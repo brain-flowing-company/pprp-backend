@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15.5-alpine
+    container_name: pprp-database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=postgres_db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    networks:
+      - pprp
+
+  backend:
+    image: cosmtrek/air
+    container_name: pprp-backend
+    working_dir: /app
+    command:
+      - go install github.com/swaggo/swag/cmd/swag@latest
+    ports:
+      - 3000:3000
+    environment:
+      - DB_URL=postgres://postgres:123456@pprp-database:5432/postgres_db
+    volumes:
+      - ./:/app/
+    networks:
+      - pprp
+
+networks:
+  pprp: {}

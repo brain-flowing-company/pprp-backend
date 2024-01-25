@@ -1,0 +1,27 @@
+basePath: /
+definitions:
+  dto.GreetingResponse:
+    properties:
+      message:
+        example: Hello, World
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: Bangkok Property Matchmaking Platform API docs
+  title: Bangkok Property Matchmaking Platform
+  version: "1.0"
+paths:
+  /greeting:
+    get:
+      description: hello, world endpoint
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GreetingResponse'
+      summary: Greeting
+swagger: "2.0"

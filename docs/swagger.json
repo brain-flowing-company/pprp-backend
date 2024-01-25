@@ -1,0 +1,41 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Bangkok Property Matchmaking Platform API docs",
+        "title": "Bangkok Property Matchmaking Platform",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:3000",
+    "basePath": "/",
+    "paths": {
+        "/greeting": {
+            "get": {
+                "description": "hello, world endpoint",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Greeting",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GreetingResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.GreetingResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Hello, World"
+                }
+            }
+        }
+    }
+}
