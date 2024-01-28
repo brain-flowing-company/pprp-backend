@@ -1,13 +1,11 @@
 package greeting
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 type Handler interface {
-	Greeting(c *gin.Context)
+	Greeting(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -25,8 +23,8 @@ func NewHandler(service Service) Handler {
 // @description hello, world endpoint
 // @produce     json
 // @success     200	{object}	dto.GreetingResponse
-func (h *handlerImpl) Greeting(c *gin.Context) {
+func (h *handlerImpl) Greeting(c *fiber.Ctx) error {
 	res := h.service.Greeting()
 
-	c.JSON(http.StatusOK, res)
+	return c.JSON(res)
 }

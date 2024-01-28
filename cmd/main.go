@@ -7,10 +7,10 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/database"
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
 	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // @title        Bangkok Property Matchmaking Platform
@@ -35,24 +35,21 @@ func main() {
 		panic(fmt.Sprintf("Could not establish connection with database with err: %v", err.Error()))
 	}
 
-	if cfg.IsDevelopment() {
-		gin.SetMode(gin.DebugMode)
-	} else {
-		gin.SetMode(gin.ReleaseMode)
-	}
+	app := fiber.New()
 
-	r := gin.Default()
+	app.Use(logger.New(logger.Config{
+		TimeFormat: "02-01-2006 15:04:05",
+		TimeZone:   "Asia/Bangkok",
+	}))
+
+	app.Get("/docs/*", swagger.HandlerDefault)
 
 	hwService := greeting.NewService()
 	hwHandler := greeting.NewHandler(hwService)
 
-	r.GET("/greeting", hwHandler.Greeting)
+	app.Get("/greeting", hwHandler.Greeting)
 
-	if cfg.IsDevelopment() {
-		r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	}
-
-	err = r.Run(fmt.Sprintf(":%v", cfg.AppPort))
+	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
 		panic(fmt.Sprintf("Server cannot start with error: %v", err.Error()))
 	}
