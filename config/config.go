@@ -13,9 +13,9 @@ func (cfg *Config) IsDevelopment() bool {
 }
 
 func Load(config *Config) error {
-	viper.BindEnv("APP_ENV")
-	viper.BindEnv("APP_PORT")
-	viper.BindEnv("DB_URL")
+	_ = viper.BindEnv("APP_ENV")
+	_ = viper.BindEnv("APP_PORT")
+	_ = viper.BindEnv("DB_URL")
 
 	viper.AutomaticEnv()
 	viper.AllowEmptyEnv(false)
