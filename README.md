@@ -33,7 +33,7 @@ make up
 > Note: make sure you have `Makefile` before using `make` command
 
 - This will automatically start postgres database and development server with auto-reload.
-- **Swagger (API docs)** is at [localhost:3000/docs/index.html](http://localhost:3000/docs/index.html) \*_change port if your app is running on different port_
+- **Swagger (API docs)** is at [localhost:3000/docs](http://localhost:3000/docs) \*_change port if your app is running on different port_
 - If you've made any changes to API docs (comments above handler function), make sure you run this command to update API docs page.
 
 ```bash
