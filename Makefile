@@ -1,7 +1,7 @@
 .PHONY: docs
 
 up:
-	docker-compose up -d
+	docker-compose -f docker-compose.dev.yaml up -d --build --no-deps
 
 docs:
 	swag init -g ./cmd/main.go -o ./docs/
