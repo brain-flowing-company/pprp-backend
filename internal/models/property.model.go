@@ -16,9 +16,9 @@ type Property struct {
 	Country               string
 	PostalCode            string
 	PropertyListTimestamp time.Time
-	// PropertyImages        []PropertyImage `gorm:"foreignKey:"`
-	// SellingProperty       SellingProperty
-	// RentingProperty       RentingProperty
+	PropertyImages        []PropertyImage `gorm:"references:PropertyId"`
+	SellingProperty       SellingProperty `gorm:"references:PropertyId"`
+	RentingProperty       RentingProperty `gorm:"references:PropertyId"`
 }
 
 type PropertyImage struct {
@@ -40,4 +40,16 @@ type RentingProperty struct {
 
 func (p Property) TableName() string {
 	return "property"
+}
+
+func (p PropertyImage) TableName() string {
+	return "property_image"
+}
+
+func (p SellingProperty) TableName() string {
+	return "selling_property"
+}
+
+func (p RentingProperty) TableName() string {
+	return "renting_property"
 }
