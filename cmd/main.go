@@ -21,7 +21,7 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		panic(err.Error())
+		fmt.Printf("Failed to load environment variables from .env file: %v\n", err.Error())
 	}
 
 	cfg := config.Config{}
@@ -42,7 +42,9 @@ func main() {
 		TimeZone:   "Asia/Bangkok",
 	}))
 
-	app.Get("/docs/*", swagger.HandlerDefault)
+	if cfg.IsDevelopment() {
+		app.Get("/docs/*", swagger.HandlerDefault)
+	}
 
 	hwService := greeting.NewService()
 	hwHandler := greeting.NewHandler(hwService)

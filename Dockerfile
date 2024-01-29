@@ -15,6 +15,5 @@ FROM alpine:latest as runner
 WORKDIR /app
 
 COPY --from=builder /app/main ./cmd/main
-COPY --from=builder /app/.env .
 
 CMD ["./cmd/main"]

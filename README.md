@@ -1,5 +1,21 @@
 ## Getting Started
 
+**FRONTEND**
+
+1. Clone repository
+
+```bash
+git clone https://github.com/brain-flowing-company/psuechaokhai-backend.git
+```
+
+2. Start backend server
+
+```bash
+docker-compose up -d
+```
+
+The server may crash on the first run. Try restarting.
+
 **Prerequisite**
 
 - Golang
@@ -11,7 +27,7 @@
 1. Clone repository
 
 ```bash
-git clone https://github.com/brain-flowing-company/pprp-backend.git
+git clone https://github.com/brain-flowing-company/psuechaokhai-backend.git
 ```
 
 2. Copy `.env.example` to `.env`
