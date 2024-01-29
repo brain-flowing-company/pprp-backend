@@ -2,7 +2,6 @@ package property
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -23,9 +22,8 @@ func NewService(repo Repository) Service {
 	}
 }
 
-func (s *serviceImpl) GetPropertyById(property *models.Property, propertyId string) *apperror.AppError {
-	err := s.repo.GetPropertyById(property, propertyId)
-	fmt.Println(err)
+func (s *serviceImpl) GetPropertyById(property *models.Property, id string) *apperror.AppError {
+	err := s.repo.GetPropertyById(property, id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.InvalidPropertyId
 	} else if err != nil {

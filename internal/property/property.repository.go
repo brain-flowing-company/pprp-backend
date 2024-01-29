@@ -19,10 +19,10 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetPropertyById(result *models.Property, propertyId string) error {
+func (repo *repositoryImpl) GetPropertyById(result *models.Property, id string) error {
 	return repo.db.Model(&models.Property{}).
 		Preload("PropertyImages").
 		Preload("SellingProperty").
 		Preload("RentingProperty").
-		First(result, "property_id = ?", propertyId).Error
+		First(result, "property_id = ?", id).Error
 }
