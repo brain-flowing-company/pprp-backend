@@ -9,7 +9,9 @@ on:
 
   push:
     branches:
-      - test/ghac
+      - release
+    tags:
+      - v*
 
   permissions:
     contents: read
