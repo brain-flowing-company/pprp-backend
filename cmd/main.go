@@ -21,7 +21,7 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Println(fmt.Sprintf("Failed to load environment variables from .env file: %v", err.Error()))
+		fmt.Printf("Failed to load environment variables from .env file: %v\n", err.Error())
 	}
 
 	cfg := config.Config{}
