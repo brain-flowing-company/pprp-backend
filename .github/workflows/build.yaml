@@ -9,9 +9,9 @@ on:
 
   push:
     branches:
-      - release
+      - "test/ghac"
     tags:
-      - v*
+      - "v*"
 
 permissions:
   contents: read
@@ -50,5 +50,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,ref=${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=gha,ref=${{ env.IMAGE_NAME }}:buildcache,mode=max
