@@ -3,19 +3,19 @@ package models
 import "time"
 
 type Property struct {
-	PropertyId            string          `json:"property_id"`
-	Description           string          `json:"description"`
-	ResidentialType       string          `json:"residential_type"`
-	ProjectName           string          `json:"project_name"`
-	Address               string          `json:"address"`
-	Alley                 string          `json:"alley"`
-	Street                string          `json:"street"`
-	SubDistrict           string          `json:"sub_district"`
-	District              string          `json:"district"`
-	Province              string          `json:"province"`
-	Country               string          `json:"country"`
-	PostalCode            string          `json:"postal_code"`
-	PropertyListTimestamp time.Time       `json:"property_list_time_stamp"`
+	PropertyId            string          `json:"property_id"              example:"f38f80b3-f326-4825-9afc-ebc331626875"`
+	Description           string          `json:"description"              example:"Et sequi dolor praes"`
+	ResidentialType       string          `json:"residential_type"         example:"Condo"`
+	ProjectName           string          `json:"project_name"             example:"Supalai"`
+	Address               string          `json:"address"                  example:"123/4"`
+	Alley                 string          `json:"alley"                    example:"Pattaya Nua 78"`
+	Street                string          `json:"street"                   example:"Pattaya"`
+	SubDistrict           string          `json:"sub_district"             example:"Bang Bon"`
+	District              string          `json:"district"                 example:"Bang Phli"`
+	Province              string          `json:"province"                 example:"Pattaya"`
+	Country               string          `json:"country"                  example:"Thailand"`
+	PostalCode            string          `json:"postal_code"              example:"69096"`
+	PropertyListTimestamp time.Time       `json:"property_list_timestamp"  example:"2023-08-12T11:37:08Z"`
 	PropertyImages        []PropertyImage `gorm:"references:PropertyId" json:"images"`
 	SellingProperty       SellingProperty `gorm:"references:PropertyId" json:"selling"`
 	RentingProperty       RentingProperty `gorm:"references:PropertyId" json:"renting"`
@@ -23,19 +23,19 @@ type Property struct {
 
 type PropertyImage struct {
 	PropertyId string `json:"-"`
-	ImageUrl   string `json:"url"`
+	ImageUrl   string `json:"url" example:"https://image_url.com/abcd"`
 }
 
 type SellingProperty struct {
 	PropertyId string  `json:"-"`
-	Price      float64 `json:"price"`
-	IsSold     bool    `json:"is_sold"`
+	Price      float64 `json:"price"   example:"12345.67"`
+	IsSold     bool    `json:"is_sold" example:"true"`
 }
 
 type RentingProperty struct {
 	PropertyId    string  `json:"-"`
-	PricePerMonth float64 `json:"price_per_month"`
-	IsOccupied    bool    `json:"is_occupied"`
+	PricePerMonth float64 `json:"price_per_month" example:"12345.67"`
+	IsOccupied    bool    `json:"is_occupied"     example:"true"`
 }
 
 func (p Property) TableName() string {

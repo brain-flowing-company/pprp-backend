@@ -1,10 +1,93 @@
 basePath: /
 definitions:
+  apperror.AppError:
+    properties:
+      code:
+        example: 500
+        type: integer
+      name:
+        example: internal-server-error
+        type: string
+    type: object
   dto.GreetingResponse:
     properties:
       message:
         example: Hello, World
         type: string
+    type: object
+  models.Property:
+    properties:
+      address:
+        example: 123/4
+        type: string
+      alley:
+        example: Pattaya Nua 78
+        type: string
+      country:
+        example: Thailand
+        type: string
+      description:
+        example: Et sequi dolor praes
+        type: string
+      district:
+        example: Bang Phli
+        type: string
+      images:
+        items:
+          $ref: '#/definitions/models.PropertyImage'
+        type: array
+      postal_code:
+        example: "69096"
+        type: string
+      project_name:
+        example: Supalai
+        type: string
+      property_id:
+        example: f38f80b3-f326-4825-9afc-ebc331626875
+        type: string
+      property_list_time_stamp:
+        example: "2023-08-12 11:37:08"
+        type: string
+      province:
+        example: Pattaya
+        type: string
+      renting:
+        $ref: '#/definitions/models.RentingProperty'
+      residential_type:
+        example: Condo
+        type: string
+      selling:
+        $ref: '#/definitions/models.SellingProperty'
+      street:
+        example: Pattaya
+        type: string
+      sub_district:
+        example: Bang Bon
+        type: string
+    type: object
+  models.PropertyImage:
+    properties:
+      url:
+        example: https://image_url.com/abcd
+        type: string
+    type: object
+  models.RentingProperty:
+    properties:
+      is_occupied:
+        example: true
+        type: boolean
+      price_per_month:
+        example: 12345.67
+        type: number
+    type: object
+  models.SellingProperty:
+    properties:
+      is_sold:
+        example: true
+        type: boolean
+      price:
+        example: 12345.67
+        type: number
     type: object
 host: localhost:3000
 info:
@@ -13,6 +96,27 @@ info:
   title: Bangkok Property Matchmaking Platform
   version: "1.0"
 paths:
+  /api/v1/property/:id:
+    get:
+      description: Get property by property id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Property'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Get property by id
+      tags:
+      - property
   /greeting:
     get:
       description: hello, world endpoint

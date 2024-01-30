@@ -1,7 +1,6 @@
 package property
 
 import (
-	"github.com/brain-flowing-company/pprp-backend/internal/dto"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,11 +19,14 @@ func NewHandler(service Service) Handler {
 	}
 }
 
-// @router      /api/property/:id [get]
+// @router      /api/v1/property/:id [get]
 // @summary     Get property by id
-// @description Get property by id
+// @description Get property by property id
+// @tags        property
 // @produce     json
-// @success     200	{object}	dto.GreetingResponse
+// @success     200	{object} models.Property
+// @failure     400 {object} apperror.AppError
+// @failure     404 {object} apperror.AppError
 func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 
@@ -34,9 +36,5 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 		return c.Status(err.Code).JSON(err)
 	}
 
-	res := dto.GetPropertyByIdResponse{
-		Property: property,
-	}
-
-	return c.JSON(res)
+	return c.JSON(property)
 }

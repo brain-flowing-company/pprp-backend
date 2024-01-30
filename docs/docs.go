@@ -15,6 +15,38 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/property/:id": {
+            "get": {
+                "description": "Get property by property id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Get property by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Property"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    }
+                }
+            }
+        },
         "/greeting": {
             "get": {
                 "description": "hello, world endpoint",
@@ -34,12 +66,129 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "apperror.AppError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 500
+                },
+                "name": {
+                    "type": "string",
+                    "example": "internal-server-error"
+                }
+            }
+        },
         "dto.GreetingResponse": {
             "type": "object",
             "properties": {
                 "message": {
                     "type": "string",
                     "example": "Hello, World"
+                }
+            }
+        },
+        "models.Property": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "123/4"
+                },
+                "alley": {
+                    "type": "string",
+                    "example": "Pattaya Nua 78"
+                },
+                "country": {
+                    "type": "string",
+                    "example": "Thailand"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Et sequi dolor praes"
+                },
+                "district": {
+                    "type": "string",
+                    "example": "Bang Phli"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PropertyImage"
+                    }
+                },
+                "postal_code": {
+                    "type": "string",
+                    "example": "69096"
+                },
+                "project_name": {
+                    "type": "string",
+                    "example": "Supalai"
+                },
+                "property_id": {
+                    "type": "string",
+                    "example": "f38f80b3-f326-4825-9afc-ebc331626875"
+                },
+                "property_list_time_stamp": {
+                    "type": "string",
+                    "example": "2023-08-12 11:37:08"
+                },
+                "province": {
+                    "type": "string",
+                    "example": "Pattaya"
+                },
+                "renting": {
+                    "$ref": "#/definitions/models.RentingProperty"
+                },
+                "residential_type": {
+                    "type": "string",
+                    "example": "Condo"
+                },
+                "selling": {
+                    "$ref": "#/definitions/models.SellingProperty"
+                },
+                "street": {
+                    "type": "string",
+                    "example": "Pattaya"
+                },
+                "sub_district": {
+                    "type": "string",
+                    "example": "Bang Bon"
+                }
+            }
+        },
+        "models.PropertyImage": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "example": "https://image_url.com/abcd"
+                }
+            }
+        },
+        "models.RentingProperty": {
+            "type": "object",
+            "properties": {
+                "is_occupied": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "price_per_month": {
+                    "type": "number",
+                    "example": 12345.67
+                }
+            }
+        },
+        "models.SellingProperty": {
+            "type": "object",
+            "properties": {
+                "is_sold": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "price": {
+                    "type": "number",
+                    "example": 12345.67
                 }
             }
         }
