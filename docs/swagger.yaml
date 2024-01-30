@@ -45,8 +45,8 @@ definitions:
       property_id:
         example: f38f80b3-f326-4825-9afc-ebc331626875
         type: string
-      property_list_time_stamp:
-        example: "2023-08-12 11:37:08"
+      property_list_timestamp:
+        example: "2023-08-12T11:37:08Z"
         type: string
       province:
         example: Pattaya
@@ -98,7 +98,7 @@ info:
 paths:
   /api/v1/property/:id:
     get:
-      description: Get property by property id
+      description: Get property by its id
       produces:
       - application/json
       responses:

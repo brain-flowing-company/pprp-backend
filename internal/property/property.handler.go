@@ -21,7 +21,7 @@ func NewHandler(service Service) Handler {
 
 // @router      /api/v1/property/:id [get]
 // @summary     Get property by id
-// @description Get property by property id
+// @description Get property by its id
 // @tags        property
 // @produce     json
 // @success     200	{object} models.Property
