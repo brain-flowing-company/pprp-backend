@@ -1,5 +1,5 @@
-package dto
+package models
 
-type GreetingResponse struct {
+type Greeting struct {
 	Message string `json:"message" example:"Hello, World"`
 }

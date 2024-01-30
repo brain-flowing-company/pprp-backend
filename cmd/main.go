@@ -54,8 +54,10 @@ func main() {
 	propertyService := property.NewService(propertyRepo)
 	propertyHandler := property.NewHandler(propertyService)
 
-	app.Get("/greeting", hwHandler.Greeting)
-	app.Get("/api/v1/property/:propertyId", propertyHandler.GetPropertyById)
+	apiv1 := app.Group("/api/v1")
+
+	apiv1.Get("/greeting", hwHandler.Greeting)
+	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {

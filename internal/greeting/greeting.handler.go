@@ -1,6 +1,7 @@
 package greeting
 
 import (
+	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -18,13 +19,15 @@ func NewHandler(service Service) Handler {
 	}
 }
 
-// @router      /greeting [get]
+// @router      /api/v1/greeting [get]
 // @summary     Greeting
 // @description hello, world endpoint
+// @tags        greeting
 // @produce     json
-// @success     200	{object}	dto.GreetingResponse
+// @success     200	{object}	models.Greeting
 func (h *handlerImpl) Greeting(c *fiber.Ctx) error {
-	res := h.service.Greeting()
+	msg := models.Greeting{}
+	h.service.Greeting(&msg)
 
-	return c.JSON(res)
+	return c.JSON(msg)
 }
