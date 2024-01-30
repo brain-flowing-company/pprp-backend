@@ -12,7 +12,7 @@ CREATE TABLE property
     province                 VARCHAR(50)                                 NOT NULL,
     country                  VARCHAR(50)                                 NOT NULL,
     postal_code              CHAR(5)                                     NOT NULL,
-    property_list_time_stamp TIMESTAMP WITHOUT TIME ZONE                 NOT NULL
+    property_list_timestamp  TIMESTAMP WITH TIME ZONE                    NOT NULL
 );
 
 CREATE TABLE property_image
@@ -37,7 +37,7 @@ CREATE TABLE renting_property
 );
 
 
-INSERT INTO property (property_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code, property_list_time_stamp) VALUES
+INSERT INTO property (property_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code, property_list_timestamp) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 'Et sequi dolor praes', 'Sequi reiciendis odi', 'Anita', 'Quas iusto expedita ', 'Delisa', 'Grace', 'Michael', 'Christine', 'Anthony', 'Andrew', '53086', '2023-08-12 11:37:08'),
 ('41a448d4-43ec-411a-a692-2d68e06e0282', 'Impedit quae itaque ', 'Mollitia quidem quas', 'Rose', 'Sunt fuga quo perspi', 'Raquel', 'Brandy', 'Jacob', 'Lino', 'Edward', 'Reginald', '12894', '2020-08-07 05:26:00'),
 ('414854bf-bdee-45a5-929f-073aedaceea0', 'Architecto iure labo', 'Maiores magnam quaer', 'Michele', 'Pariatur temporibus ', 'Robert', 'Nancy', 'Barbara', 'David', 'Henry', 'David', '24264', '2020-10-04 14:08:20'),
