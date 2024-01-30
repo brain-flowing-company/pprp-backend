@@ -8,6 +8,7 @@ import (
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
 	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
+	"github.com/brain-flowing-company/pprp-backend/internal/users"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
@@ -54,10 +55,15 @@ func main() {
 	propertyService := property.NewService(propertyRepo)
 	propertyHandler := property.NewHandler(propertyService)
 
+	usersRepo := users.NewRepository(db)
+	usersService := users.NewService(usersRepo)
+	usersHandler := users.NewHandler(usersService)
+
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
+	apiv1.Post("/users", usersHandler.CreateUser)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
