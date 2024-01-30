@@ -36,6 +36,32 @@ CREATE TABLE renting_property
     is_occupied     BOOLEAN                                            NOT NULL
 );
 
+CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMBT', 'TTB', 'SCBB', 'GSB');
+
+CREATE TABLE user
+(
+    user_id                     UUID PRIMARY KEY                    NOT NULL,
+    first_name                  VARCHAR(50)                         NOT NULL,
+    last_name                   VARCHAR(50)                         NOT NULL,
+    email                       VARCHAR(50)                         NOT NULL,
+    phone_number                VARCHAR(10)                         NOT NULL,
+    credit_cardholder_name      VARCHAR(50),
+    creadit_card_number         VARCHAR(16),
+    credit_card_expiration_month VARCHAR(2),
+    credit_card_expiration_year  VARCHAR(4),
+    credit_card_cvv             VARCHAR(3),
+    bank_name                   bank_name,
+    bank_number                 VARCHAR(10),
+    is_verified                 BOOLEAN             DEFAULT FALSE   NOT NULL
+);
+
+CREATE TABLE profile_image
+(
+    user_id     UUID REFERENCES user (user_id)      NOT NULL,
+    image_url   VARCHAR(2000)                       NOT NULL,
+    PRIMARY KEY (user_id, image_url)
+);
+
 -------------------- DUMMY DATA --------------------
 
 INSERT INTO property (property_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code, property_list_timestamp) VALUES
