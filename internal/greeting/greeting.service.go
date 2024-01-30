@@ -1,9 +1,9 @@
 package greeting
 
-import "github.com/brain-flowing-company/pprp-backend/internal/dto"
+import "github.com/brain-flowing-company/pprp-backend/internal/models"
 
 type Service interface {
-	Greeting() dto.GreetingResponse
+	Greeting(msg *models.Greeting)
 }
 
 type serviceImpl struct{}
@@ -12,6 +12,6 @@ func NewService() Service {
 	return &serviceImpl{}
 }
 
-func (s *serviceImpl) Greeting() dto.GreetingResponse {
-	return dto.GreetingResponse{Message: "Hello, World"}
+func (s *serviceImpl) Greeting(msg *models.Greeting) {
+	msg.Message = "Hello, World"
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/database"
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
 	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
+	"github.com/brain-flowing-company/pprp-backend/internal/property"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
@@ -30,7 +31,7 @@ func main() {
 		panic(fmt.Sprintf("Could not load config with error: %v", err.Error()))
 	}
 
-	_, err = database.New(&cfg)
+	db, err := database.New(&cfg)
 	if err != nil {
 		panic(fmt.Sprintf("Could not establish connection with database with err: %v", err.Error()))
 	}
@@ -49,7 +50,14 @@ func main() {
 	hwService := greeting.NewService()
 	hwHandler := greeting.NewHandler(hwService)
 
-	app.Get("/greeting", hwHandler.Greeting)
+	propertyRepo := property.NewRepository(db)
+	propertyService := property.NewService(propertyRepo)
+	propertyHandler := property.NewHandler(propertyService)
+
+	apiv1 := app.Group("/api/v1")
+
+	apiv1.Get("/greeting", hwHandler.Greeting)
+	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {

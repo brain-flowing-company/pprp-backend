@@ -1,4 +1,4 @@
-.PHONY: docs
+.PHONY: docs migrate
 
 up:
 	docker-compose -f docker-compose.dev.yaml up -d --build --no-deps
