@@ -5,6 +5,7 @@ import (
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/utils"
 	"gorm.io/gorm"
 )
 
@@ -23,6 +24,10 @@ func NewService(repo Repository) Service {
 }
 
 func (s *serviceImpl) GetPropertyById(property *models.Property, id string) *apperror.AppError {
+	if !utils.IsValidUUID(id) {
+		return apperror.InvalidPropertyId
+	}
+
 	err := s.repo.GetPropertyById(property, id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.InvalidPropertyId
