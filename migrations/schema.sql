@@ -36,6 +36,7 @@ CREATE TABLE renting_property
     is_occupied     BOOLEAN                                            NOT NULL
 );
 
+-------------------- DUMMY DATA --------------------
 
 INSERT INTO property (property_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code, property_list_timestamp) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 'Et sequi dolor praes', 'Sequi reiciendis odi', 'Anita', 'Quas iusto expedita ', 'Delisa', 'Grace', 'Michael', 'Christine', 'Anthony', 'Andrew', '53086', '2023-08-12 11:37:08'),
