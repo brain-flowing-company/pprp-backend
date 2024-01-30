@@ -9,7 +9,7 @@ definitions:
         example: internal-server-error
         type: string
     type: object
-  dto.GreetingResponse:
+  models.Greeting:
     properties:
       message:
         example: Hello, World
@@ -96,6 +96,19 @@ info:
   title: Bangkok Property Matchmaking Platform
   version: "1.0"
 paths:
+  /api/v1/greeting:
+    get:
+      description: hello, world endpoint
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Greeting'
+      summary: Greeting
+      tags:
+      - greeting
   /api/v1/property/:id:
     get:
       description: Get property by its id
@@ -117,15 +130,4 @@ paths:
       summary: Get property by id
       tags:
       - property
-  /greeting:
-    get:
-      description: hello, world endpoint
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.GreetingResponse'
-      summary: Greeting
 swagger: "2.0"

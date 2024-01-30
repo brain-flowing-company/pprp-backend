@@ -15,6 +15,26 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/greeting": {
+            "get": {
+                "description": "hello, world endpoint",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "greeting"
+                ],
+                "summary": "Greeting",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Greeting"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/property/:id": {
             "get": {
                 "description": "Get property by its id",
@@ -46,23 +66,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/greeting": {
-            "get": {
-                "description": "hello, world endpoint",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Greeting",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.GreetingResponse"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -79,7 +82,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.GreetingResponse": {
+        "models.Greeting": {
             "type": "object",
             "properties": {
                 "message": {
