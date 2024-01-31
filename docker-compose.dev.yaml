@@ -23,7 +23,7 @@ services:
     container_name: sck-backend
     working_dir: /app
     ports:
-      - 3000:3000
+      - 8000:8000
     depends_on:
       db:
         condition: service_healthy
