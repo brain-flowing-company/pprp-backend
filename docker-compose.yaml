@@ -23,13 +23,13 @@ services:
     build: .
     working_dir: /app
     ports:
-      - 3000:3000
+      - 8000:8000
     depends_on:
       db:
         condition: service_healthy
     environment:
       - APP_ENV=development
-      - APP_PORT=3000
+      - APP_PORT=8000
       - DB_URL=postgres://postgres:123456@sck-database:5432/postgres
     networks:
       - sck
