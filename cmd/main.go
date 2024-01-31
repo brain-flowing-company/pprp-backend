@@ -8,6 +8,7 @@ import (
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
 	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
+	"github.com/brain-flowing-company/pprp-backend/internal/register"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
@@ -54,10 +55,16 @@ func main() {
 	propertyService := property.NewService(propertyRepo)
 	propertyHandler := property.NewHandler(propertyService)
 
+	// Initialize the service and handler
+	userRepository := register.NewRepository(db) // assuming db is your GORM database connection
+	userService := register.NewService(userRepository)
+	userHandler := register.NewHandler(userService)
+
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
+	apiv1.Post("/register", userHandler.CreateUser)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
