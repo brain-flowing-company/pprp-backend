@@ -1,6 +1,6 @@
 ## Getting Started
 
-**FRONTEND**
+### Frontend
 
 1. Clone repository
 
@@ -11,10 +11,20 @@ git clone https://github.com/brain-flowing-company/psuechaokhai-backend.git
 2. Start backend server
 
 ```bash
-docker-compose up -d
+docker-compose up -d --build --no-deps # note: frontend only
 ```
 
-The server may crash on the first run. Try restarting.
+3. pgAdmin is available at [localhost:5050](http://localhost:5050)
+
+| Field              | Value           |
+| ------------------ | --------------- |
+| _pgAdmin_ Username | admin@admin.com |
+| _pgAdmin_ Password | admin           |
+| Host name/address  | db              |
+| Port               | 5432            |
+| Username           | postgres        |
+
+### Backend
 
 **Prerequisite**
 
@@ -41,10 +51,20 @@ go install github.com/swaggo/swag/cmd/swag@latest
 4. Run development server
 
 ```bash
-docker-compose up -d
+docker-compose -f docker-compose.dev.yaml up -d --build --no-deps # note: backend only
 # or
 make up
 ```
+
+5. pgAdmin is available at [localhost:5050](http://localhost:5050)
+
+| Field              | Value           |
+| ------------------ | --------------- |
+| _pgAdmin_ Username | admin@admin.com |
+| _pgAdmin_ Password | admin           |
+| Host name/address  | db              |
+| Port               | 5432            |
+| Username           | postgres        |
 
 > Note: make sure you have `Makefile` before using `make` command
 
