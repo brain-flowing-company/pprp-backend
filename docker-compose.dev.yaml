@@ -5,15 +5,13 @@ services:
     image: postgres:15.5-alpine
     container_name: sck-database
     environment:
-      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456
-      - POSTGRES_DB=postgres_db
     ports:
       - 5432:5432
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - ./migrations/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d postgres'"]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -30,7 +28,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      - DB_URL=postgres://postgres:123456@sck-database:5432/postgres_db
+      - DB_URL=postgres://postgres:123456@sck-database:5432/postgres
     volumes:
       - ./:/app/
     networks:
