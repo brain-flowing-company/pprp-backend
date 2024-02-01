@@ -43,16 +43,16 @@ CREATE TABLE users
     user_id                             UUID PRIMARY KEY                NOT NULL,
     first_name                          VARCHAR(50)                     NOT NULL,
     last_name                           VARCHAR(50)                     NOT NULL,
-    email                               VARCHAR(50)                     NOT NULL,
-    phone_number                        VARCHAR(10)                     NOT NULL,
-    credit_cardholder_name              VARCHAR(50),
-    credit_card_number                  VARCHAR(16),
-    credit_card_expiration_month        VARCHAR(2),
-    credit_card_expiration_year         VARCHAR(4),
-    credit_card_cvv                     VARCHAR(3),
-    bank_name                           VARCHAR(50),
-    bank_account_number                 VARCHAR(10),
-    is_verified                         BOOLEAN,
+    email                               VARCHAR(50)         UNIQUE      NOT NULL,
+    phone_number                        VARCHAR(10)         UNIQUE      NOT NULL,
+    credit_cardholder_name              VARCHAR(50)                     DEFAULT NULL,
+    credit_card_number                  VARCHAR(16)                     DEFAULT NULL,
+    credit_card_expiration_month        VARCHAR(2)                      DEFAULT NULL,
+    credit_card_expiration_year         VARCHAR(4)                      DEFAULT NULL,
+    credit_card_cvv                     VARCHAR(3)                      DEFAULT NULL,
+    bank_name                           VARCHAR(50)                     DEFAULT NULL,
+    bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
+    is_verified                         BOOLEAN                         DEFAULT FALSE
 );
 
 CREATE TABLE profile_images

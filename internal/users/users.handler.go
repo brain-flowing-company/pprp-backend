@@ -1,8 +1,6 @@
 package users
 
 import (
-	"fmt"
-
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -43,8 +41,6 @@ func (h *handlerImpl) CreateUser(c *fiber.Ctx) error {
 			"message": "Invalid body",
 		})
 	}
-
-	fmt.Println(user)
 
 	err := h.service.CreateUser(&user)
 	if err != nil {
