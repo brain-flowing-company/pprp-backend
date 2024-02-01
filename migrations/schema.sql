@@ -40,25 +40,25 @@ CREATE TABLE renting_property
 
 CREATE TABLE users
 (
-    user_id                     UUID PRIMARY KEY                    NOT NULL,
-    first_name                  VARCHAR(50)                         NOT NULL,
-    last_name                   VARCHAR(50)                         NOT NULL,
-    email                       VARCHAR(50)                         NOT NULL,
-    phone_number                VARCHAR(10)                         NOT NULL,
-    credit_cardholder_name      VARCHAR(50),
-    creadit_card_number         VARCHAR(16),
-    credit_card_expiration_month VARCHAR(2),
-    credit_card_expiration_year  VARCHAR(4),
-    credit_card_cvv             VARCHAR(3),
-    bank_name                   VARCHAR(50),
-    bank_number                 VARCHAR(10),
-    is_verified                 BOOLEAN
+    user_id                             UUID PRIMARY KEY                    NOT NULL,
+    first_name                          VARCHAR(50)                         NOT NULL,
+    last_name                           VARCHAR(50)                         NOT NULL,
+    email                               VARCHAR(50)                         NOT NULL,
+    phone_number                        VARCHAR(10)                         NOT NULL,
+    credit_cardholder_name              VARCHAR(50),
+    credit_card_number                  VARCHAR(16),
+    credit_card_expiration_month        VARCHAR(2),
+    credit_card_expiration_year         VARCHAR(4),
+    credit_card_cvv                     VARCHAR(3),
+    bank_name                           VARCHAR(50),
+    bank_account_number                 VARCHAR(10),
+    is_verified                         BOOLEAN
 );
 
-CREATE TABLE profile_image
+CREATE TABLE profile_images
 (
-    user_id     UUID REFERENCES users (user_id)      NOT NULL,
-    image_url   VARCHAR(2000)                       NOT NULL,
+    user_id         UUID REFERENCES users (user_id)         NOT NULL,
+    image_url       VARCHAR(2000)                           NOT NULL,
     PRIMARY KEY (user_id, image_url)
 );
 
@@ -108,3 +108,6 @@ INSERT INTO selling_property (property_id, price, is_sold) VALUES
 INSERT INTO renting_property (property_id, price_per_month, is_occupied) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 123423.2931847312, FALSE),
 ('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', 112302.9182347433, TRUE);
+
+INSERT INTO users (user_id, first_name, last_name, email, phone_number, credit_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, is_verified) VALUES
+('f38f80b3-f326-4825-9afc-a1b2c3d4e5f6', 'First', 'Last', 'email@email.com', '0123456789', null, null ,null, null, null, null, null, FALSE);
