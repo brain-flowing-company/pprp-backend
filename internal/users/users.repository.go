@@ -1,6 +1,8 @@
 package users
 
 import (
+	"fmt"
+
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -27,11 +29,11 @@ func (repo *repositoryImpl) GetAllUsers(user *models.Users) error {
 
 func (repo *repositoryImpl) CreateUser(user *models.Users) error {
 	user.UserId = uuid.New().String()
+	fmt.Println("user.UserId", user.UserId)
 
 	for repo.db.Find(&models.Users{}, "user_id = ?", user.UserId).RowsAffected != 0 {
 		user.UserId = uuid.New().String()
 	}
-	user.ProfileImage.UserId = user.UserId
 
 	return repo.db.Create(&user).Error
 }

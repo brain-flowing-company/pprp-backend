@@ -6,7 +6,7 @@ type Users struct {
 	LastName                  string        `json:"last_name" example:"Doe"`
 	Email                     string        `json:"email" example:"email@email.com"`
 	PhoneNumber               string        `json:"phone_number" example:"0812345678"`
-	ProfileImage              ProfileImages `gorm:"foreignKey:UserId" json:"profile_image"`
+	ProfileImage              ProfileImages `gorm:"foreignKey:UserId;references:UserId" json:"profile_image"`
 	CreditCardholderName      string        `json:"credit_cardholder_name" example:"JOHN DOE"`
 	CreditCardNumber          string        `json:"credit_card_number" example:"1234567890123456"`
 	CreditCardExpirationMonth string        `json:"credit_card_expiration_month" example:"12"`
@@ -18,8 +18,8 @@ type Users struct {
 }
 
 type ProfileImages struct {
-	UserId   string `gorm:"primaryKey" json:"-"`
-	ImageUrl string `json:"url" example:"https://image_url.com/abcd"`
+	ImageUrl string `gorm:"primaryKey" json:"url" example:"https://image_url.com/abcd"`
+	UserId   string `json:"-"`
 }
 
 // type BankName string

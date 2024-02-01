@@ -40,11 +40,11 @@ CREATE TABLE renting_property
 
 CREATE TABLE users
 (
-    user_id                             UUID PRIMARY KEY                    NOT NULL,
-    first_name                          VARCHAR(50)                         NOT NULL,
-    last_name                           VARCHAR(50)                         NOT NULL,
-    email                               VARCHAR(50)                         NOT NULL,
-    phone_number                        VARCHAR(10)                         NOT NULL,
+    user_id                             UUID PRIMARY KEY                NOT NULL,
+    first_name                          VARCHAR(50)                     NOT NULL,
+    last_name                           VARCHAR(50)                     NOT NULL,
+    email                               VARCHAR(50)                     NOT NULL,
+    phone_number                        VARCHAR(10)                     NOT NULL,
     credit_cardholder_name              VARCHAR(50),
     credit_card_number                  VARCHAR(16),
     credit_card_expiration_month        VARCHAR(2),
@@ -52,14 +52,13 @@ CREATE TABLE users
     credit_card_cvv                     VARCHAR(3),
     bank_name                           VARCHAR(50),
     bank_account_number                 VARCHAR(10),
-    is_verified                         BOOLEAN
+    is_verified                         BOOLEAN,
 );
 
 CREATE TABLE profile_images
 (
-    user_id         UUID REFERENCES users (user_id)         NOT NULL,
-    image_url       VARCHAR(2000)                           NOT NULL,
-    PRIMARY KEY (user_id, image_url)
+    image_url       VARCHAR(2000) PRIMARY KEY                           NOT NULL,
+    user_id         UUID REFERENCES users (user_id)                     NOT NULL
 );
 
 -------------------- DUMMY DATA --------------------
