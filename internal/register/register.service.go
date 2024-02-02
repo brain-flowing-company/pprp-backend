@@ -19,6 +19,9 @@ func NewService(repo Repository) Service {
 }
 
 func (s *serviceImpl) CreateUser(user *models.User) error {
+	if err := user.HashPassword(); err != nil {
+		return err
+	}
 	if err := s.repo.CreateUser(user); err != nil {
 		return err
 	}

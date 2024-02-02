@@ -1,8 +1,6 @@
 package register
 
 import (
-	"fmt"
-
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"gorm.io/gorm"
 )
@@ -22,11 +20,5 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (repo *repositoryImpl) CreateUser(user *models.User) error {
-	// bcrytpt password before saving
-	fmt.Println("user", user)
-	if err := user.HashPassword(); err != nil {
-		return err
-	}
-
 	return repo.db.Create(user).Error // Create() is a gorm method
 }
