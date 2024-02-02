@@ -2,6 +2,8 @@
 package login
 
 import (
+	"os"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/golang-jwt/jwt"
@@ -42,7 +44,7 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 	// Add other claims as needed
 
 	// Sign the token with a secret key
-	secretKey := []byte("secret") // Replace with your secret key
+	secretKey := []byte(os.Getenv("SECRET_KEY")) // Replace with your secret key
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
 		return "", apperror.InternalServerError
