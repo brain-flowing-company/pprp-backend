@@ -2,7 +2,6 @@
 package login
 
 import (
-	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,7 +23,7 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 	// Parse login request from the request body
 	var loginRequest LoginRequest
 	if err := c.BodyParser(&loginRequest); err != nil {
-		return apperror.BadRequest
+		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
 	// Authenticate user
