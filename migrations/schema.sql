@@ -36,6 +36,15 @@ CREATE TABLE renting_property
     is_occupied     BOOLEAN                                            NOT NULL
 );
 
+CREATE TABLE "users"
+(
+    id             SERIAL PRIMARY KEY,
+    created_at     TIMESTAMP(3) NOT NULL,
+    updated_at     TIMESTAMP(3) NOT NULL,
+    deleted_at     TIMESTAMP(3),
+    email          VARCHAR(255) NOT NULL UNIQUE,
+    password       VARCHAR(255) NOT NULL
+);
 -------------------- DUMMY DATA --------------------
 
 INSERT INTO property (property_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code, property_list_timestamp) VALUES
