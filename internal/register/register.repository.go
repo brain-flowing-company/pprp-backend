@@ -7,6 +7,7 @@ import (
 
 type Repository interface {
 	CreateUser(*models.User) error
+	GetUserByEmail(email string) (*models.User, error)
 }
 
 type repositoryImpl struct {
@@ -21,4 +22,12 @@ func NewRepository(db *gorm.DB) Repository {
 
 func (repo *repositoryImpl) CreateUser(user *models.User) error {
 	return repo.db.Create(user).Error // Create() is a gorm method
+}
+func (repo *repositoryImpl) GetUserByEmail(email string) (*models.User, error) {
+	user := &models.User{}
+	err := repo.db.Where("email = ?", email).First(user).Error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

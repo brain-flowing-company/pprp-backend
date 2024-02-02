@@ -19,4 +19,6 @@ var (
 	UserNotFound        = &AppError{http.StatusNotFound, "user-not-found"}
 	InvalidCredentials  = &AppError{http.StatusUnauthorized, "invalid-credentials"}
 	BadRequest          = &AppError{http.StatusBadRequest, "bad-request"}
+	InvalidEmail        = &AppError{http.StatusBadRequest, "invalid-email"}
+	EmailAlreadyExists  = &AppError{http.StatusBadRequest, "email-already-exists"}
 )
