@@ -2,6 +2,7 @@
 package login
 
 import (
+	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -21,7 +22,7 @@ func NewHandler(service Service) Handler {
 
 func (h *handlerImpl) Login(c *fiber.Ctx) error {
 	// Parse login request from the request body
-	var loginRequest LoginRequest
+	var loginRequest models.LoginRequest
 	if err := c.BodyParser(&loginRequest); err != nil {
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
@@ -40,9 +41,4 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 
 	// Return a success response
 	return c.SendStatus(fiber.StatusOK)
-}
-
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
 }
