@@ -23,8 +23,5 @@ func NewRepository(db *gorm.DB) Repository {
 func (repo *repositoryImpl) GetUserByEmail(email string) (*models.User, error) {
 	user := &models.User{}
 	err := repo.db.Where("email = ?", email).First(user).Error
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
+	return user, err
 }
