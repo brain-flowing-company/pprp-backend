@@ -1,8 +1,6 @@
 package register
 
 import (
-	"fmt"
-
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,7 +30,6 @@ func NewHandler(service Service) Handler {
 // @failure     404 {object} AppError
 func (h *handlerImpl) CreateUser(c *fiber.Ctx) error {
 	user := models.User{}
-	fmt.Println("user", user)
 	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
