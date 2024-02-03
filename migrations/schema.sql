@@ -1,18 +1,20 @@
 CREATE TABLE property
 (
-    property_id              UUID PRIMARY KEY                            NOT NULL,
-    description              TEXT                                        NOT NULL,
-    residential_type         VARCHAR(99)                                 NOT NULL,
+    property_id              UUID PRIMARY KEY                   DEFAULT gen_random_uuid(),
+    description              TEXT                               NOT NULL,
+    residential_type         VARCHAR(99)                        NOT NULL,
     project_name             VARCHAR(50),
-    address                  VARCHAR(50)                                 NOT NULL,
+    address                  VARCHAR(50)                        NOT NULL,
     alley                    VARCHAR(50),
-    street                   VARCHAR(50)                                 NOT NULL,
-    sub_district             VARCHAR(50)                                 NOT NULL,
-    district                 VARCHAR(50)                                 NOT NULL,
-    province                 VARCHAR(50)                                 NOT NULL,
-    country                  VARCHAR(50)                                 NOT NULL,
-    postal_code              CHAR(5)                                     NOT NULL,
-    property_list_timestamp  TIMESTAMP WITH TIME ZONE                    NOT NULL
+    street                   VARCHAR(50)                        NOT NULL,
+    sub_district             VARCHAR(50)                        NOT NULL,
+    district                 VARCHAR(50)                        NOT NULL,
+    province                 VARCHAR(50)                        NOT NULL,
+    country                  VARCHAR(50)                        NOT NULL,
+    postal_code              CHAR(5)                            NOT NULL,
+    created_at               TIMESTAMP WITH TIME ZONE           DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP WITH TIME ZONE           DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP WITH TIME ZONE           DEFAULT NULL
 );
 
 CREATE TABLE property_image
@@ -41,18 +43,22 @@ CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB'
 CREATE TABLE users
 (
     user_id                             UUID PRIMARY KEY                NOT NULL,
+    email                               VARCHAR(50)         UNIQUE      NOT NULL,
+    password                            VARCHAR(50)                     NOT NULL,
     first_name                          VARCHAR(50)                     NOT NULL,
     last_name                           VARCHAR(50)                     NOT NULL,
-    email                               VARCHAR(50)         UNIQUE      NOT NULL,
     phone_number                        VARCHAR(10)         UNIQUE      NOT NULL,
-    credit_cardholder_name              VARCHAR(50)                     DEFAULT NULL,
+    credit_card_cardholder_name         VARCHAR(50)                     DEFAULT NULL,
     credit_card_number                  VARCHAR(16)                     DEFAULT NULL,
     credit_card_expiration_month        VARCHAR(2)                      DEFAULT NULL,
     credit_card_expiration_year         VARCHAR(4)                      DEFAULT NULL,
     credit_card_cvv                     VARCHAR(3)                      DEFAULT NULL,
     bank_name                           bank_name                       DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
-    is_verified                         BOOLEAN                         DEFAULT FALSE
+    is_verified                         BOOLEAN                         DEFAULT FALSE,
+    created_at                          TIMESTAMP WITH TIME ZONE        DEFAULT CURRENT_TIMESTAMP,
+    updated_at                          TIMESTAMP WITH TIME ZONE        DEFAULT CURRENT_TIMESTAMP,
+    deleted_at                          TIMESTAMP WITH TIME ZONE        DEFAULT NULL
 );
 
 CREATE TABLE profile_images

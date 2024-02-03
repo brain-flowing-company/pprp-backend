@@ -7,7 +7,9 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/database"
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
 	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
+	"github.com/brain-flowing-company/pprp-backend/internal/login"
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
+	"github.com/brain-flowing-company/pprp-backend/internal/register"
 	"github.com/brain-flowing-company/pprp-backend/internal/users"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -59,6 +61,16 @@ func main() {
 	usersService := users.NewService(usersRepo)
 	usersHandler := users.NewHandler(usersService)
 
+	// Initialize the service and handler
+	userRepository := register.NewRepository(db) // assuming db is your GORM database connection
+	userService := register.NewService(userRepository)
+	userHandler := register.NewHandler(userService)
+
+	// Initialize the repository, service, and handler
+	loginRepository := login.NewRepository(db)
+	loginService := login.NewService(loginRepository)
+	loginHandler := login.NewHandler(loginService)
+
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
@@ -66,6 +78,8 @@ func main() {
 	apiv1.Get("/users", usersHandler.GetAllUsers)
 	apiv1.Get("/users/:userId", usersHandler.GetUserById)
 	apiv1.Post("/users", usersHandler.CreateUser)
+	apiv1.Post("/register", userHandler.CreateUser)
+	apiv1.Post("/login", loginHandler.Login)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
