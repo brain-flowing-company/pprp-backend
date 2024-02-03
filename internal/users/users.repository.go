@@ -7,8 +7,9 @@ import (
 )
 
 type Repository interface {
+	GetAllUsers(*[]models.Users) error
+	GetUserById(*models.Users, string) error
 	CreateUser(*models.Users) error
-	GetAllUsers(*models.Users) error
 }
 
 type repositoryImpl struct {
@@ -21,8 +22,12 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetAllUsers(user *models.Users) error {
-	return repo.db.Find(&user).Error
+func (repo *repositoryImpl) GetAllUsers(users *[]models.Users) error {
+	return repo.db.Model(&models.Users{}).Preload("ProfileImage").Find(users).Error
+}
+
+func (repo *repositoryImpl) GetUserById(user *models.Users, userId string) error {
+	return repo.db.Model(&models.Users{}).Preload("ProfileImage").First(user, "user_id = ?", userId).Error
 }
 
 func (repo *repositoryImpl) CreateUser(user *models.Users) error {

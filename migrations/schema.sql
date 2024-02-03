@@ -36,7 +36,7 @@ CREATE TABLE renting_property
     is_occupied     BOOLEAN                                            NOT NULL
 );
 
--- CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB', 'GSB');
+CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB', 'GSB');
 
 CREATE TABLE users
 (
@@ -50,7 +50,7 @@ CREATE TABLE users
     credit_card_expiration_month        VARCHAR(2)                      DEFAULT NULL,
     credit_card_expiration_year         VARCHAR(4)                      DEFAULT NULL,
     credit_card_cvv                     VARCHAR(3)                      DEFAULT NULL,
-    bank_name                           VARCHAR(50)                     DEFAULT NULL,
+    bank_name                           bank_name                       DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
     is_verified                         BOOLEAN                         DEFAULT FALSE
 );

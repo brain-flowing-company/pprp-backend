@@ -6,8 +6,9 @@ import (
 )
 
 type Handler interface {
-	CreateUser(c *fiber.Ctx) error
 	GetAllUsers(c *fiber.Ctx) error
+	GetUserById(c *fiber.Ctx) error
+	CreateUser(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -21,13 +22,24 @@ func NewHandler(service Service) Handler {
 }
 
 func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
-	users := models.Users{}
+	users := []models.Users{}
 	err := h.service.GetAllUsers(&users)
 	if err != nil {
 		return c.Status(err.Code).JSON(err)
 	}
 
 	return c.JSON(users)
+}
+
+func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
+	userId := c.Params("userId")
+	user := models.Users{}
+	err := h.service.GetUserById(&user, userId)
+	if err != nil {
+		return c.Status(err.Code).JSON(err)
+	}
+
+	return c.JSON(user)
 }
 
 func (h *handlerImpl) CreateUser(c *fiber.Ctx) error {

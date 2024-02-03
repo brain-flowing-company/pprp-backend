@@ -64,6 +64,7 @@ func main() {
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
 	apiv1.Get("/users", usersHandler.GetAllUsers)
+	apiv1.Get("/users/:userId", usersHandler.GetUserById)
 	apiv1.Post("/users", usersHandler.CreateUser)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
