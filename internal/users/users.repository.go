@@ -23,18 +23,18 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (repo *repositoryImpl) GetAllUsers(users *[]models.Users) error {
-	return repo.db.Model(&models.Users{}).Preload("ProfileImage").Find(users).Error
+	return repo.db.Find(users).Error
 }
 
 func (repo *repositoryImpl) GetUserById(user *models.Users, userId string) error {
-	return repo.db.Model(&models.Users{}).Preload("ProfileImage").First(user, "user_id = ?", userId).Error
+	return repo.db.First(user, "user_id = ?", userId).Error
 }
 
 func (repo *repositoryImpl) CreateUser(user *models.Users) error {
-	user.UserId = uuid.New().String()
+	user.UserId = uuid.New()
 
 	for repo.db.Find(&models.Users{}, "user_id = ?", user.UserId).RowsAffected != 0 {
-		user.UserId = uuid.New().String()
+		user.UserId = uuid.New()
 	}
 
 	return repo.db.Create(&user).Error
