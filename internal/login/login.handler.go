@@ -43,7 +43,7 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 	c.Cookie(&fiber.Cookie{
 		Name:    "session",
 		Value:   token,
-		Expires: time.Now().Add(time.Duration(h.cfg.JWTMaxAge) * time.Second),
+		Expires: time.Now().Add(time.Duration(h.cfg.SessionExpire) * time.Second),
 	})
 
 	// Return a success response
