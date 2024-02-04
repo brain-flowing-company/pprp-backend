@@ -8,8 +8,6 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type Service interface {
@@ -50,12 +48,4 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 	}
 
 	return token, nil
-}
-
-func (s *serviceImpl) checkPassword(user *models.Users, password string) *apperror.AppError {
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	if err != nil {
-		return apperror.InvalidCredentials
-	}
-	return nil
 }
