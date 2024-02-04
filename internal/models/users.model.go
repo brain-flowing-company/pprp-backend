@@ -23,8 +23,8 @@ type Users struct {
 	BankName                  BankName       `gorm:"default:null" json:"bank_name" example:"KBANK"`
 	BankAccountNumber         string         `gorm:"default:null" json:"bank_account_number" example:"1234567890"`
 	IsVerified                bool           `gorm:"default:null" json:"is_verified" example:"false"`
-	CreatedAt                 time.Time      `gorm:autoCreateTime`
-	UpdatedAt                 time.Time      `gorm:autoUpdateTime`
+	CreatedAt                 time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt                 time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt                 gorm.DeletedAt `gorm:"index"`
 }
 

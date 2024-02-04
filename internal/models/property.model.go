@@ -20,8 +20,8 @@ type Property struct {
 	Province        string          `json:"province"                 example:"Pattaya"`
 	Country         string          `json:"country"                  example:"Thailand"`
 	PostalCode      string          `json:"postal_code"              example:"69096"`
-	CreatedAt       time.Time       `gorm:autoCreateTime`
-	UpdatedAt       time.Time       `gorm:autoUpdateTime`
+	CreatedAt       time.Time       `gorm:"autoCreateTime"`
+	UpdatedAt       time.Time       `gorm:"autoUpdateTime"`
 	DeletedAt       gorm.DeletedAt  `gorm:"index"`
 	PropertyImages  []PropertyImage `gorm:"references:PropertyId" json:"images"`
 	SellingProperty SellingProperty `gorm:"references:PropertyId" json:"selling"`
