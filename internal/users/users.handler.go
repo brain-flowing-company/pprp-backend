@@ -8,7 +8,7 @@ import (
 type Handler interface {
 	GetAllUsers(c *fiber.Ctx) error
 	GetUserById(c *fiber.Ctx) error
-	CreateUser(c *fiber.Ctx) error
+	Register(c *fiber.Ctx) error
 	UpdateUser(c *fiber.Ctx) error
 	DeleteUser(c *fiber.Ctx) error
 }
@@ -46,7 +46,7 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-func (h *handlerImpl) CreateUser(c *fiber.Ctx) error {
+func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	user := models.Users{}
 
 	bodyErr := c.BodyParser(&user)
@@ -56,7 +56,7 @@ func (h *handlerImpl) CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	err := h.service.CreateUser(&user)
+	err := h.service.Register(&user)
 	if err != nil {
 		return c.Status(err.Code).JSON(fiber.Map{
 			"message": err.Name,

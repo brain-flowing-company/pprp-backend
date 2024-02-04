@@ -6,13 +6,14 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type Service interface {
 	GetAllUsers(*[]models.Users) *apperror.AppError
 	GetUserById(*models.Users, string) *apperror.AppError
-	CreateUser(*models.Users) *apperror.AppError
+	Register(*models.Users) *apperror.AppError
 	UpdateUser(*models.Users, string) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 }
@@ -52,7 +53,22 @@ func (s *serviceImpl) GetUserById(user *models.Users, userId string) *apperror.A
 	return nil
 }
 
-func (s *serviceImpl) CreateUser(user *models.Users) *apperror.AppError {
+func (s *serviceImpl) Register(user *models.Users) *apperror.AppError {
+	if !utils.IsValidEmail(user.Email) {
+		return apperror.InvalidEmail
+	}
+
+	if s.repo.GetUserByEmail(&models.Users{}, user.Email) == nil {
+		return apperror.EmailAlreadyExists
+	}
+
+	hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	if hashErr != nil {
+		return apperror.PasswordCannotBeHashed
+	}
+
+	user.Password = string(hashedPassword)
+
 	err := s.repo.CreateUser(user)
 	if err != nil {
 		return apperror.InternalServerError

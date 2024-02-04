@@ -77,7 +77,7 @@ func main() {
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
 	apiv1.Get("/users", usersHandler.GetAllUsers)
 	apiv1.Get("/users/:userId", usersHandler.GetUserById)
-	apiv1.Post("/users", usersHandler.CreateUser)
+	apiv1.Post("/users/register", usersHandler.Register)
 	apiv1.Put("/users/:userId", usersHandler.UpdateUser)
 	apiv1.Delete("/users/:userId", usersHandler.DeleteUser)
 	apiv1.Post("/register", userHandler.CreateUser)

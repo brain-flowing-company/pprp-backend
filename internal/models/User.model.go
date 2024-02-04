@@ -25,7 +25,7 @@ func (u *User) CheckPassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 }
 
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
+// type LoginRequest struct {
+// 	Email    string `json:"email"`
+// 	Password string `json:"password"`
+// }

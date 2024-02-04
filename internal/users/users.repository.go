@@ -8,6 +8,7 @@ import (
 type Repository interface {
 	GetAllUsers(*[]models.Users) error
 	GetUserById(*models.Users, string) error
+	GetUserByEmail(*models.Users, string) error
 	CreateUser(*models.Users) error
 	UpdateUser(*models.Users, string) error
 	DeleteUser(string) error
@@ -29,6 +30,10 @@ func (repo *repositoryImpl) GetAllUsers(users *[]models.Users) error {
 
 func (repo *repositoryImpl) GetUserById(user *models.Users, userId string) error {
 	return repo.db.First(&user, "user_id = ?", userId).Error
+}
+
+func (repo *repositoryImpl) GetUserByEmail(user *models.Users, email string) error {
+	return repo.db.First(&user, "email = ?", email).Error
 }
 
 func (repo *repositoryImpl) CreateUser(user *models.Users) error {
