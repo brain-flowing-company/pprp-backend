@@ -12,6 +12,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
 	"github.com/brain-flowing-company/pprp-backend/internal/register"
 	"github.com/brain-flowing-company/pprp-backend/internal/users"
+	"github.com/brain-flowing-company/pprp-backend/middleware"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
@@ -73,11 +74,11 @@ func main() {
 	// Initialize the repository, service, and handler
 	loginRepository := login.NewRepository(db)
 	loginService := login.NewService(loginRepository, &cfg)
-	loginHandler := login.NewHandler(loginService)
+	loginHandler := login.NewHandler(loginService, &cfg)
+
+	authMiddleware := middleware.NewAuthMiddlware(&cfg)
 
 	apiv1 := app.Group("/api/v1")
-
-	apiv1.Get("/greeting", hwHandler.Greeting)
 
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
 
@@ -92,6 +93,9 @@ func main() {
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
+
+	apiv1.Use(authMiddleware)
+	apiv1.Get("/greeting", hwHandler.Greeting)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {

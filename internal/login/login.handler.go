@@ -3,7 +3,9 @@ package login
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -14,11 +16,13 @@ type Handler interface {
 
 type handlerImpl struct {
 	service Service
+	cfg     *config.Config
 }
 
-func NewHandler(service Service) Handler {
+func NewHandler(service Service, cfg *config.Config) Handler {
 	return &handlerImpl{
 		service,
+		cfg,
 	}
 }
 
@@ -37,8 +41,9 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 
 	// Set JWT token as a cookie
 	c.Cookie(&fiber.Cookie{
-		Name:  "session",
-		Value: token,
+		Name:    "session",
+		Value:   token,
+		Expires: time.Now().Add(time.Duration(h.cfg.SessionExpire) * time.Second),
 	})
 
 	// Return a success response

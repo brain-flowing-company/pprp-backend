@@ -28,3 +28,15 @@ func CreateJwtToken(session models.Session, maxAge time.Duration, jwtSecret stri
 
 	return signedToken, nil
 }
+
+func ParseToken(token string, jwtSecret string) (*models.SessionClaim, error) {
+	claim, err := jwt.ParseWithClaims(token, &models.SessionClaim{}, func(t *jwt.Token) (interface{}, error) {
+		return []byte(jwtSecret), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return claim.Claims.(*models.SessionClaim), nil
+}
