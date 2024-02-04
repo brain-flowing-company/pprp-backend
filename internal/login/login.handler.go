@@ -2,6 +2,8 @@
 package login
 
 import (
+	"net/http"
+
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -35,10 +37,10 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 
 	// Set JWT token as a cookie
 	c.Cookie(&fiber.Cookie{
-		Name:  "jwt",
+		Name:  "session",
 		Value: token,
 	})
 
 	// Return a success response
-	return c.SendStatus(fiber.StatusOK)
+	return c.SendStatus(http.StatusOK)
 }
