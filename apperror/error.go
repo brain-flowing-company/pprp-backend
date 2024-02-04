@@ -13,12 +13,20 @@ func (*AppError) Error() string {
 }
 
 var (
+	// server errors
 	InternalServerError = &AppError{http.StatusInternalServerError, "internal-server-error"}
-	InvalidPropertyId   = &AppError{http.StatusBadRequest, "invalid-property-id"}
-	PropertyNotFound    = &AppError{http.StatusNotFound, "property-not-found"}
-	UserNotFound        = &AppError{http.StatusNotFound, "user-not-found"}
-	InvalidCredentials  = &AppError{http.StatusUnauthorized, "invalid-credentials"}
 	BadRequest          = &AppError{http.StatusBadRequest, "bad-request"}
-	InvalidEmail        = &AppError{http.StatusBadRequest, "invalid-email"}
-	EmailAlreadyExists  = &AppError{http.StatusBadRequest, "email-already-exists"}
+
+	//property errors
+	InvalidPropertyId = &AppError{http.StatusBadRequest, "invalid-property-id"}
+	PropertyNotFound  = &AppError{http.StatusNotFound, "property-not-found"}
+
+	// user errors
+	InvalidUserId          = &AppError{http.StatusBadRequest, "invalid-user-id"}
+	UserNotFound           = &AppError{http.StatusNotFound, "user-not-found"}
+	EmailAlreadyExists     = &AppError{http.StatusBadRequest, "email-already-exists"}
+	PasswordCannotBeHashed = &AppError{http.StatusInternalServerError, "password-cannot-be-hashed"}
+	InvalidEmail           = &AppError{http.StatusBadRequest, "invalid-email"}
+	InvalidPassword        = &AppError{http.StatusUnauthorized, "invalid-password"}
+	InvalidCredentials     = &AppError{http.StatusUnauthorized, "invalid-credentials"}
 )

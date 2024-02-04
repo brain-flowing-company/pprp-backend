@@ -10,6 +10,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/login"
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
 	"github.com/brain-flowing-company/pprp-backend/internal/register"
+	"github.com/brain-flowing-company/pprp-backend/internal/users"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
@@ -56,6 +57,10 @@ func main() {
 	propertyService := property.NewService(propertyRepo)
 	propertyHandler := property.NewHandler(propertyService)
 
+	usersRepo := users.NewRepository(db)
+	usersService := users.NewService(usersRepo)
+	usersHandler := users.NewHandler(usersService)
+
 	// Initialize the service and handler
 	userRepository := register.NewRepository(db) // assuming db is your GORM database connection
 	userService := register.NewService(userRepository)
@@ -70,6 +75,11 @@ func main() {
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
+	apiv1.Get("/users", usersHandler.GetAllUsers)
+	apiv1.Get("/users/:userId", usersHandler.GetUserById)
+	apiv1.Post("/users/register", usersHandler.Register)
+	apiv1.Put("/users/:userId", usersHandler.UpdateUser)
+	apiv1.Delete("/users/:userId", usersHandler.DeleteUser)
 	apiv1.Post("/register", userHandler.CreateUser)
 	apiv1.Post("/login", loginHandler.Login)
 
