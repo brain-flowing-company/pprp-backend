@@ -6,6 +6,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/database"
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
+	"github.com/brain-flowing-company/pprp-backend/internal/google"
 	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
 	"github.com/brain-flowing-company/pprp-backend/internal/login"
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
@@ -61,6 +62,9 @@ func main() {
 	usersService := users.NewService(usersRepo)
 	usersHandler := users.NewHandler(usersService)
 
+	googleService := google.NewService(&cfg)
+	googleHandler := google.NewHandler(googleService)
+
 	// Initialize the service and handler
 	userRepository := register.NewRepository(db) // assuming db is your GORM database connection
 	userService := register.NewService(userRepository)
@@ -74,14 +78,20 @@ func main() {
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
+
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
+
 	apiv1.Get("/users", usersHandler.GetAllUsers)
 	apiv1.Get("/users/:userId", usersHandler.GetUserById)
 	apiv1.Post("/users/register", usersHandler.Register)
 	apiv1.Put("/users/:userId", usersHandler.UpdateUser)
 	apiv1.Delete("/users/:userId", usersHandler.DeleteUser)
+
 	apiv1.Post("/register", userHandler.CreateUser)
 	apiv1.Post("/login", loginHandler.Login)
+
+	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
+	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {

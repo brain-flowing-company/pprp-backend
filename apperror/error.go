@@ -29,4 +29,5 @@ var (
 	InvalidEmail           = &AppError{http.StatusBadRequest, "invalid-email"}
 	InvalidPassword        = &AppError{http.StatusUnauthorized, "invalid-password"}
 	InvalidCredentials     = &AppError{http.StatusUnauthorized, "invalid-credentials"}
+	ServiceUnavailable     = &AppError{http.StatusServiceUnavailable, "service-unavailable"}
 )
