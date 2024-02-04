@@ -72,7 +72,7 @@ func main() {
 
 	// Initialize the repository, service, and handler
 	loginRepository := login.NewRepository(db)
-	loginService := login.NewService(loginRepository)
+	loginService := login.NewService(loginRepository, &cfg)
 	loginHandler := login.NewHandler(loginService)
 
 	apiv1 := app.Group("/api/v1")

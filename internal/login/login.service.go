@@ -2,13 +2,12 @@
 package login
 
 import (
-	"os"
+	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/golang-jwt/jwt"
-
-	"golang.org/x/crypto/bcrypt"
+	"github.com/brain-flowing-company/pprp-backend/utils"
 )
 
 type Service interface {
@@ -17,11 +16,13 @@ type Service interface {
 
 type serviceImpl struct {
 	repo Repository
+	cfg  *config.Config
 }
 
-func NewService(repo Repository) Service {
+func NewService(repo Repository, cfg *config.Config) Service {
 	return &serviceImpl{
 		repo,
+		cfg,
 	}
 }
 
@@ -33,30 +34,18 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 	}
 
 	// Check password
-	if err := s.checkPassword(user, password); err != nil {
+	if !utils.ComparePassword(user.Password, password) {
 		return "", apperror.InvalidCredentials
 	}
 
-	// Generate JWT token
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["email"] = user.Email
-	// Add other claims as needed
+	session := &models.Session{
+		Email: user.Email,
+	}
 
-	// Sign the token with a secret key
-	secretKey := []byte(os.Getenv("SECRET_KEY")) // Replace with your secret key
-	tokenString, err := token.SignedString(secretKey)
+	token, err := utils.CreateJwtToken(*session, time.Duration(s.cfg.JWTMaxAge), s.cfg.JWTSecret)
 	if err != nil {
 		return "", apperror.InternalServerError
 	}
 
-	return tokenString, nil
-}
-
-func (s *serviceImpl) checkPassword(user *models.User, password string) *apperror.AppError {
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	if err != nil {
-		return apperror.InvalidCredentials
-	}
-	return nil
+	return token, nil
 }

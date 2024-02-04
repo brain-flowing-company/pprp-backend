@@ -29,7 +29,7 @@ func NewHandler(service Service) Handler {
 // @failure     400 {object} AppError
 // @failure     404 {object} AppError
 func (h *handlerImpl) CreateUser(c *fiber.Ctx) error {
-	user := models.User{}
+	user := models.Users{}
 	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
