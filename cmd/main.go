@@ -79,6 +79,7 @@ func main() {
 	apiv1.Get("/users/:userId", usersHandler.GetUserById)
 	apiv1.Post("/users", usersHandler.CreateUser)
 	apiv1.Put("/users/:userId", usersHandler.UpdateUser)
+	apiv1.Delete("/users/:userId", usersHandler.DeleteUser)
 	apiv1.Post("/register", userHandler.CreateUser)
 	apiv1.Post("/login", loginHandler.Login)
 

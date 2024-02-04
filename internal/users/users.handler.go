@@ -10,6 +10,7 @@ type Handler interface {
 	GetUserById(c *fiber.Ctx) error
 	CreateUser(c *fiber.Ctx) error
 	UpdateUser(c *fiber.Ctx) error
+	DeleteUser(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -84,4 +85,17 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(user)
+}
+
+func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
+	userId := c.Params("userId")
+
+	err := h.service.DeleteUser(userId)
+	if err != nil {
+		return c.Status(err.Code).JSON(fiber.Map{
+			"message": err.Name,
+		})
+	}
+
+	return nil
 }

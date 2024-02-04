@@ -14,6 +14,7 @@ type Service interface {
 	GetUserById(*models.Users, string) *apperror.AppError
 	CreateUser(*models.Users) *apperror.AppError
 	UpdateUser(*models.Users, string) *apperror.AppError
+	DeleteUser(string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -36,12 +37,12 @@ func (service *serviceImpl) GetAllUsers(users *[]models.Users) *apperror.AppErro
 	return nil
 }
 
-func (s *serviceImpl) GetUserById(user *models.Users, id string) *apperror.AppError {
-	if !utils.IsValidUUID(id) {
+func (s *serviceImpl) GetUserById(user *models.Users, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
 		return apperror.InvalidUserId
 	}
 
-	err := s.repo.GetUserById(user, id)
+	err := s.repo.GetUserById(user, userId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.UserNotFound
 	} else if err != nil {
@@ -60,12 +61,27 @@ func (s *serviceImpl) CreateUser(user *models.Users) *apperror.AppError {
 	return nil
 }
 
-func (s *serviceImpl) UpdateUser(user *models.Users, id string) *apperror.AppError {
-	if !utils.IsValidUUID(id) {
+func (s *serviceImpl) UpdateUser(user *models.Users, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
 		return apperror.InvalidUserId
 	}
 
-	err := s.repo.UpdateUser(user, id)
+	err := s.repo.UpdateUser(user, userId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.UserNotFound
+	} else if err != nil {
+		return apperror.InternalServerError
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) DeleteUser(userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
+		return apperror.InvalidUserId
+	}
+
+	err := s.repo.DeleteUser(userId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.UserNotFound
 	} else if err != nil {

@@ -42,7 +42,7 @@ CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB'
 
 CREATE TABLE users
 (
-    user_id                             UUID PRIMARY KEY                NOT NULL,
+    user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
     email                               VARCHAR(50)         UNIQUE      NOT NULL,
     password                            VARCHAR(50)                     DEFAULT NULL,
     first_name                          VARCHAR(50)                     NOT NULL,
