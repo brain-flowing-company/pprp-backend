@@ -44,7 +44,7 @@ CREATE TABLE users
 (
     user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
     email                               VARCHAR(50)         UNIQUE      NOT NULL,
-    password                            VARCHAR(50)                     DEFAULT NULL,
+    password                            VARCHAR(64)                     DEFAULT NULL,
     first_name                          VARCHAR(50)                     NOT NULL,
     last_name                           VARCHAR(50)                     NOT NULL,
     phone_number                        VARCHAR(10)         UNIQUE      NOT NULL,
@@ -110,4 +110,4 @@ INSERT INTO renting_property (property_id, price_per_month, is_occupied) VALUES
 ('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', 112302.9182347433, TRUE);
 
 INSERT INTO users (user_id, email, password, first_name, last_name, phone_number, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, is_verified) VALUES
-('f38f80b3-f326-4825-9afc-ebc331626875', 'johnd@email.com', 'abcdefg', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', 'JOHN DOE', '1234123412341234', '12', '2023', '123', 'KBANK', '1234567890', TRUE);
+('f38f80b3-f326-4825-9afc-ebc331626875', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', 'JOHN DOE', '1234123412341234', '12', '2023', '123', 'KBANK', '1234567890', TRUE);

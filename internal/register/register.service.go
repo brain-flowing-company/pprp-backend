@@ -1,14 +1,16 @@
 package register
 
 import (
+	"fmt"
 	"net/mail"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/utils"
 )
 
 type Service interface {
-	CreateUser(*models.User) error
+	CreateUser(*models.Users) error
 }
 
 type serviceImpl struct {
@@ -21,7 +23,7 @@ func NewService(repo Repository) Service {
 	}
 }
 
-func (s *serviceImpl) CreateUser(user *models.User) error {
+func (s *serviceImpl) CreateUser(user *models.Users) error {
 	// Validate email
 	_, err := mail.ParseAddress(user.Email)
 	if err != nil {
@@ -33,11 +35,16 @@ func (s *serviceImpl) CreateUser(user *models.User) error {
 		return apperror.EmailAlreadyExists
 	}
 
-	if err := user.HashPassword(); err != nil {
-		return err
+	hashedPassword, err := utils.HashPassword(user.Password)
+	if err != nil {
+		return apperror.InternalServerError
 	}
+
+	user.Password = hashedPassword
+
 	if err := s.repo.CreateUser(user); err != nil {
-		return err
+		fmt.Println(err)
+		return apperror.InternalServerError
 	}
 	return nil
 }
