@@ -13,6 +13,7 @@ type Service interface {
 	GetAllUsers(*[]models.Users) *apperror.AppError
 	GetUserById(*models.Users, string) *apperror.AppError
 	CreateUser(*models.Users) *apperror.AppError
+	UpdateUser(*models.Users, string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -51,10 +52,23 @@ func (s *serviceImpl) GetUserById(user *models.Users, id string) *apperror.AppEr
 }
 
 func (s *serviceImpl) CreateUser(user *models.Users) *apperror.AppError {
-
 	err := s.repo.CreateUser(user)
-
 	if err != nil {
+		return apperror.InternalServerError
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) UpdateUser(user *models.Users, id string) *apperror.AppError {
+	if !utils.IsValidUUID(id) {
+		return apperror.InvalidUserId
+	}
+
+	err := s.repo.UpdateUser(user, id)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.UserNotFound
+	} else if err != nil {
 		return apperror.InternalServerError
 	}
 

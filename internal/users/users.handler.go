@@ -9,6 +9,7 @@ type Handler interface {
 	GetAllUsers(c *fiber.Ctx) error
 	GetUserById(c *fiber.Ctx) error
 	CreateUser(c *fiber.Ctx) error
+	UpdateUser(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -23,6 +24,7 @@ func NewHandler(service Service) Handler {
 
 func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 	users := []models.Users{}
+
 	err := h.service.GetAllUsers(&users)
 	if err != nil {
 		return c.Status(err.Code).JSON(err)
@@ -34,6 +36,7 @@ func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 	user := models.Users{}
+
 	err := h.service.GetUserById(&user, userId)
 	if err != nil {
 		return c.Status(err.Code).JSON(err)
@@ -43,11 +46,9 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 }
 
 func (h *handlerImpl) CreateUser(c *fiber.Ctx) error {
-
 	user := models.Users{}
 
 	bodyErr := c.BodyParser(&user)
-
 	if bodyErr != nil {
 		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
 			"message": "Invalid body",
@@ -62,4 +63,25 @@ func (h *handlerImpl) CreateUser(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(user) // TODO: don't return user
+}
+
+func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
+	userId := c.Params("userId")
+	user := models.Users{}
+
+	bodyErr := c.BodyParser(&user)
+	if bodyErr != nil {
+		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
+			"message": "Invalid body",
+		})
+	}
+
+	err := h.service.UpdateUser(&user, userId)
+	if err != nil {
+		return c.Status(err.Code).JSON(fiber.Map{
+			"message": err.Name,
+		})
+	}
+
+	return c.JSON(user)
 }

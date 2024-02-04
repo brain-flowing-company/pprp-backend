@@ -10,6 +10,7 @@ type Repository interface {
 	GetAllUsers(*[]models.Users) error
 	GetUserById(*models.Users, string) error
 	CreateUser(*models.Users) error
+	UpdateUser(*models.Users, string) error
 }
 
 type repositoryImpl struct {
@@ -38,4 +39,8 @@ func (repo *repositoryImpl) CreateUser(user *models.Users) error {
 	}
 
 	return repo.db.Create(&user).Error
+}
+
+func (repo *repositoryImpl) UpdateUser(user *models.Users, userId string) error {
+	return repo.db.Where("user_id = ?", userId).Updates(&user).Error
 }
