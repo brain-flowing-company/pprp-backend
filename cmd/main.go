@@ -31,13 +31,13 @@ func main() {
 		fmt.Printf("Could not load environment variables from .env file: %v\n", err.Error())
 	}
 
-	cfg := config.Config{}
-	err = config.Load(&cfg)
+	cfg := &config.Config{}
+	err = config.Load(cfg)
 	if err != nil {
 		panic(fmt.Sprintf("Could not load config with error: %v", err.Error()))
 	}
 
-	db, err := database.New(&cfg)
+	db, err := database.New(cfg)
 	if err != nil {
 		panic(fmt.Sprintf("Could not establish connection with database with err: %v", err.Error()))
 	}
@@ -70,7 +70,7 @@ func main() {
 	usersService := users.NewService(usersRepo)
 	usersHandler := users.NewHandler(usersService)
 
-	googleService := google.NewService(&cfg, logger)
+	googleService := google.NewService(cfg, logger)
 	googleHandler := google.NewHandler(googleService, logger)
 
 	// Initialize the service and handler
@@ -80,10 +80,10 @@ func main() {
 
 	// Initialize the repository, service, and handler
 	loginRepository := login.NewRepository(db)
-	loginService := login.NewService(loginRepository, &cfg, logger)
-	loginHandler := login.NewHandler(loginService, &cfg, logger)
+	loginService := login.NewService(loginRepository, cfg, logger)
+	loginHandler := login.NewHandler(loginService, cfg, logger)
 
-	authMiddleware := middleware.NewAuthMiddlware(&cfg)
+	authMiddleware := middleware.NewAuthMiddlware(cfg)
 
 	apiv1 := app.Group("/api/v1")
 
