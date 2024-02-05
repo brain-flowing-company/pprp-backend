@@ -13,10 +13,11 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/register"
 	"github.com/brain-flowing-company/pprp-backend/internal/users"
 	"github.com/brain-flowing-company/pprp-backend/middleware"
+	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
+	"go.uber.org/zap"
 )
 
 // @title        Bangkok Property Matchmaking Platform
@@ -27,25 +28,31 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Printf("Failed to load environment variables from .env file: %v\n", err.Error())
+		fmt.Printf("Could not load environment variables from .env file: %v\n", err.Error())
 	}
 
-	cfg := config.Config{}
-	err = config.Load(&cfg)
+	cfg := &config.Config{}
+	err = config.Load(cfg)
 	if err != nil {
 		panic(fmt.Sprintf("Could not load config with error: %v", err.Error()))
 	}
 
-	db, err := database.New(&cfg)
+	db, err := database.New(cfg)
 	if err != nil {
 		panic(fmt.Sprintf("Could not establish connection with database with err: %v", err.Error()))
 	}
 
 	app := fiber.New()
 
-	app.Use(logger.New(logger.Config{
-		TimeFormat: "02-01-2006 15:04:05",
-		TimeZone:   "Asia/Bangkok",
+	var logger *zap.Logger
+	if cfg.IsDevelopment() {
+		logger = zap.Must(zap.NewDevelopment())
+	} else {
+		logger = zap.Must(zap.NewProduction())
+	}
+
+	app.Use(fiberzap.New(fiberzap.Config{
+		Logger: logger,
 	}))
 
 	if cfg.IsDevelopment() {
@@ -56,27 +63,27 @@ func main() {
 	hwHandler := greeting.NewHandler(hwService)
 
 	propertyRepo := property.NewRepository(db)
-	propertyService := property.NewService(propertyRepo)
+	propertyService := property.NewService(propertyRepo, logger)
 	propertyHandler := property.NewHandler(propertyService)
 
 	usersRepo := users.NewRepository(db)
 	usersService := users.NewService(usersRepo)
 	usersHandler := users.NewHandler(usersService)
 
-	googleService := google.NewService(&cfg)
-	googleHandler := google.NewHandler(googleService)
+	googleService := google.NewService(cfg, logger)
+	googleHandler := google.NewHandler(googleService, logger)
 
 	// Initialize the service and handler
 	userRepository := register.NewRepository(db) // assuming db is your GORM database connection
-	userService := register.NewService(userRepository)
+	userService := register.NewService(userRepository, logger)
 	userHandler := register.NewHandler(userService)
 
 	// Initialize the repository, service, and handler
 	loginRepository := login.NewRepository(db)
-	loginService := login.NewService(loginRepository, &cfg)
-	loginHandler := login.NewHandler(loginService, &cfg)
+	loginService := login.NewService(loginRepository, cfg, logger)
+	loginHandler := login.NewHandler(loginService, cfg, logger)
 
-	authMiddleware := middleware.NewAuthMiddlware(&cfg)
+	authMiddleware := middleware.NewAuthMiddlware(cfg)
 
 	apiv1 := app.Group("/api/v1")
 
@@ -99,6 +106,6 @@ func main() {
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
-		panic(fmt.Sprintf("Server cannot start with error: %v", err.Error()))
+		panic(fmt.Sprintf("Server could not start with error: %v", err.Error()))
 	}
 }

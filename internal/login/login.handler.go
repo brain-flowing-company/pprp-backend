@@ -8,6 +8,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
 type Handler interface {
@@ -17,12 +18,14 @@ type Handler interface {
 type handlerImpl struct {
 	service Service
 	cfg     *config.Config
+	logger  *zap.Logger
 }
 
-func NewHandler(service Service, cfg *config.Config) Handler {
+func NewHandler(service Service, cfg *config.Config, logger *zap.Logger) Handler {
 	return &handlerImpl{
 		service,
 		cfg,
+		logger,
 	}
 }
 
