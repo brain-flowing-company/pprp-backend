@@ -4,15 +4,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type Users struct {
 	UserId                    uuid.UUID      `gorm:"default:uuid_generate_v4()"`
+	RegisteredType            RegisteredType `json:"registered_type" example:"EMAIL"`
 	Email                     string         `gorm:"unique" json:"email" example:"email@email.com"`
 	Password                  string         `gorm:"default:null" json:"password" example:"password1234"`
 	FirstName                 string         `json:"first_name" example:"John"`
 	LastName                  string         `json:"last_name" example:"Doe"`
+	CitizenId                 string         `gorm:"unique" json:"citizen_id" example:"1234567890123"`
 	PhoneNumber               string         `gorm:"unique" json:"phone_number" example:"0812345678"`
 	ProfileImageUrl           string         `gorm:"default:null" json:"profile_image_url" example:"https://image_url.com/abcd"`
 	CreditCardCardholderName  string         `gorm:"default:null" json:"credit_cardholder_name" example:"JOHN DOE"`
@@ -25,7 +26,7 @@ type Users struct {
 	IsVerified                bool           `gorm:"default:null" json:"is_verified" example:"false"`
 	CreatedAt                 time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt                 time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt                 gorm.DeletedAt `gorm:"index"`
+	DeletedAt                 time.Time
 }
 
 type BankName string
@@ -39,6 +40,13 @@ const (
 	TTB   BankName = "TMBTHANACHART BANK"
 	SCB   BankName = "SIAM COMMERCIAL BANK"
 	GSB   BankName = "GOVERNMENT SAVINGS BANK"
+)
+
+type RegisteredType string
+
+const (
+	GOOGLE RegisteredType = "GOOGLE"
+	EMAIL  RegisteredType = "EMAIL"
 )
 
 func (u Users) TableName() string {
