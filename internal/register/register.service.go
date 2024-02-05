@@ -1,12 +1,12 @@
 package register
 
 import (
-	"fmt"
 	"net/mail"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
+	"go.uber.org/zap"
 )
 
 type Service interface {
@@ -14,12 +14,14 @@ type Service interface {
 }
 
 type serviceImpl struct {
-	repo Repository
+	repo   Repository
+	logger *zap.Logger
 }
 
-func NewService(repo Repository) Service {
+func NewService(repo Repository, logger *zap.Logger) Service {
 	return &serviceImpl{
 		repo,
+		logger,
 	}
 }
 
@@ -37,13 +39,14 @@ func (s *serviceImpl) CreateUser(user *models.Users) error {
 
 	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
+		s.logger.Error("Could not hash password", zap.Error(err))
 		return apperror.InternalServerError
 	}
 
 	user.Password = hashedPassword
 
 	if err := s.repo.CreateUser(user); err != nil {
-		fmt.Println(err)
+		s.logger.Error("Could not create user", zap.Error(err))
 		return apperror.InternalServerError
 	}
 	return nil

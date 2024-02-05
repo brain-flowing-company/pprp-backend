@@ -28,7 +28,7 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Printf("Failed to load environment variables from .env file: %v\n", err.Error())
+		fmt.Printf("Could not load environment variables from .env file: %v\n", err.Error())
 	}
 
 	cfg := config.Config{}
@@ -63,25 +63,25 @@ func main() {
 	hwHandler := greeting.NewHandler(hwService)
 
 	propertyRepo := property.NewRepository(db)
-	propertyService := property.NewService(propertyRepo)
+	propertyService := property.NewService(propertyRepo, logger)
 	propertyHandler := property.NewHandler(propertyService)
 
 	usersRepo := users.NewRepository(db)
 	usersService := users.NewService(usersRepo)
 	usersHandler := users.NewHandler(usersService)
 
-	googleService := google.NewService(&cfg)
-	googleHandler := google.NewHandler(googleService)
+	googleService := google.NewService(&cfg, logger)
+	googleHandler := google.NewHandler(googleService, logger)
 
 	// Initialize the service and handler
 	userRepository := register.NewRepository(db) // assuming db is your GORM database connection
-	userService := register.NewService(userRepository)
+	userService := register.NewService(userRepository, logger)
 	userHandler := register.NewHandler(userService)
 
 	// Initialize the repository, service, and handler
 	loginRepository := login.NewRepository(db)
-	loginService := login.NewService(loginRepository, &cfg)
-	loginHandler := login.NewHandler(loginService, &cfg)
+	loginService := login.NewService(loginRepository, &cfg, logger)
+	loginHandler := login.NewHandler(loginService, &cfg, logger)
 
 	authMiddleware := middleware.NewAuthMiddlware(&cfg)
 
@@ -106,6 +106,6 @@ func main() {
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
-		panic(fmt.Sprintf("Server cannot start with error: %v", err.Error()))
+		panic(fmt.Sprintf("Server could not start with error: %v", err.Error()))
 	}
 }

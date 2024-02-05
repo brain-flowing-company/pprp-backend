@@ -6,6 +6,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -14,12 +15,14 @@ type Service interface {
 }
 
 type serviceImpl struct {
-	repo Repository
+	repo   Repository
+	logger *zap.Logger
 }
 
-func NewService(repo Repository) Service {
+func NewService(repo Repository, logger *zap.Logger) Service {
 	return &serviceImpl{
 		repo,
+		logger,
 	}
 }
 
@@ -32,6 +35,7 @@ func (s *serviceImpl) GetPropertyById(property *models.Property, id string) *app
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.InvalidPropertyId
 	} else if err != nil {
+		s.logger.Error("Could not get property by id", zap.String("id", id), zap.Error(err))
 		return apperror.InternalServerError
 	}
 

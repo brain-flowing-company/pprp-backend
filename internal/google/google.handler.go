@@ -7,6 +7,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
 type Handler interface {
@@ -16,11 +17,13 @@ type Handler interface {
 
 type handlerImpl struct {
 	service Service
+	logger  *zap.Logger
 }
 
-func NewHandler(service Service) Handler {
+func NewHandler(service Service, logger *zap.Logger) Handler {
 	return &handlerImpl{
 		service,
+		logger,
 	}
 }
 
@@ -35,6 +38,7 @@ func (h *handlerImpl) ExchangeToken(c *fiber.Ctx) error {
 
 	err := c.QueryParser(&excToken)
 	if err != nil {
+		h.logger.Error("Could not parse query", zap.Error(err))
 		return utils.ResponseError(c, apperror.InternalServerError)
 	}
 
