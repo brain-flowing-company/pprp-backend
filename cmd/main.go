@@ -13,10 +13,11 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/register"
 	"github.com/brain-flowing-company/pprp-backend/internal/users"
 	"github.com/brain-flowing-company/pprp-backend/middleware"
+	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
+	"go.uber.org/zap"
 )
 
 // @title        Bangkok Property Matchmaking Platform
@@ -43,9 +44,15 @@ func main() {
 
 	app := fiber.New()
 
-	app.Use(logger.New(logger.Config{
-		TimeFormat: "02-01-2006 15:04:05",
-		TimeZone:   "Asia/Bangkok",
+	var logger *zap.Logger
+	if cfg.IsDevelopment() {
+		logger = zap.Must(zap.NewDevelopment())
+	} else {
+		logger = zap.Must(zap.NewProduction())
+	}
+
+	app.Use(fiberzap.New(fiberzap.Config{
+		Logger: logger,
 	}))
 
 	if cfg.IsDevelopment() {
