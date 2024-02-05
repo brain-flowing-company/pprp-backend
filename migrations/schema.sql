@@ -1,3 +1,31 @@
+CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB', 'GSB');
+
+CREATE TYPE registered_type AS ENUM('GOOGLE', 'EMAIL');
+
+CREATE TABLE users
+(
+    user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
+    registered_type                     registered_type                 NOT NULL,
+    email                               VARCHAR(50)         UNIQUE      NOT NULL,
+    password                            VARCHAR(64)                     DEFAULT NULL,
+    first_name                          VARCHAR(50)                     NOT NULL,
+    last_name                           VARCHAR(50)                     NOT NULL,
+    phone_number                        VARCHAR(10)         UNIQUE      NOT NULL,
+    citizen_id                          VARCHAR(13)         UNIQUE      DEFAULT NULL,
+    profile_image_url                   VARCHAR(2000)                   DEFAULT NULL,
+    credit_card_cardholder_name         VARCHAR(50)                     DEFAULT NULL,
+    credit_card_number                  VARCHAR(16)                     DEFAULT NULL,
+    credit_card_expiration_month        VARCHAR(2)                      DEFAULT NULL,
+    credit_card_expiration_year         VARCHAR(4)                      DEFAULT NULL,
+    credit_card_cvv                     VARCHAR(3)                      DEFAULT NULL,
+    bank_name                           bank_name                       DEFAULT NULL,
+    bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
+    is_verified                         BOOLEAN                         DEFAULT FALSE,
+    created_at                          TIMESTAMP WITH TIME ZONE        DEFAULT CURRENT_TIMESTAMP,
+    updated_at                          TIMESTAMP WITH TIME ZONE        DEFAULT CURRENT_TIMESTAMP,
+    deleted_at                          TIMESTAMP WITH TIME ZONE
+);
+
 CREATE TABLE property
 (
     property_id              UUID PRIMARY KEY                   DEFAULT gen_random_uuid(),
@@ -37,34 +65,6 @@ CREATE TABLE renting_property
     property_id     UUID PRIMARY KEY REFERENCES property (property_id) NOT NULL,
     price_per_month DOUBLE PRECISION                                   NOT NULL,
     is_occupied     BOOLEAN                                            NOT NULL
-);
-
-CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB', 'GSB');
-
-CREATE TYPE registered_type AS ENUM('GOOGLE', 'EMAIL');
-
-CREATE TABLE users
-(
-    user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
-    registered_type                     registered_type                 NOT NULL,
-    email                               VARCHAR(50)         UNIQUE      NOT NULL,
-    password                            VARCHAR(64)                     DEFAULT NULL,
-    first_name                          VARCHAR(50)                     NOT NULL,
-    last_name                           VARCHAR(50)                     NOT NULL,
-    phone_number                        VARCHAR(10)         UNIQUE      NOT NULL,
-    citizen_id                          VARCHAR(13)         UNIQUE      DEFAULT NULL,
-    profile_image_url                   VARCHAR(2000)                   DEFAULT NULL,
-    credit_card_cardholder_name         VARCHAR(50)                     DEFAULT NULL,
-    credit_card_number                  VARCHAR(16)                     DEFAULT NULL,
-    credit_card_expiration_month        VARCHAR(2)                      DEFAULT NULL,
-    credit_card_expiration_year         VARCHAR(4)                      DEFAULT NULL,
-    credit_card_cvv                     VARCHAR(3)                      DEFAULT NULL,
-    bank_name                           bank_name                       DEFAULT NULL,
-    bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
-    is_verified                         BOOLEAN                         DEFAULT FALSE,
-    created_at                          TIMESTAMP WITH TIME ZONE        DEFAULT CURRENT_TIMESTAMP,
-    updated_at                          TIMESTAMP WITH TIME ZONE        DEFAULT CURRENT_TIMESTAMP,
-    deleted_at                          TIMESTAMP WITH TIME ZONE
 );
 
 -------------------- DUMMY DATA --------------------
