@@ -88,6 +88,7 @@ func main() {
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
+	apiv1.Get("/properties", propertyHandler.GetAllProperties)
 
 	apiv1.Get("/users", usersHandler.GetAllUsers)
 	apiv1.Get("/users/:userId", usersHandler.GetUserById)

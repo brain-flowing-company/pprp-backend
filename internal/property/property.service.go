@@ -12,6 +12,7 @@ import (
 
 type Service interface {
 	GetPropertyById(*models.Property, string) *apperror.AppError
+	GetAllProperties(*[]models.Property) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -36,6 +37,16 @@ func (s *serviceImpl) GetPropertyById(property *models.Property, id string) *app
 		return apperror.InvalidPropertyId
 	} else if err != nil {
 		s.logger.Error("Could not get property by id", zap.String("id", id), zap.Error(err))
+		return apperror.InternalServerError
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) GetAllProperties(properties *[]models.Property) *apperror.AppError {
+	err := s.repo.GetAllProperties(properties)
+	if err != nil {
+		s.logger.Error("Could not get all properties", zap.Error(err))
 		return apperror.InternalServerError
 	}
 

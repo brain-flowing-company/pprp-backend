@@ -7,6 +7,7 @@ import (
 
 type Handler interface {
 	GetPropertyById(c *fiber.Ctx) error
+	GetAllProperties(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -37,4 +38,14 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(property)
+}
+
+func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
+	properties := []models.Property{}
+	err := h.service.GetAllProperties(&properties)
+	if err != nil {
+		return c.Status(err.Code).JSON(err)
+	}
+
+	return c.JSON(properties)
 }
