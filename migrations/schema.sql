@@ -1,5 +1,3 @@
-ALTER DATABASE postgres SET TIMEZONE TO 'Asia/Bangkok';
-
 CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB', 'GSB');
 
 CREATE TYPE registered_type AS ENUM('EMAIL', 'GOOGLE');
@@ -13,7 +11,6 @@ CREATE TABLE users
     first_name                          VARCHAR(50)                     NOT NULL,
     last_name                           VARCHAR(50)                     NOT NULL,
     phone_number                        VARCHAR(10)         UNIQUE      NOT NULL,
-    citizen_id                          VARCHAR(13)         UNIQUE      DEFAULT NULL,
     profile_image_url                   VARCHAR(2000)                   DEFAULT NULL,
     credit_card_cardholder_name         VARCHAR(50)                     DEFAULT NULL,
     credit_card_number                  VARCHAR(16)                     DEFAULT NULL,
@@ -22,10 +19,12 @@ CREATE TABLE users
     credit_card_cvv                     VARCHAR(3)                      DEFAULT NULL,
     bank_name                           bank_name                       DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
+    citizen_id                          VARCHAR(13)         UNIQUE      DEFAULT NULL,
+    citizen_image_url                   VARCHAR(2000)                   DEFAULT NULL,
     is_verified                         BOOLEAN                         DEFAULT FALSE,
-    created_at                          TIMESTAMP WITH TIME ZONE        DEFAULT CURRENT_TIMESTAMP,
-    updated_at                          TIMESTAMP WITH TIME ZONE        DEFAULT CURRENT_TIMESTAMP,
-    deleted_at                          TIMESTAMP WITH TIME ZONE        DEFAULT NULL
+    created_at                          TIMESTAMP(0)                    DEFAULT CURRENT_TIMESTAMP,
+    updated_at                          TIMESTAMP(0)                    DEFAULT CURRENT_TIMESTAMP,
+    deleted_at                          TIMESTAMP(0)                    DEFAULT NULL
 );
 
 CREATE TABLE property
@@ -43,9 +42,9 @@ CREATE TABLE property
     province                 VARCHAR(50)                                            NOT NULL,
     country                  VARCHAR(50)                                            NOT NULL,
     postal_code              CHAR(5)                                                NOT NULL,
-    created_at               TIMESTAMP WITH TIME ZONE                               DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP WITH TIME ZONE                               DEFAULT CURRENT_TIMESTAMP,
-    deleted_at               TIMESTAMP WITH TIME ZONE                               DEFAULT NULL
+    created_at               TIMESTAMP(0)                                           DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP(0)                                           DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP(0)                                           DEFAULT NULL
 );
 
 CREATE TABLE property_image
@@ -69,7 +68,16 @@ CREATE TABLE renting_property
     is_occupied     BOOLEAN                                                                 NOT NULL
 );
 
+-------------------- VIEWS --------------------
+
+ALTER TABLE users RENAME TO _users;
+CREATE VIEW users AS SELECT * FROM _users WHERE deleted_at IS NULL;
+
+ALTER TABLE property RENAME TO _property;
+CREATE VIEW property AS SELECT * FROM _property WHERE deleted_at IS NULL;
+
 -------------------- RULES --------------------
+
 CREATE RULE soft_deletion AS ON DELETE TO users DO INSTEAD (
     UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = old.user_id and deleted_at IS NULL
 );
@@ -83,6 +91,7 @@ CREATE RULE delete_users AS ON UPDATE TO users
     DO ALSO UPDATE property SET deleted_at = new.deleted_at WHERE owner_id = old.user_id;
 
 -------------------- DUMMY DATA --------------------
+
 INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, citizen_id, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, is_verified) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', '1234567890123', 'https://picsum.photos/200/300?random=1', 'JOHN DOE', '1234123412341234', '12', '2023', '123', 'KBANK', '1234567890', TRUE),
 ('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, 'https://picsum.photos/200/300?random=3', 'SAM SMITH', '4321432143214321', '11', '2024', '321', 'BBL', '1234567890', FALSE),
