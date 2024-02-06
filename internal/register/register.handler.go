@@ -19,15 +19,6 @@ func NewHandler(service Service) Handler {
 	}
 }
 
-// @router      /api/v1/register [post]
-// @summary     Register user
-// @description Register user
-// @tags        register
-// @produce     json
-// @param       user body User true "User"
-// @success     200	{object} User
-// @failure     400 {object} AppError
-// @failure     404 {object} AppError
 func (h *handlerImpl) CreateUser(c *fiber.Ctx) error {
 	user := models.Users{}
 	if err := c.BodyParser(&user); err != nil {

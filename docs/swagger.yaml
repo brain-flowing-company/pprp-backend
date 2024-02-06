@@ -9,6 +9,26 @@ definitions:
         example: internal-server-error
         type: string
     type: object
+  models.BankName:
+    enum:
+    - KASIKORN BANK
+    - BANGKOK BANK
+    - KRUNG THAI BANK
+    - BANK OF AYUDHYA
+    - CIMB THAI BANK
+    - TMBTHANACHART BANK
+    - SIAM COMMERCIAL BANK
+    - GOVERNMENT SAVINGS BANK
+    type: string
+    x-enum-varnames:
+    - KBANK
+    - BBL
+    - KTB
+    - BAY
+    - CIMB
+    - TTB
+    - SCB
+    - GSB
   models.Greeting:
     properties:
       message:
@@ -26,6 +46,10 @@ definitions:
       country:
         example: Thailand
         type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
       description:
         example: Et sequi dolor praes
         type: string
@@ -36,17 +60,17 @@ definitions:
         items:
           $ref: '#/definitions/models.PropertyImage'
         type: array
+      owner_id:
+        description: foreign key
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
       postal_code:
         example: "69096"
         type: string
       project_name:
         example: Supalai
         type: string
-      property_id:
-        example: f38f80b3-f326-4825-9afc-ebc331626875
-        type: string
-      property_list_timestamp:
-        example: "2023-08-12T11:37:08Z"
+      propertyId:
         type: string
       province:
         example: Pattaya
@@ -64,6 +88,8 @@ definitions:
       sub_district:
         example: Bang Bon
         type: string
+      updatedAt:
+        type: string
     type: object
   models.PropertyImage:
     properties:
@@ -71,6 +97,14 @@ definitions:
         example: https://image_url.com/abcd
         type: string
     type: object
+  models.RegisteredType:
+    enum:
+    - EMAIL
+    - GOOGLE
+    type: string
+    x-enum-varnames:
+    - EMAIL
+    - GOOGLE
   models.RentingProperty:
     properties:
       is_occupied:
@@ -88,6 +122,70 @@ definitions:
       price:
         example: 12345.67
         type: number
+    type: object
+  models.Users:
+    properties:
+      bank_account_number:
+        example: "1234567890"
+        type: string
+      bank_name:
+        allOf:
+        - $ref: '#/definitions/models.BankName'
+        example: KBANK
+      citizen_id:
+        example: "1234567890123"
+        type: string
+      citizen_image_url:
+        example: https://image_url.com/abcd
+        type: string
+      createdAt:
+        type: string
+      credit_card_cvv:
+        example: "123"
+        type: string
+      credit_card_expiration_month:
+        example: "12"
+        type: string
+      credit_card_expiration_year:
+        example: "2023"
+        type: string
+      credit_card_number:
+        example: "1234567890123456"
+        type: string
+      credit_cardholder_name:
+        example: JOHN DOE
+        type: string
+      deletedAt:
+        type: string
+      email:
+        example: email@email.com
+        type: string
+      first_name:
+        example: John
+        type: string
+      is_verified:
+        example: false
+        type: boolean
+      last_name:
+        example: Doe
+        type: string
+      password:
+        example: password1234
+        type: string
+      phone_number:
+        example: "0812345678"
+        type: string
+      profile_image_url:
+        example: https://image_url.com/abcd
+        type: string
+      registered_type:
+        allOf:
+        - $ref: '#/definitions/models.RegisteredType'
+        example: EMAIL
+      updatedAt:
+        type: string
+      userId:
+        type: string
     type: object
 host: localhost:3000
 info:
@@ -130,4 +228,106 @@ paths:
       summary: Get property by id
       tags:
       - property
+  /api/v1/users:
+    get:
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Users'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Get all users
+      tags:
+      - users
+    post:
+      description: Create a user by prasing the body
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Users'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Register
+      tags:
+      - users
+  /api/v1/users/:userId:
+    delete:
+      description: Delete a user by its id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Delete user by id
+      tags:
+      - users
+    get:
+      description: Get a user by its id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Users'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Get user by id
+      tags:
+      - users
+    put:
+      description: Update a user with the given id by parsing the body
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Users'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Update user by id
+      tags:
+      - users
 swagger: "2.0"

@@ -23,6 +23,14 @@ func NewHandler(service Service) Handler {
 	}
 }
 
+// @router      /api/v1/users [get]
+// @summary     Get all users
+// @description Get all users
+// @tags        users
+// @produce     json
+// @success     200	{object} []models.Users
+// @failure     400 {object} apperror.AppError
+// @failure     404 {object} apperror.AppError
 func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 	users := []models.Users{}
 
@@ -34,6 +42,14 @@ func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 	return c.JSON(users)
 }
 
+// @router      /api/v1/users/:userId [get]
+// @summary     Get user by id
+// @description Get a user by its id
+// @tags        users
+// @produce     json
+// @success     200	{object} models.Users
+// @failure     400 {object} apperror.AppError
+// @failure     404 {object} apperror.AppError
 func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 	user := models.Users{}
@@ -46,6 +62,14 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+// @router      /api/v1/users [post]
+// @summary     Register
+// @description Create a user by prasing the body
+// @tags        users
+// @produce     json
+// @success     200	{object} models.Users
+// @failure     400 {object} apperror.AppError
+// @failure     404 {object} apperror.AppError
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	user := models.Users{}
 
@@ -66,6 +90,14 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	return c.JSON(user) // TODO: don't return user
 }
 
+// @router      /api/v1/users/:userId [put]
+// @summary     Update user by id
+// @description Update a user with the given id by parsing the body
+// @tags        users
+// @produce     json
+// @success     200	{object} models.Users
+// @failure     400 {object} apperror.AppError
+// @failure     404 {object} apperror.AppError
 func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 	user := models.Users{}
@@ -87,6 +119,14 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+// @router      /api/v1/users/:userId [delete]
+// @summary     Delete user by id
+// @description Delete a user by its id
+// @tags        users
+// @produce     json
+// @success     200
+// @failure     400 {object} apperror.AppError
+// @failure     404 {object} apperror.AppError
 func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 
