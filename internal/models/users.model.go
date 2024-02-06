@@ -13,7 +13,7 @@ type Users struct {
 	Password                  string         `gorm:"default:null" json:"password" example:"password1234"`
 	FirstName                 string         `json:"first_name" example:"John"`
 	LastName                  string         `json:"last_name" example:"Doe"`
-	CitizenId                 string         `gorm:"unique" json:"citizen_id" example:"1234567890123"`
+	CitizenId                 string         `gorm:"default:null; unique" json:"citizen_id" example:"1234567890123"`
 	PhoneNumber               string         `gorm:"unique" json:"phone_number" example:"0812345678"`
 	ProfileImageUrl           string         `gorm:"default:null" json:"profile_image_url" example:"https://image_url.com/abcd"`
 	CreditCardCardholderName  string         `gorm:"default:null" json:"credit_cardholder_name" example:"JOHN DOE"`
@@ -26,12 +26,14 @@ type Users struct {
 	IsVerified                bool           `gorm:"default:null" json:"is_verified" example:"false"`
 	CreatedAt                 time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt                 time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt                 time.Time
+	DeletedAt                 time.Time      `gorm:"default:null"`
 }
 
 type BankName string
+type RegisteredType string
 
 const (
+	// BankName
 	KBANK BankName = "KASIKORN BANK"
 	BBL   BankName = "BANGKOK BANK"
 	KTB   BankName = "KRUNG THAI BANK"
@@ -40,13 +42,10 @@ const (
 	TTB   BankName = "TMBTHANACHART BANK"
 	SCB   BankName = "SIAM COMMERCIAL BANK"
 	GSB   BankName = "GOVERNMENT SAVINGS BANK"
-)
 
-type RegisteredType string
-
-const (
-	GOOGLE RegisteredType = "GOOGLE"
+	// RegisteredType
 	EMAIL  RegisteredType = "EMAIL"
+	GOOGLE RegisteredType = "GOOGLE"
 )
 
 func (u Users) TableName() string {

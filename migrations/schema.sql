@@ -1,6 +1,8 @@
+ALTER DATABASE postgres SET TIMEZONE TO 'Asia/Bangkok';
+
 CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB', 'GSB');
 
-CREATE TYPE registered_type AS ENUM('GOOGLE', 'EMAIL');
+CREATE TYPE registered_type AS ENUM('EMAIL', 'GOOGLE');
 
 CREATE TABLE users
 (
@@ -23,49 +25,62 @@ CREATE TABLE users
     is_verified                         BOOLEAN                         DEFAULT FALSE,
     created_at                          TIMESTAMP WITH TIME ZONE        DEFAULT CURRENT_TIMESTAMP,
     updated_at                          TIMESTAMP WITH TIME ZONE        DEFAULT CURRENT_TIMESTAMP,
-    deleted_at                          TIMESTAMP WITH TIME ZONE
+    deleted_at                          TIMESTAMP WITH TIME ZONE        DEFAULT NULL
 );
 
 CREATE TABLE property
 (
-    property_id              UUID PRIMARY KEY                   DEFAULT gen_random_uuid(),
-    owner_id                 UUID REFERENCES users (user_id)    NOT NULL,
-    description              TEXT                               NOT NULL,
-    residential_type         VARCHAR(99)                        NOT NULL,
+    property_id              UUID PRIMARY KEY                                       DEFAULT gen_random_uuid(),
+    owner_id                 UUID REFERENCES users (user_id)                        NOT NULL,
+    description              TEXT                                                   NOT NULL,
+    residential_type         VARCHAR(99)                                            NOT NULL,
     project_name             VARCHAR(50),
-    address                  VARCHAR(50)                        NOT NULL,
+    address                  VARCHAR(50)                                            NOT NULL,
     alley                    VARCHAR(50),
-    street                   VARCHAR(50)                        NOT NULL,
-    sub_district             VARCHAR(50)                        NOT NULL,
-    district                 VARCHAR(50)                        NOT NULL,
-    province                 VARCHAR(50)                        NOT NULL,
-    country                  VARCHAR(50)                        NOT NULL,
-    postal_code              CHAR(5)                            NOT NULL,
-    created_at               TIMESTAMP WITH TIME ZONE           DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP WITH TIME ZONE           DEFAULT CURRENT_TIMESTAMP,
-    deleted_at               TIMESTAMP WITH TIME ZONE
+    street                   VARCHAR(50)                                            NOT NULL,
+    sub_district             VARCHAR(50)                                            NOT NULL,
+    district                 VARCHAR(50)                                            NOT NULL,
+    province                 VARCHAR(50)                                            NOT NULL,
+    country                  VARCHAR(50)                                            NOT NULL,
+    postal_code              CHAR(5)                                                NOT NULL,
+    created_at               TIMESTAMP WITH TIME ZONE                               DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP WITH TIME ZONE                               DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP WITH TIME ZONE                               DEFAULT NULL
 );
 
 CREATE TABLE property_image
 (
-    property_id UUID REFERENCES property (property_id) NOT NULL,
-    image_url       VARCHAR(2000)                      NOT NULL,
+    property_id UUID REFERENCES property (property_id) ON DELETE CASCADE        NOT NULL,
+    image_url       VARCHAR(2000)                                               NOT NULL,
     PRIMARY KEY (property_id, image_url)
 );
 
 CREATE TABLE selling_property
 (
-    property_id UUID PRIMARY KEY REFERENCES property (property_id) NOT NULL,
-    price       DOUBLE PRECISION                                   NOT NULL,
-    is_sold     BOOLEAN                                            NOT NULL
+    property_id UUID PRIMARY KEY REFERENCES property (property_id) ON DELETE CASCADE    NOT NULL,
+    price       DOUBLE PRECISION                                                        NOT NULL,
+    is_sold     BOOLEAN                                                                 NOT NULL
 );
 
 CREATE TABLE renting_property
 (
-    property_id     UUID PRIMARY KEY REFERENCES property (property_id) NOT NULL,
-    price_per_month DOUBLE PRECISION                                   NOT NULL,
-    is_occupied     BOOLEAN                                            NOT NULL
+    property_id     UUID PRIMARY KEY REFERENCES property (property_id) ON DELETE CASCADE    NOT NULL,
+    price_per_month DOUBLE PRECISION                                                        NOT NULL,
+    is_occupied     BOOLEAN                                                                 NOT NULL
 );
+
+-------------------- RULES --------------------
+CREATE RULE soft_deletion AS ON DELETE TO users DO INSTEAD (
+    UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = old.user_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO property DO INSTEAD (
+    UPDATE property SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
+);
+
+CREATE RULE delete_users AS ON UPDATE TO users
+    WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
+    DO ALSO UPDATE property SET deleted_at = new.deleted_at WHERE owner_id = old.user_id;
 
 -------------------- DUMMY DATA --------------------
 INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, citizen_id, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, is_verified) VALUES
