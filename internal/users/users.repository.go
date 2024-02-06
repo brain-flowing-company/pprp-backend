@@ -45,6 +45,5 @@ func (repo *repositoryImpl) UpdateUser(user *models.Users, userId string) error 
 }
 
 func (repo *repositoryImpl) DeleteUser(userId string) error {
-	var user *models.Users
-	return repo.db.Where("user_id = ?", userId).Delete(&user).Error
+	return repo.db.Where("user_id = ?", userId).Delete(&models.Users{}).Error
 }

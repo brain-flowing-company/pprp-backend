@@ -6,6 +6,7 @@ services:
     container_name: sck-database
     environment:
       - POSTGRES_PASSWORD=123456
+      - TZ=Asia/Bangkok
     ports:
       - 5432:5432
     volumes:

@@ -4,11 +4,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type Property struct {
 	PropertyId      uuid.UUID       `gorm:"type:uuid;default:uuid_generate_v4()"`
+	OwnerId         uuid.UUID       `json:"owner_id"                 example:"123e4567-e89b-12d3-a456-426614174000"` // foreign key
 	Description     string          `json:"description"              example:"Et sequi dolor praes"`
 	ResidentialType string          `json:"residential_type"         example:"Condo"`
 	ProjectName     string          `json:"project_name"             example:"Supalai"`
@@ -22,7 +22,7 @@ type Property struct {
 	PostalCode      string          `json:"postal_code"              example:"69096"`
 	CreatedAt       time.Time       `gorm:"autoCreateTime"`
 	UpdatedAt       time.Time       `gorm:"autoUpdateTime"`
-	DeletedAt       gorm.DeletedAt  `gorm:"index"`
+	DeletedAt       time.Time       `gorm:"default:null"`
 	PropertyImages  []PropertyImage `gorm:"references:PropertyId" json:"images"`
 	SellingProperty SellingProperty `gorm:"references:PropertyId" json:"selling"`
 	RentingProperty RentingProperty `gorm:"references:PropertyId" json:"renting"`

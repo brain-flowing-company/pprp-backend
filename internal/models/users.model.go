@@ -4,11 +4,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type Users struct {
 	UserId                    uuid.UUID      `gorm:"default:uuid_generate_v4()"`
+	RegisteredType            RegisteredType `json:"registered_type" example:"EMAIL"`
 	Email                     string         `gorm:"unique" json:"email" example:"email@email.com"`
 	Password                  string         `gorm:"default:null" json:"password" example:"password1234"`
 	FirstName                 string         `json:"first_name" example:"John"`
@@ -22,15 +22,19 @@ type Users struct {
 	CreditCardCVV             string         `gorm:"default:null" json:"credit_card_cvv" example:"123"`
 	BankName                  BankName       `gorm:"default:null" json:"bank_name" example:"KBANK"`
 	BankAccountNumber         string         `gorm:"default:null" json:"bank_account_number" example:"1234567890"`
+	CitizenId                 string         `gorm:"default:null; unique" json:"citizen_id" example:"1234567890123"`
+	CitizenImageUrl           string         `gorm:"default:null" json:"citizen_image_url" example:"https://image_url.com/abcd"`
 	IsVerified                bool           `gorm:"default:null" json:"is_verified" example:"false"`
 	CreatedAt                 time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt                 time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt                 gorm.DeletedAt `gorm:"index"`
+	DeletedAt                 time.Time      `gorm:"default:null"`
 }
 
 type BankName string
+type RegisteredType string
 
 const (
+	// BankName
 	KBANK BankName = "KASIKORN BANK"
 	BBL   BankName = "BANGKOK BANK"
 	KTB   BankName = "KRUNG THAI BANK"
@@ -39,6 +43,10 @@ const (
 	TTB   BankName = "TMBTHANACHART BANK"
 	SCB   BankName = "SIAM COMMERCIAL BANK"
 	GSB   BankName = "GOVERNMENT SAVINGS BANK"
+
+	// RegisteredType
+	EMAIL  RegisteredType = "EMAIL"
+	GOOGLE RegisteredType = "GOOGLE"
 )
 
 func (u Users) TableName() string {
