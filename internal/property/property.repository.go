@@ -7,6 +7,7 @@ import (
 
 type Repository interface {
 	GetPropertyById(*models.Property, string) error
+	GetAllProperties(*[]models.Property) error
 }
 
 type repositoryImpl struct {
@@ -25,4 +26,12 @@ func (repo *repositoryImpl) GetPropertyById(result *models.Property, id string) 
 		Preload("SellingProperty").
 		Preload("RentingProperty").
 		First(result, "property_id = ?", id).Error
+}
+
+func (repo *repositoryImpl) GetAllProperties(result *[]models.Property) error {
+	return repo.db.Model(&models.Property{}).
+		Preload("PropertyImages").
+		Preload("SellingProperty").
+		Preload("RentingProperty").
+		Find(result).Error
 }
