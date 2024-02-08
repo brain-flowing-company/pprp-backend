@@ -1,9 +1,14 @@
 package greeting
 
-import "github.com/brain-flowing-company/pprp-backend/internal/models"
+import (
+	"fmt"
+
+	"github.com/brain-flowing-company/pprp-backend/internal/models"
+)
 
 type Service interface {
-	Greeting(msg *models.Greeting)
+	Greeting(*models.Greeting)
+	UserGreeting(*models.Greeting, string)
 }
 
 type serviceImpl struct{}
@@ -13,5 +18,9 @@ func NewService() Service {
 }
 
 func (s *serviceImpl) Greeting(msg *models.Greeting) {
-	msg.Message = "Hello, World"
+	msg.Message = "Hello, World!"
+}
+
+func (s *serviceImpl) UserGreeting(msg *models.Greeting, email string) {
+	msg.Message = fmt.Sprintf("Hello, %v!", email)
 }

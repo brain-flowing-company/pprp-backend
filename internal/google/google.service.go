@@ -3,10 +3,12 @@ package google
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/utils"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -20,6 +22,7 @@ type Service interface {
 type serviceImpl struct {
 	authCfg *oauth2.Config
 	logger  *zap.Logger
+	cfg     *config.Config
 }
 
 func NewService(cfg *config.Config, logger *zap.Logger) Service {
@@ -32,6 +35,7 @@ func NewService(cfg *config.Config, logger *zap.Logger) Service {
 			Scopes:       cfg.GoogleScopes,
 		},
 		logger,
+		cfg,
 	}
 }
 
@@ -40,13 +44,13 @@ func (s *serviceImpl) GoogleLogin() string {
 }
 
 func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleExchangeToken) (string, *apperror.AppError) {
-	token, err := s.authCfg.Exchange(c, excToken.Code)
+	oauthToken, err := s.authCfg.Exchange(c, excToken.Code)
 	if err != nil {
 		s.logger.Error("Could not exchange token from google", zap.Error(err))
 		return "", apperror.ServiceUnavailable
 	}
 
-	client := s.authCfg.Client(c, token)
+	client := s.authCfg.Client(c, oauthToken)
 
 	res, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
@@ -54,14 +58,20 @@ func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleEx
 		return "", apperror.ServiceUnavailable
 	}
 
-	userInfo := models.GoogleUserInfo{}
+	session := models.Session{}
 
 	defer res.Body.Close()
-	err = json.NewDecoder(res.Body).Decode(&userInfo)
+	err = json.NewDecoder(res.Body).Decode(&session)
 	if err != nil {
 		s.logger.Error("Could not decode json body", zap.Error(err))
 		return "", apperror.InternalServerError
 	}
 
-	return userInfo.Email, nil
+	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
+	if err != nil {
+		s.logger.Error("Could not create JWT token", zap.Error(err))
+		return "", apperror.InternalServerError
+	}
+
+	return token, nil
 }

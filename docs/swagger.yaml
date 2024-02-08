@@ -196,7 +196,7 @@ info:
 paths:
   /api/v1/greeting:
     get:
-      description: hello, world endpoint
+      description: says hello, world
       produces:
       - application/json
       responses:
@@ -207,6 +207,16 @@ paths:
       summary: Greeting
       tags:
       - greeting
+  /api/v1/oauth/google:
+    get:
+      description: Redirect to this endpoint to login with Google OAuth2. When logging
+        in is completed, the redirection to /register in client will occur.
+      responses:
+        "307":
+          description: Temporary Redirect
+      summary: Login with Google
+      tags:
+      - google login
   /api/v1/property/:id:
     get:
       description: Get property by its id
@@ -228,6 +238,23 @@ paths:
       summary: Get property by id
       tags:
       - property
+  /api/v1/user/greeting:
+    get:
+      description: says hello to current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Greeting'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Greeting with auth required
+      tags:
+      - greeting
   /api/v1/users:
     get:
       description: Get all users

@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/api/v1/greeting": {
             "get": {
-                "description": "hello, world endpoint",
+                "description": "says hello, world",
                 "produces": [
                     "application/json"
                 ],
@@ -31,6 +31,20 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Greeting"
                         }
+                    }
+                }
+            }
+        },
+        "/api/v1/oauth/google": {
+            "get": {
+                "description": "Redirect to this endpoint to login with Google OAuth2. When logging in is completed, the redirection to /register in client will occur.",
+                "tags": [
+                    "google login"
+                ],
+                "summary": "Login with Google",
+                "responses": {
+                    "307": {
+                        "description": "Temporary Redirect"
                     }
                 }
             }
@@ -60,6 +74,32 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/greeting": {
+            "get": {
+                "description": "says hello to current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "greeting"
+                ],
+                "summary": "Greeting with auth required",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Greeting"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }

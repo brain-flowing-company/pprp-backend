@@ -15,6 +15,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/middleware"
 	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
@@ -55,6 +56,13 @@ func main() {
 		Logger: logger,
 	}))
 
+	fmt.Println(cfg.AllowOrigin)
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     cfg.AllowOrigin,
+		AllowCredentials: true,
+	}))
+
 	if cfg.IsDevelopment() {
 		app.Get("/docs/*", swagger.HandlerDefault)
 	}
@@ -71,7 +79,7 @@ func main() {
 	usersHandler := users.NewHandler(usersService)
 
 	googleService := google.NewService(cfg, logger)
-	googleHandler := google.NewHandler(googleService, logger)
+	googleHandler := google.NewHandler(googleService, logger, cfg)
 
 	// Initialize the service and handler
 	userRepository := register.NewRepository(db) // assuming db is your GORM database connection
@@ -86,6 +94,8 @@ func main() {
 	authMiddleware := middleware.NewAuthMiddlware(cfg)
 
 	apiv1 := app.Group("/api/v1")
+
+	apiv1.Get("/greeting", hwHandler.Greeting)
 
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
 	apiv1.Get("/properties", propertyHandler.GetAllProperties)
@@ -103,7 +113,7 @@ func main() {
 	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
 
 	apiv1.Use(authMiddleware)
-	apiv1.Get("/greeting", hwHandler.Greeting)
+	apiv1.Get("/user/greeting", hwHandler.UserGreeting)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
