@@ -207,6 +207,16 @@ paths:
       summary: Greeting
       tags:
       - greeting
+  /api/v1/oauth/google:
+    get:
+      description: Redirect to this endpoint to login with Google OAuth2. When logging
+        in is completed, the redirection to /register in client will occur.
+      responses:
+        "307":
+          description: Temporary Redirect
+      summary: Login with Google
+      tags:
+      - google login
   /api/v1/property/:id:
     get:
       description: Get property by its id

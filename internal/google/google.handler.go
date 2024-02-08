@@ -31,6 +31,11 @@ func NewHandler(service Service, logger *zap.Logger, cfg *config.Config) Handler
 	}
 }
 
+// @router      /api/v1/oauth/google [get]
+// @summary     Login with Google
+// @description Redirect to this endpoint to login with Google OAuth2. When logging in is completed, the redirection to /register in client will occur.
+// @tags        google login
+// @success     307
 func (h *handlerImpl) GoogleLogin(c *fiber.Ctx) error {
 	url := h.service.GoogleLogin()
 

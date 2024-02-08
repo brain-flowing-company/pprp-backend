@@ -35,6 +35,20 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/oauth/google": {
+            "get": {
+                "description": "Redirect to this endpoint to login with Google OAuth2. When logging in is completed, the redirection to /register in client will occur.",
+                "tags": [
+                    "google login"
+                ],
+                "summary": "Login with Google",
+                "responses": {
+                    "307": {
+                        "description": "Temporary Redirect"
+                    }
+                }
+            }
+        },
         "/api/v1/property/:id": {
             "get": {
                 "description": "Get property by its id",
