@@ -41,9 +41,17 @@ func (repo *repositoryImpl) CreateUser(user *models.Users) error {
 }
 
 func (repo *repositoryImpl) UpdateUser(user *models.Users, userId string) error {
+	err := repo.db.First(&models.Users{}, "user_id = ?", userId).Error
+	if err != nil {
+		return err
+	}
 	return repo.db.Where("user_id = ?", userId).Updates(&user).Error
 }
 
 func (repo *repositoryImpl) DeleteUser(userId string) error {
+	err := repo.db.First(&models.Users{}, "user_id = ?", userId).Error
+	if err != nil {
+		return err
+	}
 	return repo.db.Where("user_id = ?", userId).Delete(&models.Users{}).Error
 }

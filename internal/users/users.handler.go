@@ -137,5 +137,7 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 		})
 	}
 
-	return nil
+	return c.JSON(fiber.Map{
+		"message": "User deleted successfully",
+	})
 }

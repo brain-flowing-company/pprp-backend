@@ -30,7 +30,7 @@ CREATE TABLE users
 CREATE TABLE property
 (
     property_id              UUID PRIMARY KEY                                       DEFAULT gen_random_uuid(),
-    owner_id                 UUID REFERENCES users (user_id)                        NOT NULL,
+    owner_id                 UUID REFERENCES users (user_id) ON DELETE CASCADE      NOT NULL,
     description              TEXT                                                   NOT NULL,
     residential_type         VARCHAR(99)                                            NOT NULL,
     project_name             VARCHAR(50),
@@ -49,8 +49,11 @@ CREATE TABLE property
 
 CREATE TABLE property_image
 (
-    property_id UUID REFERENCES property (property_id) ON DELETE CASCADE        NOT NULL,
-    image_url       VARCHAR(2000)                                               NOT NULL,
+    property_id UUID REFERENCES property (property_id) ON DELETE CASCADE            NOT NULL,
+    image_url       VARCHAR(2000)                                                   NOT NULL,
+    created_at               TIMESTAMP(0)                                           DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP(0)                                           DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP(0)                                           DEFAULT NULL,
     PRIMARY KEY (property_id, image_url)
 );
 
@@ -58,37 +61,21 @@ CREATE TABLE selling_property
 (
     property_id UUID PRIMARY KEY REFERENCES property (property_id) ON DELETE CASCADE    NOT NULL,
     price       DOUBLE PRECISION                                                        NOT NULL,
-    is_sold     BOOLEAN                                                                 NOT NULL
+    is_sold     BOOLEAN                                                                 NOT NULL,
+    created_at               TIMESTAMP(0)                                               DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP(0)                                               DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP(0)                                               DEFAULT NULL
 );
 
 CREATE TABLE renting_property
 (
     property_id     UUID PRIMARY KEY REFERENCES property (property_id) ON DELETE CASCADE    NOT NULL,
     price_per_month DOUBLE PRECISION                                                        NOT NULL,
-    is_occupied     BOOLEAN                                                                 NOT NULL
+    is_occupied     BOOLEAN                                                                 NOT NULL,
+    created_at               TIMESTAMP(0)                                                   DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP(0)                                                   DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP(0)                                                   DEFAULT NULL
 );
-
--------------------- VIEWS --------------------
-
-ALTER TABLE users RENAME TO _users;
-CREATE VIEW users AS SELECT * FROM _users WHERE deleted_at IS NULL;
-
-ALTER TABLE property RENAME TO _property;
-CREATE VIEW property AS SELECT * FROM _property WHERE deleted_at IS NULL;
-
--------------------- RULES --------------------
-
-CREATE RULE soft_deletion AS ON DELETE TO users DO INSTEAD (
-    UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = old.user_id and deleted_at IS NULL
-);
-
-CREATE RULE soft_deletion AS ON DELETE TO property DO INSTEAD (
-    UPDATE property SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
-);
-
-CREATE RULE delete_users AS ON UPDATE TO users
-    WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
-    DO ALSO UPDATE property SET deleted_at = new.deleted_at WHERE owner_id = old.user_id;
 
 -------------------- DUMMY DATA --------------------
 
@@ -141,3 +128,62 @@ INSERT INTO selling_property (property_id, price, is_sold) VALUES
 INSERT INTO renting_property (property_id, price_per_month, is_occupied) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 123423.2931847312, FALSE),
 ('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', 112302.9182347433, TRUE);
+
+-------------------- VIEWS --------------------
+
+ALTER TABLE users RENAME TO _users;
+CREATE VIEW users AS SELECT * FROM _users WHERE deleted_at IS NULL;
+
+ALTER TABLE property RENAME TO _property;
+CREATE VIEW property AS SELECT * FROM _property WHERE deleted_at IS NULL;
+
+ALTER TABLE property_image RENAME TO _property_image;
+CREATE VIEW property_image AS SELECT * FROM _property_image WHERE property_id IN (SELECT property_id FROM property WHERE deleted_at IS NULL);
+
+ALTER TABLE selling_property RENAME TO _selling_property;
+CREATE VIEW selling_property AS SELECT * FROM _selling_property WHERE property_id IN (SELECT property_id FROM property WHERE deleted_at IS NULL);
+
+ALTER TABLE renting_property RENAME TO _renting_property;
+CREATE VIEW renting_property AS SELECT * FROM _renting_property WHERE property_id IN (SELECT property_id FROM property WHERE deleted_at IS NULL);
+
+-------------------- RULES --------------------
+
+CREATE RULE soft_deletion AS ON DELETE TO users DO INSTEAD (
+    UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = old.user_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO property DO INSTEAD (
+    UPDATE property SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO property_image DO INSTEAD (
+    UPDATE property_image SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO selling_property DO INSTEAD (
+    UPDATE selling_property SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO renting_property DO INSTEAD (
+    UPDATE renting_property SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
+);
+
+CREATE RULE delete_users AS ON UPDATE TO users
+    WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
+    DO ALSO UPDATE property SET deleted_at = new.deleted_at WHERE owner_id = old.user_id;
+
+CREATE RULE delete_property AS ON UPDATE TO property
+    WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
+    DO ALSO (
+        UPDATE property_image SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+        UPDATE selling_property SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+        UPDATE renting_property SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+    );
+
+-- CREATE RULE delete_property AS ON UPDATE TO property
+--     WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
+--     DO ALSO UPDATE selling_property SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+
+-- CREATE RULE delete_property AS ON UPDATE TO property
+--     WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
+--     DO ALSO UPDATE renting_property SET deleted_at = new.deleted_at WHERE property_id = old.property_id;

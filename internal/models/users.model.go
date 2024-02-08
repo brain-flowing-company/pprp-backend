@@ -25,9 +25,9 @@ type Users struct {
 	CitizenId                 string         `gorm:"default:null; unique" json:"citizen_id" example:"1234567890123"`
 	CitizenImageUrl           string         `gorm:"default:null" json:"citizen_image_url" example:"https://image_url.com/abcd"`
 	IsVerified                bool           `gorm:"default:null" json:"is_verified" example:"false"`
-	CreatedAt                 time.Time      `gorm:"autoCreateTime"`
-	UpdatedAt                 time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt                 time.Time      `gorm:"default:null"`
+	CreatedAt                 *time.Time     `gorm:"autoCreateTime"`
+	UpdatedAt                 *time.Time     `gorm:"autoUpdateTime"`
+	DeletedAt                 *time.Time     `gorm:"default:null"`
 }
 
 type BankName string
