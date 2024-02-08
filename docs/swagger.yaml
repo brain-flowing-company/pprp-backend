@@ -196,7 +196,7 @@ info:
 paths:
   /api/v1/greeting:
     get:
-      description: hello, world endpoint
+      description: says hello, world
       produces:
       - application/json
       responses:
@@ -238,6 +238,23 @@ paths:
       summary: Get property by id
       tags:
       - property
+  /api/v1/user/greeting:
+    get:
+      description: says hello to current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Greeting'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Greeting with auth required
+      tags:
+      - greeting
   /api/v1/users:
     get:
       description: Get all users

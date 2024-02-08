@@ -7,6 +7,7 @@ import (
 
 type Handler interface {
 	Greeting(c *fiber.Ctx) error
+	UserGreeting(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -21,13 +22,29 @@ func NewHandler(service Service) Handler {
 
 // @router      /api/v1/greeting [get]
 // @summary     Greeting
-// @description hello, world endpoint
+// @description says hello, world
 // @tags        greeting
 // @produce     json
 // @success     200	{object}	models.Greeting
 func (h *handlerImpl) Greeting(c *fiber.Ctx) error {
 	msg := models.Greeting{}
 	h.service.Greeting(&msg)
+
+	return c.JSON(msg)
+}
+
+// @router      /api/v1/user/greeting [get]
+// @summary     Greeting with auth required
+// @description says hello to current user
+// @tags        greeting
+// @produce     json
+// @success     200	{object}	models.Greeting
+// @failure     401 {object}	apperror.AppError
+func (h *handlerImpl) UserGreeting(c *fiber.Ctx) error {
+	email := (c.Locals("email").(string))
+
+	msg := models.Greeting{}
+	h.service.UserGreeting(&msg, email)
 
 	return c.JSON(msg)
 }
