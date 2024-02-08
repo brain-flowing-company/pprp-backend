@@ -12,6 +12,7 @@ type Config struct {
 	GoogleScopes   []string `mapstructure:"GOOGLE_SCOPE"`
 	JWTSecret      string   `mapstructure:"JWT_SECRET"`
 	SessionExpire  int      `mapstructure:"SESSION_EXPIRES"`
+	LoginRedirect  string   `mapstructure:"LOGIN_REDIRECT"`
 }
 
 func (cfg *Config) IsDevelopment() bool {
@@ -28,6 +29,7 @@ func Load(config *Config) error {
 	_ = viper.BindEnv("GOOGLE_SCOPE")
 	_ = viper.BindEnv("JWT_SECRET")
 	_ = viper.BindEnv("SESSION_EXPIRES")
+	_ = viper.BindEnv("LOGIN_REDIRECT")
 
 	viper.AutomaticEnv()
 	viper.AllowEmptyEnv(false)

@@ -71,7 +71,7 @@ func main() {
 	usersHandler := users.NewHandler(usersService)
 
 	googleService := google.NewService(cfg, logger)
-	googleHandler := google.NewHandler(googleService, logger)
+	googleHandler := google.NewHandler(googleService, logger, cfg)
 
 	// Initialize the service and handler
 	userRepository := register.NewRepository(db) // assuming db is your GORM database connection

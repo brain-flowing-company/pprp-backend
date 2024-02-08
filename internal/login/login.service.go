@@ -41,11 +41,11 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 		return "", apperror.InvalidCredentials
 	}
 
-	session := &models.Session{
+	session := models.Session{
 		Email: user.Email,
 	}
 
-	token, err := utils.CreateJwtToken(*session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
+	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
 	if err != nil {
 		s.logger.Error("Could not create JWT token", zap.Error(err))
 		return "", apperror.InternalServerError
