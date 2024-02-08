@@ -26,7 +26,7 @@ func NewAuthMiddlware(cfg *config.Config) func(*fiber.Ctx) error {
 			return utils.ResponseError(c, apperror.Unauthorized)
 		}
 
-		fmt.Println(claim)
+		c.Locals("email", claim.Session.Email)
 
 		return c.Next()
 	}
