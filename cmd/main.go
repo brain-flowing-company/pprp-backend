@@ -15,6 +15,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/middleware"
 	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
@@ -53,6 +54,13 @@ func main() {
 
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger,
+	}))
+
+	fmt.Println(cfg.AllowOrigin)
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     cfg.AllowOrigin,
+		AllowCredentials: true,
 	}))
 
 	if cfg.IsDevelopment() {

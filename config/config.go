@@ -13,6 +13,7 @@ type Config struct {
 	JWTSecret      string   `mapstructure:"JWT_SECRET"`
 	SessionExpire  int      `mapstructure:"SESSION_EXPIRES"`
 	LoginRedirect  string   `mapstructure:"LOGIN_REDIRECT"`
+	AllowOrigin    string   `mapstructure:"APP_ALLOW_ORIGIN"`
 }
 
 func (cfg *Config) IsDevelopment() bool {
@@ -30,6 +31,7 @@ func Load(config *Config) error {
 	_ = viper.BindEnv("JWT_SECRET")
 	_ = viper.BindEnv("SESSION_EXPIRES")
 	_ = viper.BindEnv("LOGIN_REDIRECT")
+	_ = viper.BindEnv("APP_ALLOW_ORIGIN")
 
 	viper.AutomaticEnv()
 	viper.AllowEmptyEnv(false)
