@@ -58,17 +58,13 @@ func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleEx
 		return "", apperror.ServiceUnavailable
 	}
 
-	userInfo := models.GoogleUserInfo{}
+	session := models.Session{}
 
 	defer res.Body.Close()
-	err = json.NewDecoder(res.Body).Decode(&userInfo)
+	err = json.NewDecoder(res.Body).Decode(&session)
 	if err != nil {
 		s.logger.Error("Could not decode json body", zap.Error(err))
 		return "", apperror.InternalServerError
-	}
-
-	session := models.Session{
-		Email: userInfo.Email,
 	}
 
 	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
