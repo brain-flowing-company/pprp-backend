@@ -35,16 +35,89 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/login": {
+            "post": {
+                "description": "Login with email and password",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login with email",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Property"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user credentials",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "401": {
+                        "description": "Password mismatch",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/oauth/google": {
             "get": {
                 "description": "Redirect to this endpoint to login with Google OAuth2. When logging in is completed, the redirection to /register in client will occur.",
                 "tags": [
-                    "google login"
+                    "auth"
                 ],
                 "summary": "Login with Google",
                 "responses": {
                     "307": {
                         "description": "Temporary Redirect"
+                    }
+                }
+            }
+        },
+        "/api/v1/properties": {
+            "get": {
+                "description": "Get all properties",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Get all properties",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Property"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
                     }
                 }
             }
@@ -67,13 +140,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid property id",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Property id not found",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
@@ -127,14 +200,8 @@ const docTemplate = `{
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
@@ -158,13 +225,19 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid user info",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "401": {
+                        "description": "Invalid password",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
@@ -190,13 +263,19 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid user id",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
@@ -220,13 +299,19 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid user info",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
@@ -247,13 +332,51 @@ const docTemplate = `{
                         "description": "OK"
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid user id",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/current": {
+            "get": {
+                "description": "Get current user info",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get current user info",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Users"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
@@ -286,7 +409,8 @@ const docTemplate = `{
                 "CIMB THAI BANK",
                 "TMBTHANACHART BANK",
                 "SIAM COMMERCIAL BANK",
-                "GOVERNMENT SAVINGS BANK"
+                "GOVERNMENT SAVINGS BANK",
+                "BANK NOT SELECTED"
             ],
             "x-enum-varnames": [
                 "KBANK",
@@ -296,7 +420,8 @@ const docTemplate = `{
                 "CIMB",
                 "TTB",
                 "SCB",
-                "GSB"
+                "GSB",
+                "NULL"
             ]
         },
         "models.Greeting": {
@@ -389,6 +514,15 @@ const docTemplate = `{
         "models.PropertyImage": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
                 "url": {
                     "type": "string",
                     "example": "https://image_url.com/abcd"
@@ -409,6 +543,12 @@ const docTemplate = `{
         "models.RentingProperty": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
                 "is_occupied": {
                     "type": "boolean",
                     "example": true
@@ -416,12 +556,21 @@ const docTemplate = `{
                 "price_per_month": {
                     "type": "number",
                     "example": 12345.67
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },
         "models.SellingProperty": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
                 "is_sold": {
                     "type": "boolean",
                     "example": true
@@ -429,6 +578,9 @@ const docTemplate = `{
                 "price": {
                     "type": "number",
                     "example": 12345.67
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },
@@ -447,13 +599,13 @@ const docTemplate = `{
                     ],
                     "example": "KBANK"
                 },
+                "citizen_card_image_url": {
+                    "type": "string",
+                    "example": "https://image_url.com/abcd"
+                },
                 "citizen_id": {
                     "type": "string",
                     "example": "1234567890123"
-                },
-                "citizen_image_url": {
-                    "type": "string",
-                    "example": "https://image_url.com/abcd"
                 },
                 "createdAt": {
                     "type": "string"
@@ -531,7 +683,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:3000",
+	Host:             "localhost:8000",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Bangkok Property Matchmaking Platform",

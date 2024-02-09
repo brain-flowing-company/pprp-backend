@@ -19,6 +19,7 @@ definitions:
     - TMBTHANACHART BANK
     - SIAM COMMERCIAL BANK
     - GOVERNMENT SAVINGS BANK
+    - BANK NOT SELECTED
     type: string
     x-enum-varnames:
     - KBANK
@@ -29,6 +30,7 @@ definitions:
     - TTB
     - SCB
     - GSB
+    - "NULL"
   models.Greeting:
     properties:
       message:
@@ -93,6 +95,12 @@ definitions:
     type: object
   models.PropertyImage:
     properties:
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      updatedAt:
+        type: string
       url:
         example: https://image_url.com/abcd
         type: string
@@ -107,21 +115,33 @@ definitions:
     - GOOGLE
   models.RentingProperty:
     properties:
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
       is_occupied:
         example: true
         type: boolean
       price_per_month:
         example: 12345.67
         type: number
+      updatedAt:
+        type: string
     type: object
   models.SellingProperty:
     properties:
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
       is_sold:
         example: true
         type: boolean
       price:
         example: 12345.67
         type: number
+      updatedAt:
+        type: string
     type: object
   models.Users:
     properties:
@@ -132,11 +152,11 @@ definitions:
         allOf:
         - $ref: '#/definitions/models.BankName'
         example: KBANK
+      citizen_card_image_url:
+        example: https://image_url.com/abcd
+        type: string
       citizen_id:
         example: "1234567890123"
-        type: string
-      citizen_image_url:
-        example: https://image_url.com/abcd
         type: string
       createdAt:
         type: string
@@ -187,7 +207,7 @@ definitions:
       userId:
         type: string
     type: object
-host: localhost:3000
+host: localhost:8000
 info:
   contact: {}
   description: Bangkok Property Matchmaking Platform API docs
@@ -207,6 +227,35 @@ paths:
       summary: Greeting
       tags:
       - greeting
+  /api/v1/login:
+    post:
+      description: Login with email and password
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Property'
+        "400":
+          description: Invalid user credentials
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "401":
+          description: Password mismatch
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Login with email
+      tags:
+      - auth
   /api/v1/oauth/google:
     get:
       description: Redirect to this endpoint to login with Google OAuth2. When logging
@@ -216,7 +265,26 @@ paths:
           description: Temporary Redirect
       summary: Login with Google
       tags:
-      - google login
+      - auth
+  /api/v1/properties:
+    get:
+      description: Get all properties
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Property'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Get all properties
+      tags:
+      - property
   /api/v1/property/:id:
     get:
       description: Get property by its id
@@ -228,11 +296,11 @@ paths:
           schema:
             $ref: '#/definitions/models.Property'
         "400":
-          description: Bad Request
+          description: Invalid property id
           schema:
             $ref: '#/definitions/apperror.AppError'
         "404":
-          description: Not Found
+          description: Property id not found
           schema:
             $ref: '#/definitions/apperror.AppError'
       summary: Get property by id
@@ -267,12 +335,8 @@ paths:
             items:
               $ref: '#/definitions/models.Users'
             type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/apperror.AppError'
-        "404":
-          description: Not Found
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/apperror.AppError'
       summary: Get all users
@@ -288,11 +352,15 @@ paths:
           schema:
             $ref: '#/definitions/models.Users'
         "400":
-          description: Bad Request
+          description: Invalid user info
           schema:
             $ref: '#/definitions/apperror.AppError'
-        "404":
-          description: Not Found
+        "401":
+          description: Invalid password
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/apperror.AppError'
       summary: Register
@@ -307,11 +375,15 @@ paths:
         "200":
           description: OK
         "400":
-          description: Bad Request
+          description: Invalid user id
           schema:
             $ref: '#/definitions/apperror.AppError'
         "404":
-          description: Not Found
+          description: User not found
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/apperror.AppError'
       summary: Delete user by id
@@ -327,11 +399,15 @@ paths:
           schema:
             $ref: '#/definitions/models.Users'
         "400":
-          description: Bad Request
+          description: Invalid user id
           schema:
             $ref: '#/definitions/apperror.AppError'
         "404":
-          description: Not Found
+          description: User not found
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/apperror.AppError'
       summary: Get user by id
@@ -347,14 +423,39 @@ paths:
           schema:
             $ref: '#/definitions/models.Users'
         "400":
-          description: Bad Request
+          description: Invalid user info
           schema:
             $ref: '#/definitions/apperror.AppError'
         "404":
-          description: Not Found
+          description: User not found
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/apperror.AppError'
       summary: Update user by id
+      tags:
+      - users
+  /api/v1/users/current:
+    get:
+      description: Get current user info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Users'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Get current user info
       tags:
       - users
 swagger: "2.0"

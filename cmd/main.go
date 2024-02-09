@@ -24,7 +24,7 @@ import (
 // @title        Bangkok Property Matchmaking Platform
 // @description  Bangkok Property Matchmaking Platform API docs
 // @version      1.0
-// @host         localhost:3000
+// @host         localhost:8000
 // @BasePath     /
 func main() {
 	err := godotenv.Load()
