@@ -15,6 +15,7 @@ type Service interface {
 	Register(*models.Users) *apperror.AppError
 	UpdateUser(*models.Users, string) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
+	GetUserByEmail(*models.Users, string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -102,6 +103,21 @@ func (s *serviceImpl) DeleteUser(userId string) *apperror.AppError {
 	}
 
 	err := s.repo.DeleteUser(userId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.UserNotFound
+	} else if err != nil {
+		return apperror.InternalServerError
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) GetUserByEmail(user *models.Users, email string) *apperror.AppError {
+	if !utils.IsValidEmail(email) {
+		return apperror.InvalidEmail
+	}
+
+	err := s.repo.GetUserByEmail(user, email)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.UserNotFound
 	} else if err != nil {
