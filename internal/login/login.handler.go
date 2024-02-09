@@ -29,6 +29,16 @@ func NewHandler(service Service, cfg *config.Config, logger *zap.Logger) Handler
 	}
 }
 
+// @router      /api/v1/login [post]
+// @summary     Login with email
+// @description Login with email and password
+// @tags        auth
+// @produce     json
+// @success     200	{object} models.Property
+// @failure     400 {object} apperror.AppError "Invalid user credentials"
+// @failure     401 {object} apperror.AppError "Password mismatch"
+// @failure     404 {object} apperror.AppError "User not found"
+// @failure     500 {object} apperror.AppError
 func (h *handlerImpl) Login(c *fiber.Ctx) error {
 	// Parse login request from the request body
 	var loginRequest models.LoginRequest

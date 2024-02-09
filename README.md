@@ -23,6 +23,7 @@ docker-compose up -d --build --no-deps # note: frontend only
 | Host name/address  | db              |
 | Port               | 5432            |
 | Username           | postgres        |
+| Password           | 123456          |
 
 ### Backend
 
@@ -65,6 +66,7 @@ make up
 | Host name/address  | db              |
 | Port               | 5432            |
 | Username           | postgres        |
+| Password           | 123456          |
 
 > Note: make sure you have `Makefile` before using `make` command
 

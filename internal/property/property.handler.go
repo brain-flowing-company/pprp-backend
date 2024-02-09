@@ -26,8 +26,8 @@ func NewHandler(service Service) Handler {
 // @tags        property
 // @produce     json
 // @success     200	{object} models.Property
-// @failure     400 {object} apperror.AppError
-// @failure     404 {object} apperror.AppError
+// @failure     400 {object} apperror.AppError "Invalid property id"
+// @failure     404 {object} apperror.AppError "Property id not found"
 func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 
@@ -40,6 +40,13 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 	return c.JSON(property)
 }
 
+// @router      /api/v1/properties [get]
+// @summary     Get all properties
+// @description Get all properties
+// @tags        property
+// @produce     json
+// @success     200	{object} []models.Property
+// @failure     500 {object} apperror.AppError
 func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	properties := []models.Property{}
 	err := h.service.GetAllProperties(&properties)

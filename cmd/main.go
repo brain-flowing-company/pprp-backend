@@ -24,7 +24,7 @@ import (
 // @title        Bangkok Property Matchmaking Platform
 // @description  Bangkok Property Matchmaking Platform API docs
 // @version      1.0
-// @host         localhost:3000
+// @host         localhost:8000
 // @BasePath     /
 func main() {
 	err := godotenv.Load()
@@ -75,7 +75,7 @@ func main() {
 	propertyHandler := property.NewHandler(propertyService)
 
 	usersRepo := users.NewRepository(db)
-	usersService := users.NewService(usersRepo)
+	usersService := users.NewService(usersRepo, logger)
 	usersHandler := users.NewHandler(usersService)
 
 	googleService := google.NewService(cfg, logger)

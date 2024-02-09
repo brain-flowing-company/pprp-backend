@@ -14,6 +14,6 @@ cover:
 
 migrate:
 	atlas schema apply \
-		--url "postgres://postgres:123456@127.0.0.1:5432/postgres_db?sslmode=disable" \
+		--url "postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable" \
 		--to "file://./migrations/schema.sql" \
 		--dev-url "docker://postgres/15"
