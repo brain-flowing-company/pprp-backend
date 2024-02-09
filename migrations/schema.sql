@@ -20,7 +20,7 @@ CREATE TABLE users
     bank_name                           bank_name                       DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
     citizen_id                          VARCHAR(13)         UNIQUE      DEFAULT NULL,
-    citizen_image_url                   VARCHAR(2000)                   DEFAULT NULL,
+    citizen_card_image_url              VARCHAR(2000)                   DEFAULT NULL,
     is_verified                         BOOLEAN                         DEFAULT FALSE,
     created_at                          TIMESTAMP(0)                    DEFAULT CURRENT_TIMESTAMP,
     updated_at                          TIMESTAMP(0)                    DEFAULT CURRENT_TIMESTAMP,
@@ -79,10 +79,10 @@ CREATE TABLE renting_property
 
 -------------------- DUMMY DATA --------------------
 
-INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, citizen_id, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, is_verified) VALUES
-('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', '1234567890123', 'https://picsum.photos/200/300?random=1', 'JOHN DOE', '1234123412341234', '12', '2023', '123', 'KBANK', '1234567890', TRUE),
-('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, 'https://picsum.photos/200/300?random=3', 'SAM SMITH', '4321432143214321', '11', '2024', '321', 'BBL', '1234567890', FALSE),
-('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', '3333333333333', 'https://picsum.photos/200/300?random=1', 'C C', '1234123412341234', '12', '2023', '123', 'SCB', '1234567890', TRUE);
+INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified) VALUES
+('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', 'JOHN DOE', '1234123412341234', '12', '2023', '123', 'KBANK', '1234567890', '1234567890123', 'https://picsum.photos/200/300?random=2', TRUE),
+('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, 'SAM SMITH', '4321432143214321', '11', '2024', '321', 'BBL', '1234567890', NULL, NULL, FALSE),
+('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', 'C C', '1234123412341234', '12', '2023', '123', 'SCB', '1234567890', '3333333333333', 'https://picsum.photos/200/300?random=4', TRUE);
 
 INSERT INTO property (property_id, owner_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Et sequi dolor praes', 'Sequi reiciendis odi', 'Anita', 'Quas iusto expedita ', 'Delisa', 'Grace', 'Michael', 'Christine', 'Anthony', 'Andrew', '53086'),

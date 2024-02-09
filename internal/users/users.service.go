@@ -62,12 +62,13 @@ func (s *serviceImpl) Register(user *models.Users) *apperror.AppError {
 		return apperror.EmailAlreadyExists
 	}
 
-	hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
-	if hashErr != nil {
-		return apperror.PasswordCannotBeHashed
+	if user.Password != "" {
+		hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+		if hashErr != nil {
+			return apperror.PasswordCannotBeHashed
+		}
+		user.Password = string(hashedPassword)
 	}
-
-	user.Password = string(hashedPassword)
 
 	err := s.repo.CreateUser(user)
 	if err != nil {

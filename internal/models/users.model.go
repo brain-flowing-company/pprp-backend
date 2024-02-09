@@ -23,7 +23,7 @@ type Users struct {
 	BankName                  BankName       `gorm:"default:null" json:"bank_name" example:"KBANK"`
 	BankAccountNumber         string         `gorm:"default:null" json:"bank_account_number" example:"1234567890"`
 	CitizenId                 string         `gorm:"default:null; unique" json:"citizen_id" example:"1234567890123"`
-	CitizenImageUrl           string         `gorm:"default:null" json:"citizen_image_url" example:"https://image_url.com/abcd"`
+	CitizenCardImageUrl       string         `gorm:"default:null" json:"citizen_card_image_url" example:"https://image_url.com/abcd"`
 	IsVerified                bool           `gorm:"default:null" json:"is_verified" example:"false"`
 	CreatedAt                 *time.Time     `gorm:"autoCreateTime"`
 	UpdatedAt                 *time.Time     `gorm:"autoUpdateTime"`
@@ -43,6 +43,7 @@ const (
 	TTB   BankName = "TMBTHANACHART BANK"
 	SCB   BankName = "SIAM COMMERCIAL BANK"
 	GSB   BankName = "GOVERNMENT SAVINGS BANK"
+	NULL  BankName = "BANK NOT SELECTED"
 
 	// RegisteredType
 	EMAIL  RegisteredType = "EMAIL"
