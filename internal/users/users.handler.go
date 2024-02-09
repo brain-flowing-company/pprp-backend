@@ -1,8 +1,6 @@
 package users
 
 import (
-	"log"
-
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
@@ -150,7 +148,6 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 // @failure     500 {object} apperror.AppError
 func (h *handlerImpl) GetCurrentUserFromLocalStorage(c *fiber.Ctx) error {
 	email := c.Locals("email").(string)
-	log.Println(email)
 	user := models.Users{}
 	err := h.service.GetUserByEmail(&user, email)
 	if err != nil {
