@@ -1,7 +1,9 @@
 package users
 
 import (
+	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -36,7 +38,7 @@ func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 
 	err := h.service.GetAllUsers(&users)
 	if err != nil {
-		return c.Status(err.Code).JSON(err)
+		return utils.ResponseError(c, err)
 	}
 
 	return c.JSON(users)
@@ -56,7 +58,7 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 
 	err := h.service.GetUserById(&user, userId)
 	if err != nil {
-		return c.Status(err.Code).JSON(err)
+		return utils.ResponseError(c, err)
 	}
 
 	return c.JSON(user)
@@ -75,16 +77,12 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 
 	bodyErr := c.BodyParser(&user)
 	if bodyErr != nil {
-		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
-			"message": "Invalid body",
-		})
+		return utils.ResponseError(c, apperror.InvalidBody)
 	}
 
 	err := h.service.Register(&user)
 	if err != nil {
-		return c.Status(err.Code).JSON(fiber.Map{
-			"message": err.Name,
-		})
+		return utils.ResponseError(c, err)
 	}
 
 	return c.JSON(user) // TODO: don't return user
@@ -104,16 +102,12 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 
 	bodyErr := c.BodyParser(&user)
 	if bodyErr != nil {
-		return c.Status(fiber.ErrBadRequest.Code).JSON(fiber.Map{
-			"message": "Invalid body",
-		})
+		return utils.ResponseError(c, apperror.InvalidBody)
 	}
 
 	err := h.service.UpdateUser(&user, userId)
 	if err != nil {
-		return c.Status(err.Code).JSON(fiber.Map{
-			"message": err.Name,
-		})
+		return utils.ResponseError(c, err)
 	}
 
 	return c.JSON(user)
@@ -132,9 +126,7 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 
 	err := h.service.DeleteUser(userId)
 	if err != nil {
-		return c.Status(err.Code).JSON(fiber.Map{
-			"message": err.Name,
-		})
+		return utils.ResponseError(c, err)
 	}
 
 	return c.JSON(fiber.Map{

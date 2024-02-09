@@ -15,6 +15,7 @@ func (*AppError) Error() string {
 var (
 	// server errors
 	InternalServerError = &AppError{http.StatusInternalServerError, "internal-server-error"}
+	InvalidBody         = &AppError{http.StatusBadRequest, "invalid-body"}
 	BadRequest          = &AppError{http.StatusBadRequest, "bad-request"}
 
 	//property errors

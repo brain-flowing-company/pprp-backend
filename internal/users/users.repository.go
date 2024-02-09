@@ -29,15 +29,15 @@ func (repo *repositoryImpl) GetAllUsers(users *[]models.Users) error {
 }
 
 func (repo *repositoryImpl) GetUserById(user *models.Users, userId string) error {
-	return repo.db.First(&user, "user_id = ?", userId).Error
+	return repo.db.First(user, "user_id = ?", userId).Error
 }
 
 func (repo *repositoryImpl) GetUserByEmail(user *models.Users, email string) error {
-	return repo.db.First(&user, "email = ?", email).Error
+	return repo.db.First(user, "email = ?", email).Error
 }
 
 func (repo *repositoryImpl) CreateUser(user *models.Users) error {
-	return repo.db.Create(&user).Error
+	return repo.db.Create(user).Error
 }
 
 func (repo *repositoryImpl) UpdateUser(user *models.Users, userId string) error {
@@ -45,7 +45,8 @@ func (repo *repositoryImpl) UpdateUser(user *models.Users, userId string) error 
 	if err != nil {
 		return err
 	}
-	return repo.db.Where("user_id = ?", userId).Updates(&user).Error
+
+	return repo.db.Where("user_id = ?", userId).Updates(user).Error
 }
 
 func (repo *repositoryImpl) DeleteUser(userId string) error {
@@ -53,5 +54,6 @@ func (repo *repositoryImpl) DeleteUser(userId string) error {
 	if err != nil {
 		return err
 	}
+
 	return repo.db.Where("user_id = ?", userId).Delete(&models.Users{}).Error
 }

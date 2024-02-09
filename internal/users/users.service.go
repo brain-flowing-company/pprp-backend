@@ -6,7 +6,6 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -63,7 +62,11 @@ func (s *serviceImpl) Register(user *models.Users) *apperror.AppError {
 	}
 
 	if user.Password != "" {
-		hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+		if !utils.IsValidPassword(user.Password) {
+			return apperror.InvalidPassword
+		}
+
+		hashedPassword, hashErr := utils.HashPassword(user.Password)
 		if hashErr != nil {
 			return apperror.PasswordCannotBeHashed
 		}
