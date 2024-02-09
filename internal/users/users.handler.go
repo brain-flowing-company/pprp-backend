@@ -1,6 +1,8 @@
 package users
 
 import (
+	"log"
+
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -8,6 +10,7 @@ import (
 type Handler interface {
 	GetAllUsers(c *fiber.Ctx) error
 	GetUserById(c *fiber.Ctx) error
+	GetCurrentUserFromLocalStorage(c *fiber.Ctx) error
 	Register(c *fiber.Ctx) error
 	UpdateUser(c *fiber.Ctx) error
 	DeleteUser(c *fiber.Ctx) error
@@ -138,4 +141,17 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 	}
 
 	return nil
+}
+
+func (h *handlerImpl) GetCurrentUserFromLocalStorage(c *fiber.Ctx) error {
+	email := c.Locals("email").(string)
+	log.Println(email)
+	user := models.Users{}
+	err := h.service.GetUserByEmail(&user, email)
+	if err != nil {
+		return c.Status(err.Code).JSON(fiber.Map{
+			"message": err.Name,
+		})
+	}
+	return c.JSON(user)
 }
