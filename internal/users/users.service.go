@@ -6,7 +6,6 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -63,12 +62,17 @@ func (s *serviceImpl) Register(user *models.Users) *apperror.AppError {
 		return apperror.EmailAlreadyExists
 	}
 
-	hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
-	if hashErr != nil {
-		return apperror.PasswordCannotBeHashed
-	}
+	if user.Password != "" {
+		if !utils.IsValidPassword(user.Password) {
+			return apperror.InvalidPassword
+		}
 
-	user.Password = string(hashedPassword)
+		hashedPassword, hashErr := utils.HashPassword(user.Password)
+		if hashErr != nil {
+			return apperror.PasswordCannotBeHashed
+		}
+		user.Password = string(hashedPassword)
+	}
 
 	err := s.repo.CreateUser(user)
 	if err != nil {
