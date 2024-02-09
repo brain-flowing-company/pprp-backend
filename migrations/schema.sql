@@ -22,9 +22,9 @@ CREATE TABLE users
     citizen_id                          VARCHAR(13)         UNIQUE      DEFAULT NULL,
     citizen_card_image_url              VARCHAR(2000)                   DEFAULT NULL,
     is_verified                         BOOLEAN                         DEFAULT FALSE,
-    created_at                          TIMESTAMP(0)                    DEFAULT CURRENT_TIMESTAMP,
-    updated_at                          TIMESTAMP(0)                    DEFAULT CURRENT_TIMESTAMP,
-    deleted_at                          TIMESTAMP(0)                    DEFAULT NULL
+    created_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
+    updated_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
+    deleted_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT NULL
 );
 
 CREATE TABLE property
@@ -42,18 +42,18 @@ CREATE TABLE property
     province                 VARCHAR(50)                                            NOT NULL,
     country                  VARCHAR(50)                                            NOT NULL,
     postal_code              CHAR(5)                                                NOT NULL,
-    created_at               TIMESTAMP(0)                                           DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP(0)                                           DEFAULT CURRENT_TIMESTAMP,
-    deleted_at               TIMESTAMP(0)                                           DEFAULT NULL
+    created_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT NULL
 );
 
 CREATE TABLE property_image
 (
     property_id UUID REFERENCES property (property_id) ON DELETE CASCADE            NOT NULL,
     image_url       VARCHAR(2000)                                                   NOT NULL,
-    created_at               TIMESTAMP(0)                                           DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP(0)                                           DEFAULT CURRENT_TIMESTAMP,
-    deleted_at               TIMESTAMP(0)                                           DEFAULT NULL,
+    created_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT NULL,
     PRIMARY KEY (property_id, image_url)
 );
 
@@ -62,9 +62,9 @@ CREATE TABLE selling_property
     property_id UUID PRIMARY KEY REFERENCES property (property_id) ON DELETE CASCADE    NOT NULL,
     price       DOUBLE PRECISION                                                        NOT NULL,
     is_sold     BOOLEAN                                                                 NOT NULL,
-    created_at               TIMESTAMP(0)                                               DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP(0)                                               DEFAULT CURRENT_TIMESTAMP,
-    deleted_at               TIMESTAMP(0)                                               DEFAULT NULL
+    created_at               TIMESTAMP(0) WITH TIME ZONE                                DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP(0) WITH TIME ZONE                                DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP(0) WITH TIME ZONE                                DEFAULT NULL
 );
 
 CREATE TABLE renting_property
@@ -72,9 +72,9 @@ CREATE TABLE renting_property
     property_id     UUID PRIMARY KEY REFERENCES property (property_id) ON DELETE CASCADE    NOT NULL,
     price_per_month DOUBLE PRECISION                                                        NOT NULL,
     is_occupied     BOOLEAN                                                                 NOT NULL,
-    created_at               TIMESTAMP(0)                                                   DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP(0)                                                   DEFAULT CURRENT_TIMESTAMP,
-    deleted_at               TIMESTAMP(0)                                                   DEFAULT NULL
+    created_at               TIMESTAMP(0) WITH TIME ZONE                                    DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP(0) WITH TIME ZONE                                    DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP(0) WITH TIME ZONE                                    DEFAULT NULL
 );
 
 -------------------- DUMMY DATA --------------------
