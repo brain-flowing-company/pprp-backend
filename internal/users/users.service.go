@@ -6,6 +6,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -19,12 +20,14 @@ type Service interface {
 }
 
 type serviceImpl struct {
-	repo Repository
+	repo   Repository
+	logger *zap.Logger
 }
 
-func NewService(repo Repository) Service {
+func NewService(repo Repository, logger *zap.Logger) Service {
 	return &serviceImpl{
 		repo,
+		logger,
 	}
 }
 
@@ -32,6 +35,7 @@ func (service *serviceImpl) GetAllUsers(users *[]models.Users) *apperror.AppErro
 	err := service.repo.GetAllUsers(users)
 
 	if err != nil {
+		service.logger.Error("Could not get all users", zap.Error(err))
 		return apperror.InternalServerError
 	}
 
@@ -47,6 +51,7 @@ func (s *serviceImpl) GetUserById(user *models.Users, userId string) *apperror.A
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.UserNotFound
 	} else if err != nil {
+		s.logger.Error("Could not get user by id", zap.String("id", userId), zap.Error(err))
 		return apperror.InternalServerError
 	}
 
@@ -76,6 +81,7 @@ func (s *serviceImpl) Register(user *models.Users) *apperror.AppError {
 
 	err := s.repo.CreateUser(user)
 	if err != nil {
+		s.logger.Error("Could not create user", zap.Error(err))
 		return apperror.InternalServerError
 	}
 
@@ -91,6 +97,7 @@ func (s *serviceImpl) UpdateUser(user *models.Users, userId string) *apperror.Ap
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.UserNotFound
 	} else if err != nil {
+		s.logger.Error("Could not update user info", zap.String("id", userId), zap.Error(err))
 		return apperror.InternalServerError
 	}
 
@@ -106,6 +113,7 @@ func (s *serviceImpl) DeleteUser(userId string) *apperror.AppError {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.UserNotFound
 	} else if err != nil {
+		s.logger.Error("Could not delete user", zap.String("id", userId), zap.Error(err))
 		return apperror.InternalServerError
 	}
 
@@ -121,6 +129,7 @@ func (s *serviceImpl) GetUserByEmail(user *models.Users, email string) *apperror
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.UserNotFound
 	} else if err != nil {
+		s.logger.Error("Could not get current user info", zap.String("email", email), zap.Error(err))
 		return apperror.InternalServerError
 	}
 
