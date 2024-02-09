@@ -20,14 +20,17 @@ services:
       - sck
 
   backend:
+    image: cosmtrek/air
     container_name: sck-backend
-    build: .
     working_dir: /app
     ports:
       - 8000:8000
+      - 2345:2345 # Add this line for debugging
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./:/app/
     environment:
       - APP_ENV=development
       - APP_PORT=8000
