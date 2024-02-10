@@ -14,7 +14,6 @@ func ResponseError(c *fiber.Ctx, err interface{}) error {
 		r.Code = appErr.Code()
 		r.Name = appErr.Name()
 		r.Message = appErr.Error()
-		break
 
 	case *apperror.AppErrorType:
 		r.Code = appErr.Code

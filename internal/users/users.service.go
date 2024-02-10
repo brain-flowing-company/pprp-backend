@@ -95,7 +95,6 @@ func (s *serviceImpl) Register(user *models.Users, session models.Session) *appe
 				Describe("Could not create user. Please try again later")
 		}
 		user.Password = string(hashedPassword)
-		break
 
 	case models.GOOGLE:
 		user.Email = session.Email
