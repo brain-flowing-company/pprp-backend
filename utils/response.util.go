@@ -28,7 +28,7 @@ func ResponseError(c *fiber.Ctx, err interface{}) error {
 }
 
 func ResponseStatus(c *fiber.Ctx, status int) error {
-	return c.Status(status).JSON(nil)
+	return c.Status(status).Send(nil)
 }
 
 func ResponseMessage(c *fiber.Ctx, status int, message string) error {
