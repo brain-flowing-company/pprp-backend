@@ -1,8 +1,6 @@
 package users
 
 import (
-	"fmt"
-
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
@@ -12,7 +10,7 @@ import (
 type Handler interface {
 	GetAllUsers(c *fiber.Ctx) error
 	GetUserById(c *fiber.Ctx) error
-	GetCurrentUserFromLocalStorage(c *fiber.Ctx) error
+	GetCurrentUser(c *fiber.Ctx) error
 	Register(c *fiber.Ctx) error
 	UpdateUser(c *fiber.Ctx) error
 	DeleteUser(c *fiber.Ctx) error
@@ -148,8 +146,7 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 // @success     200 {object} models.Users
 // @failure     401 {object} apperror.AppError
 // @failure     500 {object} apperror.AppError
-func (h *handlerImpl) GetCurrentUserFromLocalStorage(c *fiber.Ctx) error {
-	fmt.Println("HERE")
+func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
 	email := c.Locals("email").(string)
 	user := models.Users{}
 	err := h.service.GetUserByEmail(&user, email)

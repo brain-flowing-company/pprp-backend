@@ -107,7 +107,7 @@ func main() {
 
 	apiv1.Use(authMiddleware)
 	apiv1.Get("/user/greeting", hwHandler.UserGreeting)
-	apiv1.Get("/user/me", usersHandler.GetCurrentUserFromLocalStorage)
+	apiv1.Get("/user/me", usersHandler.GetCurrentUser)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
