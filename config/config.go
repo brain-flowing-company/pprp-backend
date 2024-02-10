@@ -6,6 +6,7 @@ type Config struct {
 	AppEnv         string   `mapstructure:"APP_ENV"`
 	AppPort        string   `mapstructure:"APP_PORT"`
 	AllowOrigin    string   `mapstructure:"APP_ALLOW_ORIGIN"`
+	HomePath       string   `mapstructure:"APP_HOME_PATH"`
 	DBUrl          string   `mapstructure:"DB_URL"`
 	JWTSecret      string   `mapstructure:"JWT_SECRET"`
 	SessionExpire  int      `mapstructure:"SESSION_EXPIRES"`
@@ -24,6 +25,7 @@ func Load(config *Config) error {
 	_ = viper.BindEnv("APP_ENV")
 	_ = viper.BindEnv("APP_PORT")
 	_ = viper.BindEnv("APP_ALLOW_ORIGIN")
+	_ = viper.BindEnv("APP_HOME_PATH")
 	_ = viper.BindEnv("DB_URL")
 	_ = viper.BindEnv("JWT_SECRET")
 	_ = viper.BindEnv("SESSION_EXPIRES")
