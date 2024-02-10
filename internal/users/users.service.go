@@ -13,7 +13,7 @@ import (
 type Service interface {
 	GetAllUsers(*[]models.Users) *apperror.AppError
 	GetUserById(*models.Users, string) *apperror.AppError
-	Register(*models.Users) *apperror.AppError
+	Register(*models.Users, models.Session) *apperror.AppError
 	UpdateUser(*models.Users, string) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 	GetUserByEmail(*models.Users, string) *apperror.AppError
@@ -66,20 +66,21 @@ func (s *serviceImpl) GetUserById(user *models.Users, userId string) *apperror.A
 	return nil
 }
 
-func (s *serviceImpl) Register(user *models.Users) *apperror.AppError {
-	if !utils.IsValidEmail(user.Email) {
-		return apperror.
-			New(apperror.InvalidEmail).
-			Describe("Invalid email format")
-	}
-
+func (s *serviceImpl) Register(user *models.Users, session models.Session) *apperror.AppError {
 	if s.repo.GetUserByEmail(&models.Users{}, user.Email) == nil {
 		return apperror.
 			New(apperror.EmailAlreadyExists).
 			Describe("User has already existed")
 	}
 
-	if user.Password != "" {
+	switch session.RegisteredType {
+	case models.EMAIL:
+		if !utils.IsValidEmail(user.Email) {
+			return apperror.
+				New(apperror.InvalidEmail).
+				Describe("Invalid email format")
+		}
+
 		if !utils.IsValidPassword(user.Password) {
 			return apperror.
 				New(apperror.InvalidPassword).
@@ -94,7 +95,15 @@ func (s *serviceImpl) Register(user *models.Users) *apperror.AppError {
 				Describe("Could not create user. Please try again later")
 		}
 		user.Password = string(hashedPassword)
+		break
+
+	case models.GOOGLE:
+		user.Email = session.Email
+		user.Password = ""
+		break
 	}
+
+	user.RegisteredType = session.RegisteredType
 
 	err := s.repo.CreateUser(user)
 	if err != nil {

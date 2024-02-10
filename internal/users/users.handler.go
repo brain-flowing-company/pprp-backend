@@ -76,6 +76,11 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 // @failure     400 {object} models.ErrorResponse "Invalid user info"
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Session)
+	if !ok {
+		session = models.Session{RegisteredType: models.EMAIL}
+	}
+
 	user := models.Users{}
 
 	bodyErr := c.BodyParser(&user)
@@ -83,7 +88,7 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperror.InvalidBody)
 	}
 
-	err := h.service.Register(&user)
+	err := h.service.Register(&user, session)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
