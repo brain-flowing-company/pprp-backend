@@ -1,6 +1,8 @@
 package users
 
 import (
+	"fmt"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
@@ -44,7 +46,7 @@ func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 	return c.JSON(users)
 }
 
-// @router      /api/v1/users/:userId [get]
+// @router      /api/v1/user/:userId [get]
 // @summary     Get user by id
 // @description Get a user by its id
 // @tags        users
@@ -65,7 +67,7 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-// @router      /api/v1/users/register [post]
+// @router      /api/v1/user/register [post]
 // @summary     Register
 // @description Create a user by prasing the body
 // @tags        users
@@ -90,7 +92,7 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	return c.JSON(user) // TODO: don't return user
 }
 
-// @router      /api/v1/users/:userId [put]
+// @router      /api/v1/user/:userId [put]
 // @summary     Update user by id
 // @description Update a user with the given id by parsing the body
 // @tags        users
@@ -116,7 +118,7 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-// @router      /api/v1/users/:userId [delete]
+// @router      /api/v1/user/:userId [delete]
 // @summary     Delete user by id
 // @description Delete a user by its id
 // @tags        users
@@ -138,7 +140,7 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 	})
 }
 
-// @router      /api/v1/users/current [get]
+// @router      /api/v1/user/me [get]
 // @summary     Get current user info
 // @description Get current user info
 // @tags        users
@@ -147,6 +149,7 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 // @failure     401 {object} apperror.AppError
 // @failure     500 {object} apperror.AppError
 func (h *handlerImpl) GetCurrentUserFromLocalStorage(c *fiber.Ctx) error {
+	fmt.Println("HERE")
 	email := c.Locals("email").(string)
 	user := models.Users{}
 	err := h.service.GetUserByEmail(&user, email)

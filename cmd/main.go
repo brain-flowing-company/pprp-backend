@@ -10,7 +10,6 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
 	"github.com/brain-flowing-company/pprp-backend/internal/login"
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
-	"github.com/brain-flowing-company/pprp-backend/internal/register"
 	"github.com/brain-flowing-company/pprp-backend/internal/users"
 	"github.com/brain-flowing-company/pprp-backend/middleware"
 	"github.com/gofiber/contrib/fiberzap/v2"
@@ -81,11 +80,6 @@ func main() {
 	googleService := google.NewService(cfg, logger)
 	googleHandler := google.NewHandler(googleService, logger, cfg)
 
-	// Initialize the service and handler
-	userRepository := register.NewRepository(db) // assuming db is your GORM database connection
-	userService := register.NewService(userRepository, logger)
-	userHandler := register.NewHandler(userService)
-
 	// Initialize the repository, service, and handler
 	loginRepository := login.NewRepository(db)
 	loginService := login.NewService(loginRepository, cfg, logger)
@@ -101,12 +95,11 @@ func main() {
 	apiv1.Get("/properties", propertyHandler.GetAllProperties)
 
 	apiv1.Get("/users", usersHandler.GetAllUsers)
-	apiv1.Get("/users/:userId", usersHandler.GetUserById)
-	apiv1.Post("/users/register", usersHandler.Register)
-	apiv1.Put("/users/:userId", usersHandler.UpdateUser)
-	apiv1.Delete("/users/:userId", usersHandler.DeleteUser)
+	apiv1.Get("/user/:userId", usersHandler.GetUserById)
+	apiv1.Put("/user/:userId", usersHandler.UpdateUser)
+	apiv1.Delete("/user/:userId", usersHandler.DeleteUser)
 
-	apiv1.Post("/register", userHandler.CreateUser)
+	apiv1.Post("/register", usersHandler.Register)
 	apiv1.Post("/login", loginHandler.Login)
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
@@ -114,7 +107,7 @@ func main() {
 
 	apiv1.Use(authMiddleware)
 	apiv1.Get("/user/greeting", hwHandler.UserGreeting)
-	apiv1.Get("/user/current", usersHandler.GetCurrentUserFromLocalStorage)
+	apiv1.Get("/user/me", usersHandler.GetCurrentUserFromLocalStorage)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {

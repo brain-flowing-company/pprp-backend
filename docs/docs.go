@@ -154,62 +154,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/greeting": {
-            "get": {
-                "description": "says hello to current user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "greeting"
-                ],
-                "summary": "Greeting with auth required",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Greeting"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users": {
-            "get": {
-                "description": "Get all users",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get all users",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Users"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users/:userId": {
+        "/api/v1/user/:userId": {
             "get": {
                 "description": "Get a user by its id",
                 "produces": [
@@ -316,7 +261,33 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/current": {
+        "/api/v1/user/greeting": {
+            "get": {
+                "description": "says hello to current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "greeting"
+                ],
+                "summary": "Greeting with auth required",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Greeting"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/me": {
             "get": {
                 "description": "Get current user info",
                 "produces": [
@@ -348,7 +319,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/register": {
+        "/api/v1/user/register": {
             "post": {
                 "description": "Create a user by prasing the body",
                 "produces": [
@@ -375,6 +346,35 @@ const docTemplate = `{
                         "description": "Invalid password",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users": {
+            "get": {
+                "description": "Get all users",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get all users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Users"
+                            }
                         }
                     },
                     "500": {

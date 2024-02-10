@@ -306,43 +306,7 @@ paths:
       summary: Get property by id
       tags:
       - property
-  /api/v1/user/greeting:
-    get:
-      description: says hello to current user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Greeting'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/apperror.AppError'
-      summary: Greeting with auth required
-      tags:
-      - greeting
-  /api/v1/users:
-    get:
-      description: Get all users
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Users'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/apperror.AppError'
-      summary: Get all users
-      tags:
-      - users
-  /api/v1/users/:userId:
+  /api/v1/user/:userId:
     delete:
       description: Delete a user by its id
       produces:
@@ -413,7 +377,24 @@ paths:
       summary: Update user by id
       tags:
       - users
-  /api/v1/users/current:
+  /api/v1/user/greeting:
+    get:
+      description: says hello to current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Greeting'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Greeting with auth required
+      tags:
+      - greeting
+  /api/v1/user/me:
     get:
       description: Get current user info
       produces:
@@ -434,7 +415,7 @@ paths:
       summary: Get current user info
       tags:
       - users
-  /api/v1/users/register:
+  /api/v1/user/register:
     post:
       description: Create a user by prasing the body
       produces:
@@ -457,6 +438,25 @@ paths:
           schema:
             $ref: '#/definitions/apperror.AppError'
       summary: Register
+      tags:
+      - users
+  /api/v1/users:
+    get:
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Users'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Get all users
       tags:
       - users
 swagger: "2.0"
