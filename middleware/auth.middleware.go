@@ -10,7 +10,21 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func NewAuthMiddlware(cfg *config.Config) func(*fiber.Ctx) error {
+type Middleware interface {
+	AuthMiddlware(next func(*fiber.Ctx) error) func(*fiber.Ctx) error
+}
+
+type middlewareImpl struct {
+	cfg *config.Config
+}
+
+func NewMiddleware(cfg *config.Config) Middleware {
+	return &middlewareImpl{
+		cfg,
+	}
+}
+
+func (m *middlewareImpl) AuthMiddlware(next func(*fiber.Ctx) error) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		cookie := new(models.Cookie)
 
@@ -20,7 +34,7 @@ func NewAuthMiddlware(cfg *config.Config) func(*fiber.Ctx) error {
 			return utils.ResponseError(c, apperror.Unauthorized)
 		}
 
-		claim, err := utils.ParseToken(cookie.Session, cfg.JWTSecret)
+		claim, err := utils.ParseToken(cookie.Session, m.cfg.JWTSecret)
 		if err != nil {
 			fmt.Println(err)
 			return utils.ResponseError(c, apperror.Unauthorized)
@@ -28,6 +42,6 @@ func NewAuthMiddlware(cfg *config.Config) func(*fiber.Ctx) error {
 
 		c.Locals("email", claim.Session.Email)
 
-		return c.Next()
+		return next(c)
 	}
 }

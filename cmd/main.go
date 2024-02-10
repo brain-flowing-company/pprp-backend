@@ -85,16 +85,18 @@ func main() {
 	loginService := login.NewService(loginRepository, cfg, logger)
 	loginHandler := login.NewHandler(loginService, cfg, logger)
 
-	authMiddleware := middleware.NewAuthMiddlware(cfg)
+	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
+	apiv1.Get("/user/greeting", mw.AuthMiddlware(hwHandler.UserGreeting))
 
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
 	apiv1.Get("/properties", propertyHandler.GetAllProperties)
 
 	apiv1.Get("/users", usersHandler.GetAllUsers)
+	apiv1.Get("/user/me", mw.AuthMiddlware(usersHandler.GetCurrentUser))
 	apiv1.Get("/user/:userId", usersHandler.GetUserById)
 	apiv1.Put("/user/:userId", usersHandler.UpdateUser)
 	apiv1.Delete("/user/:userId", usersHandler.DeleteUser)
@@ -104,10 +106,6 @@ func main() {
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
-
-	apiv1.Use(authMiddleware)
-	apiv1.Get("/user/greeting", hwHandler.UserGreeting)
-	apiv1.Get("/user/me", usersHandler.GetCurrentUser)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
