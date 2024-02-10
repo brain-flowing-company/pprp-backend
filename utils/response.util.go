@@ -30,3 +30,9 @@ func ResponseError(c *fiber.Ctx, err interface{}) error {
 func ResponseStatus(c *fiber.Ctx, status int) error {
 	return c.Status(status).JSON(nil)
 }
+
+func ResponseMessage(c *fiber.Ctx, status int, message string) error {
+	return c.Status(status).JSON(fiber.Map{
+		message: message,
+	})
+}
