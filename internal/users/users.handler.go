@@ -1,6 +1,8 @@
 package users
 
 import (
+	"net/http"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
@@ -86,7 +88,7 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(user) // TODO: don't return user
+	return utils.ResponseMessage(c, http.StatusCreated, "User created")
 }
 
 // @router      /api/v1/user/:userId [put]
@@ -112,7 +114,7 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(user)
+	return utils.ResponseMessage(c, http.StatusOK, "User updated")
 }
 
 // @router      /api/v1/user/:userId [delete]
@@ -132,9 +134,7 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "User deleted successfully",
-	})
+	return utils.ResponseMessage(c, http.StatusOK, "User deleted")
 }
 
 // @router      /api/v1/user/me [get]
