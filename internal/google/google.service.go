@@ -47,7 +47,9 @@ func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleEx
 	oauthToken, err := s.authCfg.Exchange(c, excToken.Code)
 	if err != nil {
 		s.logger.Error("Could not exchange token from google", zap.Error(err))
-		return "", apperror.ServiceUnavailable
+		return "", apperror.
+			New(apperror.ServiceUnavailable).
+			Describe("Google OAuth failed")
 	}
 
 	client := s.authCfg.Client(c, oauthToken)
@@ -55,7 +57,9 @@ func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleEx
 	res, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
 		s.logger.Error("Could not get userinfo", zap.Error(err))
-		return "", apperror.ServiceUnavailable
+		return "", apperror.
+			New(apperror.ServiceUnavailable).
+			Describe("Google OAuth failed")
 	}
 
 	googleInfo := models.GoogleUserInfo{}
@@ -64,7 +68,9 @@ func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleEx
 	err = json.NewDecoder(res.Body).Decode(&googleInfo)
 	if err != nil {
 		s.logger.Error("Could not decode json body", zap.Error(err))
-		return "", apperror.InternalServerError
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Google OAuth failed")
 	}
 
 	session := models.Session{
@@ -75,7 +81,9 @@ func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleEx
 	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
 	if err != nil {
 		s.logger.Error("Could not create JWT token", zap.Error(err))
-		return "", apperror.InternalServerError
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Google OAuth failed")
 	}
 
 	return token, nil

@@ -29,15 +29,21 @@ func NewService(repo Repository, logger *zap.Logger) Service {
 
 func (s *serviceImpl) GetPropertyById(property *models.Property, id string) *apperror.AppError {
 	if !utils.IsValidUUID(id) {
-		return apperror.InvalidPropertyId
+		return apperror.
+			New(apperror.InvalidPropertyId).
+			Describe("Invalid property id")
 	}
 
 	err := s.repo.GetPropertyById(property, id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return apperror.InvalidPropertyId
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
 	} else if err != nil {
 		s.logger.Error("Could not get property by id", zap.String("id", id), zap.Error(err))
-		return apperror.InternalServerError
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get property. Please try again later.")
 	}
 
 	return nil
@@ -47,7 +53,9 @@ func (s *serviceImpl) GetAllProperties(properties *[]models.Property) *apperror.
 	err := s.repo.GetAllProperties(properties)
 	if err != nil {
 		s.logger.Error("Could not get all properties", zap.Error(err))
-		return apperror.InternalServerError
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get all properties. Please try again later.")
 	}
 
 	return nil
