@@ -9,19 +9,17 @@ import (
 func ResponseError(c *fiber.Ctx, err interface{}) error {
 	r := models.ErrorResponse{}
 
-	switch err.(type) {
+	switch appErr := err.(type) {
 	case *apperror.AppError:
-		appErr := err.(*apperror.AppError)
-
 		r.Code = appErr.Code()
 		r.Name = appErr.Name()
 		r.Message = appErr.Error()
+		break
 
 	case *apperror.AppErrorType:
-		appErrType := err.(*apperror.AppErrorType)
-
-		r.Code = appErrType.Code
-		r.Name = appErrType.Name
+		r.Code = appErr.Code
+		r.Name = appErr.Name
+		break
 	}
 
 	return c.Status(r.Code).JSON(r)
