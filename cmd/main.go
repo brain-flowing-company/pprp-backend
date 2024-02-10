@@ -77,7 +77,8 @@ func main() {
 	usersService := users.NewService(usersRepo, logger)
 	usersHandler := users.NewHandler(usersService)
 
-	googleService := google.NewService(cfg, logger)
+	googleRepo := google.NewRepository(db)
+	googleService := google.NewService(googleRepo, cfg, logger)
 	googleHandler := google.NewHandler(googleService, logger, cfg)
 
 	// Initialize the repository, service, and handler

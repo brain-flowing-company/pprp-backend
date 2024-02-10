@@ -51,7 +51,7 @@ func (h *handlerImpl) ExchangeToken(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperror.InternalServerError)
 	}
 
-	token, apperr := h.service.ExchangeToken(c.Context(), &excToken)
+	token, registered, apperr := h.service.ExchangeToken(c.Context(), &excToken)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}
@@ -62,5 +62,10 @@ func (h *handlerImpl) ExchangeToken(c *fiber.Ctx) error {
 		Expires: time.Now().Add(time.Duration(h.cfg.SessionExpire) * time.Second),
 	})
 
-	return c.Redirect(h.cfg.LoginRedirect, http.StatusPermanentRedirect)
+	url := h.cfg.LoginRedirect
+	if registered {
+		url = h.cfg.HomePath
+	}
+
+	return c.Redirect(url, http.StatusPermanentRedirect)
 }
