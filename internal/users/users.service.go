@@ -100,7 +100,6 @@ func (s *serviceImpl) Register(user *models.Users, session models.Session) *appe
 	case models.GOOGLE:
 		user.Email = session.Email
 		user.Password = ""
-		break
 	}
 
 	user.RegisteredType = session.RegisteredType

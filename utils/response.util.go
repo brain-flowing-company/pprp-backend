@@ -19,7 +19,6 @@ func ResponseError(c *fiber.Ctx, err interface{}) error {
 	case *apperror.AppErrorType:
 		r.Code = appErr.Code
 		r.Name = appErr.Name
-		break
 	}
 
 	return c.Status(r.Code).JSON(r)
