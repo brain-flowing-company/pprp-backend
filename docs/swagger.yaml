@@ -342,30 +342,6 @@ paths:
       summary: Get all users
       tags:
       - users
-    post:
-      description: Create a user by prasing the body
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Users'
-        "400":
-          description: Invalid user info
-          schema:
-            $ref: '#/definitions/apperror.AppError'
-        "401":
-          description: Invalid password
-          schema:
-            $ref: '#/definitions/apperror.AppError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/apperror.AppError'
-      summary: Register
-      tags:
-      - users
   /api/v1/users/:userId:
     delete:
       description: Delete a user by its id
@@ -456,6 +432,31 @@ paths:
           schema:
             $ref: '#/definitions/apperror.AppError'
       summary: Get current user info
+      tags:
+      - users
+  /api/v1/users/register:
+    post:
+      description: Create a user by prasing the body
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Users'
+        "400":
+          description: Invalid user info
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "401":
+          description: Invalid password
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.AppError'
+      summary: Register
       tags:
       - users
 swagger: "2.0"

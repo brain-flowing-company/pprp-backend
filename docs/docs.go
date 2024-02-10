@@ -207,42 +207,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "description": "Create a user by prasing the body",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Register",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Users"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid user info",
-                        "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid password",
-                        "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
-                        }
-                    }
-                }
             }
         },
         "/api/v1/users/:userId": {
@@ -371,6 +335,44 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/register": {
+            "post": {
+                "description": "Create a user by prasing the body",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Register",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Users"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user info",
+                        "schema": {
+                            "$ref": "#/definitions/apperror.AppError"
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid password",
                         "schema": {
                             "$ref": "#/definitions/apperror.AppError"
                         }
