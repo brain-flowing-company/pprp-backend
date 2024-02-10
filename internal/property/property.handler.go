@@ -2,6 +2,7 @@ package property
 
 import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,15 +27,16 @@ func NewHandler(service Service) Handler {
 // @tags        property
 // @produce     json
 // @success     200	{object} models.Property
-// @failure     400 {object} apperror.AppError "Invalid property id"
-// @failure     404 {object} apperror.AppError "Property id not found"
+// @failure     400 {object} models.ErrorResponse "Invalid property id"
+// @failure     404 {object} models.ErrorResponse "Property id not found"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 
 	property := models.Property{}
 	err := h.service.GetPropertyById(&property, propertyId)
 	if err != nil {
-		return c.Status(err.Code).JSON(err)
+		return utils.ResponseError(c, err)
 	}
 
 	return c.JSON(property)
@@ -46,12 +48,12 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 // @tags        property
 // @produce     json
 // @success     200	{object} []models.Property
-// @failure     500 {object} apperror.AppError
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	properties := []models.Property{}
 	err := h.service.GetAllProperties(&properties)
 	if err != nil {
-		return c.Status(err.Code).JSON(err)
+		return utils.ResponseError(c, err)
 	}
 
 	return c.JSON(properties)

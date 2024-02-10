@@ -33,12 +33,16 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 	// Retrieve user by email
 	user, err := s.repo.GetUserByEmail(email)
 	if err != nil {
-		return "", apperror.UserNotFound
+		return "", apperror.
+			New(apperror.UserNotFound).
+			Describe("User does not exist")
 	}
 
 	// Check password
 	if !utils.ComparePassword(user.Password, password) {
-		return "", apperror.InvalidCredentials
+		return "", apperror.
+			New(apperror.InvalidCredentials).
+			Describe("Credentials do not match")
 	}
 
 	session := models.Session{
@@ -48,7 +52,9 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
 	if err != nil {
 		s.logger.Error("Could not create JWT token", zap.Error(err))
-		return "", apperror.InternalServerError
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not login. Please try again later")
 	}
 
 	return token, nil

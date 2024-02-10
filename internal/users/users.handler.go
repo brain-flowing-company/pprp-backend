@@ -1,6 +1,8 @@
 package users
 
 import (
+	"net/http"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
@@ -10,7 +12,7 @@ import (
 type Handler interface {
 	GetAllUsers(c *fiber.Ctx) error
 	GetUserById(c *fiber.Ctx) error
-	GetCurrentUserFromLocalStorage(c *fiber.Ctx) error
+	GetCurrentUser(c *fiber.Ctx) error
 	Register(c *fiber.Ctx) error
 	UpdateUser(c *fiber.Ctx) error
 	DeleteUser(c *fiber.Ctx) error
@@ -32,7 +34,7 @@ func NewHandler(service Service) Handler {
 // @tags        users
 // @produce     json
 // @success     200	{object} []models.Users
-// @failure     500 {object} apperror.AppError
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 	users := []models.Users{}
 
@@ -44,15 +46,15 @@ func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 	return c.JSON(users)
 }
 
-// @router      /api/v1/users/:userId [get]
+// @router      /api/v1/user/:userId [get]
 // @summary     Get user by id
 // @description Get a user by its id
 // @tags        users
 // @produce     json
 // @success     200	{object} models.Users
-// @failure     400 {object} apperror.AppError "Invalid user id"
-// @failure     404 {object} apperror.AppError "User not found"
-// @failure     500 {object} apperror.AppError
+// @failure     400 {object} models.ErrorResponse "Invalid user id"
+// @failure     404 {object} models.ErrorResponse "User not found"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 	user := models.Users{}
@@ -65,16 +67,20 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-// @router      /api/v1/users [post]
+// @router      /api/v1/user/register [post]
 // @summary     Register
 // @description Create a user by prasing the body
 // @tags        users
 // @produce     json
 // @success     200	{object} models.Users
-// @failure     400 {object} apperror.AppError "Invalid user info"
-// @failure     401 {object} apperror.AppError "Invalid password"
-// @failure     500 {object} apperror.AppError
+// @failure     400 {object} models.ErrorResponse "Invalid user info"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Session)
+	if !ok {
+		session = models.Session{RegisteredType: models.EMAIL}
+	}
+
 	user := models.Users{}
 
 	bodyErr := c.BodyParser(&user)
@@ -82,23 +88,23 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperror.InvalidBody)
 	}
 
-	err := h.service.Register(&user)
+	err := h.service.Register(&user, session)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(user) // TODO: don't return user
+	return utils.ResponseMessage(c, http.StatusCreated, "User created")
 }
 
-// @router      /api/v1/users/:userId [put]
+// @router      /api/v1/user/:userId [put]
 // @summary     Update user by id
 // @description Update a user with the given id by parsing the body
 // @tags        users
 // @produce     json
 // @success     200	{object} models.Users
-// @failure     400 {object} apperror.AppError "Invalid user info"
-// @failure     404 {object} apperror.AppError "User not found"
-// @failure     500 {object} apperror.AppError
+// @failure     400 {object} models.ErrorResponse "Invalid user info"
+// @failure     404 {object} models.ErrorResponse "User not found"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 	user := models.Users{}
@@ -113,18 +119,18 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(user)
+	return utils.ResponseMessage(c, http.StatusOK, "User updated")
 }
 
-// @router      /api/v1/users/:userId [delete]
+// @router      /api/v1/user/:userId [delete]
 // @summary     Delete user by id
 // @description Delete a user by its id
 // @tags        users
 // @produce     json
 // @success     200
-// @failure     400 {object} apperror.AppError "Invalid user id"
-// @failure     404 {object} apperror.AppError "User not found"
-// @failure     500 {object} apperror.AppError
+// @failure     400 {object} models.ErrorResponse "Invalid user id"
+// @failure     404 {object} models.ErrorResponse "User not found"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 
@@ -133,27 +139,22 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "User deleted successfully",
-	})
+	return utils.ResponseMessage(c, http.StatusOK, "User deleted")
 }
 
-// @router      /api/v1/users/current [get]
+// @router      /api/v1/user/me [get]
 // @summary     Get current user info
 // @description Get current user info
 // @tags        users
 // @produce     json
 // @success     200 {object} models.Users
-// @failure     401 {object} apperror.AppError
-// @failure     500 {object} apperror.AppError
-func (h *handlerImpl) GetCurrentUserFromLocalStorage(c *fiber.Ctx) error {
-	email := c.Locals("email").(string)
+// @failure     500 {object} models.ErrorResponse
+func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
+	session := c.Locals("session").(models.Session)
 	user := models.Users{}
-	err := h.service.GetUserByEmail(&user, email)
+	err := h.service.GetUserByEmail(&user, session.Email)
 	if err != nil {
-		return c.Status(err.Code).JSON(fiber.Map{
-			"message": err.Name,
-		})
+		return utils.ResponseError(c, err)
 	}
 	return c.JSON(user)
 }
