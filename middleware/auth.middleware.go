@@ -1,47 +1,47 @@
 package middleware
 
 import (
-	"fmt"
+	"net/http"
 
-	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-type Middleware interface {
-	AuthMiddlware(next func(*fiber.Ctx) error) func(*fiber.Ctx) error
-}
-
-type middlewareImpl struct {
+type Middleware struct {
 	cfg *config.Config
 }
 
 func NewMiddleware(cfg *config.Config) Middleware {
-	return &middlewareImpl{
+	return Middleware{
 		cfg,
 	}
 }
 
-func (m *middlewareImpl) AuthMiddlware(next func(*fiber.Ctx) error) func(*fiber.Ctx) error {
+func (m *Middleware) AuthMiddlewareWrapper(next func(*fiber.Ctx) error) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		cookie := new(models.Cookie)
-
-		err := c.CookieParser(cookie)
-		if err != nil {
-			fmt.Println(err)
-			return utils.ResponseError(c, apperror.Unauthorized)
+		_, ok := c.Locals("session").(models.Session)
+		if !ok {
+			return utils.ResponseMessage(c, http.StatusUnauthorized, "Unauthorized")
 		}
-
-		claim, err := utils.ParseToken(cookie.Session, m.cfg.JWTSecret)
-		if err != nil {
-			fmt.Println(err)
-			return utils.ResponseError(c, apperror.Unauthorized)
-		}
-
-		c.Locals("email", claim.Session.Email)
 
 		return next(c)
 	}
+}
+
+func (m *Middleware) SessionMiddleware(c *fiber.Ctx) error {
+	cookie := new(models.Cookie)
+
+	err := c.CookieParser(cookie)
+	if err != nil {
+		return c.Next()
+	}
+
+	claim, err := utils.ParseToken(cookie.Session, m.cfg.JWTSecret)
+	if err == nil {
+		c.Locals("session", claim.Session)
+	}
+
+	return c.Next()
 }

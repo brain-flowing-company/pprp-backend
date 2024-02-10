@@ -41,10 +41,10 @@ func (h *handlerImpl) Greeting(c *fiber.Ctx) error {
 // @success     200	{object}	models.Greeting
 // @failure     401 {object}	models.ErrorResponse
 func (h *handlerImpl) UserGreeting(c *fiber.Ctx) error {
-	email := (c.Locals("email").(string))
+	session := (c.Locals("session").(models.Session))
 
 	msg := models.Greeting{}
-	h.service.UserGreeting(&msg, email)
+	h.service.UserGreeting(&msg, session.Email)
 
 	return c.JSON(msg)
 }

@@ -145,9 +145,9 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 // @success     200 {object} models.Users
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
-	email := c.Locals("email").(string)
+	session := c.Locals("session").(models.Session)
 	user := models.Users{}
-	err := h.service.GetUserByEmail(&user, email)
+	err := h.service.GetUserByEmail(&user, session.Email)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
