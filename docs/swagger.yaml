@@ -1,14 +1,5 @@
 basePath: /
 definitions:
-  apperror.AppError:
-    properties:
-      code:
-        example: 500
-        type: integer
-      name:
-        example: internal-server-error
-        type: string
-    type: object
   models.BankName:
     enum:
     - KASIKORN BANK
@@ -31,6 +22,18 @@ definitions:
     - SCB
     - GSB
     - "NULL"
+  models.ErrorResponse:
+    properties:
+      code:
+        example: 500
+        type: integer
+      message:
+        example: internal server error
+        type: string
+      name:
+        example: internal-server-error
+        type: string
+    type: object
   models.Greeting:
     properties:
       message:
@@ -238,21 +241,21 @@ paths:
           schema:
             $ref: '#/definitions/models.Property'
         "400":
-          description: Invalid user credentials
+          description: Empty or invalid credentials
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "401":
           description: Password mismatch
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Login with email
       tags:
       - auth
@@ -281,7 +284,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Get all properties
       tags:
       - property
@@ -298,11 +301,15 @@ paths:
         "400":
           description: Invalid property id
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "404":
           description: Property id not found
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Get property by id
       tags:
       - property
@@ -317,15 +324,15 @@ paths:
         "400":
           description: Invalid user id
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Delete user by id
       tags:
       - users
@@ -341,15 +348,15 @@ paths:
         "400":
           description: Invalid user id
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Get user by id
       tags:
       - users
@@ -365,15 +372,15 @@ paths:
         "400":
           description: Invalid user info
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Update user by id
       tags:
       - users
@@ -390,7 +397,7 @@ paths:
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Greeting with auth required
       tags:
       - greeting
@@ -404,14 +411,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Users'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/apperror.AppError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Get current user info
       tags:
       - users
@@ -428,15 +431,11 @@ paths:
         "400":
           description: Invalid user info
           schema:
-            $ref: '#/definitions/apperror.AppError'
-        "401":
-          description: Invalid password
-          schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Register
       tags:
       - users
@@ -455,7 +454,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/apperror.AppError'
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Get all users
       tags:
       - users

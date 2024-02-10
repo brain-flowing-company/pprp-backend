@@ -53,27 +53,27 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid user credentials",
+                        "description": "Empty or invalid credentials",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "401": {
                         "description": "Password mismatch",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -116,7 +116,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -142,13 +142,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid property id",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Property id not found",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -174,19 +180,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid user id",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -210,19 +216,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid user info",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -243,19 +249,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid user id",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -281,7 +287,7 @@ const docTemplate = `{
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -304,16 +310,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.Users"
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -339,19 +339,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid user info",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid password",
-                        "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -380,7 +374,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/apperror.AppError"
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -388,19 +382,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "apperror.AppError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 500
-                },
-                "name": {
-                    "type": "string",
-                    "example": "internal-server-error"
-                }
-            }
-        },
         "models.BankName": {
             "type": "string",
             "enum": [
@@ -425,6 +406,23 @@ const docTemplate = `{
                 "GSB",
                 "NULL"
             ]
+        },
+        "models.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 500
+                },
+                "message": {
+                    "type": "string",
+                    "example": "internal server error"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "internal-server-error"
+                }
+            }
         },
         "models.Greeting": {
             "type": "object",

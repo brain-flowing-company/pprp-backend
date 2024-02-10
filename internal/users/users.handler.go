@@ -32,7 +32,7 @@ func NewHandler(service Service) Handler {
 // @tags        users
 // @produce     json
 // @success     200	{object} []models.Users
-// @failure     500 {object} model.ErrorResponse
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 	users := []models.Users{}
 
@@ -50,9 +50,9 @@ func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @success     200	{object} models.Users
-// @failure     400 {object} model.ErrorResponse "Invalid user id"
-// @failure     404 {object} model.ErrorResponse "User not found"
-// @failure     500 {object} model.ErrorResponse
+// @failure     400 {object} models.ErrorResponse "Invalid user id"
+// @failure     404 {object} models.ErrorResponse "User not found"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 	user := models.Users{}
@@ -71,8 +71,8 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @success     200	{object} models.Users
-// @failure     400 {object} model.ErrorResponse "Invalid user info"
-// @failure     500 {object} model.ErrorResponse
+// @failure     400 {object} models.ErrorResponse "Invalid user info"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	user := models.Users{}
 
@@ -95,9 +95,9 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @success     200	{object} models.Users
-// @failure     400 {object} model.ErrorResponse "Invalid user info"
-// @failure     404 {object} model.ErrorResponse "User not found"
-// @failure     500 {object} model.ErrorResponse
+// @failure     400 {object} models.ErrorResponse "Invalid user info"
+// @failure     404 {object} models.ErrorResponse "User not found"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 	user := models.Users{}
@@ -121,9 +121,9 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @success     200
-// @failure     400 {object} model.ErrorResponse "Invalid user id"
-// @failure     404 {object} model.ErrorResponse "User not found"
-// @failure     500 {object} model.ErrorResponse
+// @failure     400 {object} models.ErrorResponse "Invalid user id"
+// @failure     404 {object} models.ErrorResponse "User not found"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 
@@ -143,7 +143,7 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @success     200 {object} models.Users
-// @failure     500 {object} model.ErrorResponse
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
 	email := c.Locals("email").(string)
 	user := models.Users{}

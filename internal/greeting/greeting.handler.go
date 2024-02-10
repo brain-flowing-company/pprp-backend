@@ -39,7 +39,7 @@ func (h *handlerImpl) Greeting(c *fiber.Ctx) error {
 // @tags        greeting
 // @produce     json
 // @success     200	{object}	models.Greeting
-// @failure     401 {object}	apperror.AppError
+// @failure     401 {object}	models.ErrorResponse
 func (h *handlerImpl) UserGreeting(c *fiber.Ctx) error {
 	email := (c.Locals("email").(string))
 

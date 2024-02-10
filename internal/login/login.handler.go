@@ -37,10 +37,10 @@ func NewHandler(service Service, cfg *config.Config, logger *zap.Logger) Handler
 // @tags        auth
 // @produce     json
 // @success     200	{object} models.Property
-// @failure     400 {object} model.ErrorResponse "Empty or invalid credentials"
-// @failure     401 {object} model.ErrorResponse "Password mismatch"
-// @failure     404 {object} model.ErrorResponse "User not found"
-// @failure     500 {object} model.ErrorResponse
+// @failure     400 {object} models.ErrorResponse "Empty or invalid credentials"
+// @failure     401 {object} models.ErrorResponse "Password mismatch"
+// @failure     404 {object} models.ErrorResponse "User not found"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) Login(c *fiber.Ctx) error {
 	// Parse login request from the request body
 	var loginRequest models.LoginRequest
