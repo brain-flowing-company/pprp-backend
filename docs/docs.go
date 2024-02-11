@@ -183,7 +183,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Register",
+                "summary": "Register *use cookies*",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -322,7 +322,7 @@ const docTemplate = `{
                 "tags": [
                     "greeting"
                 ],
-                "summary": "Greeting with auth required",
+                "summary": "Greeting with auth required *use cookies*",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -348,7 +348,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get current user info",
+                "summary": "Get current user info *use cookies*",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -360,6 +360,26 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/me/registered": {
+            "get": {
+                "description": "Get user registered type",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user registered type *use cookies*",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Session"
                         }
                     }
                 }
@@ -595,6 +615,17 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Session": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "registered_type": {
+                    "$ref": "#/definitions/models.RegisteredType"
                 }
             }
         },

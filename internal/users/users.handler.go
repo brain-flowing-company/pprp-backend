@@ -69,7 +69,7 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/register [post]
-// @summary     Register
+// @summary     Register *use cookies*
 // @description Create a user by prasing the body
 // @tags        users
 // @produce     json
@@ -144,7 +144,7 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/user/me [get]
-// @summary     Get current user info
+// @summary     Get current user info *use cookies*
 // @description Get current user info
 // @tags        users
 // @produce     json
@@ -160,6 +160,12 @@ func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+// @router      /api/v1/user/me/registered [get]
+// @summary     Get user registered type *use cookies*
+// @description Get user registered type
+// @tags        users
+// @produce     json
+// @success     200 {object} models.Session
 func (h *handlerImpl) GetRegisteredType(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Session)
 	if !ok {

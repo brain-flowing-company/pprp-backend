@@ -2,7 +2,6 @@
 package auth
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -66,7 +65,9 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 	})
 
 	// Return a success response
-	return utils.ResponseStatus(c, http.StatusOK)
+	return c.JSON(fiber.Map{
+		"success": true,
+	})
 }
 
 // @router      /api/v1/logout [post]
@@ -81,5 +82,7 @@ func (h *handlerImpl) Logout(c *fiber.Ctx) error {
 		HTTPOnly: true,
 	})
 
-	return utils.ResponseStatus(c, http.StatusOK)
+	return c.JSON(fiber.Map{
+		"success": true,
+	})
 }
