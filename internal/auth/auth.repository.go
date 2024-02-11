@@ -1,5 +1,5 @@
 // internal/login/repository.go
-package login
+package auth
 
 import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"

@@ -1,5 +1,5 @@
 // internal/login/handler.go
-package login
+package auth
 
 import (
 	"net/http"
@@ -14,7 +14,8 @@ import (
 )
 
 type Handler interface {
-	Login(c *fiber.Ctx) error
+	Login(*fiber.Ctx) error
+	Logout(*fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -64,5 +65,19 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 	})
 
 	// Return a success response
+	return utils.ResponseStatus(c, http.StatusOK)
+}
+
+// @router      /api/v1/logout [post]
+// @summary     Logout
+// @description Logout
+// @tags        auth
+// @success     200
+func (h *handlerImpl) Logout(c *fiber.Ctx) error {
+	c.Cookie(&fiber.Cookie{
+		Name:    "session",
+		Expires: time.Now(),
+	})
+
 	return utils.ResponseStatus(c, http.StatusOK)
 }
