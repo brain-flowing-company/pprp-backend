@@ -59,9 +59,10 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 
 	// Set JWT token as a cookie
 	c.Cookie(&fiber.Cookie{
-		Name:    "session",
-		Value:   token,
-		Expires: time.Now().Add(time.Duration(h.cfg.SessionExpire) * time.Second),
+		Name:     "session",
+		Value:    token,
+		Expires:  time.Now().Add(time.Duration(h.cfg.SessionExpire) * time.Second),
+		HTTPOnly: true,
 	})
 
 	// Return a success response
@@ -75,8 +76,9 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 // @success     200
 func (h *handlerImpl) Logout(c *fiber.Ctx) error {
 	c.Cookie(&fiber.Cookie{
-		Name:    "session",
-		Expires: time.Now(),
+		Name:     "session",
+		Expires:  time.Now(),
+		HTTPOnly: true,
 	})
 
 	return utils.ResponseStatus(c, http.StatusOK)
