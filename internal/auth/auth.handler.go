@@ -1,5 +1,5 @@
 // internal/login/handler.go
-package login
+package auth
 
 import (
 	"net/http"
@@ -14,7 +14,7 @@ import (
 )
 
 type Handler interface {
-	Login(c *fiber.Ctx) error
+	Login(*fiber.Ctx) error
 }
 
 type handlerImpl struct {

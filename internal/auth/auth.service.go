@@ -1,5 +1,5 @@
 // internal/login/service.go
-package login
+package auth
 
 import (
 	"time"

@@ -6,9 +6,9 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/database"
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
+	"github.com/brain-flowing-company/pprp-backend/internal/auth"
 	"github.com/brain-flowing-company/pprp-backend/internal/google"
 	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
-	"github.com/brain-flowing-company/pprp-backend/internal/login"
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
 	"github.com/brain-flowing-company/pprp-backend/internal/users"
 	"github.com/brain-flowing-company/pprp-backend/middleware"
@@ -82,9 +82,9 @@ func main() {
 	googleHandler := google.NewHandler(googleService, logger, cfg)
 
 	// Initialize the repository, service, and handler
-	loginRepository := login.NewRepository(db)
-	loginService := login.NewService(loginRepository, cfg, logger)
-	loginHandler := login.NewHandler(loginService, cfg, logger)
+	authRepository := auth.NewRepository(db)
+	authService := auth.NewService(authRepository, cfg, logger)
+	authHandler := auth.NewHandler(authService, cfg, logger)
 
 	mw := middleware.NewMiddleware(cfg)
 
@@ -103,7 +103,7 @@ func main() {
 	apiv1.Delete("/user/:userId", usersHandler.DeleteUser)
 
 	apiv1.Post("/register", usersHandler.Register)
-	apiv1.Post("/login", loginHandler.Login)
+	apiv1.Post("/login", authHandler.Login)
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
