@@ -67,7 +67,7 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
-// @router      /api/v1/user/register [post]
+// @router      /api/v1/register [post]
 // @summary     Register
 // @description Create a user by prasing the body
 // @tags        users
