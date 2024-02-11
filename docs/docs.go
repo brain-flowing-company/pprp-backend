@@ -365,6 +365,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user/me/registered": {
+            "get": {
+                "description": "Get user registered type",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user registered type",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Session"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users": {
             "get": {
                 "description": "Get all users",
@@ -595,6 +615,17 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Session": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "registered_type": {
+                    "$ref": "#/definitions/models.RegisteredType"
                 }
             }
         },

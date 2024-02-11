@@ -146,6 +146,13 @@ definitions:
       updatedAt:
         type: string
     type: object
+  models.Session:
+    properties:
+      email:
+        type: string
+      registered_type:
+        $ref: '#/definitions/models.RegisteredType'
+    type: object
   models.Users:
     properties:
       bank_account_number:
@@ -446,6 +453,19 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get current user info
+      tags:
+      - users
+  /api/v1/user/me/registered:
+    get:
+      description: Get user registered type
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Session'
+      summary: Get user registered type
       tags:
       - users
   /api/v1/users:

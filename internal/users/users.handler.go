@@ -160,6 +160,12 @@ func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+// @router      /api/v1/user/me/registered [get]
+// @summary     Get user registered type
+// @description Get user registered type
+// @tags        users
+// @produce     json
+// @success     200 {object} models.Session
 func (h *handlerImpl) GetRegisteredType(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Session)
 	if !ok {
