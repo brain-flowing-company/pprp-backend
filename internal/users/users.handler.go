@@ -16,6 +16,7 @@ type Handler interface {
 	Register(c *fiber.Ctx) error
 	UpdateUser(c *fiber.Ctx) error
 	DeleteUser(c *fiber.Ctx) error
+	GetRegisteredType(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -157,4 +158,13 @@ func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err)
 	}
 	return c.JSON(user)
+}
+
+func (h *handlerImpl) GetRegisteredType(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Session)
+	if !ok {
+		session = models.Session{RegisteredType: models.EMAIL}
+	}
+
+	return c.JSON(session)
 }

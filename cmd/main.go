@@ -98,6 +98,7 @@ func main() {
 
 	apiv1.Get("/users", usersHandler.GetAllUsers)
 	apiv1.Get("/user/me", mw.AuthMiddlewareWrapper(usersHandler.GetCurrentUser))
+	apiv1.Get("/user/me/registered", usersHandler.GetRegisteredType)
 	apiv1.Get("/user/:userId", usersHandler.GetUserById)
 	apiv1.Put("/user/:userId", usersHandler.UpdateUser)
 	apiv1.Delete("/user/:userId", usersHandler.DeleteUser)
