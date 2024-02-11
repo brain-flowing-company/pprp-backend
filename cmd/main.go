@@ -104,6 +104,7 @@ func main() {
 
 	apiv1.Post("/register", usersHandler.Register)
 	apiv1.Post("/login", authHandler.Login)
+	apiv1.Post("/logout", authHandler.Logout)
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
