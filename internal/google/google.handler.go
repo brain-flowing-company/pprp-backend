@@ -57,9 +57,10 @@ func (h *handlerImpl) ExchangeToken(c *fiber.Ctx) error {
 	}
 
 	c.Cookie(&fiber.Cookie{
-		Name:    "session",
-		Value:   token,
-		Expires: time.Now().Add(time.Duration(h.cfg.SessionExpire) * time.Second),
+		Name:     "session",
+		Value:    token,
+		Expires:  time.Now().Add(time.Duration(h.cfg.SessionExpire) * time.Second),
+		HTTPOnly: true,
 	})
 
 	url := h.cfg.LoginRedirect

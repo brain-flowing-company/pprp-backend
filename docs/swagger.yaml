@@ -259,6 +259,15 @@ paths:
       summary: Login with email
       tags:
       - auth
+  /api/v1/logout:
+    post:
+      description: Logout
+      responses:
+        "200":
+          description: OK
+      summary: Logout
+      tags:
+      - auth
   /api/v1/oauth/google:
     get:
       description: Redirect to this endpoint to login with Google OAuth2. When logging
@@ -313,6 +322,27 @@ paths:
       summary: Get property by id
       tags:
       - property
+  /api/v1/register:
+    post:
+      description: Create a user by prasing the body
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Users'
+        "400":
+          description: Invalid user info
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Register
+      tags:
+      - users
   /api/v1/user/:userId:
     delete:
       description: Delete a user by its id
@@ -416,27 +446,6 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get current user info
-      tags:
-      - users
-  /api/v1/user/register:
-    post:
-      description: Create a user by prasing the body
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Users'
-        "400":
-          description: Invalid user info
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Register
       tags:
       - users
   /api/v1/users:

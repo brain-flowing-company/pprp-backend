@@ -37,6 +37,8 @@ func main() {
 		panic(fmt.Sprintf("Could not load config with error: %v", err.Error()))
 	}
 
+	fmt.Println(cfg)
+
 	db, err := database.New(cfg)
 	if err != nil {
 		panic(fmt.Sprintf("Could not establish connection with database with err: %v", err.Error()))
@@ -54,8 +56,6 @@ func main() {
 	app.Use(fiberzap.New(fiberzap.Config{
 		Logger: logger,
 	}))
-
-	fmt.Println(cfg.AllowOrigin)
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     cfg.AllowOrigin,
@@ -98,6 +98,7 @@ func main() {
 
 	apiv1.Get("/users", usersHandler.GetAllUsers)
 	apiv1.Get("/user/me", mw.AuthMiddlewareWrapper(usersHandler.GetCurrentUser))
+	apiv1.Get("/user/me/registered", usersHandler.GetRegisteredType)
 	apiv1.Get("/user/:userId", usersHandler.GetUserById)
 	apiv1.Put("/user/:userId", usersHandler.UpdateUser)
 	apiv1.Delete("/user/:userId", usersHandler.DeleteUser)
