@@ -34,7 +34,7 @@ func (h *handlerImpl) Greeting(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/user/greeting [get]
-// @summary     Greeting with auth required
+// @summary     Greeting with auth required *use cookies*
 // @description says hello to current user
 // @tags        greeting
 // @produce     json

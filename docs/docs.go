@@ -183,7 +183,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Register",
+                "summary": "Register *use cookies*",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -322,7 +322,7 @@ const docTemplate = `{
                 "tags": [
                     "greeting"
                 ],
-                "summary": "Greeting with auth required",
+                "summary": "Greeting with auth required *use cookies*",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -348,7 +348,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get current user info",
+                "summary": "Get current user info *use cookies*",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -374,7 +374,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get user registered type",
+                "summary": "Get user registered type *use cookies*",
                 "responses": {
                     "200": {
                         "description": "OK",

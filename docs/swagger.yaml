@@ -347,7 +347,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Register
+      summary: Register *use cookies*
       tags:
       - users
   /api/v1/user/:userId:
@@ -435,7 +435,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Greeting with auth required
+      summary: Greeting with auth required *use cookies*
       tags:
       - greeting
   /api/v1/user/me:
@@ -452,7 +452,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Get current user info
+      summary: Get current user info *use cookies*
       tags:
       - users
   /api/v1/user/me/registered:
@@ -465,7 +465,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Session'
-      summary: Get user registered type
+      summary: Get user registered type *use cookies*
       tags:
       - users
   /api/v1/users:
