@@ -77,25 +77,30 @@ func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleEx
 			Describe("Google OAuth failed")
 	}
 
-	session := models.Session{
-		Email:          googleInfo.Email,
-		RegisteredType: models.GOOGLE,
-	}
-
-	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
-	if err != nil {
-		s.logger.Error("Could not create JWT token", zap.Error(err))
+	registered := true
+	err = s.repo.GetUserByEmail(&models.Users{}, googleInfo.Email)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		registered = false
+	} else if err != nil {
+		s.logger.Error("Could not get user", zap.Error(err))
 		return "", false, apperror.
 			New(apperror.InternalServerError).
 			Describe("Google OAuth failed")
 	}
 
-	registered := true
-	err = s.repo.GetUserByEmail(&models.Users{}, session.Email)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		registered = false
-	} else if err != nil {
-		s.logger.Error("Could not get user", zap.Error(err))
+	session := models.Session{
+		Email:          googleInfo.Email,
+		RegisteredType: models.GOOGLE,
+		SessionType:    models.SessionRegister,
+	}
+
+	if registered {
+		session.SessionType = models.SessionLogin
+	}
+
+	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
+	if err != nil {
+		s.logger.Error("Could not create JWT token", zap.Error(err))
 		return "", false, apperror.
 			New(apperror.InternalServerError).
 			Describe("Google OAuth failed")

@@ -149,10 +149,25 @@ definitions:
   models.Session:
     properties:
       email:
+        example: admim@email.com
         type: string
       registered_type:
-        $ref: '#/definitions/models.RegisteredType'
+        allOf:
+        - $ref: '#/definitions/models.RegisteredType'
+        example: EMAIL / GOOGLE
+      session_type:
+        allOf:
+        - $ref: '#/definitions/models.SessionType'
+        example: LOGIN / REGISTER
     type: object
+  models.SessionType:
+    enum:
+    - REGISTER
+    - LOGIN
+    type: string
+    x-enum-varnames:
+    - SessionRegister
+    - SessionLogin
   models.Users:
     properties:
       bank_account_number:
