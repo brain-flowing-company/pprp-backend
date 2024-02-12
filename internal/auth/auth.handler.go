@@ -2,8 +2,6 @@
 package auth
 
 import (
-	"time"
-
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -57,12 +55,7 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 	}
 
 	// Set JWT token as a cookie
-	c.Cookie(&fiber.Cookie{
-		Name:     "session",
-		Value:    token,
-		Expires:  time.Now().Add(time.Duration(h.cfg.SessionExpire) * time.Second),
-		HTTPOnly: true,
-	})
+	c.Cookie(utils.CreateSessionCookie(token, h.cfg.SessionExpire))
 
 	// Return a success response
 	return c.JSON(fiber.Map{
@@ -76,11 +69,7 @@ func (h *handlerImpl) Login(c *fiber.Ctx) error {
 // @tags        auth
 // @success     200
 func (h *handlerImpl) Logout(c *fiber.Ctx) error {
-	c.Cookie(&fiber.Cookie{
-		Name:     "session",
-		Expires:  time.Now(),
-		HTTPOnly: true,
-	})
+	c.Cookie(utils.CreateSessionCookie("", 0))
 
 	return c.JSON(fiber.Map{
 		"success": true,

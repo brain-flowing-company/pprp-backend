@@ -2,7 +2,6 @@ package google
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
@@ -56,12 +55,7 @@ func (h *handlerImpl) ExchangeToken(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperr)
 	}
 
-	c.Cookie(&fiber.Cookie{
-		Name:     "session",
-		Value:    token,
-		Expires:  time.Now().Add(time.Duration(h.cfg.SessionExpire) * time.Second),
-		HTTPOnly: true,
-	})
+	c.Cookie(utils.CreateSessionCookie(token, h.cfg.SessionExpire))
 
 	url := h.cfg.LoginRedirect
 	if registered {
