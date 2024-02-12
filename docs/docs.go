@@ -622,12 +622,37 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "admim@email.com"
                 },
                 "registered_type": {
-                    "$ref": "#/definitions/models.RegisteredType"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.RegisteredType"
+                        }
+                    ],
+                    "example": "EMAIL / GOOGLE"
+                },
+                "session_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.SessionType"
+                        }
+                    ],
+                    "example": "LOGIN / REGISTER"
                 }
             }
+        },
+        "models.SessionType": {
+            "type": "string",
+            "enum": [
+                "REGISTER",
+                "LOGIN"
+            ],
+            "x-enum-varnames": [
+                "SessionRegister",
+                "SessionLogin"
+            ]
         },
         "models.Users": {
             "type": "object",
