@@ -169,7 +169,7 @@ func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
 func (h *handlerImpl) GetRegisteredType(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Session)
 	if !ok {
-		session = models.Session{RegisteredType: models.EMAIL}
+		session = models.Session{}
 	}
 
 	return c.JSON(session)
