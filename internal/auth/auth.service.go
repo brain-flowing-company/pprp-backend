@@ -21,7 +21,7 @@ type serviceImpl struct {
 	logger *zap.Logger
 }
 
-func NewService(repo Repository, cfg *config.Config, logger *zap.Logger) Service {
+func NewService(logger *zap.Logger, cfg *config.Config, repo Repository) Service {
 	return &serviceImpl{
 		repo,
 		cfg,

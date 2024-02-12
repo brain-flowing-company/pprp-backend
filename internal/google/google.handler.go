@@ -22,7 +22,7 @@ type handlerImpl struct {
 	cfg     *config.Config
 }
 
-func NewHandler(service Service, logger *zap.Logger, cfg *config.Config) Handler {
+func NewHandler(logger *zap.Logger, cfg *config.Config, service Service) Handler {
 	return &handlerImpl{
 		service,
 		logger,

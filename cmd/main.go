@@ -77,21 +77,21 @@ func main() {
 	hwHandler := greeting.NewHandler(hwService)
 
 	propertyRepo := property.NewRepository(db)
-	propertyService := property.NewService(propertyRepo, logger)
+	propertyService := property.NewService(logger, propertyRepo)
 	propertyHandler := property.NewHandler(propertyService)
 
 	usersRepo := users.NewRepository(db)
-	usersService := users.NewService(usersRepo, logger)
+	usersService := users.NewService(logger, usersRepo)
 	usersHandler := users.NewHandler(usersService)
 
 	googleRepo := google.NewRepository(db)
-	googleService := google.NewService(googleRepo, cfg, logger)
-	googleHandler := google.NewHandler(googleService, logger, cfg)
+	googleService := google.NewService(logger, cfg, googleRepo)
+	googleHandler := google.NewHandler(logger, cfg, googleService)
 
 	// Initialize the repository, service, and handler
 	authRepository := auth.NewRepository(db)
-	authService := auth.NewService(authRepository, cfg, logger)
-	authHandler := auth.NewHandler(authService, cfg, logger)
+	authService := auth.NewService(logger, cfg, authRepository)
+	authHandler := auth.NewHandler(cfg, authService)
 
 	mw := middleware.NewMiddleware(cfg)
 
