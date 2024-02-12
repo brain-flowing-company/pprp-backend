@@ -46,7 +46,9 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 	}
 
 	session := models.Session{
-		Email: user.Email,
+		Email:          user.Email,
+		RegisteredType: models.EMAIL,
+		SessionType:    models.SessionLogin,
 	}
 
 	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
