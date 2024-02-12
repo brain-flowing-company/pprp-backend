@@ -15,6 +15,7 @@ type Config struct {
 	GoogleRedirect string   `mapstructure:"GOOGLE_REDIRECT"`
 	GoogleScopes   []string `mapstructure:"GOOGLE_SCOPE"`
 	LoginRedirect  string   `mapstructure:"GOOGLE_REGISTER_REDIRECT"`
+	S3Bucket       string   `mapstructure:"AWS_S3_BUCKET_NAME"`
 }
 
 func (cfg *Config) IsDevelopment() bool {
@@ -34,6 +35,7 @@ func Load(config *Config) error {
 	_ = viper.BindEnv("GOOGLE_REDIRECT")
 	_ = viper.BindEnv("GOOGLE_SCOPE")
 	_ = viper.BindEnv("GOOGLE_REGISTER_REDIRECT")
+	_ = viper.BindEnv("AWS_S3_BUCKET_NAME")
 
 	viper.AutomaticEnv()
 	viper.AllowEmptyEnv(false)

@@ -12,7 +12,8 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
 	"github.com/brain-flowing-company/pprp-backend/internal/users"
 	"github.com/brain-flowing-company/pprp-backend/middleware"
-	"github.com/gofiber/contrib/fiberzap/v2"
+	"github.com/brain-flowing-company/pprp-backend/storage"
+	"github.com/gofiber/contrib/fiberzap"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
@@ -42,6 +43,11 @@ func main() {
 	db, err := database.New(cfg)
 	if err != nil {
 		panic(fmt.Sprintf("Could not establish connection with database with err: %v", err.Error()))
+	}
+
+	_, err = storage.New(cfg)
+	if err != nil {
+		panic(fmt.Sprintf("Could not establish connection with AWS S3 with err: %v", err.Error()))
 	}
 
 	app := fiber.New()
