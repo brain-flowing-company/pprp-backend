@@ -13,6 +13,7 @@ type Repository interface {
 	UpdateUser(*models.Users, string) error
 	DeleteUser(string) error
 	CountEmail(*int64, string) error
+	CountPhoneNumber(*int64, string) error
 }
 
 type repositoryImpl struct {
@@ -61,4 +62,8 @@ func (repo *repositoryImpl) DeleteUser(userId string) error {
 
 func (repo *repositoryImpl) CountEmail(count *int64, email string) error {
 	return repo.db.Model(&models.Users{}).Where("email = ?", email).Count(count).Error
+}
+
+func (repo *repositoryImpl) CountPhoneNumber(count *int64, phoneNumber string) error {
+	return repo.db.Model(&models.Users{}).Where("phone_number = ?", phoneNumber).Count(count).Error
 }

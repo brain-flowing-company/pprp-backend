@@ -67,17 +67,30 @@ func (s *serviceImpl) GetUserById(user *models.Users, userId string) *apperror.A
 }
 
 func (s *serviceImpl) Register(user *models.Users, session models.Session) *apperror.AppError {
-	var count int64
-	if s.repo.CountEmail(&count, user.Email) != nil {
+	var countEmail int64
+	if s.repo.CountEmail(&countEmail, user.Email) != nil {
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get all emails")
 	}
 
-	if count > 0 {
+	if countEmail > 0 {
 		return apperror.
 			New(apperror.EmailAlreadyExists).
 			Describe("Email already exists")
+	}
+
+	var countPhoneNumber int64
+	if s.repo.CountPhoneNumber(&countPhoneNumber, user.PhoneNumber) != nil {
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get all phone numbers")
+	}
+
+	if countPhoneNumber > 0 {
+		return apperror.
+			New(apperror.PhoneNumberAlreadyExists).
+			Describe("Phone number already exists")
 	}
 
 	switch session.RegisteredType {
