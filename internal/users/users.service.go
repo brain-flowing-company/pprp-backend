@@ -37,11 +37,11 @@ func NewService(logger *zap.Logger, repo Repository, storage storage.Storage) Se
 	}
 }
 
-func (service *serviceImpl) GetAllUsers(users *[]models.Users) *apperror.AppError {
-	err := service.repo.GetAllUsers(users)
+func (s *serviceImpl) GetAllUsers(users *[]models.Users) *apperror.AppError {
+	err := s.repo.GetAllUsers(users)
 
 	if err != nil {
-		service.logger.Error("Could not get all users", zap.Error(err))
+		s.logger.Error("Could not get all users", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get all users. Please try again later.")
@@ -73,10 +73,30 @@ func (s *serviceImpl) GetUserById(user *models.Users, userId string) *apperror.A
 }
 
 func (s *serviceImpl) Register(user *models.Users, session models.Session) *apperror.AppError {
-	if s.repo.GetUserByEmail(&models.Users{}, user.Email) == nil {
+	var countEmail int64
+	if s.repo.CountEmail(&countEmail, user.Email) != nil {
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get all emails")
+	}
+
+	if countEmail > 0 {
 		return apperror.
 			New(apperror.EmailAlreadyExists).
-			Describe("User has already existed")
+			Describe("Email already exists")
+	}
+
+	var countPhoneNumber int64
+	if s.repo.CountPhoneNumber(&countPhoneNumber, user.PhoneNumber) != nil {
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get all phone numbers")
+	}
+
+	if countPhoneNumber > 0 {
+		return apperror.
+			New(apperror.PhoneNumberAlreadyExists).
+			Describe("Phone number already exists")
 	}
 
 	switch session.RegisteredType {

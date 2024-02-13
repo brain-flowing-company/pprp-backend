@@ -6,11 +6,11 @@ CREATE TABLE users
 (
     user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
     registered_type                     registered_type                 NOT NULL,
-    email                               VARCHAR(50)         UNIQUE      NOT NULL,
+    email                               VARCHAR(50)                     NOT NULL,
     password                            VARCHAR(64)                     DEFAULT NULL,
     first_name                          VARCHAR(50)                     NOT NULL,
     last_name                           VARCHAR(50)                     NOT NULL,
-    phone_number                        VARCHAR(10)         UNIQUE      NOT NULL,
+    phone_number                        VARCHAR(10)                     NOT NULL,
     profile_image_url                   VARCHAR(2000)                   DEFAULT NULL,
     credit_card_cardholder_name         VARCHAR(50)                     DEFAULT NULL,
     credit_card_number                  VARCHAR(16)                     DEFAULT NULL,
@@ -19,12 +19,15 @@ CREATE TABLE users
     credit_card_cvv                     VARCHAR(3)                      DEFAULT NULL,
     bank_name                           bank_name                       DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
-    citizen_id                          VARCHAR(13)         UNIQUE      DEFAULT NULL,
+    citizen_id                          VARCHAR(13)                     DEFAULT NULL,
     citizen_card_image_url              VARCHAR(2000)                   DEFAULT NULL,
     is_verified                         BOOLEAN                         DEFAULT FALSE,
     created_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
     updated_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
-    deleted_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT NULL
+    deleted_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT NULL,
+    UNIQUE(email, deleted_at),
+    UNIQUE(phone_number, deleted_at),
+    UNIQUE(citizen_id, deleted_at)
 );
 
 CREATE TABLE property
