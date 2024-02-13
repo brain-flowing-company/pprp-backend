@@ -2,9 +2,11 @@ package users
 
 import (
 	"errors"
+	"io"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/storage"
 	"github.com/brain-flowing-company/pprp-backend/utils"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -17,17 +19,20 @@ type Service interface {
 	UpdateUser(*models.Users, string) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 	GetUserByEmail(*models.Users, string) *apperror.AppError
+	UploadProfileImage(string, io.Reader) (string, *apperror.AppError)
 }
 
 type serviceImpl struct {
-	repo   Repository
-	logger *zap.Logger
+	repo    Repository
+	logger  *zap.Logger
+	storage storage.Storage
 }
 
-func NewService(logger *zap.Logger, repo Repository) Service {
+func NewService(logger *zap.Logger, repo Repository, storage storage.Storage) Service {
 	return &serviceImpl{
 		repo,
 		logger,
+		storage,
 	}
 }
 
@@ -182,4 +187,15 @@ func (s *serviceImpl) GetUserByEmail(user *models.Users, email string) *apperror
 	}
 
 	return nil
+}
+
+func (s *serviceImpl) UploadProfileImage(filename string, file io.Reader) (string, *apperror.AppError) {
+	url, err := s.storage.Upload(filename, file)
+	if err != nil {
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not upload profile image")
+	}
+
+	return url, nil
 }
