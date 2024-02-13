@@ -2,6 +2,7 @@ package users
 
 import (
 	"errors"
+	"fmt"
 	"io"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -190,7 +191,7 @@ func (s *serviceImpl) GetUserByEmail(user *models.Users, email string) *apperror
 }
 
 func (s *serviceImpl) UploadProfileImage(filename string, file io.Reader) (string, *apperror.AppError) {
-	url, err := s.storage.Upload(filename, file)
+	url, err := s.storage.Upload(fmt.Sprintf("profiles/%v", filename), file)
 	if err != nil {
 		return "", apperror.
 			New(apperror.InternalServerError).
