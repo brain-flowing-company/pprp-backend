@@ -3,7 +3,7 @@ package utils
 import "github.com/brain-flowing-company/pprp-backend/internal/models"
 
 func ParseBankName(s string) models.BankName {
-	val, _ := map[string]models.BankName{
+	return map[string]models.BankName{
 		"KBANK": models.KBANK,
 		"BBL":   models.BBL,
 		"KTB":   models.KTB,
@@ -14,6 +14,4 @@ func ParseBankName(s string) models.BankName {
 		"GSB":   models.GSB,
 		"NULL":  models.NULL,
 	}[s]
-
-	return val
 }
