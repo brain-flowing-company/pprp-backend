@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -83,13 +84,16 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 		session = models.Session{RegisteredType: models.EMAIL}
 	}
 
-	user := models.Users{}
-	bodyErr := c.BodyParser(&user)
-	if bodyErr != nil {
-		return utils.ResponseError(c, apperror.InvalidBody)
-	}
+	// user := models.Users{}
+	// bodyErr := c.BodyParser(&user)
+	// if bodyErr != nil {
+	// 	return utils.ResponseError(c, apperror.InvalidBody)
+	// }
 
+	user := utils.ParseFormToUser(c)
 	user.UserId = uuid.New()
+
+	fmt.Println(user)
 
 	formFile, err := c.FormFile("profile_image")
 	if err == nil {
