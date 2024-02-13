@@ -6,7 +6,7 @@ import (
 )
 
 type Repository interface {
-	GetUserByEmail(user *models.Users, email string) error
+	CountEmail(count *int64, email string) error
 }
 
 type repositoryImpl struct {
@@ -19,6 +19,6 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetUserByEmail(user *models.Users, email string) error {
-	return repo.db.Model(&models.Users{}).First(user, "email = ?", email).Error
+func (repo *repositoryImpl) CountEmail(count *int64, email string) error {
+	return repo.db.Model(&models.Users{}).Where("email = ?", email).Count(count).Error
 }
