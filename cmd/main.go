@@ -81,7 +81,7 @@ func main() {
 	propertyHandler := property.NewHandler(propertyService)
 
 	usersRepo := users.NewRepository(db)
-	usersService := users.NewService(logger, usersRepo, storage)
+	usersService := users.NewService(logger, cfg, usersRepo, storage)
 	usersHandler := users.NewHandler(usersService)
 
 	googleRepo := google.NewRepository(db)
