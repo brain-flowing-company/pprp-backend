@@ -86,10 +86,9 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 
 	err := c.BodyParser(user)
 	if err != nil {
-		fmt.Println(err.Error())
 		return utils.ResponseError(c, apperror.
 			New(apperror.BadRequest).
-			Describe("Could not parse form data"))
+			Describe(fmt.Sprintf("Could not parse form data: %v", err.Error())))
 	}
 
 	if session, ok := c.Locals("session").(models.Session); !ok {
