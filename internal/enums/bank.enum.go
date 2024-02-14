@@ -1,4 +1,4 @@
-package consts
+package enums
 
 type BankName string
 

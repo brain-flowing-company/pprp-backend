@@ -6,7 +6,7 @@ import (
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
-	"github.com/brain-flowing-company/pprp-backend/internal/consts"
+	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
 	"go.uber.org/zap"
@@ -48,7 +48,7 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 
 	session := models.Session{
 		Email:          user.Email,
-		RegisteredType: consts.EMAIL,
+		RegisteredType: enums.EMAIL,
 		SessionType:    models.SessionLogin,
 	}
 

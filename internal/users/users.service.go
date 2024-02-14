@@ -10,7 +10,7 @@ import (
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
-	"github.com/brain-flowing-company/pprp-backend/internal/consts"
+	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/storage"
 	"github.com/brain-flowing-company/pprp-backend/utils"
@@ -107,7 +107,7 @@ func (s *serviceImpl) Register(user *models.Users, profileImage *multipart.FileH
 			Describe("Phone number already exists")
 	}
 
-	if user.RegisteredType == consts.EMAIL {
+	if user.RegisteredType == enums.EMAIL {
 		if !utils.IsValidEmail(user.Email) {
 			return apperror.
 				New(apperror.InvalidEmail).

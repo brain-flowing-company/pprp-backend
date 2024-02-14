@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
-	"github.com/brain-flowing-company/pprp-backend/internal/consts"
+	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
 	"github.com/gofiber/fiber/v2"
@@ -92,7 +92,7 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	}
 
 	if session, ok := c.Locals("session").(models.Session); !ok {
-		user.RegisteredType = consts.EMAIL
+		user.RegisteredType = enums.EMAIL
 	} else {
 		user.RegisteredType = session.RegisteredType
 	}
