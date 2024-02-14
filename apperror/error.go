@@ -22,7 +22,11 @@ func (apperr *AppError) Describe(message string) *AppError {
 }
 
 func (apperr *AppError) Error() string {
-	return *apperr.message
+	if apperr.message == nil {
+		return ""
+	} else {
+		return *apperr.message
+	}
 }
 
 func (apperr *AppError) Code() int {

@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"path/filepath"
 	"strings"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
+	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/storage"
 	"github.com/brain-flowing-company/pprp-backend/utils"
@@ -20,7 +22,7 @@ import (
 type Service interface {
 	GetAllUsers(*[]models.Users) *apperror.AppError
 	GetUserById(*models.Users, string) *apperror.AppError
-	Register(*models.Users, models.Session) *apperror.AppError
+	Register(*models.Users, *multipart.FileHeader) *apperror.AppError
 	UpdateUser(*models.Users, string) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 	GetUserByEmail(*models.Users, string) *apperror.AppError
@@ -78,7 +80,7 @@ func (s *serviceImpl) GetUserById(user *models.Users, userId string) *apperror.A
 	return nil
 }
 
-func (s *serviceImpl) Register(user *models.Users, session models.Session) *apperror.AppError {
+func (s *serviceImpl) Register(user *models.Users, profileImage *multipart.FileHeader) *apperror.AppError {
 	var countEmail int64
 	if s.repo.CountEmail(&countEmail, user.Email) != nil {
 		return apperror.
@@ -105,8 +107,7 @@ func (s *serviceImpl) Register(user *models.Users, session models.Session) *appe
 			Describe("Phone number already exists")
 	}
 
-	switch session.RegisteredType {
-	case models.EMAIL:
+	if user.RegisteredType == enums.EMAIL {
 		if !utils.IsValidEmail(user.Email) {
 			return apperror.
 				New(apperror.InvalidEmail).
@@ -126,14 +127,25 @@ func (s *serviceImpl) Register(user *models.Users, session models.Session) *appe
 				New(apperror.InternalServerError).
 				Describe("Could not create user. Please try again later")
 		}
-		user.Password = string(hashedPassword)
 
-	case models.GOOGLE:
-		user.Email = session.Email
-		user.Password = ""
+		user.Password = string(hashedPassword)
 	}
 
-	user.RegisteredType = session.RegisteredType
+	if profileImage != nil {
+		file, err := profileImage.Open()
+		if err != nil {
+			return apperror.
+				New(apperror.InternalServerError).
+				Describe("Could not upload profile image")
+		}
+
+		url, apperr := s.UploadProfileImage(user.UserId, profileImage.Filename, file)
+		if apperr != nil {
+			return apperr
+		}
+
+		user.ProfileImageUrl = url
+	}
 
 	err := s.repo.CreateUser(user)
 	if err != nil {
