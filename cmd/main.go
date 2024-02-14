@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/database"
@@ -12,7 +13,8 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
 	"github.com/brain-flowing-company/pprp-backend/internal/users"
 	"github.com/brain-flowing-company/pprp-backend/middleware"
-	"github.com/gofiber/contrib/fiberzap/v2"
+	"github.com/brain-flowing-company/pprp-backend/storage"
+	"github.com/gofiber/contrib/fiberzap"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
@@ -44,6 +46,11 @@ func main() {
 		panic(fmt.Sprintf("Could not establish connection with database with err: %v", err.Error()))
 	}
 
+	storage, err := storage.New(cfg)
+	if err != nil {
+		panic(fmt.Sprintf("Could not establish connection with AWS S3 with err: %v", err.Error()))
+	}
+
 	app := fiber.New()
 
 	var logger *zap.Logger
@@ -70,25 +77,44 @@ func main() {
 	hwHandler := greeting.NewHandler(hwService)
 
 	propertyRepo := property.NewRepository(db)
-	propertyService := property.NewService(propertyRepo, logger)
+	propertyService := property.NewService(logger, propertyRepo)
 	propertyHandler := property.NewHandler(propertyService)
 
 	usersRepo := users.NewRepository(db)
-	usersService := users.NewService(usersRepo, logger)
+	usersService := users.NewService(logger, cfg, usersRepo, storage)
 	usersHandler := users.NewHandler(usersService)
 
 	googleRepo := google.NewRepository(db)
-	googleService := google.NewService(googleRepo, cfg, logger)
-	googleHandler := google.NewHandler(googleService, logger, cfg)
+	googleService := google.NewService(logger, cfg, googleRepo)
+	googleHandler := google.NewHandler(logger, cfg, googleService)
 
 	// Initialize the repository, service, and handler
 	authRepository := auth.NewRepository(db)
-	authService := auth.NewService(authRepository, cfg, logger)
-	authHandler := auth.NewHandler(authService, cfg, logger)
+	authService := auth.NewService(logger, cfg, authRepository)
+	authHandler := auth.NewHandler(cfg, authService)
 
 	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
+
+	apiv1.Post("/upload", func(c *fiber.Ctx) error {
+		file, err := c.FormFile("profile")
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).SendString(err.Error())
+		}
+
+		fileReader, err := file.Open()
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).SendString(err.Error())
+		}
+
+		url, err := storage.Upload(fmt.Sprintf("profiles/%v", file.Filename), fileReader)
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).SendString(err.Error())
+		}
+
+		return c.SendString(url)
+	})
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/user/greeting", mw.AuthMiddlewareWrapper(hwHandler.UserGreeting))

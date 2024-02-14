@@ -30,8 +30,11 @@ type Users struct {
 	DeletedAt                 *time.Time     `gorm:"default:null"`
 }
 
+func (u Users) TableName() string {
+	return "users"
+}
+
 type BankName string
-type RegisteredType string
 
 const (
 	// BankName
@@ -44,15 +47,15 @@ const (
 	SCB   BankName = "SIAM COMMERCIAL BANK"
 	GSB   BankName = "GOVERNMENT SAVINGS BANK"
 	NULL  BankName = "BANK NOT SELECTED"
+)
 
+type RegisteredType string
+
+const (
 	// RegisteredType
 	EMAIL  RegisteredType = "EMAIL"
 	GOOGLE RegisteredType = "GOOGLE"
 )
-
-func (u Users) TableName() string {
-	return "users"
-}
 
 type LoginRequest struct {
 	Email    string `json:"email"`

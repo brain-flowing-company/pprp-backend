@@ -7,6 +7,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type Handler interface {
@@ -82,16 +83,30 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 		session = models.Session{RegisteredType: models.EMAIL}
 	}
 
-	user := models.Users{}
+	user := utils.ParseFormToUser(c)
+	user.UserId = uuid.New()
 
-	bodyErr := c.BodyParser(&user)
-	if bodyErr != nil {
-		return utils.ResponseError(c, apperror.InvalidBody)
+	formFile, err := c.FormFile("profile_image")
+	if err == nil {
+		file, err := formFile.Open()
+		if err != nil {
+			return utils.ResponseError(c, apperror.
+				New(apperror.InternalServerError).
+				Describe("Could not upload profile image"))
+		}
+
+		url, apperr := h.service.UploadProfileImage(user.UserId, formFile.Filename, file)
+
+		if apperr != nil {
+			return utils.ResponseError(c, apperr)
+		}
+
+		user.ProfileImageUrl = url
 	}
 
-	err := h.service.Register(&user, session)
-	if err != nil {
-		return utils.ResponseError(c, err)
+	apperr := h.service.Register(&user, session)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
 	}
 
 	return utils.ResponseMessage(c, http.StatusCreated, "User created")

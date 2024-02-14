@@ -26,7 +26,7 @@ type serviceImpl struct {
 	repo    Repository
 }
 
-func NewService(repo Repository, cfg *config.Config, logger *zap.Logger) Service {
+func NewService(logger *zap.Logger, cfg *config.Config, repo Repository) Service {
 	return &serviceImpl{
 		&oauth2.Config{
 			ClientID:     cfg.GoogleClientId,

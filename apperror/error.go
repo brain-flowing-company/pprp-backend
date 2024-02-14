@@ -49,14 +49,15 @@ var (
 	PropertyNotFound  = &AppErrorType{http.StatusNotFound, "property-not-found"}
 
 	// user errors
-	InvalidUserId            = &AppErrorType{http.StatusBadRequest, "invalid-user-id"}
-	UserNotFound             = &AppErrorType{http.StatusNotFound, "user-not-found"}
-	EmailAlreadyExists       = &AppErrorType{http.StatusBadRequest, "email-already-exists"}
-	PhoneNumberAlreadyExists = &AppErrorType{http.StatusBadRequest, "phone-number-already-exists"}
-	InvalidEmail             = &AppErrorType{http.StatusBadRequest, "invalid-email"}
-	InvalidPassword          = &AppErrorType{http.StatusBadRequest, "invalid-password"}
-	InvalidCredentials       = &AppErrorType{http.StatusUnauthorized, "invalid-credentials"}
-	ServiceUnavailable       = &AppErrorType{http.StatusServiceUnavailable, "service-unavailable"}
+	InvalidUserId                = &AppErrorType{http.StatusBadRequest, "invalid-user-id"}
+	UserNotFound                 = &AppErrorType{http.StatusNotFound, "user-not-found"}
+	EmailAlreadyExists           = &AppErrorType{http.StatusBadRequest, "email-already-exists"}
+	PhoneNumberAlreadyExists     = &AppErrorType{http.StatusBadRequest, "phone-number-already-exists"}
+	InvalidEmail                 = &AppErrorType{http.StatusBadRequest, "invalid-email"}
+	InvalidPassword              = &AppErrorType{http.StatusBadRequest, "invalid-password"}
+	InvalidCredentials           = &AppErrorType{http.StatusUnauthorized, "invalid-credentials"}
+	ServiceUnavailable           = &AppErrorType{http.StatusServiceUnavailable, "service-unavailable"}
+	InvalidProfileImageExtension = &AppErrorType{http.StatusBadRequest, "invalid-profile-image-extensions"}
 
 	Unauthorized = &AppErrorType{http.StatusUnauthorized, "unauthorized"}
 )

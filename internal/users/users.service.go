@@ -2,10 +2,17 @@ package users
 
 import (
 	"errors"
+	"fmt"
+	"io"
+	"path/filepath"
+	"strings"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/storage"
 	"github.com/brain-flowing-company/pprp-backend/utils"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -17,17 +24,22 @@ type Service interface {
 	UpdateUser(*models.Users, string) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 	GetUserByEmail(*models.Users, string) *apperror.AppError
+	UploadProfileImage(uuid.UUID, string, io.Reader) (string, *apperror.AppError)
 }
 
 type serviceImpl struct {
-	repo   Repository
-	logger *zap.Logger
+	repo    Repository
+	logger  *zap.Logger
+	storage storage.Storage
+	cfg     *config.Config
 }
 
-func NewService(repo Repository, logger *zap.Logger) Service {
+func NewService(logger *zap.Logger, cfg *config.Config, repo Repository, storage storage.Storage) Service {
 	return &serviceImpl{
 		repo,
 		logger,
+		storage,
+		cfg,
 	}
 }
 
@@ -202,4 +214,30 @@ func (s *serviceImpl) GetUserByEmail(user *models.Users, email string) *apperror
 	}
 
 	return nil
+}
+
+func (s *serviceImpl) UploadProfileImage(userId uuid.UUID, filename string, file io.Reader) (string, *apperror.AppError) {
+	ext := filepath.Ext(filename)
+	valid := false
+	for _, allowExt := range s.cfg.AllowImageExtensions {
+		if allowExt == strings.ToLower(ext[1:]) {
+			valid = true
+			break
+		}
+	}
+
+	if !valid {
+		return "", apperror.
+			New(apperror.InvalidProfileImageExtension).
+			Describe(fmt.Sprintf("App does not support %v extension", ext))
+	}
+
+	url, err := s.storage.Upload(fmt.Sprintf("profiles/%v%v", userId.String(), ext), file)
+	if err != nil {
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not upload profile image")
+	}
+
+	return url, nil
 }
