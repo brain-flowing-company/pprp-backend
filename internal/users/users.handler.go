@@ -1,9 +1,11 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/internal/consts"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
 	"github.com/gofiber/fiber/v2"
@@ -78,33 +80,27 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 // @failure     400 {object} models.ErrorResponse "Invalid user info"
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
-	session, ok := c.Locals("session").(models.Session)
-	if !ok {
-		session = models.Session{RegisteredType: models.EMAIL}
+	user := &models.Users{
+		UserId: uuid.New(),
 	}
 
-	user := utils.ParseFormToUser(c)
-	user.UserId = uuid.New()
-
-	formFile, err := c.FormFile("profile_image")
-	if err == nil {
-		file, err := formFile.Open()
-		if err != nil {
-			return utils.ResponseError(c, apperror.
-				New(apperror.InternalServerError).
-				Describe("Could not upload profile image"))
-		}
-
-		url, apperr := h.service.UploadProfileImage(user.UserId, formFile.Filename, file)
-
-		if apperr != nil {
-			return utils.ResponseError(c, apperr)
-		}
-
-		user.ProfileImageUrl = url
+	err := c.BodyParser(user)
+	if err != nil {
+		fmt.Println(err.Error())
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe("Could not parse form data"))
 	}
 
-	apperr := h.service.Register(&user, session)
+	if session, ok := c.Locals("session").(models.Session); !ok {
+		user.RegisteredType = consts.EMAIL
+	} else {
+		user.RegisteredType = session.RegisteredType
+	}
+
+	profileImage, _ := c.FormFile("profile_image")
+
+	apperr := h.service.Register(user, profileImage)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}
