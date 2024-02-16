@@ -183,10 +183,10 @@ CREATE RULE delete_property AS ON UPDATE TO property
         UPDATE renting_property SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
     );
 
--- CREATE RULE delete_property AS ON UPDATE TO property
---     WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
---     DO ALSO UPDATE selling_property SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+-------------------- INDEX --------------------
 
--- CREATE RULE delete_property AS ON UPDATE TO property
---     WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
---     DO ALSO UPDATE renting_property SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+CREATE INDEX idx_users_deleted_at ON users (deleted_at);
+CREATE INDEX idx_property_deleted_at ON property (deleted_at);
+CREATE INDEX idx_propderty_image_deleted_at ON property_image (deleted_at);
+CREATE INDEX idx_selling_property_deleted_at ON selling_property (deleted_at);
+CREATE INDEX idx_renting_property_deleted_at ON renting_property (deleted_at);
