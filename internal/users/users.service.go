@@ -244,7 +244,38 @@ func (s *serviceImpl) UploadProfileImage(userId uuid.UUID, filename string, file
 			Describe(fmt.Sprintf("App does not support %v extension", ext))
 	}
 
-	url, err := s.storage.Upload(fmt.Sprintf("profiles/%v%v", userId.String(), ext), file)
+	ip := utils.NewImageProcessor()
+	err := ip.LoadJPEG(file)
+	if err != nil {
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe(err.Error())
+	}
+
+	err = ip.Resize(1024)
+	if err != nil {
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe(err.Error())
+	}
+
+	err = ip.SquareCropped()
+	if err != nil {
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe(err.Error())
+	}
+
+	processedFile, err := ip.Save()
+	if err != nil {
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe(err.Error())
+	}
+
+	fmt.Printf("saving profiles/%v%v\n", userId.String(), ext)
+
+	url, err := s.storage.Upload(fmt.Sprintf("profiles/%v%v", userId.String(), ext), processedFile)
 	if err != nil {
 		return "", apperror.
 			New(apperror.InternalServerError).
