@@ -230,52 +230,58 @@ func (s *serviceImpl) GetUserByEmail(user *models.Users, email string) *apperror
 
 func (s *serviceImpl) UploadProfileImage(userId uuid.UUID, filename string, file io.Reader) (string, *apperror.AppError) {
 	ext := filepath.Ext(filename)
-	valid := false
-	for _, allowExt := range s.cfg.AllowImageExtensions {
-		if allowExt == strings.ToLower(ext[1:]) {
-			valid = true
-			break
-		}
-	}
 
-	if !valid {
+	ip := utils.NewImageProcessor()
+	var err error
+
+	switch strings.ToLower(ext) {
+	case ".jpg":
+		fallthrough
+
+	case ".jpeg":
+		err = ip.LoadJPEG(file)
+
+	case ".png":
+		err = ip.LoadPNG(file)
+
+	default:
 		return "", apperror.
 			New(apperror.InvalidProfileImageExtension).
 			Describe(fmt.Sprintf("App does not support %v extension", ext))
 	}
 
-	ip := utils.NewImageProcessor()
-	err := ip.LoadJPEG(file)
 	if err != nil {
+		s.logger.Error("Could not load image", zap.Error(err))
 		return "", apperror.
 			New(apperror.InternalServerError).
-			Describe(err.Error())
+			Describe("Could not process image")
 	}
 
 	err = ip.Resize(1024)
 	if err != nil {
+		s.logger.Error("Could not resize image", zap.Error(err))
 		return "", apperror.
 			New(apperror.InternalServerError).
-			Describe(err.Error())
+			Describe("Could not process image")
 	}
 
 	err = ip.SquareCropped()
 	if err != nil {
+		s.logger.Error("Could not sqaure crop image", zap.Error(err))
 		return "", apperror.
 			New(apperror.InternalServerError).
-			Describe(err.Error())
+			Describe("Could not process image")
 	}
 
 	processedFile, err := ip.Save()
 	if err != nil {
+		s.logger.Error("Could not create new image", zap.Error(err))
 		return "", apperror.
 			New(apperror.InternalServerError).
-			Describe(err.Error())
+			Describe("Could not process image")
 	}
 
-	fmt.Printf("saving profiles/%v%v\n", userId.String(), ext)
-
-	url, err := s.storage.Upload(fmt.Sprintf("profiles/%v%v", userId.String(), ext), processedFile)
+	url, err := s.storage.Upload(fmt.Sprintf("profiles/%v.jpeg", userId.String()), processedFile)
 	if err != nil {
 		return "", apperror.
 			New(apperror.InternalServerError).
