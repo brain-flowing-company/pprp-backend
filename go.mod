@@ -12,6 +12,7 @@ require (
 	github.com/gofiber/swagger v0.1.14
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.2
 	go.uber.org/zap v1.26.0
