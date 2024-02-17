@@ -11,7 +11,6 @@ type Repository interface {
 	GetAppointmentsByOwnerId(*[]models.Appointments, string) error
 	GetAppointmentsByDwellerId(*[]models.Appointments, string) error
 	CreateAppointments(*[]models.Appointments) error
-	UpdateAppointments(*models.Appointments, string) error
 	DeleteAppointments(string) error
 }
 
@@ -48,12 +47,6 @@ func (repo *repositoryImpl) GetAppointmentsByDwellerId(result *[]models.Appointm
 func (repo *repositoryImpl) CreateAppointments(apps *[]models.Appointments) error {
 	return repo.db.Model(&models.Appointments{}).
 		CreateInBatches(apps, len(*apps)).Error
-}
-
-func (repo *repositoryImpl) UpdateAppointments(app *models.Appointments, id string) error {
-	return repo.db.Model(&models.Appointments{}).
-		Where("appointment_id = ?", id).
-		Updates(app).Error
 }
 
 func (repo *repositoryImpl) DeleteAppointments(id string) error {

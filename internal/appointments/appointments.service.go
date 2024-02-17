@@ -16,7 +16,6 @@ type Service interface {
 	GetAllAppointments(*[]models.Appointments) *apperror.AppError
 	GetAppointmentsById(*models.Appointments, string) *apperror.AppError
 	CreateAppointments(*models.CreatingAppointments) *apperror.AppError
-	UpdateAppointments(*models.Appointments, string) *apperror.AppError
 	DeleteAppointments(string) *apperror.AppError
 }
 
@@ -104,22 +103,6 @@ func (s *serviceImpl) CreateAppointments(creatingApp *models.CreatingAppointment
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not create appointments")
-	}
-
-	return nil
-}
-
-func (s *serviceImpl) UpdateAppointments(app *models.Appointments, appId string) *apperror.AppError {
-	err := s.repo.UpdateAppointments(app, appId)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return apperror.
-			New(apperror.AppointmentNotFound).
-			Describe("Could not update the specified appointment")
-	} else if err != nil {
-		s.logger.Error("Could not update appointments", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not update appointments")
 	}
 
 	return nil
