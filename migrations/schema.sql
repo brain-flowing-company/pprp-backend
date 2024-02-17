@@ -84,6 +84,7 @@ CREATE TABLE appointments
 (
     appointment_id   UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
     property_id      UUID REFERENCES property (property_id)     NOT NULL,
+    owner_user_id    UUID REFERENCES users (user_id)            NOT NULL,
     dweller_user_id  UUID REFERENCES users (user_id)            NOT NULL,
     appointment_date TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
     created_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
@@ -172,7 +173,8 @@ CREATE VIEW appointments AS SELECT *
     WHERE (
      	deleted_at IS NULL AND
         property_id IN (SELECT property_id FROM property WHERE deleted_at IS NULL) AND
-        dweller_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL)
+        dweller_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL) AND
+        owner_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL)
     );
 
 -------------------- RULES --------------------
