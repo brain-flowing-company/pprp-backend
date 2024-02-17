@@ -162,7 +162,13 @@ ALTER TABLE renting_property RENAME TO _renting_property;
 CREATE VIEW renting_property AS SELECT * FROM _renting_property WHERE property_id IN (SELECT property_id FROM property WHERE deleted_at IS NULL);
 
 ALTER TABLE appointments RENAME TO _appointments;
-CREATE VIEW appointments AS SELECT * FROM _appointments WHERE property_id IN (SELECT property_id FROM property WHERE deleted_at IS NULL);
+CREATE VIEW appointments AS SELECT *
+    FROM _appointments
+    WHERE (
+     	deleted_at IS NULL AND
+        property_id IN (SELECT property_id FROM property WHERE deleted_at IS NULL) AND
+        dweller_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL)
+    );
 
 -------------------- RULES --------------------
 
