@@ -150,7 +150,12 @@ ALTER TABLE users RENAME TO _users;
 CREATE VIEW users AS SELECT * FROM _users WHERE deleted_at IS NULL;
 
 ALTER TABLE property RENAME TO _property;
-CREATE VIEW property AS SELECT * FROM _property WHERE deleted_at IS NULL;
+CREATE VIEW property AS SELECT *
+    FROM _property
+    WHERE (
+        deleted_at IS NULL AND
+        owner_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL)
+    );
 
 ALTER TABLE property_image RENAME TO _property_image;
 CREATE VIEW property_image AS SELECT * FROM _property_image WHERE property_id IN (SELECT property_id FROM property WHERE deleted_at IS NULL);
