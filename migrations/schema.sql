@@ -82,14 +82,14 @@ CREATE TABLE renting_property
 
 CREATE TABLE appointments
 (
-    appointment_id   UUID DEFAULT gen_random_uuid()         NOT NULL,
-    property_id      UUID REFERENCES property (property_id) NOT NULL,
-    dweller_user_id  UUID REFERENCES users (user_id)        NOT NULL,
-    appointment_date TIMESTAMP(0) WITH TIME ZONE            NOT NULL,
-    created_at       TIMESTAMP(0) WITH TIME ZONE            DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP(0) WITH TIME ZONE            DEFAULT CURRENT_TIMESTAMP,
-    deleted_at       TIMESTAMP(0) WITH TIME ZONE            DEFAULT NULL,
-    PRIMARY KEY (property_id, appointment_date)
+    appointment_id   UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+    property_id      UUID REFERENCES property (property_id)     NOT NULL,
+    dweller_user_id  UUID REFERENCES users (user_id)            NOT NULL,
+    appointment_date TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
+    created_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
+    deleted_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL,
+    UNIQUE (property_id, appointment_date)
 );
 
 -------------------- DUMMY DATA --------------------
