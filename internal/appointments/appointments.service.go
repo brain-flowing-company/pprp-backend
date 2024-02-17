@@ -2,10 +2,12 @@ package appointments
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -13,7 +15,7 @@ import (
 type Service interface {
 	GetAllAppointments(*[]models.Appointments) *apperror.AppError
 	GetAppointmentsById(*models.Appointments, string) *apperror.AppError
-	CreateAppointments(*[]models.Appointments) *apperror.AppError
+	CreateAppointments(*models.CreatingAppointments) *apperror.AppError
 	UpdateAppointments(*models.Appointments, string) *apperror.AppError
 	DeleteAppointments(string) *apperror.AppError
 }
@@ -76,8 +78,27 @@ func (s *serviceImpl) GetAppointmentsByOwnerId(apps *[]models.Appointments, user
 	return nil
 }
 
-func (s *serviceImpl) CreateAppointments(apps *[]models.Appointments) *apperror.AppError {
-	err := s.repo.CreateAppointments(apps)
+func (s *serviceImpl) CreateAppointments(creatingApp *models.CreatingAppointments) *apperror.AppError {
+	n := len(creatingApp.AppointmentDates)
+	if n == 0 {
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("Appointment dates cannot be empty")
+	}
+
+	apps := make([]models.Appointments, len(creatingApp.AppointmentDates))
+	for i := 0; i < n; i++ {
+		fmt.Println(creatingApp.AppointmentDates[i])
+		apps[i] = models.Appointments{
+			AppointmentId:   uuid.New(),
+			PropertyId:      creatingApp.PropertyId,
+			OwnerUserId:     creatingApp.OwnerUserId,
+			DwellerUserId:   creatingApp.DwellerUserId,
+			AppointmentDate: creatingApp.AppointmentDates[i],
+		}
+	}
+
+	err := s.repo.CreateAppointments(&apps)
 	if err != nil {
 		s.logger.Error("Could not create appointments", zap.Error(err))
 		return apperror.

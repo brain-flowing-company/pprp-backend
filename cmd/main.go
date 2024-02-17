@@ -129,6 +129,7 @@ func main() {
 
 	apiv1.Get("/appointments/:appointmentId", appointmentHandler.GetAppointmentById)
 	apiv1.Get("/appointments", appointmentHandler.GetAllAppointments)
+	apiv1.Post("/appointments", appointmentHandler.CreateAppointments)
 
 	apiv1.Get("/users", usersHandler.GetAllUsers)
 	apiv1.Get("/user/me", mw.AuthMiddlewareWrapper(usersHandler.GetCurrentUser))
