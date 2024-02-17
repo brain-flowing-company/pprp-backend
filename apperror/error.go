@@ -52,6 +52,10 @@ var (
 	InvalidPropertyId = &AppErrorType{http.StatusBadRequest, "invalid-property-id"}
 	PropertyNotFound  = &AppErrorType{http.StatusNotFound, "property-not-found"}
 
+	//property errors
+	InvalidAppointmentId = &AppErrorType{http.StatusBadRequest, "invalid-appointment-id"}
+	AppointmentNotFound  = &AppErrorType{http.StatusNotFound, "appointment-not-found"}
+
 	// user errors
 	InvalidUserId                = &AppErrorType{http.StatusBadRequest, "invalid-user-id"}
 	UserNotFound                 = &AppErrorType{http.StatusNotFound, "user-not-found"}
