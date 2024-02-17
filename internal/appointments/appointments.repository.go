@@ -11,7 +11,7 @@ type Repository interface {
 	GetAppointmentsByOwnerId(*[]models.Appointments, string) error
 	GetAppointmentsByDwellerId(*[]models.Appointments, string) error
 	CreateAppointments(*[]models.Appointments) error
-	DeleteAppointments(string) error
+	DeleteAppointments(*[]string) error
 }
 
 type repositoryImpl struct {
@@ -49,7 +49,7 @@ func (repo *repositoryImpl) CreateAppointments(apps *[]models.Appointments) erro
 		CreateInBatches(apps, len(*apps)).Error
 }
 
-func (repo *repositoryImpl) DeleteAppointments(id string) error {
+func (repo *repositoryImpl) DeleteAppointments(appIds *[]string) error {
 	return repo.db.Model(&models.Appointments{}).
-		Delete(&models.Appointments{}, "appointment_id = ?", id).Error
+		Delete(&models.Appointments{}, appIds).Error
 }

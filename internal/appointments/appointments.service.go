@@ -16,7 +16,7 @@ type Service interface {
 	GetAllAppointments(*[]models.Appointments) *apperror.AppError
 	GetAppointmentsById(*models.Appointments, string) *apperror.AppError
 	CreateAppointments(*models.CreatingAppointments) *apperror.AppError
-	DeleteAppointments(string) *apperror.AppError
+	DeleteAppointments(*[]string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -108,8 +108,16 @@ func (s *serviceImpl) CreateAppointments(creatingApp *models.CreatingAppointment
 	return nil
 }
 
-func (s *serviceImpl) DeleteAppointments(appId string) *apperror.AppError {
-	err := s.repo.DeleteAppointments(appId)
+func (s *serviceImpl) DeleteAppointments(appIds *[]string) *apperror.AppError {
+	for _, e := range *appIds {
+		if !utils.IsValidUUID(e) {
+			return apperror.
+				New(apperror.InvalidAppointmentId).
+				Describe("Invalid appointment id")
+		}
+	}
+
+	err := s.repo.DeleteAppointments(appIds)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.AppointmentNotFound).

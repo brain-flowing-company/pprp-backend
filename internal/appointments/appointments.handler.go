@@ -14,6 +14,7 @@ type Handler interface {
 	GetAllAppointments(c *fiber.Ctx) error
 	GetAppointmentById(c *fiber.Ctx) error
 	CreateAppointments(c *fiber.Ctx) error
+	DeleteAppointments(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -54,7 +55,7 @@ func (h *handlerImpl) CreateAppointments(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ResponseError(c, apperror.
 			New(apperror.BadRequest).
-			Describe(fmt.Sprintf("Could not parse form data: %v", err.Error())))
+			Describe(fmt.Sprintf("Could not parse body: %v", err.Error())))
 	}
 
 	apperr := h.service.CreateAppointments(apps)
@@ -63,4 +64,21 @@ func (h *handlerImpl) CreateAppointments(c *fiber.Ctx) error {
 	}
 
 	return utils.ResponseMessage(c, http.StatusCreated, "Appointments created")
+}
+
+func (h *handlerImpl) DeleteAppointments(c *fiber.Ctx) error {
+	appIds := &[]string{}
+	err := c.BodyParser(appIds)
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(fmt.Sprintf("Could not parse body: %v", err.Error())))
+	}
+
+	apperr := h.service.DeleteAppointments(appIds)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+
+	return utils.ResponseMessage(c, http.StatusCreated, "Appointments deleted")
 }
