@@ -2,7 +2,6 @@ package appointments
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -87,7 +86,6 @@ func (s *serviceImpl) CreateAppointments(creatingApp *models.CreatingAppointment
 
 	apps := make([]models.Appointments, len(creatingApp.AppointmentDates))
 	for i := 0; i < n; i++ {
-		fmt.Println(creatingApp.AppointmentDates[i])
 		apps[i] = models.Appointments{
 			AppointmentId:   uuid.New(),
 			PropertyId:      creatingApp.PropertyId,
@@ -98,7 +96,11 @@ func (s *serviceImpl) CreateAppointments(creatingApp *models.CreatingAppointment
 	}
 
 	err := s.repo.CreateAppointments(&apps)
-	if err != nil {
+	if errors.Is(err, gorm.ErrDuplicatedKey) {
+		return apperror.
+			New(apperror.DuplicateAppointment).
+			Describe("Could not create appointments")
+	} else if err != nil {
 		s.logger.Error("Could not create appointments", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
