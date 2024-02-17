@@ -80,6 +80,18 @@ CREATE TABLE renting_property
     deleted_at               TIMESTAMP(0) WITH TIME ZONE                                    DEFAULT NULL
 );
 
+CREATE TABLE appointments
+(
+    appointment_id   UUID DEFAULT gen_random_uuid()         NOT NULL,
+    property_id      UUID REFERENCES property (property_id) NOT NULL,
+    dweller_user_id  UUID REFERENCES users (user_id)        NOT NULL,
+    appointment_date TIMESTAMP(0) WITH TIME ZONE            NOT NULL,
+    created_at       TIMESTAMP(0) WITH TIME ZONE            DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP(0) WITH TIME ZONE            DEFAULT CURRENT_TIMESTAMP,
+    deleted_at       TIMESTAMP(0) WITH TIME ZONE            DEFAULT NULL,
+    PRIMARY KEY (property_id, appointment_date)
+);
+
 -------------------- DUMMY DATA --------------------
 
 INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified) VALUES
@@ -149,6 +161,9 @@ CREATE VIEW selling_property AS SELECT * FROM _selling_property WHERE property_i
 ALTER TABLE renting_property RENAME TO _renting_property;
 CREATE VIEW renting_property AS SELECT * FROM _renting_property WHERE property_id IN (SELECT property_id FROM property WHERE deleted_at IS NULL);
 
+ALTER TABLE appointments RENAME TO _appointments;
+CREATE VIEW appointments AS SELECT * FROM _appointments WHERE property_id IN (SELECT property_id FROM property WHERE deleted_at IS NULL);
+
 -------------------- RULES --------------------
 
 CREATE RULE soft_deletion AS ON DELETE TO users DO INSTEAD (
@@ -171,6 +186,10 @@ CREATE RULE soft_deletion AS ON DELETE TO renting_property DO INSTEAD (
     UPDATE renting_property SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
 );
 
+CREATE RULE soft_deletion AS ON DELETE TO appointments DO INSTEAD (
+    UPDATE appointments SET deleted_at = CURRENT_TIMESTAMP WHERE appointment_id = old.appointment_id and deleted_at IS NULL
+);
+
 CREATE RULE delete_users AS ON UPDATE TO users
     WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
     DO ALSO UPDATE property SET deleted_at = new.deleted_at WHERE owner_id = old.user_id;
@@ -185,8 +204,9 @@ CREATE RULE delete_property AS ON UPDATE TO property
 
 -------------------- INDEX --------------------
 
-CREATE INDEX idx_users_deleted_at ON users (deleted_at);
-CREATE INDEX idx_property_deleted_at ON property (deleted_at);
-CREATE INDEX idx_propderty_image_deleted_at ON property_image (deleted_at);
-CREATE INDEX idx_selling_property_deleted_at ON selling_property (deleted_at);
-CREATE INDEX idx_renting_property_deleted_at ON renting_property (deleted_at);
+CREATE INDEX idx_users_deleted_at            ON _users (deleted_at);
+CREATE INDEX idx_property_deleted_at         ON _property (deleted_at);
+CREATE INDEX idx_propderty_image_deleted_at  ON _property_image (deleted_at);
+CREATE INDEX idx_selling_property_deleted_at ON _selling_property (deleted_at);
+CREATE INDEX idx_renting_property_deleted_at ON _renting_property (deleted_at);
+CREATE INDEX idx_appointments_deleted_at     ON _appointments (deleted_at);
