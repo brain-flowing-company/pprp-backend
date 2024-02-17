@@ -93,6 +93,20 @@ CREATE TABLE appointments
     UNIQUE (property_id, appointment_date)
 );
 
+CREATE TABLE agreements
+(
+    agreement_id   UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+    property_id      UUID REFERENCES property (property_id)     NOT NULL,
+    owner_user_id    UUID REFERENCES users (user_id)            NOT NULL,
+    dweller_user_id  UUID REFERENCES users (user_id)            NOT NULL,
+    agreement_date TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
+    created_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
+    deleted_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL,
+    UNIQUE (property_id, agreement_date)
+);
+
+
 -------------------- DUMMY DATA --------------------
 
 INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified) VALUES
