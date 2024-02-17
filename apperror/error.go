@@ -63,5 +63,9 @@ var (
 	ServiceUnavailable           = &AppErrorType{http.StatusServiceUnavailable, "service-unavailable"}
 	InvalidProfileImageExtension = &AppErrorType{http.StatusBadRequest, "invalid-profile-image-extensions"}
 
+	InvalidAgreementId = &AppErrorType{http.StatusBadRequest, "invalid-agreement-id"}
+	AgreementNotFound  = &AppErrorType{http.StatusNotFound, "agreement-not-found"}
+	DuplicateAgreement = &AppErrorType{http.StatusBadRequest, "duplicate-agreement"}
+
 	Unauthorized = &AppErrorType{http.StatusUnauthorized, "unauthorized"}
 )
