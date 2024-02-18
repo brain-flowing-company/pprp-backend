@@ -90,7 +90,7 @@ CREATE TABLE appointments
     created_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
     deleted_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL,
-    UNIQUE (property_id, appointment_date)
+    UNIQUE (property_id, appointment_date, deleted_at)
 );
 
 -------------------- DUMMY DATA --------------------
