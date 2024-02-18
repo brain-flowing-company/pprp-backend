@@ -1,12 +1,11 @@
 package models
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
 type Property struct {
+	CommonModel
 	PropertyId      uuid.UUID       `gorm:"type:uuid;default:uuid_generate_v4()"`
 	OwnerId         uuid.UUID       `json:"owner_id"                 example:"123e4567-e89b-12d3-a456-426614174000"` // foreign key
 	Description     string          `json:"description"              example:"Et sequi dolor praes"`
@@ -20,38 +19,29 @@ type Property struct {
 	Province        string          `json:"province"                 example:"Pattaya"`
 	Country         string          `json:"country"                  example:"Thailand"`
 	PostalCode      string          `json:"postal_code"              example:"69096"`
-	CreatedAt       *time.Time      `gorm:"autoCreateTime"`
-	UpdatedAt       *time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt       *time.Time      `gorm:"default:null"`
 	PropertyImages  []PropertyImage `gorm:"references:PropertyId" json:"images"`
 	SellingProperty SellingProperty `gorm:"references:PropertyId" json:"selling"`
 	RentingProperty RentingProperty `gorm:"references:PropertyId" json:"renting"`
 }
 
 type PropertyImage struct {
-	PropertyId uuid.UUID  `json:"-"`
-	ImageUrl   string     `json:"url" example:"https://image_url.com/abcd"`
-	CreatedAt  *time.Time `gorm:"autoCreateTime"`
-	UpdatedAt  *time.Time `gorm:"autoUpdateTime"`
-	DeletedAt  *time.Time `gorm:"default:null"`
+	CommonModel
+	PropertyId uuid.UUID `json:"-"`
+	ImageUrl   string    `json:"url" example:"https://image_url.com/abcd"`
 }
 
 type SellingProperty struct {
-	PropertyId uuid.UUID  `json:"-"`
-	Price      float64    `json:"price"   example:"12345.67"`
-	IsSold     bool       `json:"is_sold" example:"true"`
-	CreatedAt  *time.Time `gorm:"autoCreateTime"`
-	UpdatedAt  *time.Time `gorm:"autoUpdateTime"`
-	DeletedAt  *time.Time `gorm:"default:null"`
+	CommonModel
+	PropertyId uuid.UUID `json:"-"`
+	Price      float64   `json:"price"   example:"12345.67"`
+	IsSold     bool      `json:"is_sold" example:"true"`
 }
 
 type RentingProperty struct {
-	PropertyId    uuid.UUID  `json:"-"`
-	PricePerMonth float64    `json:"price_per_month" example:"12345.67"`
-	IsOccupied    bool       `json:"is_occupied"     example:"true"`
-	CreatedAt     *time.Time `gorm:"autoCreateTime"`
-	UpdatedAt     *time.Time `gorm:"autoUpdateTime"`
-	DeletedAt     *time.Time `gorm:"default:null"`
+	CommonModel
+	PropertyId    uuid.UUID `json:"-"`
+	PricePerMonth float64   `json:"price_per_month" example:"12345.67"`
+	IsOccupied    bool      `json:"is_occupied"     example:"true"`
 }
 
 func (p Property) TableName() string {

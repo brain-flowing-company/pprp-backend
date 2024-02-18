@@ -15,6 +15,157 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/appointments": {
+            "get": {
+                "description": "Get all appointments",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Get all appointments",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Appointments"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create appointments",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Create appointments",
+                "parameters": [
+                    {
+                        "description": "Appointment details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreatingAppointments"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Appointments"
+                        }
+                    },
+                    "400": {
+                        "description": "Empty dates or some of appointments duplicate with existing one",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/appointments/": {
+            "delete": {
+                "description": "Delete **all appointments** in body.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Delete appointments",
+                "parameters": [
+                    {
+                        "description": "Appointment id deleting lists",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeletingAppointments"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Appointments"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/appointments/:appointmentId": {
+            "get": {
+                "description": "Get appointments by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Get appointments by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Appointments"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid appointment id",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Appointment id not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/greeting": {
             "get": {
                 "description": "says hello, world",
@@ -416,7 +567,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.BankName": {
+        "enums.BankName": {
             "type": "string",
             "enum": [
                 "KASIKORN BANK",
@@ -440,6 +591,91 @@ const docTemplate = `{
                 "GSB",
                 "NULL"
             ]
+        },
+        "enums.RegisteredType": {
+            "type": "string",
+            "enum": [
+                "EMAIL",
+                "GOOGLE"
+            ],
+            "x-enum-varnames": [
+                "EMAIL",
+                "GOOGLE"
+            ]
+        },
+        "models.Appointments": {
+            "type": "object",
+            "properties": {
+                "appointment_date": {
+                    "type": "string",
+                    "example": "2024-02-18T11:00:00Z"
+                },
+                "appointment_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "dweller_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "owner_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "property_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CreatingAppointments": {
+            "type": "object",
+            "properties": {
+                "appointment_dates": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "2024-02-18T11:00:00Z"
+                    ]
+                },
+                "dweller_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "owner_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "property_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                }
+            }
+        },
+        "models.DeletingAppointments": {
+            "type": "object",
+            "properties": {
+                "appointmentIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "123e4567-e89b-12d3-a456-426614174000"
+                    ]
+                }
+            }
         },
         "models.ErrorResponse": {
             "type": "object",
@@ -563,17 +799,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.RegisteredType": {
-            "type": "string",
-            "enum": [
-                "EMAIL",
-                "GOOGLE"
-            ],
-            "x-enum-varnames": [
-                "EMAIL",
-                "GOOGLE"
-            ]
-        },
         "models.RentingProperty": {
             "type": "object",
             "properties": {
@@ -628,7 +853,7 @@ const docTemplate = `{
                 "registered_type": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.RegisteredType"
+                            "$ref": "#/definitions/enums.RegisteredType"
                         }
                     ],
                     "example": "EMAIL / GOOGLE"
@@ -664,7 +889,7 @@ const docTemplate = `{
                 "bank_name": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.BankName"
+                            "$ref": "#/definitions/enums.BankName"
                         }
                     ],
                     "example": "KBANK"
@@ -731,10 +956,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "https://image_url.com/abcd"
                 },
-                "registered_type": {
+                "registeredType": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.RegisteredType"
+                            "$ref": "#/definitions/enums.RegisteredType"
                         }
                     ],
                     "example": "EMAIL"
