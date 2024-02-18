@@ -123,7 +123,7 @@ func (s *serviceImpl) DeleteAppointments(appIds *[]string) *apperror.AppError {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.AppointmentNotFound).
-			Describe("Could not delete the specified appointment")
+			Describe("Could not find the specified appointment")
 	} else if err != nil {
 		s.logger.Error("Could not delete appointments", zap.Error(err))
 		return apperror.
