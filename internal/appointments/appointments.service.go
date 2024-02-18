@@ -87,11 +87,12 @@ func (s *serviceImpl) CreateAppointments(creatingApp *models.CreatingAppointment
 	apps := make([]models.Appointments, len(creatingApp.AppointmentDates))
 	for i := 0; i < n; i++ {
 		apps[i] = models.Appointments{
-			AppointmentId:   uuid.New(),
-			PropertyId:      creatingApp.PropertyId,
-			OwnerUserId:     creatingApp.OwnerUserId,
-			DwellerUserId:   creatingApp.DwellerUserId,
-			AppointmentDate: creatingApp.AppointmentDates[i],
+			AppointmentId:      uuid.New(),
+			PropertyId:         creatingApp.PropertyId,
+			OwnerUserId:        creatingApp.OwnerUserId,
+			DwellerUserId:      creatingApp.DwellerUserId,
+			AppointmentDate:    creatingApp.AppointmentDates[i],
+			AppointmentsStatus: models.Pending,
 		}
 	}
 
