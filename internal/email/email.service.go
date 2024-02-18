@@ -48,12 +48,17 @@ func (s *serviceImpl) SendEmail(email string) *apperror.AppError {
 			Describe("Email already exists")
 	}
 
+	smtpHost := s.cfg.SmtpHost
+	smtpPort := s.cfg.SmtpPort
 	from := s.cfg.Email
 	password := s.cfg.EmailPassword
 	to := []string{email}
-	smtpHost := s.cfg.SmtpHost
-	smtpPort := s.cfg.SmtpPort
-	message := []byte("To: " + to[0] + "\r\n" + "Subject: Welcome to Sue Chao Khai by Brain-Flowing Company :)")
+
+	message := []byte("To: " + email + "\r\n" +
+		"Subject: Email Verification from suechaokhai.com\r\n" +
+		"\r\n" +
+		"Welcome to Sue Chao Khai by Brain-Flowing Company :)")
+
 	auth := smtp.PlainAuth("", from, password, smtpHost)
 
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
