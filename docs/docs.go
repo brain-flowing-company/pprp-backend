@@ -15,6 +15,173 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/agreement/:agreementId": {
+            "get": {
+                "description": "Get an agreement by its id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Get agreement by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Agreement"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid agreement id",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Agreement not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an agreement by its id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Delete an agreement",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/agreements": {
+            "get": {
+                "description": "Get all agreements",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Get all agreements",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Agreement"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create an agreement by parsing the body",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Create an agreement",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/agreements/dweller/:userId": {
+            "get": {
+                "description": "Get all agreements by dweller id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Get agreements by dweller id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Agreement"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/agreements/owner/:userId": {
+            "get": {
+                "description": "Get all agreements by owner id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Get agreements by owner id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Agreement"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/appointments": {
             "get": {
                 "description": "Get all appointments",
@@ -153,6 +320,50 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Appointment id not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update appointment status",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Update appointment status",
+                "parameters": [
+                    {
+                        "description": "Appointment id deleting lists",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeletingAppointments"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Appointments"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -603,6 +814,35 @@ const docTemplate = `{
                 "GOOGLE"
             ]
         },
+        "models.Agreement": {
+            "type": "object",
+            "properties": {
+                "agreement_date": {
+                    "type": "string"
+                },
+                "agreement_id": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "dweller_user_id": {
+                    "type": "string"
+                },
+                "owner_user_id": {
+                    "type": "string"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Appointments": {
             "type": "object",
             "properties": {
@@ -614,10 +854,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "dweller_user_id": {
@@ -632,10 +869,34 @@ const docTemplate = `{
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
-                "updatedAt": {
-                    "type": "string"
+                "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.AppointmentsStatus"
+                        }
+                    ],
+                    "example": "PENDING"
                 }
             }
+        },
+        "models.AppointmentsStatus": {
+            "type": "string",
+            "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "REQUEST_CHANGE",
+                "CANCELLED",
+                "COMPLETED"
+            ],
+            "x-enum-varnames": [
+                "Pending",
+                "Approved",
+                "Rejected",
+                "RequestChange",
+                "Cancelled",
+                "Completed"
+            ]
         },
         "models.CreatingAppointments": {
             "type": "object",
@@ -718,10 +979,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Thailand"
                 },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "description": {
@@ -775,22 +1033,13 @@ const docTemplate = `{
                 "sub_district": {
                     "type": "string",
                     "example": "Bang Bon"
-                },
-                "updatedAt": {
-                    "type": "string"
                 }
             }
         },
         "models.PropertyImage": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "type": "string"
-                },
-                "updatedAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "url": {
@@ -802,10 +1051,7 @@ const docTemplate = `{
         "models.RentingProperty": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "is_occupied": {
@@ -815,19 +1061,13 @@ const docTemplate = `{
                 "price_per_month": {
                     "type": "number",
                     "example": 12345.67
-                },
-                "updatedAt": {
-                    "type": "string"
                 }
             }
         },
         "models.SellingProperty": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "is_sold": {
@@ -837,9 +1077,6 @@ const docTemplate = `{
                 "price": {
                     "type": "number",
                     "example": 12345.67
-                },
-                "updatedAt": {
-                    "type": "string"
                 }
             }
         },
@@ -902,7 +1139,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "1234567890123"
                 },
-                "createdAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "credit_card_cvv": {
@@ -924,9 +1161,6 @@ const docTemplate = `{
                 "credit_cardholder_name": {
                     "type": "string",
                     "example": "JOHN DOE"
-                },
-                "deletedAt": {
-                    "type": "string"
                 },
                 "email": {
                     "type": "string",
@@ -963,9 +1197,6 @@ const docTemplate = `{
                         }
                     ],
                     "example": "EMAIL"
-                },
-                "updatedAt": {
-                    "type": "string"
                 },
                 "userId": {
                     "type": "string"
