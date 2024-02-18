@@ -16,6 +16,7 @@ type Service interface {
 	GetAppointmentsById(*models.Appointments, string) *apperror.AppError
 	CreateAppointments(*models.CreatingAppointments) *apperror.AppError
 	DeleteAppointments(*[]string) *apperror.AppError
+	UpdateAppointmentStatus(string, models.AppointmentsStatus) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -130,6 +131,44 @@ func (s *serviceImpl) DeleteAppointments(appIds *[]string) *apperror.AppError {
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not delete appointments")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) UpdateAppointmentStatus(appId string, status models.AppointmentsStatus) *apperror.AppError {
+	if !utils.IsValidUUID(appId) {
+		return apperror.
+			New(apperror.InvalidAppointmentId).
+			Describe("Invalid appointment id")
+	}
+
+	var count int64
+	err := s.repo.CheckAppointmentId(&count, appId)
+	if err != nil {
+		s.logger.Error("Could not update the specified appointment", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not update the specified appointment")
+	} else if count == 0 {
+		return apperror.
+			New(apperror.AppointmentNotFound).
+			Describe("Could not find the specified appointment")
+	}
+
+	_, ok := models.AppointmentStatusMap[string(status)]
+	if !ok {
+		return apperror.
+			New(apperror.InvalidAppointmentStatus).
+			Describe("Invalid appointment status")
+	}
+
+	err = s.repo.UpdateAppointmentStatus(appId, status)
+	if err != nil {
+		s.logger.Error("Could not update appointment statue", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not set appointment status")
 	}
 
 	return nil

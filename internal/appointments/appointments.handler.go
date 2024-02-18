@@ -15,6 +15,7 @@ type Handler interface {
 	GetAppointmentById(c *fiber.Ctx) error
 	CreateAppointments(c *fiber.Ctx) error
 	DeleteAppointments(c *fiber.Ctx) error
+	UpdateAppointmentStatus(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -114,4 +115,32 @@ func (h *handlerImpl) DeleteAppointments(c *fiber.Ctx) error {
 	}
 
 	return utils.ResponseMessage(c, http.StatusCreated, "Appointments deleted")
+}
+
+// @router      /api/v1/appointments/:appointmentId [patch]
+// @summary     Update appointment status
+// @description Update appointment status
+// @tags        appointments
+// @produce     json
+// @param       body body models.DeletingAppointments true "Appointment id deleting lists"
+// @success     200	{object} []models.Appointments
+// @failure     400 {object} models.ErrorResponse
+// @failure     500 {object} models.ErrorResponse
+func (h *handlerImpl) UpdateAppointmentStatus(c *fiber.Ctx) error {
+	status := models.UpdatingAppointmentStatus{}
+	err := c.BodyParser(&status)
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(fmt.Sprintf("Could not parse body: %v", err.Error())))
+	}
+
+	appId := c.Params("appointmentId")
+
+	apperr := h.service.UpdateAppointmentStatus(appId, status.Status)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+
+	return utils.ResponseMessage(c, http.StatusOK, "Appointment state updated")
 }

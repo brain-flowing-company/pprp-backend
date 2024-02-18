@@ -34,10 +34,23 @@ func (a Appointments) TableName() string {
 type AppointmentsStatus string
 
 const (
-	Pending        AppointmentsStatus = "PENDING"
-	Approved       AppointmentsStatus = "APPROVED"
-	Rejected       AppointmentsStatus = "REJECTED"
-	Request_change AppointmentsStatus = "REQUEST_CHANGE"
-	Cancelled      AppointmentsStatus = "CANCELLED"
-	Completed      AppointmentsStatus = "COMPLETED"
+	Pending       AppointmentsStatus = "PENDING"
+	Approved      AppointmentsStatus = "APPROVED"
+	Rejected      AppointmentsStatus = "REJECTED"
+	RequestChange AppointmentsStatus = "REQUEST_CHANGE"
+	Cancelled     AppointmentsStatus = "CANCELLED"
+	Completed     AppointmentsStatus = "COMPLETED"
 )
+
+var AppointmentStatusMap = map[string]AppointmentsStatus{
+	"PENDING":        Pending,
+	"APPROVED":       Approved,
+	"REJECTED":       Rejected,
+	"REQUEST_CHANGE": RequestChange,
+	"CANCELLED":      Cancelled,
+	"COMPLETED":      Completed,
+}
+
+type UpdatingAppointmentStatus struct {
+	Status AppointmentsStatus `json:"status"`
+}
