@@ -131,6 +131,7 @@ func main() {
 	apiv1.Get("/appointments", appointmentHandler.GetAllAppointments)
 	apiv1.Post("/appointments", appointmentHandler.CreateAppointments)
 	apiv1.Delete("/appointments", appointmentHandler.DeleteAppointments)
+	apiv1.Patch("/appointments/:appointmentId", appointmentHandler.UpdateAppointmentStatus)
 
 	apiv1.Get("/users", usersHandler.GetAllUsers)
 	apiv1.Get("/user/me", mw.AuthMiddlewareWrapper(usersHandler.GetCurrentUser))

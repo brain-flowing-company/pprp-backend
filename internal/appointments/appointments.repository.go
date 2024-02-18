@@ -2,6 +2,7 @@ package appointments
 
 import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -12,6 +13,7 @@ type Repository interface {
 	GetAppointmentsByDwellerId(*[]models.Appointments, string) error
 	CreateAppointments(*[]models.Appointments) error
 	DeleteAppointments(*[]string) error
+	UpdateAppointmentStatus(uuid.UUID, models.AppointmentsStatus) (int, error)
 }
 
 type repositoryImpl struct {
@@ -52,4 +54,15 @@ func (repo *repositoryImpl) CreateAppointments(apps *[]models.Appointments) erro
 func (repo *repositoryImpl) DeleteAppointments(appIds *[]string) error {
 	return repo.db.Model(&models.Appointments{}).
 		Delete(&models.Appointments{}, appIds).Error
+}
+
+func (repo *repositoryImpl) UpdateAppointmentStatus(appId uuid.UUID, status models.AppointmentsStatus) (int, error) {
+	result := repo.db.Model(&models.Appointments{}).
+		Where("appointment_id = ?", appId).
+		Updates(models.Appointments{
+			AppointmentId:      appId,
+			AppointmentsStatus: status,
+		})
+
+	return int(result.RowsAffected), result.Error
 }

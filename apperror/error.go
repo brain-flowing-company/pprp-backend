@@ -53,9 +53,10 @@ var (
 	PropertyNotFound  = &AppErrorType{http.StatusNotFound, "property-not-found"}
 
 	// appointment errors
-	InvalidAppointmentId = &AppErrorType{http.StatusBadRequest, "invalid-appointment-id"}
-	AppointmentNotFound  = &AppErrorType{http.StatusNotFound, "appointment-not-found"}
-	DuplicateAppointment = &AppErrorType{http.StatusBadRequest, "duplicate-appointment"}
+	InvalidAppointmentId     = &AppErrorType{http.StatusBadRequest, "invalid-appointment-id"}
+	AppointmentNotFound      = &AppErrorType{http.StatusNotFound, "appointment-not-found"}
+	DuplicateAppointment     = &AppErrorType{http.StatusBadRequest, "duplicate-appointment"}
+	InvalidAppointmentStatus = &AppErrorType{http.StatusBadRequest, "invalid-appointment-status"}
 
 	// user errors
 	InvalidUserId                = &AppErrorType{http.StatusBadRequest, "invalid-user-id"}
