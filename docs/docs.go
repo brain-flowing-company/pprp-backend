@@ -182,6 +182,201 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/appointments": {
+            "get": {
+                "description": "Get all appointments",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Get all appointments",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Appointments"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create appointments",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Create appointments",
+                "parameters": [
+                    {
+                        "description": "Appointment details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreatingAppointments"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Appointments"
+                        }
+                    },
+                    "400": {
+                        "description": "Empty dates or some of appointments duplicate with existing one",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/appointments/": {
+            "delete": {
+                "description": "Delete **all appointments** in body.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Delete appointments",
+                "parameters": [
+                    {
+                        "description": "Appointment id deleting lists",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeletingAppointments"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Appointments"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/appointments/:appointmentId": {
+            "get": {
+                "description": "Get appointments by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Get appointments by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Appointments"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid appointment id",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Appointment id not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update appointment status",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Update appointment status",
+                "parameters": [
+                    {
+                        "description": "Appointment id deleting lists",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeletingAppointments"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Appointments"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/greeting": {
             "get": {
                 "description": "says hello, world",
@@ -648,6 +843,101 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Appointments": {
+            "type": "object",
+            "properties": {
+                "appointment_date": {
+                    "type": "string",
+                    "example": "2024-02-18T11:00:00Z"
+                },
+                "appointment_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "dweller_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "owner_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "property_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.AppointmentsStatus"
+                        }
+                    ],
+                    "example": "PENDING"
+                }
+            }
+        },
+        "models.AppointmentsStatus": {
+            "type": "string",
+            "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "REQUEST_CHANGE",
+                "CANCELLED",
+                "COMPLETED"
+            ],
+            "x-enum-varnames": [
+                "Pending",
+                "Approved",
+                "Rejected",
+                "RequestChange",
+                "Cancelled",
+                "Completed"
+            ]
+        },
+        "models.CreatingAppointments": {
+            "type": "object",
+            "properties": {
+                "appointment_dates": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "2024-02-18T11:00:00Z"
+                    ]
+                },
+                "dweller_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "owner_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "property_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                }
+            }
+        },
+        "models.DeletingAppointments": {
+            "type": "object",
+            "properties": {
+                "appointmentIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "123e4567-e89b-12d3-a456-426614174000"
+                    ]
+                }
+            }
+        },
         "models.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -689,10 +979,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Thailand"
                 },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "description": {
@@ -746,22 +1033,13 @@ const docTemplate = `{
                 "sub_district": {
                     "type": "string",
                     "example": "Bang Bon"
-                },
-                "updatedAt": {
-                    "type": "string"
                 }
             }
         },
         "models.PropertyImage": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "type": "string"
-                },
-                "updatedAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "url": {
@@ -773,10 +1051,7 @@ const docTemplate = `{
         "models.RentingProperty": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "is_occupied": {
@@ -786,19 +1061,13 @@ const docTemplate = `{
                 "price_per_month": {
                     "type": "number",
                     "example": 12345.67
-                },
-                "updatedAt": {
-                    "type": "string"
                 }
             }
         },
         "models.SellingProperty": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "is_sold": {
@@ -808,9 +1077,6 @@ const docTemplate = `{
                 "price": {
                     "type": "number",
                     "example": 12345.67
-                },
-                "updatedAt": {
-                    "type": "string"
                 }
             }
         },
@@ -873,7 +1139,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "1234567890123"
                 },
-                "createdAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "credit_card_cvv": {
@@ -895,9 +1161,6 @@ const docTemplate = `{
                 "credit_cardholder_name": {
                     "type": "string",
                     "example": "JOHN DOE"
-                },
-                "deletedAt": {
-                    "type": "string"
                 },
                 "email": {
                     "type": "string",
@@ -934,9 +1197,6 @@ const docTemplate = `{
                         }
                     ],
                     "example": "EMAIL"
-                },
-                "updatedAt": {
-                    "type": "string"
                 },
                 "userId": {
                     "type": "string"

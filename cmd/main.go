@@ -8,6 +8,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/database"
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
 	"github.com/brain-flowing-company/pprp-backend/internal/agreements"
+	"github.com/brain-flowing-company/pprp-backend/internal/appointments"
 	"github.com/brain-flowing-company/pprp-backend/internal/auth"
 	"github.com/brain-flowing-company/pprp-backend/internal/google"
 	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
@@ -98,6 +99,10 @@ func main() {
 	authService := auth.NewService(logger, cfg, authRepository)
 	authHandler := auth.NewHandler(cfg, authService)
 
+	appointmentRepository := appointments.NewRepository(db)
+	appointmentService := appointments.NewService(logger, appointmentRepository)
+	appointmentHandler := appointments.NewHandler(appointmentService)
+
 	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
@@ -126,6 +131,12 @@ func main() {
 
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
 	apiv1.Get("/properties", propertyHandler.GetAllProperties)
+
+	apiv1.Get("/appointments/:appointmentId", appointmentHandler.GetAppointmentById)
+	apiv1.Get("/appointments", appointmentHandler.GetAllAppointments)
+	apiv1.Post("/appointments", appointmentHandler.CreateAppointments)
+	apiv1.Delete("/appointments", appointmentHandler.DeleteAppointments)
+	apiv1.Patch("/appointments/:appointmentId", appointmentHandler.UpdateAppointmentStatus)
 
 	apiv1.Get("/users", usersHandler.GetAllUsers)
 	apiv1.Get("/user/me", mw.AuthMiddlewareWrapper(usersHandler.GetCurrentUser))
