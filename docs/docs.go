@@ -85,9 +85,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/appointments/:appointmendId": {
+        "/api/v1/appointments/": {
             "delete": {
-                "description": "Delete **an appointment** by query with ` + "`" + `appointmentId` + "`" + ` or delete **multiple appointments** at a time by passing in ` + "`" + `body` + "`" + `. If both are passed, body will be selected.",
+                "description": "Delete **all appointments** in body.",
                 "produces": [
                     "application/json"
                 ],
@@ -100,6 +100,7 @@ const docTemplate = `{
                         "description": "Appointment id deleting lists",
                         "name": "body",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "$ref": "#/definitions/models.DeletingAppointments"
                         }

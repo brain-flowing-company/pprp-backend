@@ -91,12 +91,12 @@ func (h *handlerImpl) CreateAppointments(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusCreated, "Appointments created")
 }
 
-// @router      /api/v1/appointments/:appointmendId [delete]
+// @router      /api/v1/appointments/ [delete]
 // @summary     Delete appointments
-// @description Delete **an appointment** by query with `appointmentId` or delete **multiple appointments** at a time by passing in `body`. If both are passed, body will be selected.
+// @description Delete **all appointments** in body.
 // @tags        appointments
 // @produce     json
-// @param       body body models.DeletingAppointments false "Appointment id deleting lists"
+// @param       body body models.DeletingAppointments true "Appointment id deleting lists"
 // @success     200	{object} []models.Appointments
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) DeleteAppointments(c *fiber.Ctx) error {

@@ -337,15 +337,14 @@ paths:
       summary: Create appointments
       tags:
       - appointments
-  /api/v1/appointments/:appointmendId:
+  /api/v1/appointments/:
     delete:
-      description: Delete **an appointment** by query with `appointmentId` or delete
-        **multiple appointments** at a time by passing in `body`. If both are passed,
-        body will be selected.
+      description: Delete **all appointments** in body.
       parameters:
       - description: Appointment id deleting lists
         in: body
         name: body
+        required: true
         schema:
           $ref: '#/definitions/models.DeletingAppointments'
       produces:
