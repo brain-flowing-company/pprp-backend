@@ -51,12 +51,12 @@ func (s *serviceImpl) SendEmail(email string) *apperror.AppError {
 	from := s.cfg.Email
 	password := s.cfg.EmailPassword
 	to := []string{email}
-	smptHost := s.cfg.SmtpHost
-	smptPort := s.cfg.SmtpPort
+	smtpHost := s.cfg.SmtpHost
+	smtpPort := s.cfg.SmtpPort
 	message := []byte("To: " + to[0] + "\r\n" + "Subject: Welcome to Sue Chao Khai by Brain-Flowing Company :)")
-	auth := smtp.PlainAuth("", from, password, smptHost)
+	auth := smtp.PlainAuth("", from, password, smtpHost)
 
-	err := smtp.SendMail(smptHost+":"+smptPort, auth, from, to, message)
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
 	if err != nil {
 		s.logger.Error("Could not send email", zap.Error(err))
 		return apperror.
