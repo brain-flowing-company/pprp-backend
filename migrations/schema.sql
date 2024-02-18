@@ -159,6 +159,29 @@ INSERT INTO renting_property (property_id, price_per_month, is_occupied) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 123423.2931847312, FALSE),
 ('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', 112302.9182347433, TRUE);
 
+-- mock data for appointments
+
+-- Insert mock data into the users table
+INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified)
+VALUES
+('123e4567-e89b-12d3-a456-426614174001', 'EMAIL', 'user1@email.com', 'password123', 'User', 'One', '1234567890', 'https://example.com/image1.jpg', 'CARDHOLDER1', '1111222233334444', '12', '2023', '123', 'KBANK', '9876543210', '1234567890123', 'https://example.com/card_image1.jpg', TRUE),
+('123e4567-e89b-12d3-a456-426614174002', 'EMAIL', 'user2@email.com', 'password456', 'User', 'Two', '9876543210', 'https://example.com/image2.jpg', 'CARDHOLDER2', '5555666677778888', '11', '2024', '456', 'BBL', '1234567890', '9876543210987', 'https://example.com/card_image2.jpg', FALSE),
+('123e4567-e89b-12d3-a456-426614174003', 'GOOGLE', 'user3@gmail.com', NULL, 'User', 'Three', '3333333333', 'https://example.com/image3.jpg', 'CARDHOLDER3', '9999888877776666', '10', '2022', '789', 'KTB', '1234567890', '3333333333333', 'https://example.com/card_image3.jpg', TRUE);
+
+-- Insert mock data into the property table
+INSERT INTO property (property_id, owner_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code)
+VALUES
+('223e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174001', 'Beautiful House', 'House', 'Dream House', '123 Main St', NULL, 'Dream Street', 'Dreamville', 'Dream District', 'Dream Province', 'Dream Country', '12345'),
+('223e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174002', 'Cozy Apartment', 'Apartment', 'Sky Towers', '456 Sky Blvd', 'Sky Alley', 'Cloud Street', 'Cloudsville', 'Cloud District', 'Cloud Province', 'Cloud Country', '56789'),
+('223e4567-e89b-12d3-a456-426614174003', '123e4567-e89b-12d3-a456-426614174003', 'Luxury Condo', 'Condo', 'Golden Heights', '789 Gold Ave', 'Gold Alley', 'Golden Street', 'Goldenville', 'Gold District', 'Gold Province', 'Gold Country', '98765');
+
+-- Insert mock data into the agreements table
+INSERT INTO agreements (agreement_id, property_id, owner_user_id, dweller_user_id, agreement_date)
+VALUES
+('323e4567-e89b-12d3-a456-426614174001', '223e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174002', CURRENT_TIMESTAMP),
+('323e4567-e89b-12d3-a456-426614174002', '223e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174003', CURRENT_TIMESTAMP),
+('323e4567-e89b-12d3-a456-426614174003', '223e4567-e89b-12d3-a456-426614174003', '123e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174003', CURRENT_TIMESTAMP);
+
 -------------------- VIEWS --------------------
 
 ALTER TABLE users RENAME TO _users;
