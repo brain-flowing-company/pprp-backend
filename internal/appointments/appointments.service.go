@@ -137,6 +137,25 @@ func (s *serviceImpl) DeleteAppointments(appIds *[]string) *apperror.AppError {
 }
 
 func (s *serviceImpl) UpdateAppointmentStatus(appId string, status models.AppointmentsStatus) *apperror.AppError {
+	if !utils.IsValidUUID(appId) {
+		return apperror.
+			New(apperror.InvalidAppointmentId).
+			Describe("Invalid appointment id")
+	}
+
+	var count int64
+	err := s.repo.CheckAppointmentId(&count, appId)
+	if err != nil {
+		s.logger.Error("Could not update the specified appointment", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not update the specified appointment")
+	} else if count == 0 {
+		return apperror.
+			New(apperror.AppointmentNotFound).
+			Describe("Could not find the specified appointment")
+	}
+
 	_, ok := models.AppointmentStatusMap[string(status)]
 	if !ok {
 		return apperror.
@@ -144,24 +163,12 @@ func (s *serviceImpl) UpdateAppointmentStatus(appId string, status models.Appoin
 			Describe("Invalid appointment status")
 	}
 
-	id, err := uuid.Parse(appId)
+	err = s.repo.UpdateAppointmentStatus(appId, status)
 	if err != nil {
-		return apperror.
-			New(apperror.InvalidAppointmentId).
-			Describe("Invalid appointment id")
-	}
-
-	count, err := s.repo.UpdateAppointmentStatus(id, status)
-	if err != nil {
+		s.logger.Error("Could not update appointment statue", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not set appointment status")
-	}
-
-	if count == 0 {
-		return apperror.
-			New(apperror.AppointmentNotFound).
-			Describe("Could not update the specified appointment")
 	}
 
 	return nil

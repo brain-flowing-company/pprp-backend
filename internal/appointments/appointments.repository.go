@@ -2,7 +2,6 @@ package appointments
 
 import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -13,7 +12,8 @@ type Repository interface {
 	GetAppointmentsByDwellerId(*[]models.Appointments, string) error
 	CreateAppointments(*[]models.Appointments) error
 	DeleteAppointments(*[]string) error
-	UpdateAppointmentStatus(uuid.UUID, models.AppointmentsStatus) (int, error)
+	UpdateAppointmentStatus(string, models.AppointmentsStatus) error
+	CheckAppointmentId(*int64, string) error
 }
 
 type repositoryImpl struct {
@@ -56,13 +56,14 @@ func (repo *repositoryImpl) DeleteAppointments(appIds *[]string) error {
 		Delete(&models.Appointments{}, appIds).Error
 }
 
-func (repo *repositoryImpl) UpdateAppointmentStatus(appId uuid.UUID, status models.AppointmentsStatus) (int, error) {
-	result := repo.db.Model(&models.Appointments{}).
+func (repo *repositoryImpl) CheckAppointmentId(count *int64, appId string) error {
+	return repo.db.Model(&models.Appointments{}).
 		Where("appointment_id = ?", appId).
-		Updates(models.Appointments{
-			AppointmentId:      appId,
-			AppointmentsStatus: status,
-		})
+		Count(count).Error
+}
 
-	return int(result.RowsAffected), result.Error
+func (repo *repositoryImpl) UpdateAppointmentStatus(appId string, status models.AppointmentsStatus) error {
+	return repo.db.Model(&models.Appointments{}).
+		Where("appointment_id = ?", appId).
+		Update("appointments_status", status).Error
 }
