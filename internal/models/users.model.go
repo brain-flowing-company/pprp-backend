@@ -1,13 +1,12 @@
 package models
 
 import (
-	"time"
-
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/google/uuid"
 )
 
 type Users struct {
+	CommonModel
 	UserId                    uuid.UUID            `gorm:"default:uuid_generate_v4()"`
 	RegisteredType            enums.RegisteredType `example:"EMAIL"`
 	Email                     string               `json:"email"                        form:"email"                        gorm:"unique" example:"email@email.com"`
@@ -26,9 +25,6 @@ type Users struct {
 	CitizenId                 string               `json:"citizen_id"                   form:"citizen_id"                   gorm:"default:null; unique" example:"1234567890123"`
 	CitizenCardImageUrl       string               `json:"citizen_card_image_url"       form:"citizen_card_image_url"       gorm:"default:null" example:"https://image_url.com/abcd"`
 	IsVerified                bool                 `json:"is_verified"                  form:"is_verified"                  gorm:"default:null" example:"false"`
-	CreatedAt                 *time.Time           `gorm:"autoCreateTime"`
-	UpdatedAt                 *time.Time           `gorm:"autoUpdateTime"`
-	DeletedAt                 *time.Time           `gorm:"default:null"`
 }
 
 func (u Users) TableName() string {
