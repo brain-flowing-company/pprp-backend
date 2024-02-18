@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  models.BankName:
+  enums.BankName:
     enum:
     - KASIKORN BANK
     - BANGKOK BANK
@@ -22,6 +22,33 @@ definitions:
     - SCB
     - GSB
     - "NULL"
+  enums.RegisteredType:
+    enum:
+    - EMAIL
+    - GOOGLE
+    type: string
+    x-enum-varnames:
+    - EMAIL
+    - GOOGLE
+  models.Agreement:
+    properties:
+      agreement_date:
+        type: string
+      agreement_id:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      dweller_user_id:
+        type: string
+      owner_user_id:
+        type: string
+      property_id:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   models.ErrorResponse:
     properties:
       code:
@@ -108,14 +135,6 @@ definitions:
         example: https://image_url.com/abcd
         type: string
     type: object
-  models.RegisteredType:
-    enum:
-    - EMAIL
-    - GOOGLE
-    type: string
-    x-enum-varnames:
-    - EMAIL
-    - GOOGLE
   models.RentingProperty:
     properties:
       createdAt:
@@ -153,7 +172,7 @@ definitions:
         type: string
       registered_type:
         allOf:
-        - $ref: '#/definitions/models.RegisteredType'
+        - $ref: '#/definitions/enums.RegisteredType'
         example: EMAIL / GOOGLE
       session_type:
         allOf:
@@ -175,7 +194,7 @@ definitions:
         type: string
       bank_name:
         allOf:
-        - $ref: '#/definitions/models.BankName'
+        - $ref: '#/definitions/enums.BankName'
         example: KBANK
       citizen_card_image_url:
         example: https://image_url.com/abcd
@@ -223,9 +242,9 @@ definitions:
       profile_image_url:
         example: https://image_url.com/abcd
         type: string
-      registered_type:
+      registeredType:
         allOf:
-        - $ref: '#/definitions/models.RegisteredType'
+        - $ref: '#/definitions/enums.RegisteredType'
         example: EMAIL
       updatedAt:
         type: string
@@ -239,6 +258,116 @@ info:
   title: Bangkok Property Matchmaking Platform
   version: "1.0"
 paths:
+  /api/v1/agreement/:agreementId:
+    delete:
+      description: Delete an agreement by its id
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete an agreement
+      tags:
+      - agreements
+    get:
+      description: Get an agreement by its id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Agreement'
+        "400":
+          description: Invalid agreement id
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Agreement not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get agreement by id
+      tags:
+      - agreements
+  /api/v1/agreements:
+    get:
+      description: Get all agreements
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Agreement'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all agreements
+      tags:
+      - agreements
+    post:
+      description: Create an agreement by parsing the body
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create an agreement
+      tags:
+      - agreements
+  /api/v1/agreements/dweller/:userId:
+    get:
+      description: Get all agreements by dweller id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Agreement'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get agreements by dweller id
+      tags:
+      - agreements
+  /api/v1/agreements/owner/:userId:
+    get:
+      description: Get all agreements by owner id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Agreement'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get agreements by owner id
+      tags:
+      - agreements
   /api/v1/greeting:
     get:
       description: says hello, world

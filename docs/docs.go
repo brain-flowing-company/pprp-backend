@@ -15,6 +15,173 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/agreement/:agreementId": {
+            "get": {
+                "description": "Get an agreement by its id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Get agreement by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Agreement"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid agreement id",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Agreement not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an agreement by its id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Delete an agreement",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/agreements": {
+            "get": {
+                "description": "Get all agreements",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Get all agreements",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Agreement"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create an agreement by parsing the body",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Create an agreement",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/agreements/dweller/:userId": {
+            "get": {
+                "description": "Get all agreements by dweller id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Get agreements by dweller id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Agreement"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/agreements/owner/:userId": {
+            "get": {
+                "description": "Get all agreements by owner id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Get agreements by owner id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Agreement"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/greeting": {
             "get": {
                 "description": "says hello, world",
@@ -416,7 +583,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.BankName": {
+        "enums.BankName": {
             "type": "string",
             "enum": [
                 "KASIKORN BANK",
@@ -440,6 +607,46 @@ const docTemplate = `{
                 "GSB",
                 "NULL"
             ]
+        },
+        "enums.RegisteredType": {
+            "type": "string",
+            "enum": [
+                "EMAIL",
+                "GOOGLE"
+            ],
+            "x-enum-varnames": [
+                "EMAIL",
+                "GOOGLE"
+            ]
+        },
+        "models.Agreement": {
+            "type": "object",
+            "properties": {
+                "agreement_date": {
+                    "type": "string"
+                },
+                "agreement_id": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "dweller_user_id": {
+                    "type": "string"
+                },
+                "owner_user_id": {
+                    "type": "string"
+                },
+                "property_id": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
         },
         "models.ErrorResponse": {
             "type": "object",
@@ -563,17 +770,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.RegisteredType": {
-            "type": "string",
-            "enum": [
-                "EMAIL",
-                "GOOGLE"
-            ],
-            "x-enum-varnames": [
-                "EMAIL",
-                "GOOGLE"
-            ]
-        },
         "models.RentingProperty": {
             "type": "object",
             "properties": {
@@ -628,7 +824,7 @@ const docTemplate = `{
                 "registered_type": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.RegisteredType"
+                            "$ref": "#/definitions/enums.RegisteredType"
                         }
                     ],
                     "example": "EMAIL / GOOGLE"
@@ -664,7 +860,7 @@ const docTemplate = `{
                 "bank_name": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.BankName"
+                            "$ref": "#/definitions/enums.BankName"
                         }
                     ],
                     "example": "KBANK"
@@ -731,10 +927,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "https://image_url.com/abcd"
                 },
-                "registered_type": {
+                "registeredType": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.RegisteredType"
+                            "$ref": "#/definitions/enums.RegisteredType"
                         }
                     ],
                     "example": "EMAIL"

@@ -24,6 +24,13 @@ func NewHandler(service Service) Handler {
 	}
 }
 
+// @router  /api/v1/agreements [get]
+// @summary  Get all agreements
+// @description  Get all agreements
+// @tags agreements
+// @produce json
+// @success 200 {object} []models.Agreement
+// @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAllAgreements(c *fiber.Ctx) error {
 	var apps []models.Agreement
 	err := h.service.GetAllAgreements(&apps)
@@ -34,6 +41,15 @@ func (h *handlerImpl) GetAllAgreements(c *fiber.Ctx) error {
 
 }
 
+// @router  /api/v1/agreement/:agreementId [get]
+// @summary  Get agreement by id
+// @description  Get an agreement by its id
+// @tags agreements
+// @produce json
+// @success 200 {object} models.Agreement
+// @failure 400 {object} models.ErrorResponse "Invalid agreement id"
+// @failure 404 {object} models.ErrorResponse "Agreement not found"
+// @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 	id := c.Params("agreementId")
 	var app models.Agreement
@@ -44,6 +60,13 @@ func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 	return c.JSON(app)
 }
 
+// @router  /api/v1/agreements/owner/:userId [get]
+// @summary  Get agreements by owner id
+// @description  Get all agreements by owner id
+// @tags agreements
+// @produce json
+// @success 200 {object} []models.Agreement
+// @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAgreementsByOwnerId(c *fiber.Ctx) error {
 	id := c.Params("userId")
 	var apps []models.Agreement
@@ -54,6 +77,13 @@ func (h *handlerImpl) GetAgreementsByOwnerId(c *fiber.Ctx) error {
 	return c.JSON(apps)
 }
 
+// @router  /api/v1/agreements/dweller/:userId [get]
+// @summary  Get agreements by dweller id
+// @description  Get all agreements by dweller id
+// @tags agreements
+// @produce json
+// @success 200 {object} []models.Agreement
+// @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAgreementsByDwellerId(c *fiber.Ctx) error {
 	id := c.Params("userId")
 	var apps []models.Agreement
@@ -64,6 +94,13 @@ func (h *handlerImpl) GetAgreementsByDwellerId(c *fiber.Ctx) error {
 	return c.JSON(apps)
 }
 
+// @router  /api/v1/agreements [post]
+// @summary  Create an agreement
+// @description  Create an agreement by parsing the body
+// @tags agreements
+// @produce json
+// @success 201
+// @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) CreateAgreement(c *fiber.Ctx) error {
 	var creatingAgreement models.CreatingAgreement
 	if err := c.BodyParser(&creatingAgreement); err != nil {
@@ -76,6 +113,13 @@ func (h *handlerImpl) CreateAgreement(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusCreated)
 }
 
+// @router  /api/v1/agreement/:agreementId [delete]
+// @summary  Delete an agreement
+// @description  Delete an agreement by its id
+// @tags agreements
+// @produce json
+// @success 204
+// @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) DeleteAgreement(c *fiber.Ctx) error {
 	id := c.Params("agreementId")
 	err := h.service.DeleteAgreement(id)
