@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  models.BankName:
+  enums.BankName:
     enum:
     - KASIKORN BANK
     - BANGKOK BANK
@@ -22,6 +22,65 @@ definitions:
     - SCB
     - GSB
     - "NULL"
+  enums.RegisteredType:
+    enum:
+    - EMAIL
+    - GOOGLE
+    type: string
+    x-enum-varnames:
+    - EMAIL
+    - GOOGLE
+  models.Appointments:
+    properties:
+      appointment_date:
+        example: "2024-02-18T11:00:00Z"
+        type: string
+      appointment_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      dweller_user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      owner_user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      property_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.CreatingAppointments:
+    properties:
+      appointment_dates:
+        example:
+        - "2024-02-18T11:00:00Z"
+        items:
+          type: string
+        type: array
+      dweller_user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      owner_user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      property_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    type: object
+  models.DeletingAppointments:
+    properties:
+      appointmentIds:
+        example:
+        - 123e4567-e89b-12d3-a456-426614174000
+        items:
+          type: string
+        type: array
+    type: object
   models.ErrorResponse:
     properties:
       code:
@@ -108,14 +167,6 @@ definitions:
         example: https://image_url.com/abcd
         type: string
     type: object
-  models.RegisteredType:
-    enum:
-    - EMAIL
-    - GOOGLE
-    type: string
-    x-enum-varnames:
-    - EMAIL
-    - GOOGLE
   models.RentingProperty:
     properties:
       createdAt:
@@ -153,7 +204,7 @@ definitions:
         type: string
       registered_type:
         allOf:
-        - $ref: '#/definitions/models.RegisteredType'
+        - $ref: '#/definitions/enums.RegisteredType'
         example: EMAIL / GOOGLE
       session_type:
         allOf:
@@ -175,7 +226,7 @@ definitions:
         type: string
       bank_name:
         allOf:
-        - $ref: '#/definitions/models.BankName'
+        - $ref: '#/definitions/enums.BankName'
         example: KBANK
       citizen_card_image_url:
         example: https://image_url.com/abcd
@@ -223,9 +274,9 @@ definitions:
       profile_image_url:
         example: https://image_url.com/abcd
         type: string
-      registered_type:
+      registeredType:
         allOf:
-        - $ref: '#/definitions/models.RegisteredType'
+        - $ref: '#/definitions/enums.RegisteredType'
         example: EMAIL
       updatedAt:
         type: string
@@ -239,6 +290,107 @@ info:
   title: Bangkok Property Matchmaking Platform
   version: "1.0"
 paths:
+  /api/v1/appointments:
+    get:
+      description: Get all appointments
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Appointments'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all appointments
+      tags:
+      - appointments
+    post:
+      description: Create appointments
+      parameters:
+      - description: Appointment details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreatingAppointments'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Appointments'
+        "400":
+          description: Empty dates or some of appointments duplicate with existing
+            one
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create appointments
+      tags:
+      - appointments
+  /api/v1/appointments/:appointmendId:
+    delete:
+      description: Delete **an appointment** by query with `appointmentId` or delete
+        **multiple appointments** at a time by passing in `body`. If both are passed,
+        body will be selected.
+      parameters:
+      - description: Appointment id deleting lists
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/models.DeletingAppointments'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Appointments'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete appointments
+      tags:
+      - appointments
+  /api/v1/appointments/:appointmentId:
+    get:
+      description: Get appointments by id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Appointments'
+            type: array
+        "400":
+          description: Invalid appointment id
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Appointment id not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get appointments by id
+      tags:
+      - appointments
   /api/v1/greeting:
     get:
       description: says hello, world

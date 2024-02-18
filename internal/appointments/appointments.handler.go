@@ -27,6 +27,13 @@ func NewHandler(service Service) Handler {
 	}
 }
 
+// @router      /api/v1/appointments [get]
+// @summary     Get all appointments
+// @description Get all appointments
+// @tags        appointments
+// @produce     json
+// @success     200	{object} []models.Appointments
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 	var apps []models.Appointments
 	err := h.service.GetAllAppointments(&apps)
@@ -37,6 +44,15 @@ func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 	return c.JSON(apps)
 }
 
+// @router      /api/v1/appointments/:appointmentId [get]
+// @summary     Get appointments by id
+// @description Get appointments by id
+// @tags        appointments
+// @produce     json
+// @success     200	{object} []models.Appointments
+// @failure     400 {object} models.ErrorResponse "Invalid appointment id"
+// @failure     404 {object} models.ErrorResponse "Appointment id not found"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 	appointmentId := c.Params("appointmentId")
 
@@ -49,6 +65,15 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 	return c.JSON(apps)
 }
 
+// @router      /api/v1/appointments [post]
+// @summary     Create appointments
+// @description Create appointments
+// @tags        appointments
+// @produce     json
+// @param       body body models.CreatingAppointments true "Appointment details"
+// @success     201	{object} models.Appointments
+// @failure     400 {object} models.ErrorResponse "Empty dates or some of appointments duplicate with existing one"
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) CreateAppointments(c *fiber.Ctx) error {
 	apps := &models.CreatingAppointments{}
 	err := c.BodyParser(apps)
@@ -66,6 +91,14 @@ func (h *handlerImpl) CreateAppointments(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusCreated, "Appointments created")
 }
 
+// @router      /api/v1/appointments/:appointmendId [delete]
+// @summary     Delete appointments
+// @description Delete **an appointment** by query with `appointmentId` or delete **multiple appointments** at a time by passing in `body`. If both are passed, body will be selected.
+// @tags        appointments
+// @produce     json
+// @param       body body models.DeletingAppointments false "Appointment id deleting lists"
+// @success     200	{object} []models.Appointments
+// @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) DeleteAppointments(c *fiber.Ctx) error {
 	appIds := &[]string{}
 	err := c.BodyParser(appIds)
