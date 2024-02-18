@@ -2,6 +2,8 @@ CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB'
 
 CREATE TYPE registered_type AS ENUM('EMAIL', 'GOOGLE');
 
+CREATE TYPE appointments_status AS ENUM('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED', 'COMPLETED');
+
 CREATE TABLE users
 (
     user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
@@ -82,14 +84,15 @@ CREATE TABLE renting_property
 
 CREATE TABLE appointments
 (
-    appointment_id   UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-    property_id      UUID REFERENCES property (property_id)     NOT NULL,
-    owner_user_id    UUID REFERENCES users (user_id)            NOT NULL,
-    dweller_user_id  UUID REFERENCES users (user_id)            NOT NULL,
-    appointment_date TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
-    created_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
-    deleted_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL,
+    appointment_id      UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+    property_id         UUID REFERENCES property (property_id)     NOT NULL,
+    owner_user_id       UUID REFERENCES users (user_id)            NOT NULL,
+    dweller_user_id     UUID REFERENCES users (user_id)            NOT NULL,
+    appointments_status appointments_status DEFAULT 'PENDING'      NOT NULL,
+    appointment_date    TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
+    created_at          TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
+    deleted_at          TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL,
     UNIQUE (property_id, appointment_date, deleted_at)
 );
 
