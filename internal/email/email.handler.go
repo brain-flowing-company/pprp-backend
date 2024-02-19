@@ -20,12 +20,12 @@ func NewHandler(service Service) Handler {
 	}
 }
 
-type SendEmailBody struct {
+type Body struct {
 	Email string `json:"email"`
 }
 
 func (h *handlerImpl) SendEmail(c *fiber.Ctx) error {
-	body := SendEmailBody{}
+	body := Body{}
 
 	bodyErr := c.BodyParser(&body)
 	if bodyErr != nil {
@@ -34,7 +34,7 @@ func (h *handlerImpl) SendEmail(c *fiber.Ctx) error {
 			Describe("Invalid request body"))
 	}
 
-	appErr := h.service.SendEmail(body.Email)
+	appErr := h.service.SendVerificationEmail(body.Email)
 	if appErr != nil {
 		return utils.ResponseError(c, appErr)
 	}

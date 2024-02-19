@@ -1,6 +1,9 @@
 package email
 
 import (
+	"bytes"
+	"fmt"
+	"html/template"
 	"net/smtp"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -10,7 +13,7 @@ import (
 )
 
 type Service interface {
-	SendEmail(string) *apperror.AppError
+	SendVerificationEmail(string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -27,7 +30,7 @@ func NewService(logger *zap.Logger, cfg *config.Config, repo Repository) Service
 	}
 }
 
-func (s *serviceImpl) SendEmail(email string) *apperror.AppError {
+func (s *serviceImpl) SendVerificationEmail(email string) *apperror.AppError {
 
 	if !utils.IsValidEmail(email) {
 		return apperror.
@@ -54,14 +57,30 @@ func (s *serviceImpl) SendEmail(email string) *apperror.AppError {
 	password := s.cfg.EmailPassword
 	to := []string{email}
 
-	message := []byte("To: " + email + "\r\n" +
-		"Subject: Email Verification from suechaokhai.com\r\n" +
-		"\r\n" +
-		"Welcome to Sue Chao Khai by Brain-Flowing Company :)")
+	t, _ := template.ParseFiles("internal/email/verificationEmailTemplate.html")
+
+	var body bytes.Buffer
+
+	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	body.Write([]byte(fmt.Sprintf("Subject: Email Verification from suechaokhai.com \n%s\n\n", mimeHeaders)))
+
+	t.Execute(&body, struct{}{})
+	// t.Execute(&body, struct {
+	// 	Name    string
+	// 	Message string
+	// }{
+	// 	Name:    (strings.Split(email, "@"))[0],
+	// 	Message: "Welcome to Sue Chao Khai by Brain-Flowing Company :)",
+	// })
+
+	// message := []byte("To: " + email + "\r\n" +
+	// 	"Subject: Email Verification from suechaokhai.com\r\n" +
+	// 	"\r\n" +
+	// 	"Welcome to Sue Chao Khai by Brain-Flowing Company :)")
 
 	auth := smtp.PlainAuth("", from, password, smtpHost)
 
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, body.Bytes())
 	if err != nil {
 		s.logger.Error("Could not send email", zap.Error(err))
 		return apperror.
