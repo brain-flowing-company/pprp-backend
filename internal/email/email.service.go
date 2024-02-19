@@ -53,30 +53,24 @@ func (s *serviceImpl) SendVerificationEmail(email string) *apperror.AppError {
 
 	smtpHost := s.cfg.SmtpHost
 	smtpPort := s.cfg.SmtpPort
+
 	from := s.cfg.Email
 	password := s.cfg.EmailPassword
 	to := []string{email}
 
+	verificationLink := "https://www.youtube.com/@oreo10baht"
+	subject := "Email Verification from suechaokhai.com"
 	t, _ := template.ParseFiles("internal/email/verificationEmailTemplate.html")
 
 	var body bytes.Buffer
-
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	body.Write([]byte(fmt.Sprintf("Subject: Email Verification from suechaokhai.com \n%s\n\n", mimeHeaders)))
+	body.Write([]byte(fmt.Sprintf("Subject: "+subject+" \n%s\n\n", mimeHeaders)))
 
-	t.Execute(&body, struct{}{})
-	// t.Execute(&body, struct {
-	// 	Name    string
-	// 	Message string
-	// }{
-	// 	Name:    (strings.Split(email, "@"))[0],
-	// 	Message: "Welcome to Sue Chao Khai by Brain-Flowing Company :)",
-	// })
-
-	// message := []byte("To: " + email + "\r\n" +
-	// 	"Subject: Email Verification from suechaokhai.com\r\n" +
-	// 	"\r\n" +
-	// 	"Welcome to Sue Chao Khai by Brain-Flowing Company :)")
+	t.Execute(&body, struct {
+		VerificationLink string
+	}{
+		VerificationLink: verificationLink,
+	})
 
 	auth := smtp.PlainAuth("", from, password, smtpHost)
 
