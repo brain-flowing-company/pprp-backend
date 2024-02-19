@@ -2,6 +2,7 @@ package property
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -63,6 +64,7 @@ func (s *serviceImpl) GetAllProperties(properties *[]models.Property) *apperror.
 }
 
 func (s *serviceImpl) SearchProperties(properties *[]models.Property, query string) *apperror.AppError {
+	query = strings.ToLower(strings.TrimSpace(query))
 	err := s.repo.SearchProperties(properties, query)
 	if err != nil {
 		s.logger.Error("Could not search properties", zap.Error(err))

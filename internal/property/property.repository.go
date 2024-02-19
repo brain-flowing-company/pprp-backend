@@ -42,6 +42,6 @@ func (repo *repositoryImpl) SearchProperties(result *[]models.Property, query st
 		Preload("PropertyImages").
 		Preload("SellingProperty").
 		Preload("RentingProperty").
-		Where("project_name LIKE ? OR description LIKE ?", "%"+query+"%", "%"+query+"%").
+		Where("LOWER(project_name) LIKE ? OR LOWER(description) LIKE ?", "%"+query+"%", "%"+query+"%").
 		Find(result).Error
 }
