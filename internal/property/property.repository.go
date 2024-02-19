@@ -8,6 +8,7 @@ import (
 type Repository interface {
 	GetPropertyById(*models.Property, string) error
 	GetAllProperties(*[]models.Property) error
+	SearchProperties(*[]models.Property, string) error
 }
 
 type repositoryImpl struct {
@@ -33,5 +34,14 @@ func (repo *repositoryImpl) GetAllProperties(result *[]models.Property) error {
 		Preload("PropertyImages").
 		Preload("SellingProperty").
 		Preload("RentingProperty").
+		Find(result).Error
+}
+
+func (repo *repositoryImpl) SearchProperties(result *[]models.Property, query string) error {
+	return repo.db.Model(&models.Property{}).
+		Preload("PropertyImages").
+		Preload("SellingProperty").
+		Preload("RentingProperty").
+		Where("project_name LIKE ? OR description LIKE ?", "%"+query+"%", "%"+query+"%").
 		Find(result).Error
 }

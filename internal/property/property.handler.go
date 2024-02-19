@@ -9,6 +9,7 @@ import (
 type Handler interface {
 	GetPropertyById(c *fiber.Ctx) error
 	GetAllProperties(c *fiber.Ctx) error
+	SeachProperties(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -52,6 +53,26 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	properties := []models.Property{}
 	err := h.service.GetAllProperties(&properties)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return c.JSON(properties)
+}
+
+// @router      /api/v1/properties/search [get]
+// @summary     Search properties
+// @description Search properties by project name or description
+// @tags        property
+// @produce     json
+// @param       query query string true "Search query"
+// @success     200	{object} []models.Property
+// @failure     500 {object} models.ErrorResponse
+func (h *handlerImpl) SeachProperties(c *fiber.Ctx) error {
+	query := c.Query("query")
+
+	properties := []models.Property{}
+	err := h.service.SearchProperties(&properties, query)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}

@@ -13,6 +13,7 @@ import (
 type Service interface {
 	GetPropertyById(*models.Property, string) *apperror.AppError
 	GetAllProperties(*[]models.Property) *apperror.AppError
+	SearchProperties(*[]models.Property, string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -56,6 +57,18 @@ func (s *serviceImpl) GetAllProperties(properties *[]models.Property) *apperror.
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get all properties. Please try again later.")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) SearchProperties(properties *[]models.Property, query string) *apperror.AppError {
+	err := s.repo.SearchProperties(properties, query)
+	if err != nil {
+		s.logger.Error("Could not search properties", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not search properties. Please try again later.")
 	}
 
 	return nil
