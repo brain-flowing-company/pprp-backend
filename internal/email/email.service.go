@@ -8,6 +8,7 @@ import (
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
+	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
 	"go.uber.org/zap"
 )
@@ -51,20 +52,27 @@ func (s *serviceImpl) SendVerificationEmail(userEmail string) *apperror.AppError
 			Describe("Email already exists")
 	}
 
+	to := []string{userEmail}
+	subject := "Email Verification from suechaokhai.com"
+	emailStructure := models.VerificationEmail{
+		VerificationLink: "https://www.youtube.com/@oreo10baht",
+	}
+
+	return s.sendEmail(to, subject, emailStructure)
+}
+
+func (s *serviceImpl) sendEmail(to []string, subject string, emailStructure models.EmailType) *apperror.AppError {
 	smtpHost := s.cfg.SmtpHost
 	smtpPort := s.cfg.SmtpPort
+	smtpAddr := smtpHost + ":" + smtpPort
 
 	from := s.cfg.Email
 	password := s.cfg.EmailPassword
-	to := []string{userEmail}
 
 	auth := smtp.PlainAuth("", from, password, smtpHost)
 
-	subject := "Email Verification from suechaokhai.com"
-	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	verificationLink := "https://www.youtube.com/@oreo10baht"
-
-	t, templateErr := template.ParseFiles("internal/email/verificationEmailTemplate.html")
+	path := emailStructure.Path()
+	t, templateErr := template.ParseFiles(path)
 	if templateErr != nil {
 		s.logger.Error("Could not parse email template", zap.Error(templateErr))
 		return apperror.
@@ -73,15 +81,12 @@ func (s *serviceImpl) SendVerificationEmail(userEmail string) *apperror.AppError
 	}
 
 	var body bytes.Buffer
-	t.Execute(&body, struct {
-		VerificationLink string
-	}{
-		VerificationLink: verificationLink,
-	})
+	t.Execute(&body, emailStructure)
 
+	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	message := []byte(fmt.Sprintf("Subject: %s \n%s\n\n%s", subject, mimeHeaders, body.String()))
 
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	err := smtp.SendMail(smtpAddr, auth, from, to, message)
 	if err != nil {
 		s.logger.Error("Could not send email", zap.Error(err))
 		return apperror.
