@@ -28,5 +28,5 @@ func IsValidPassword(password string) bool {
 }
 
 func IsValidEmailVerificationCode(code string) bool {
-	return len(code) == 8
+	return len(code) == 20 && code[0:4] == "SCK-"
 }
