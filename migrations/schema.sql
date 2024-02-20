@@ -4,6 +4,13 @@ CREATE TYPE registered_type AS ENUM('EMAIL', 'GOOGLE');
 
 CREATE TYPE appointments_status AS ENUM('PENDING', 'APPROVED', 'REJECTED', 'REQUEST_CHANGE', 'CANCELLED', 'COMPLETED');
 
+CREATE TABLE email_verification_data
+(
+    email                     VARCHAR(50) PRIMARY KEY           NOT NULL,
+    code                      VARCHAR(99)                       NOT NULL,
+    expired_at                TIMESTAMP(0) WITH TIME ZONE       NOT NULL
+);
+
 CREATE TABLE users
 (
     user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),

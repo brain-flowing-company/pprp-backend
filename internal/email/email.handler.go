@@ -7,7 +7,9 @@ import (
 )
 
 type Handler interface {
-	SendEmail(c *fiber.Ctx) error
+	SendVerificationEmail(c *fiber.Ctx) error
+	VerifyEmail(c *fiber.Ctx) error
+	DeleteEmailVerificationData(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -24,7 +26,7 @@ type Body struct {
 	Email string `json:"email"`
 }
 
-func (h *handlerImpl) SendEmail(c *fiber.Ctx) error {
+func (h *handlerImpl) SendVerificationEmail(c *fiber.Ctx) error {
 	body := Body{}
 
 	bodyErr := c.BodyParser(&body)
@@ -40,4 +42,27 @@ func (h *handlerImpl) SendEmail(c *fiber.Ctx) error {
 	}
 
 	return utils.ResponseMessage(c, 200, "Email sent successfully")
+}
+
+func (h *handlerImpl) VerifyEmail(c *fiber.Ctx) error {
+	email := c.Queries()["email"]
+	code := c.Queries()["code"]
+
+	appErr := h.service.VerifyEmail(email, code)
+	if appErr != nil {
+		return utils.ResponseError(c, appErr)
+	}
+
+	return utils.ResponseMessage(c, 200, "Email verified successfully")
+}
+
+func (h *handlerImpl) DeleteEmailVerificationData(c *fiber.Ctx) error {
+	email := c.Params("email")
+
+	appErr := h.service.DeleteEmailVerificationData(email)
+	if appErr != nil {
+		return utils.ResponseError(c, appErr)
+	}
+
+	return utils.ResponseMessage(c, 200, "Email verification data deleted successfully")
 }

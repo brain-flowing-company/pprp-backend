@@ -64,6 +64,8 @@ var (
 	EmailAlreadyExists           = &AppErrorType{http.StatusBadRequest, "email-already-exists"}
 	PhoneNumberAlreadyExists     = &AppErrorType{http.StatusBadRequest, "phone-number-already-exists"}
 	InvalidEmail                 = &AppErrorType{http.StatusBadRequest, "invalid-email"}
+	InvalidEmailVerificationCode = &AppErrorType{http.StatusBadRequest, "invalid-email-verification-code"}
+	EmailVerificationCodeExpired = &AppErrorType{http.StatusBadRequest, "email-verification-code-expired"}
 	InvalidPassword              = &AppErrorType{http.StatusBadRequest, "invalid-password"}
 	InvalidCredentials           = &AppErrorType{http.StatusUnauthorized, "invalid-credentials"}
 	ServiceUnavailable           = &AppErrorType{http.StatusServiceUnavailable, "service-unavailable"}

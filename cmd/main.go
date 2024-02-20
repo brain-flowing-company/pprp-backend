@@ -152,7 +152,9 @@ func main() {
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
 
-	apiv1.Post("/email", emailHandler.SendEmail)
+	apiv1.Post("/email", emailHandler.SendVerificationEmail)
+	apiv1.Post("/email/verify", emailHandler.VerifyEmail)
+	apiv1.Delete("/email/:email", emailHandler.DeleteEmailVerificationData)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
