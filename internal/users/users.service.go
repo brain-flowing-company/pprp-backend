@@ -3,7 +3,6 @@ package users
 import (
 	"errors"
 	"fmt"
-	"io"
 	"mime/multipart"
 	"path/filepath"
 	"strings"
@@ -23,10 +22,9 @@ type Service interface {
 	GetAllUsers(*[]models.Users) *apperror.AppError
 	GetUserById(*models.Users, string) *apperror.AppError
 	Register(*models.Users, *multipart.FileHeader) *apperror.AppError
-	UpdateUser(*models.Users, string) *apperror.AppError
+	UpdateUser(*models.Users, *multipart.FileHeader) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 	GetUserByEmail(*models.Users, string) *apperror.AppError
-	UploadProfileImage(uuid.UUID, string, io.Reader) (string, *apperror.AppError)
 }
 
 type serviceImpl struct {
@@ -131,21 +129,12 @@ func (s *serviceImpl) Register(user *models.Users, profileImage *multipart.FileH
 		user.Password = string(hashedPassword)
 	}
 
-	if profileImage != nil {
-		file, err := profileImage.Open()
-		if err != nil {
-			return apperror.
-				New(apperror.InternalServerError).
-				Describe("Could not upload profile image")
-		}
-
-		url, apperr := s.UploadProfileImage(user.UserId, profileImage.Filename, file)
-		if apperr != nil {
-			return apperr
-		}
-
-		user.ProfileImageUrl = url
+	url, apperr := s.uploadProfileImage(user.UserId, profileImage)
+	if apperr != nil {
+		return apperr
 	}
+
+	user.ProfileImageUrl = url
 
 	err := s.repo.CreateUser(user)
 	if err != nil {
@@ -158,25 +147,24 @@ func (s *serviceImpl) Register(user *models.Users, profileImage *multipart.FileH
 	return nil
 }
 
-func (s *serviceImpl) UpdateUser(user *models.Users, userId string) *apperror.AppError {
-	if !utils.IsValidUUID(userId) {
-		return apperror.
-			New(apperror.InvalidUserId).
-			Describe("Invalid user id")
-	}
-
-	err := s.repo.UpdateUser(user, userId)
+func (s *serviceImpl) UpdateUser(user *models.Users, profileImage *multipart.FileHeader) *apperror.AppError {
+	err := s.repo.UpdateUser(user, user.UserId.String())
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.UserNotFound).
 			Describe("Could not find the specified user")
 	} else if err != nil {
-		s.logger.Error("Could not update user info", zap.String("id", userId), zap.Error(err))
+		s.logger.Error("Could not update user info", zap.String("id", user.UserId.String()), zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not update user information. Please try again later")
 	}
 
+	url, apperr := s.uploadProfileImage(user.UserId, profileImage)
+	if apperr != nil {
+		return apperr
+	}
+	user.ProfileImageUrl = url
 	return nil
 }
 
@@ -228,11 +216,21 @@ func (s *serviceImpl) GetUserByEmail(user *models.Users, email string) *apperror
 	return nil
 }
 
-func (s *serviceImpl) UploadProfileImage(userId uuid.UUID, filename string, file io.Reader) (string, *apperror.AppError) {
-	ext := filepath.Ext(filename)
+func (s *serviceImpl) uploadProfileImage(userId uuid.UUID, profileImage *multipart.FileHeader) (string, *apperror.AppError) {
+	if profileImage == nil {
+		return "", nil
+	}
+
+	file, err := profileImage.Open()
+	if err != nil {
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not upload profile image")
+	}
+
+	ext := filepath.Ext(profileImage.Filename)
 
 	ip := utils.NewImageProcessor()
-	var err error
 
 	switch strings.ToLower(ext) {
 	case ".jpg":

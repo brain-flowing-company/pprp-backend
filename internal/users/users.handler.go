@@ -117,16 +117,24 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 // @failure     404 {object} models.ErrorResponse "User not found"
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
-	userId := c.Params("userId")
-	user := models.Users{}
+	userId, err := uuid.Parse(c.Params("userId"))
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id"))
+	}
+
+	user := models.Users{UserId: userId}
 
 	bodyErr := c.BodyParser(&user)
 	if bodyErr != nil {
 		return utils.ResponseError(c, apperror.InvalidBody)
 	}
 
-	err := h.service.UpdateUser(&user, userId)
-	if err != nil {
+	profileImage, _ := c.FormFile("profile_image")
+
+	apperr := h.service.UpdateUser(&user, profileImage)
+	if apperr != nil {
 		return utils.ResponseError(c, err)
 	}
 
