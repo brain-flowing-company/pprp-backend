@@ -291,11 +291,11 @@ definitions:
       profile_image_url:
         example: https://image_url.com/abcd
         type: string
-      registeredType:
+      registered_type:
         allOf:
         - $ref: '#/definitions/enums.RegisteredType'
         example: EMAIL
-      userId:
+      user_id:
         type: string
     type: object
 host: localhost:8000

@@ -1199,7 +1199,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "https://image_url.com/abcd"
                 },
-                "registeredType": {
+                "registered_type": {
                     "allOf": [
                         {
                             "$ref": "#/definitions/enums.RegisteredType"
@@ -1207,7 +1207,7 @@ const docTemplate = `{
                     ],
                     "example": "EMAIL"
                 },
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }
