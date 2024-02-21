@@ -131,10 +131,10 @@ CREATE TABLE agreements
 
 -------------------- DUMMY DATA --------------------
 
-INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified) VALUES
-('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', 'JOHN DOE', '1234123412341234', '12', '2023', '123', 'KBANK', '1234567890', '1234567890123', 'https://picsum.photos/200/300?random=2', TRUE),
-('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, 'SAM SMITH', '4321432143214321', '11', '2024', '321', 'BBL', '1234567890', NULL, NULL, FALSE),
-('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', 'C C', '1234123412341234', '12', '2023', '123', 'SCB', '1234567890', '3333333333333', 'https://picsum.photos/200/300?random=4', TRUE);
+INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified) VALUES
+('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', 'KBANK', '1234567890', '1234567890123', 'https://picsum.photos/200/300?random=2', TRUE),
+('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, 'BBL', '1234567890', NULL, NULL, FALSE),
+('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', 'SCB', '1234567890', '3333333333333', 'https://picsum.photos/200/300?random=4', TRUE);
 
 INSERT INTO properties (property_id, owner_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Et sequi dolor praes', 'Sequi reiciendis odi', 'Anita', 'Quas iusto expedita ', 'Delisa', 'Grace', 'Michael', 'Christine', 'Anthony', 'Andrew', '53086'),
@@ -184,11 +184,11 @@ INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUE
 -- mock data for appointments
 
 -- Insert mock data into the users table
-INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified)
+INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified)
 VALUES
-('123e4567-e89b-12d3-a456-426614174001', 'EMAIL', 'user1@email.com', 'password123', 'User', 'One', '1234567890', 'https://example.com/image1.jpg', 'CARDHOLDER1', '1111222233334444', '12', '2023', '123', 'KBANK', '9876543210', '1234567890123', 'https://example.com/card_image1.jpg', TRUE),
-('123e4567-e89b-12d3-a456-426614174002', 'EMAIL', 'user2@email.com', 'password456', 'User', 'Two', '9876543210', 'https://example.com/image2.jpg', 'CARDHOLDER2', '5555666677778888', '11', '2024', '456', 'BBL', '1234567890', '9876543210987', 'https://example.com/card_image2.jpg', FALSE),
-('123e4567-e89b-12d3-a456-426614174003', 'GOOGLE', 'user3@gmail.com', NULL, 'User', 'Three', '3333333333', 'https://example.com/image3.jpg', 'CARDHOLDER3', '9999888877776666', '10', '2022', '789', 'KTB', '1234567890', '3333333333333', 'https://example.com/card_image3.jpg', TRUE);
+('123e4567-e89b-12d3-a456-426614174001', 'EMAIL', 'user1@email.com', 'password123', 'User', 'One', '1234567890', 'https://example.com/image1.jpg', 'KBANK', '9876543210', '1234567890123', 'https://example.com/card_image1.jpg', TRUE),
+('123e4567-e89b-12d3-a456-426614174002', 'EMAIL', 'user2@email.com', 'password456', 'User', 'Two', '9876543210', 'https://example.com/image2.jpg', 'BBL', '1234567890', '9876543210987', 'https://example.com/card_image2.jpg', FALSE),
+('123e4567-e89b-12d3-a456-426614174003', 'GOOGLE', 'user3@gmail.com', NULL, 'User', 'Three', '3333333333', 'https://example.com/image3.jpg', 'KTB', '1234567890', '3333333333333', 'https://example.com/card_image3.jpg', TRUE);
 
 -- Insert mock data into the properties table
 INSERT INTO properties (property_id, owner_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code)
@@ -266,7 +266,7 @@ CREATE RULE delete_users AS ON UPDATE TO users
     WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
     DO ALSO UPDATE properties SET deleted_at = new.deleted_at WHERE owner_id = old.user_id;
 
-CREATE RULE delete_properties AS ON UPDATE TO property
+CREATE RULE delete_properties AS ON UPDATE TO properties
     WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
     DO ALSO (
         UPDATE property_images SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
