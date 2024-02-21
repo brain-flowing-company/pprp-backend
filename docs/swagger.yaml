@@ -658,67 +658,9 @@ paths:
       - property
   /api/v1/register:
     post:
-      description: Create a user by prasing the body
+      description: Create a user by parsing the body **\***upload profile image in
+        formData with field `profile_image`. Available formats are .png / .jpg / .jpeg
       parameters:
-      - example: "1234567890"
-        in: formData
-        name: bank_account_number
-        type: string
-      - enum:
-        - KASIKORN BANK
-        - BANGKOK BANK
-        - KRUNG THAI BANK
-        - BANK OF AYUDHYA
-        - CIMB THAI BANK
-        - TMBTHANACHART BANK
-        - SIAM COMMERCIAL BANK
-        - GOVERNMENT SAVINGS BANK
-        - BANK NOT SELECTED
-        example: KBANK
-        in: formData
-        name: bank_name
-        type: string
-        x-enum-varnames:
-        - KBANK
-        - BBL
-        - KTB
-        - BAY
-        - CIMB
-        - TTB
-        - SCB
-        - GSB
-        - "NULL"
-      - example: https://image_url.com/abcd
-        in: formData
-        name: citizen_card_image_url
-        type: string
-      - example: "1234567890123"
-        in: formData
-        name: citizen_id
-        type: string
-      - in: formData
-        name: created_at
-        type: string
-      - example: "123"
-        in: formData
-        name: credit_card_cvv
-        type: string
-      - example: "12"
-        in: formData
-        name: credit_card_expiration_month
-        type: string
-      - example: "2023"
-        in: formData
-        name: credit_card_expiration_year
-        type: string
-      - example: "1234567890123456"
-        in: formData
-        name: credit_card_number
-        type: string
-      - example: JOHN DOE
-        in: formData
-        name: credit_cardholder_name
-        type: string
       - example: email@email.com
         in: formData
         name: email
@@ -727,10 +669,6 @@ paths:
         in: formData
         name: first_name
         type: string
-      - example: false
-        in: formData
-        name: is_verified
-        type: boolean
       - example: Doe
         in: formData
         name: last_name
@@ -742,23 +680,6 @@ paths:
       - example: "0812345678"
         in: formData
         name: phone_number
-        type: string
-      - example: https://image_url.com/abcd
-        in: formData
-        name: profile_image_url
-        type: string
-      - enum:
-        - EMAIL
-        - GOOGLE
-        example: EMAIL
-        in: formData
-        name: registered_type
-        type: string
-        x-enum-varnames:
-        - EMAIL
-        - GOOGLE
-      - in: formData
-        name: user_id
         type: string
       produces:
       - application/json

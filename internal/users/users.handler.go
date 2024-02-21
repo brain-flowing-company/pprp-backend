@@ -73,15 +73,15 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 
 // @router      /api/v1/register [post]
 // @summary     Register *use cookies*
-// @description Create a user by prasing the body
+// @description Create a user by parsing the body **\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg
 // @tags        users
 // @produce     json
-// @param       formData formData models.Users true "User information"
+// @param       formData formData models.RegisteringUser true "User information"
 // @success     200	{object} models.Users
 // @failure     400 {object} models.ErrorResponse "Invalid user info"
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
-	user := &models.Users{
+	user := &models.RegisteringUser{
 		UserId: uuid.New(),
 	}
 
