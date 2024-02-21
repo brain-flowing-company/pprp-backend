@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreditCard struct {
+type CreditCards struct {
 	CreditCardId   uuid.UUID       `json:"credit_card_id"               gorm:"default:uuid_generate_v4()"`
 	CardNickname   string          `json:"card_nickname"                example:"My Card"`
 	CardholderName string          `json:"cardholder_name"              example:"JOHN DOE"`
@@ -14,5 +14,5 @@ type CreditCard struct {
 	ExpireYear     string          `json:"expire_year"              example:"2023"`
 	CVV            string          `json:"cvv"                          example:"123"`
 	CardColor      enums.CardColor `json:"card_color"                   example:"LIGHT BLUE"`
-	CommonModel
+	CommonModels
 }

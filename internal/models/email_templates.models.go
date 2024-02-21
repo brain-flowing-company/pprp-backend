@@ -4,10 +4,10 @@ type EmailType interface {
 	Path() string
 }
 
-type VerificationEmail struct {
+type VerificationEmails struct {
 	VerificationLink string
 }
 
-func (v VerificationEmail) Path() string {
+func (v VerificationEmails) Path() string {
 	return "templates/VerificationEmail.html"
 }

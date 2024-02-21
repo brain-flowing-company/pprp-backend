@@ -1,5 +1,5 @@
 package models
 
-type Cookie struct {
+type Cookies struct {
 	Session string `cookie:"session"`
 }

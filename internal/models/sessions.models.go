@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type Session struct {
+type Sessions struct {
 	Email          string               `json:"email,omitempty"           example:"admim@email.com"`
 	UserId         uuid.UUID            `json:"user_id,omitempty"         example:"123e4567-e89b-12d3-a456-426614174000"`
 	RegisteredType enums.RegisteredType `json:"registered_type,omitempty" example:"EMAIL / GOOGLE"`

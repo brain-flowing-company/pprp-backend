@@ -2,7 +2,7 @@ package models
 
 import "github.com/golang-jwt/jwt"
 
-type SessionClaim struct {
+type SessionClaims struct {
 	jwt.StandardClaims
-	Session Session `json:"session"`
+	Session Sessions `json:"session"`
 }

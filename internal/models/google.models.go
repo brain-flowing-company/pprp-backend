@@ -1,6 +1,6 @@
 package models
 
-type GoogleExchangeToken struct {
+type GoogleExchangeTokens struct {
 	Authuser string
 	Code     string
 	Prompt   string
@@ -8,6 +8,6 @@ type GoogleExchangeToken struct {
 	State    string
 }
 
-type GoogleUserInfo struct {
+type GoogleUserInfos struct {
 	Email string
 }
