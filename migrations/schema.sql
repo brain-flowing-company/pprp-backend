@@ -4,6 +4,8 @@ CREATE TYPE registered_type AS ENUM('EMAIL', 'GOOGLE');
 
 CREATE TYPE appointments_status AS ENUM('PENDING', 'APPROVED', 'REJECTED', 'REQUEST_CHANGE', 'CANCELLED', 'COMPLETED');
 
+CREATE TYPE card_color AS ENUM('LIGHT_BLUE', 'BLUE', 'DARK_BLUE', 'VERY_DARK_BLUE');
+
 CREATE TABLE email_verification_data
 (
     email                     VARCHAR(50) PRIMARY KEY           NOT NULL,
@@ -21,11 +23,6 @@ CREATE TABLE users
     last_name                           VARCHAR(50)                     NOT NULL,
     phone_number                        VARCHAR(10)                     NOT NULL,
     profile_image_url                   VARCHAR(2000)                   DEFAULT NULL,
-    credit_card_cardholder_name         VARCHAR(50)                     DEFAULT NULL,
-    credit_card_number                  VARCHAR(16)                     DEFAULT NULL,
-    credit_card_expiration_month        VARCHAR(2)                      DEFAULT NULL,
-    credit_card_expiration_year         VARCHAR(4)                      DEFAULT NULL,
-    credit_card_cvv                     VARCHAR(3)                      DEFAULT NULL,
     bank_name                           bank_name                       DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
     citizen_id                          VARCHAR(13)                     DEFAULT NULL,
@@ -37,6 +34,22 @@ CREATE TABLE users
     UNIQUE(email, deleted_at),
     UNIQUE(phone_number, deleted_at),
     UNIQUE(citizen_id, deleted_at)
+);
+
+CREATE TABLE credit_cards
+(
+    credit_card_id                      UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
+    user_id                             UUID REFERENCES users (user_id) ON DELETE CASCADE,
+    card_nickname                       VARCHAR(50)                     NOT NULL,
+    cardholder_name                     VARCHAR(50)                     NOT NULL,
+    card_number                         VARCHAR(16)                     NOT NULL,
+    expire_month                        VARCHAR(2)                      NOT NULL,
+    expire_year                         VARCHAR(4)                      NOT NULL,
+    cvv                                 VARCHAR(3)                      NOT NULL,
+    card_color                          card_color                      DEFAULT 'LIGHT_BLUE',
+    created_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
+    updated_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
+    deleted_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT NULL
 );
 
 CREATE TABLE property
