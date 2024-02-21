@@ -98,8 +98,9 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 		user.RegisteredType = session.RegisteredType
 	}
 
-	profileImage, _ := c.FormFile("profile_image")
+	fmt.Println(user)
 
+	profileImage, _ := c.FormFile("profile_image")
 	apperr := h.service.Register(user, profileImage)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
@@ -108,8 +109,8 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusCreated, "User created")
 }
 
-// @router      /api/v1/user/:userId [put]
-// @summary     Update user by id
+// @router      /api/v1/user/ [put]
+// @summary     Update current user personal information *use cookies*
 // @description Update specifying userId with formData **\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg
 // @tags        users
 // @produce     json
@@ -119,15 +120,12 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 // @failure     404 {object} models.ErrorResponse "User not found"
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
-	userId, err := uuid.Parse(c.Params("userId"))
-	if err != nil {
-		return utils.ResponseError(c, apperror.
-			New(apperror.InvalidUserId).
-			Describe("Invalid user id"))
+	session, ok := c.Locals("session").(models.Session)
+	if !ok {
+		session = models.Session{}
 	}
 
-	user := models.UpdatingUserPersonalInfo{UserId: userId}
-
+	user := models.UpdatingUserPersonalInfo{UserId: session.UserId}
 	bodyErr := c.BodyParser(&user)
 	if bodyErr != nil {
 		return utils.ResponseError(c, apperror.InvalidBody)
@@ -137,7 +135,7 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 
 	apperr := h.service.UpdateUser(&user, profileImage)
 	if apperr != nil {
-		return utils.ResponseError(c, err)
+		return utils.ResponseError(c, apperr)
 	}
 
 	return utils.ResponseMessage(c, http.StatusOK, "User updated")

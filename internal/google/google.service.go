@@ -3,6 +3,7 @@ package google
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -13,6 +14,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"gorm.io/gorm"
 )
 
 type Service interface {
@@ -77,23 +79,22 @@ func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleEx
 	}
 
 	registered := true
-	var countEmail int64
-	findEmailErr := s.repo.CountEmail(&countEmail, googleInfo.Email)
-	if findEmailErr != nil {
-		s.logger.Error("Could not get user", zap.Error(findEmailErr))
+	user := models.Users{}
+	err = s.repo.GetUserByEmail(&user, googleInfo.Email)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		registered = false
+	} else if err != nil {
+		s.logger.Error("Could not get user", zap.Error(err))
 		return "", false, apperror.
 			New(apperror.InternalServerError).
 			Describe("Google OAuth failed")
-	}
-
-	if countEmail == 0 {
-		registered = false
 	}
 
 	session := models.Session{
 		Email:          googleInfo.Email,
 		RegisteredType: enums.GOOGLE,
 		SessionType:    models.SessionRegister,
+		UserId:         user.UserId,
 	}
 
 	if registered {
