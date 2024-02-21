@@ -33,29 +33,21 @@ services:
     environment:
       - APP_ENV=development
       - APP_PORT=8000
-      - DB_URL=postgres://postgres:123456@sck-database:5432/postgres
       - APP_ALLOW_ORIGIN=http://localhost:3000
+      - APP_HOME_PATH=http://localhost:3000
       - JWT_SECRET=secret
-      - SESSION_EXPIRES=86400
+      - SESSION_EXPIRE=86400
       - GOOGLE_CLIENT_ID=784140310844-71giihsb58cg5kkevilab3ddmdhqdm96.apps.googleusercontent.com
       - GOOGLE_REDIRECT=http://localhost:8000/api/v1/oauth/callback
       - GOOGLE_SCOPE=openid,email
-      - LOGIN_REDIRECT=http://localhost:3000/register
-    networks:
-      - sck
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: unless-stopped
+      - GOOGLE_REGISTER_REDIRECT=http://localhost:3000/register
+      - AWS_REGION=ap-southeast-1
+      - AWS_ACCESS_KEY_ID=AKIASNYKPVTR5QT4EWXR
+      - AWS_S3_BUCKET_NAME=suechaokhai
+      - EMAIL=brainflowingcompany@gmail.com
+      - EMAIL_VERIFICATION_CODE_EXPIRE=300
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
     networks:
       - sck
 
