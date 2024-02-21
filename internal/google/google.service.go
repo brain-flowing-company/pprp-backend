@@ -78,8 +78,9 @@ func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleEx
 
 	registered := true
 	var countEmail int64
-	if s.repo.CountEmail(&countEmail, googleInfo.Email) != nil {
-		s.logger.Error("Could not get user", zap.Error(err))
+	findEmailErr := s.repo.CountEmail(&countEmail, googleInfo.Email)
+	if findEmailErr != nil {
+		s.logger.Error("Could not get user", zap.Error(findEmailErr))
 		return "", false, apperror.
 			New(apperror.InternalServerError).
 			Describe("Google OAuth failed")

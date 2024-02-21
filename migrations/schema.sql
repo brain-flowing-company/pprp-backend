@@ -4,6 +4,13 @@ CREATE TYPE registered_type AS ENUM('EMAIL', 'GOOGLE');
 
 CREATE TYPE appointments_status AS ENUM('PENDING', 'APPROVED', 'REJECTED', 'REQUEST_CHANGE', 'CANCELLED', 'COMPLETED');
 
+CREATE TABLE email_verification_data
+(
+    email                     VARCHAR(50) PRIMARY KEY           NOT NULL,
+    code                      VARCHAR(20)                       NOT NULL,
+    expired_at                TIMESTAMP(0) WITH TIME ZONE       NOT NULL
+);
+
 CREATE TABLE users
 (
     user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
@@ -253,6 +260,11 @@ CREATE RULE delete_property AS ON UPDATE TO property
         UPDATE property_image SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
         UPDATE selling_property SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
         UPDATE renting_property SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+    );
+
+CREATE RULE create_email_verification_data AS ON INSERT TO email_verification_data
+    WHERE new.email = (SELECT email FROM email_verification_data WHERE email = new.email) DO INSTEAD(
+        UPDATE email_verification_data SET code = new.code, expired_at = new.expired_at WHERE email = new.email
     );
 
 -------------------- INDEX --------------------

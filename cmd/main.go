@@ -10,6 +10,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/agreements"
 	"github.com/brain-flowing-company/pprp-backend/internal/appointments"
 	"github.com/brain-flowing-company/pprp-backend/internal/auth"
+	"github.com/brain-flowing-company/pprp-backend/internal/email"
 	"github.com/brain-flowing-company/pprp-backend/internal/google"
 	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
 	"github.com/brain-flowing-company/pprp-backend/internal/property"
@@ -103,6 +104,10 @@ func main() {
 	appointmentService := appointments.NewService(logger, appointmentRepository)
 	appointmentHandler := appointments.NewHandler(appointmentService)
 
+	emailRepository := email.NewRepository(db)
+	emailService := email.NewService(logger, cfg, emailRepository)
+	emailHandler := email.NewHandler(logger, cfg, emailService)
+
 	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
@@ -158,6 +163,9 @@ func main() {
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
+
+	apiv1.Post("/email", emailHandler.SendVerificationEmail)
+	apiv1.Post("/email/verify", emailHandler.VerifyEmail)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {

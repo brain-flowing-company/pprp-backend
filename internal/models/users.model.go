@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/google/uuid"
 )
@@ -63,4 +65,15 @@ func (u Users) TableName() string {
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type EmailVerificationData struct {
+	Email     string    `json:"email"`
+	Code      string    `json:"code"`
+	ExpiredAt time.Time `json:"expire_at"`
+}
+
+type EmailVerificationRequest struct {
+	Email string `json:"email"`
+	Code  string `json:"code"`
 }
