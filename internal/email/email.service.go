@@ -103,7 +103,13 @@ func (s *serviceImpl) sendEmail(to []string, subject string, emailStructure mode
 	}
 
 	var body bytes.Buffer
-	t.Execute(&body, emailStructure)
+	emailTempErr := t.Execute(&body, emailStructure)
+	if emailTempErr != nil {
+		s.logger.Error("Could not execute email template", zap.Error(emailTempErr))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not send email. Please try again later")
+	}
 
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	message := []byte(fmt.Sprintf("Subject: %s \n%s\n\n%s", subject, mimeHeaders, body.String()))
