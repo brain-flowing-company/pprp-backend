@@ -7,8 +7,8 @@ import (
 
 type Users struct {
 	CommonModel
-	UserId                    uuid.UUID            `gorm:"default:uuid_generate_v4()"`
-	RegisteredType            enums.RegisteredType `example:"EMAIL"`
+	UserId                    uuid.UUID            `json:"user_id"                      gorm:"default:uuid_generate_v4()"`
+	RegisteredType            enums.RegisteredType `json:"registered_type"              example:"EMAIL"`
 	Email                     string               `json:"email"                        form:"email"                        gorm:"unique" example:"email@email.com"`
 	Password                  string               `json:"password"                     form:"password"                     gorm:"default:null" example:"password1234"`
 	FirstName                 string               `json:"first_name"                   form:"first_name"                   example:"John"`
