@@ -34,7 +34,7 @@ func Load(config *Config) error {
 	_ = viper.BindEnv("APP_HOME_PATH")
 	_ = viper.BindEnv("DB_URL")
 	_ = viper.BindEnv("JWT_SECRET")
-	_ = viper.BindEnv("SESSION_EXPIRES")
+	_ = viper.BindEnv("SESSION_EXPIRE")
 	_ = viper.BindEnv("GOOGLE_CLIENT_ID")
 	_ = viper.BindEnv("GOOGLE_CLIENT_SECRET")
 	_ = viper.BindEnv("GOOGLE_REDIRECT")
