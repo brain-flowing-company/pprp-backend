@@ -5,7 +5,7 @@ import (
 )
 
 type Properties struct {
-	PropertyId      uuid.UUID         `gorm:"type:uuid;default:uuid_generate_v4()"`
+	PropertyId      uuid.UUID         `gorm:"type:uuid; default:uuid_generate_v4()"`
 	OwnerId         uuid.UUID         `json:"owner_id"                 example:"123e4567-e89b-12d3-a456-426614174000"` // foreign key
 	Description     string            `json:"description"              example:"Et sequi dolor praes"`
 	ResidentialType string            `json:"residential_type"         example:"Condo"`
@@ -18,9 +18,9 @@ type Properties struct {
 	Province        string            `json:"province"                 example:"Pattaya"`
 	Country         string            `json:"country"                  example:"Thailand"`
 	PostalCode      string            `json:"postal_code"              example:"69096"`
-	PropertyImages  []PropertyImages  `gorm:"references:PropertyId" json:"images"`
-	SellingProperty SellingProperties `gorm:"references:PropertyId" json:"selling"`
-	RentingProperty RentingProperties `gorm:"references:PropertyId" json:"renting"`
+	PropertyImages  []PropertyImages  `gorm:"foreignKey:PropertyId; references:PropertyId" json:"images"`
+	SellingProperty SellingProperties `gorm:"foreignKey:PropertyId; references:PropertyId" json:"selling"`
+	RentingProperty RentingProperties `gorm:"foreignKey:PropertyId; references:PropertyId" json:"renting"`
 	CommonModels
 }
 
