@@ -130,8 +130,7 @@ func main() {
 	apiv1.Get("/user/greeting", mw.AuthMiddlewareWrapper(hwHandler.UserGreeting))
 
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
-	apiv1.Get("/properties", propertyHandler.GetAllProperties)
-	apiv1.Get("/properties/search", propertyHandler.SeachProperties)
+	apiv1.Get("/properties", propertyHandler.GetOrSearchProperties)
 
 	apiv1.Get("/appointments/:appointmentId", appointmentHandler.GetAppointmentById)
 	apiv1.Get("/appointments", appointmentHandler.GetAllAppointments)

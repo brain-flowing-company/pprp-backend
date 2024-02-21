@@ -607,7 +607,14 @@ paths:
       - auth
   /api/v1/properties:
     get:
-      description: Get all properties
+      description: If a query parameter is provided, search properties by project
+        name or description. Otherwise, get all properties.
+      parameters:
+      - description: Search query
+        in: query
+        name: query
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -621,7 +628,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Get all properties
+      summary: Get all properties or search properties
       tags:
       - property
   /api/v1/property/:id:
