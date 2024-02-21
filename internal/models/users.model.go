@@ -39,9 +39,9 @@ type LoginRequest struct {
 }
 
 type EmailVerificationData struct {
-	Email     string     `json:"email"`
-	Code      string     `json:"code"`
-	ExpiredAt *time.Time `json:"expire_at"`
+	Email     string    `json:"email"`
+	Code      string    `json:"code"`
+	ExpiredAt time.Time `json:"expire_at"`
 }
 
 type EmailVerificationRequest struct {

@@ -57,12 +57,13 @@ func (s *serviceImpl) SendVerificationEmail(userEmail string) *apperror.AppError
 
 	code := "SCK-" + utils.RandomString(16)
 
-	expiredAt := time.Now().Add(5 * time.Minute)
+	emailVerificationCodeExpire := s.cfg.EmailVerificationCodeExpire
+	expiredAt := time.Now().Add(time.Duration(emailVerificationCodeExpire) * time.Second)
 
 	verificationData := models.EmailVerificationData{
 		Email:     userEmail,
 		Code:      code,
-		ExpiredAt: &expiredAt,
+		ExpiredAt: expiredAt,
 	}
 
 	if s.repo.CreateEmailVerificationData(&verificationData) != nil {
@@ -184,7 +185,6 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 			Describe("Invalid verification code")
 	}
 
-	fmt.Println("Verification code matched")
 	deleteErr := s.repo.DeleteEmailVerificationData(userEmail)
 	if deleteErr != nil {
 		s.logger.Error("Could not delete email verification data", zap.Error(deleteErr))

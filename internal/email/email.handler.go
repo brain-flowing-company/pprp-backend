@@ -1,6 +1,8 @@
 package email
 
 import (
+	"net/http"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -28,12 +30,10 @@ func NewHandler(logger *zap.Logger, cfg *config.Config, service Service) Handler
 	}
 }
 
-type Body struct {
-	Email string `json:"email"`
-}
-
 func (h *handlerImpl) SendVerificationEmail(c *fiber.Ctx) error {
-	body := Body{}
+	body := struct {
+		Email string `json:"email"`
+	}{}
 
 	bodyErr := c.BodyParser(&body)
 	if bodyErr != nil {
@@ -48,7 +48,7 @@ func (h *handlerImpl) SendVerificationEmail(c *fiber.Ctx) error {
 		return utils.ResponseError(c, appErr)
 	}
 
-	return utils.ResponseMessage(c, 200, "Email sent successfully")
+	return utils.ResponseMessage(c, http.StatusOK, "Email sent successfully")
 }
 
 func (h *handlerImpl) VerifyEmail(c *fiber.Ctx) error {
@@ -69,7 +69,7 @@ func (h *handlerImpl) VerifyEmail(c *fiber.Ctx) error {
 
 	c.Cookie(utils.CreateSessionCookie(token, h.cfg.SessionExpire))
 
-	return c.Status(200).JSON(fiber.Map{
+	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "Email verified successfully",
 		"token":   token,
 	})
