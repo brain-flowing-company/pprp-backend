@@ -21,7 +21,7 @@ import (
 type Service interface {
 	GetAllUsers(*[]models.Users) *apperror.AppError
 	GetUserById(*models.Users, string) *apperror.AppError
-	Register(*models.RegisteringUser, *multipart.FileHeader) *apperror.AppError
+	Register(*models.RegisteringUsers, *multipart.FileHeader) *apperror.AppError
 	UpdateUser(*models.UpdatingUserPersonalInfo, *multipart.FileHeader) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 	GetUserByEmail(*models.Users, string) *apperror.AppError
@@ -78,7 +78,7 @@ func (s *serviceImpl) GetUserById(user *models.Users, userId string) *apperror.A
 	return nil
 }
 
-func (s *serviceImpl) Register(user *models.RegisteringUser, profileImage *multipart.FileHeader) *apperror.AppError {
+func (s *serviceImpl) Register(user *models.RegisteringUsers, profileImage *multipart.FileHeader) *apperror.AppError {
 	var countEmail int64
 	if s.repo.CountEmail(&countEmail, user.Email) != nil {
 		return apperror.

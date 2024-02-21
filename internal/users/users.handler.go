@@ -76,12 +76,12 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 // @description Create user with formData **\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg
 // @tags        users
 // @produce     json
-// @param       formData formData models.RegisteringUser true "User information"
+// @param       formData formData models.RegisteringUsers true "User information"
 // @success     200	{object} models.Users
 // @failure     400 {object} models.ErrorResponse "Invalid user info"
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
-	user := &models.RegisteringUser{
+	user := &models.RegisteringUsers{
 		UserId: uuid.New(),
 	}
 
@@ -92,7 +92,7 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 			Describe(fmt.Sprintf("Could not parse form data: %v", err.Error())))
 	}
 
-	if session, ok := c.Locals("session").(models.Session); !ok {
+	if session, ok := c.Locals("session").(models.Sessions); !ok {
 		user.RegisteredType = enums.EMAIL
 	} else {
 		user.RegisteredType = session.RegisteredType
@@ -120,9 +120,9 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 // @failure     404 {object} models.ErrorResponse "User not found"
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
-	session, ok := c.Locals("session").(models.Session)
+	session, ok := c.Locals("session").(models.Sessions)
 	if !ok {
-		session = models.Session{}
+		session = models.Sessions{}
 	}
 
 	user := models.UpdatingUserPersonalInfo{UserId: session.UserId}
@@ -169,7 +169,7 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 // @success     200 {object} models.Users
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
-	session := c.Locals("session").(models.Session)
+	session := c.Locals("session").(models.Sessions)
 	user := models.Users{}
 	err := h.service.GetUserByEmail(&user, session.Email)
 	if err != nil {
@@ -185,9 +185,9 @@ func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
 // @produce     json
 // @success     200 {object} models.Session
 func (h *handlerImpl) GetRegisteredType(c *fiber.Ctx) error {
-	session, ok := c.Locals("session").(models.Session)
+	session, ok := c.Locals("session").(models.Sessions)
 	if !ok {
-		session = models.Session{}
+		session = models.Sessions{}
 	}
 
 	return c.JSON(session)
