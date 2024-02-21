@@ -38,7 +38,7 @@ func NewHandler(cfg *config.Config, service Service) Handler {
 // @failure     500 {object} models.ErrorResponse
 func (h *handlerImpl) Login(c *fiber.Ctx) error {
 	// Parse login request from the request body
-	var loginRequest models.LoginRequest
+	var loginRequest models.LoginRequests
 	if err := c.BodyParser(&loginRequest); err != nil {
 		return utils.ResponseError(c, apperror.
 			New(apperror.BadRequest).

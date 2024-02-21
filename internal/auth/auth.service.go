@@ -46,7 +46,7 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 			Describe("Credentials do not match")
 	}
 
-	session := models.Session{
+	session := models.Sessions{
 		Email:          user.Email,
 		RegisteredType: enums.EMAIL,
 		SessionType:    models.SessionLogin,
