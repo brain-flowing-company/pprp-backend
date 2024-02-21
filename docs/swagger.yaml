@@ -291,11 +291,11 @@ definitions:
       profile_image_url:
         example: https://image_url.com/abcd
         type: string
-      registeredType:
+      registered_type:
         allOf:
         - $ref: '#/definitions/enums.RegisteredType'
         example: EMAIL
-      userId:
+      user_id:
         type: string
     type: object
 host: localhost:8000
@@ -658,7 +658,29 @@ paths:
       - property
   /api/v1/register:
     post:
-      description: Create a user by prasing the body
+      description: Create user with formData **\***upload profile image in formData
+        with field `profile_image`. Available formats are .png / .jpg / .jpeg
+      parameters:
+      - example: email@email.com
+        in: formData
+        name: email
+        type: string
+      - example: John
+        in: formData
+        name: first_name
+        type: string
+      - example: Doe
+        in: formData
+        name: last_name
+        type: string
+      - example: password1234
+        in: formData
+        name: password
+        type: string
+      - example: "0812345678"
+        in: formData
+        name: phone_number
+        type: string
       produces:
       - application/json
       responses:
@@ -725,7 +747,22 @@ paths:
       tags:
       - users
     put:
-      description: Update a user with the given id by parsing the body
+      description: Update specifying userId with formData **\***upload profile image
+        in formData with field `profile_image`. Available formats are .png / .jpg
+        / .jpeg
+      parameters:
+      - example: John
+        in: formData
+        name: first_name
+        type: string
+      - example: Doe
+        in: formData
+        name: last_name
+        type: string
+      - example: "0812345678"
+        in: formData
+        name: phone_number
+        type: string
       produces:
       - application/json
       responses:

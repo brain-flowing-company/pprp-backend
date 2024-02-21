@@ -27,6 +27,35 @@ type Users struct {
 	IsVerified                bool                 `json:"is_verified"                  form:"is_verified"                  gorm:"default:null" example:"false"`
 }
 
+type RegisteringUser struct {
+	CommonModel     `swaggerignore:"true"`
+	UserId          uuid.UUID            `form:"-" swaggerignore:"true"`
+	RegisteredType  enums.RegisteredType `form:"-" swaggerignore:"true"`
+	Email           string               `form:"email"        example:"email@email.com"`
+	Password        string               `form:"password"     example:"password1234"`
+	FirstName       string               `form:"first_name"   example:"John"`
+	LastName        string               `form:"last_name"    example:"Doe"`
+	PhoneNumber     string               `form:"phone_number" example:"0812345678"`
+	ProfileImageUrl string               `form:"-" swaggerignore:"true"`
+}
+
+func (r RegisteringUser) TableName() string {
+	return "users"
+}
+
+type UpdatingUserPersonalInfo struct {
+	CommonModel     `swaggerignore:"true"`
+	UserId          uuid.UUID `form:"-"            swaggerignore:"true"`
+	FirstName       string    `form:"first_name"   example:"John"`
+	LastName        string    `form:"last_name"    example:"Doe"`
+	PhoneNumber     string    `form:"phone_number" example:"0812345678"`
+	ProfileImageUrl string    `form:"-"            swaggerignore:"true"`
+}
+
+func (r UpdatingUserPersonalInfo) TableName() string {
+	return "users"
+}
+
 func (u Users) TableName() string {
 	return "users"
 }

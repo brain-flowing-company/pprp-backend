@@ -547,7 +547,7 @@ const docTemplate = `{
         },
         "/api/v1/register": {
             "post": {
-                "description": "Create a user by prasing the body",
+                "description": "Create user with formData **\\***upload profile image in formData with field ` + "`" + `profile_image` + "`" + `. Available formats are .png / .jpg / .jpeg",
                 "produces": [
                     "application/json"
                 ],
@@ -555,6 +555,38 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Register *use cookies*",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "email@email.com",
+                        "name": "email",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "John",
+                        "name": "first_name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Doe",
+                        "name": "last_name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "password1234",
+                        "name": "password",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "0812345678",
+                        "name": "phone_number",
+                        "in": "formData"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -615,7 +647,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update a user with the given id by parsing the body",
+                "description": "Update specifying userId with formData **\\***upload profile image in formData with field ` + "`" + `profile_image` + "`" + `. Available formats are .png / .jpg / .jpeg",
                 "produces": [
                     "application/json"
                 ],
@@ -623,6 +655,26 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Update user by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "John",
+                        "name": "first_name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Doe",
+                        "name": "last_name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "0812345678",
+                        "name": "phone_number",
+                        "in": "formData"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1199,7 +1251,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "https://image_url.com/abcd"
                 },
-                "registeredType": {
+                "registered_type": {
                     "allOf": [
                         {
                             "$ref": "#/definitions/enums.RegisteredType"
@@ -1207,7 +1259,7 @@ const docTemplate = `{
                     ],
                     "example": "EMAIL"
                 },
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }

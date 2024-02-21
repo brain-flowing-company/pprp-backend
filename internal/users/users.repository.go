@@ -9,8 +9,8 @@ type Repository interface {
 	GetAllUsers(*[]models.Users) error
 	GetUserById(*models.Users, string) error
 	GetUserByEmail(*models.Users, string) error
-	CreateUser(*models.Users) error
-	UpdateUser(*models.Users, string) error
+	CreateUser(*models.RegisteringUser) error
+	UpdateUser(*models.UpdatingUserPersonalInfo, string) error
 	DeleteUser(string) error
 	CountEmail(*int64, string) error
 	CountPhoneNumber(*int64, string) error
@@ -38,11 +38,11 @@ func (repo *repositoryImpl) GetUserByEmail(user *models.Users, email string) err
 	return repo.db.First(user, "email = ?", email).Error
 }
 
-func (repo *repositoryImpl) CreateUser(user *models.Users) error {
+func (repo *repositoryImpl) CreateUser(user *models.RegisteringUser) error {
 	return repo.db.Create(user).Error
 }
 
-func (repo *repositoryImpl) UpdateUser(user *models.Users, userId string) error {
+func (repo *repositoryImpl) UpdateUser(user *models.UpdatingUserPersonalInfo, userId string) error {
 	err := repo.db.First(&models.Users{}, "user_id = ?", userId).Error
 	if err != nil {
 		return err
