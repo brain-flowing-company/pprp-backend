@@ -9,6 +9,7 @@ import (
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
+	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
 	"go.uber.org/zap"
@@ -16,7 +17,7 @@ import (
 
 type Service interface {
 	SendVerificationEmail(string) *apperror.AppError
-	VerifyEmail(string, string) *apperror.AppError
+	VerifyEmail(*models.EmailVerificationRequest) (string, *apperror.AppError)
 }
 
 type serviceImpl struct {
@@ -75,7 +76,8 @@ func (s *serviceImpl) SendVerificationEmail(userEmail string) *apperror.AppError
 	subject := "Email Verification from suechaokhai.com"
 	emailStructure := models.VerificationEmail{
 		// VerificationLink: "https://www.youtube.com/@oreo10baht",
-		VerificationLink: "http://localhost:8000/email/verify?email=" + userEmail + "&code=" + code,
+		// VerificationLink: "http://localhost:8000/email/verify?email=" + userEmail + "&code=" + code,
+		VerificationLink: "http://localhost:3000/register",
 	}
 
 	return s.sendEmail(to, subject, emailStructure)
@@ -117,25 +119,42 @@ func (s *serviceImpl) sendEmail(to []string, subject string, emailStructure mode
 	return nil
 }
 
-func (s *serviceImpl) VerifyEmail(userEmail string, userCode string) *apperror.AppError {
+func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationRequest) (string, *apperror.AppError) {
+
+	userEmail := verificationReq.Email
+	userCode := verificationReq.Code
+
 	if !utils.IsValidEmail(userEmail) {
-		return apperror.
+		return "", apperror.
 			New(apperror.InvalidEmail).
 			Describe("Invalid email")
 	}
 
 	if !utils.IsValidEmailVerificationCode(userCode) {
-		return apperror.
+		return "", apperror.
 			New(apperror.InvalidEmailVerificationCode).
 			Describe("Invalid verification code")
 	}
 
 	verificationData := models.EmailVerificationData{}
 
+	var countData int64
+	countDataErr := s.repo.CountEmailVerificationData(&countData, userEmail)
+	if countDataErr != nil {
+		s.logger.Error("Could not count email verification data", zap.Error(countDataErr))
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not verify email. Please try again later")
+	} else if countData == 0 {
+		return "", apperror.
+			New(apperror.EmailVerificationDataNotFound).
+			Describe("Could not verify email. Please try again later")
+	}
+
 	getDataErr := s.repo.GetEmailVerificationDataByEmail(&verificationData, userEmail)
 	if getDataErr != nil {
 		s.logger.Error("Could not get email verification data", zap.Error(getDataErr))
-		return apperror.
+		return "", apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not verify email. Please try again later")
 	}
@@ -144,28 +163,43 @@ func (s *serviceImpl) VerifyEmail(userEmail string, userCode string) *apperror.A
 		err := s.repo.DeleteEmailVerificationData(userEmail)
 		if err != nil {
 			s.logger.Error("Could not delete email verification data", zap.Error(err))
-			return apperror.
+			return "", apperror.
 				New(apperror.InternalServerError).
 				Describe("Verification code expired")
 		}
-		return apperror.
+		return "", apperror.
 			New(apperror.EmailVerificationCodeExpired).
 			Describe("Verification code expired")
 	}
 
 	if userCode != verificationData.Code {
-		return apperror.
+		return "", apperror.
 			New(apperror.InvalidEmailVerificationCode).
 			Describe("Invalid verification code")
 	}
 
-	err := s.repo.DeleteEmailVerificationData(userEmail)
-	if err != nil {
-		s.logger.Error("Could not delete email verification data", zap.Error(err))
-		return apperror.
+	fmt.Println("Verification code matched")
+	deleteErr := s.repo.DeleteEmailVerificationData(userEmail)
+	if deleteErr != nil {
+		s.logger.Error("Could not delete email verification data", zap.Error(deleteErr))
+		return "", apperror.
 			New(apperror.InternalServerError).
 			Describe("Server Error. Please try again later")
 	}
 
-	return nil
+	session := models.Session{
+		Email:          userEmail,
+		RegisteredType: enums.EMAIL,
+		SessionType:    models.SessionRegister,
+	}
+
+	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
+	if err != nil {
+		s.logger.Error("Could not create JWT token", zap.Error(err))
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Server Error. Please try again later")
+	}
+
+	return token, nil
 }

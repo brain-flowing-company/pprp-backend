@@ -263,8 +263,9 @@ CREATE RULE delete_property AS ON UPDATE TO property
     );
 
 CREATE RULE create_email_verification_data AS ON INSERT TO email_verification_data
-    WHERE new.email = (SELECT email FROM users WHERE email = new.email)
-    DO INSTEAD UPDATE email_verification_data SET code = new.code, expired_at = new.expired_at WHERE email = new.email;
+    WHERE new.email = (SELECT email FROM email_verification_data WHERE email = new.email) DO INSTEAD(
+        UPDATE email_verification_data SET code = new.code, expired_at = new.expired_at WHERE email = new.email
+    );
 
 -------------------- INDEX --------------------
 

@@ -43,3 +43,8 @@ type EmailVerificationData struct {
 	Code      string     `json:"code"`
 	ExpiredAt *time.Time `json:"expire_at"`
 }
+
+type EmailVerificationRequest struct {
+	Email string `json:"email"`
+	Code  string `json:"code"`
+}

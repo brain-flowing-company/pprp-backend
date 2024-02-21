@@ -9,6 +9,7 @@ type Repository interface {
 	CountEmail(*int64, string) error
 	CreateEmailVerificationData(*models.EmailVerificationData) error
 	GetEmailVerificationDataByEmail(*models.EmailVerificationData, string) error
+	CountEmailVerificationData(*int64, string) error
 	DeleteEmailVerificationData(string) error
 }
 
@@ -32,6 +33,10 @@ func (repo *repositoryImpl) CreateEmailVerificationData(emailVerificationData *m
 
 func (repo *repositoryImpl) GetEmailVerificationDataByEmail(emailVerificationData *models.EmailVerificationData, email string) error {
 	return repo.db.First(emailVerificationData, "email = ?", email).Error
+}
+
+func (repo *repositoryImpl) CountEmailVerificationData(count *int64, email string) error {
+	return repo.db.Model(&models.EmailVerificationData{}).Where("email = ?", email).Count(count).Error
 }
 
 func (repo *repositoryImpl) DeleteEmailVerificationData(email string) error {

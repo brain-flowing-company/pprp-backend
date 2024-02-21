@@ -2,8 +2,11 @@ package email
 
 import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/config"
+	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/utils"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
 type Handler interface {
@@ -13,11 +16,15 @@ type Handler interface {
 
 type handlerImpl struct {
 	service Service
+	logger  *zap.Logger
+	cfg     *config.Config
 }
 
-func NewHandler(service Service) Handler {
+func NewHandler(logger *zap.Logger, cfg *config.Config, service Service) Handler {
 	return &handlerImpl{
 		service,
+		logger,
+		cfg,
 	}
 }
 
@@ -30,6 +37,7 @@ func (h *handlerImpl) SendVerificationEmail(c *fiber.Ctx) error {
 
 	bodyErr := c.BodyParser(&body)
 	if bodyErr != nil {
+		h.logger.Error("Could not parse body", zap.Error(bodyErr))
 		return utils.ResponseError(c, apperror.
 			New(apperror.InvalidBody).
 			Describe("Invalid request body"))
@@ -44,13 +52,28 @@ func (h *handlerImpl) SendVerificationEmail(c *fiber.Ctx) error {
 }
 
 func (h *handlerImpl) VerifyEmail(c *fiber.Ctx) error {
-	email := c.Queries()["email"]
-	code := c.Queries()["code"]
+	verificationReq := models.EmailVerificationRequest{}
 
-	appErr := h.service.VerifyEmail(email, code)
+	requestErr := c.QueryParser(&verificationReq)
+	if requestErr != nil {
+		h.logger.Error("Could not parse query", zap.Error(requestErr))
+		return utils.ResponseError(c, apperror.
+			New(apperror.InvalidBody).
+			Describe("Invalid request body"))
+	}
+
+	token, appErr := h.service.VerifyEmail(&verificationReq)
 	if appErr != nil {
 		return utils.ResponseError(c, appErr)
 	}
 
-	return utils.ResponseMessage(c, 200, "Email verified successfully")
+	c.Cookie(utils.CreateSessionCookie(token, h.cfg.SessionExpire))
+
+	return c.Status(200).JSON(fiber.Map{
+		"message": "Email verified successfully",
+		"token":   token,
+	})
+	// url := h.cfg.LoginRedirect
+
+	// return c.Redirect(url, http.StatusPermanentRedirect)
 }

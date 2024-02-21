@@ -106,7 +106,7 @@ func main() {
 
 	emailRepository := email.NewRepository(db)
 	emailService := email.NewService(logger, cfg, emailRepository)
-	emailHandler := email.NewHandler(emailService)
+	emailHandler := email.NewHandler(logger, cfg, emailService)
 
 	mw := middleware.NewMiddleware(cfg)
 

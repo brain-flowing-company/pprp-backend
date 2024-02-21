@@ -59,17 +59,18 @@ var (
 	InvalidAppointmentStatus = &AppErrorType{http.StatusBadRequest, "invalid-appointment-status"}
 
 	// user errors
-	InvalidUserId                = &AppErrorType{http.StatusBadRequest, "invalid-user-id"}
-	UserNotFound                 = &AppErrorType{http.StatusNotFound, "user-not-found"}
-	EmailAlreadyExists           = &AppErrorType{http.StatusBadRequest, "email-already-exists"}
-	PhoneNumberAlreadyExists     = &AppErrorType{http.StatusBadRequest, "phone-number-already-exists"}
-	InvalidEmail                 = &AppErrorType{http.StatusBadRequest, "invalid-email"}
-	InvalidEmailVerificationCode = &AppErrorType{http.StatusBadRequest, "invalid-email-verification-code"}
-	EmailVerificationCodeExpired = &AppErrorType{http.StatusBadRequest, "email-verification-code-expired"}
-	InvalidPassword              = &AppErrorType{http.StatusBadRequest, "invalid-password"}
-	InvalidCredentials           = &AppErrorType{http.StatusUnauthorized, "invalid-credentials"}
-	ServiceUnavailable           = &AppErrorType{http.StatusServiceUnavailable, "service-unavailable"}
-	InvalidProfileImageExtension = &AppErrorType{http.StatusBadRequest, "invalid-profile-image-extensions"}
+	InvalidUserId                 = &AppErrorType{http.StatusBadRequest, "invalid-user-id"}
+	UserNotFound                  = &AppErrorType{http.StatusNotFound, "user-not-found"}
+	EmailAlreadyExists            = &AppErrorType{http.StatusBadRequest, "email-already-exists"}
+	PhoneNumberAlreadyExists      = &AppErrorType{http.StatusBadRequest, "phone-number-already-exists"}
+	InvalidEmail                  = &AppErrorType{http.StatusBadRequest, "invalid-email"}
+	InvalidEmailVerificationCode  = &AppErrorType{http.StatusBadRequest, "invalid-email-verification-code"}
+	EmailVerificationCodeExpired  = &AppErrorType{http.StatusBadRequest, "email-verification-code-expired"}
+	EmailVerificationDataNotFound = &AppErrorType{http.StatusNotFound, "email-verification-data-not-found"}
+	InvalidPassword               = &AppErrorType{http.StatusBadRequest, "invalid-password"}
+	InvalidCredentials            = &AppErrorType{http.StatusUnauthorized, "invalid-credentials"}
+	ServiceUnavailable            = &AppErrorType{http.StatusServiceUnavailable, "service-unavailable"}
+	InvalidProfileImageExtension  = &AppErrorType{http.StatusBadRequest, "invalid-profile-image-extensions"}
 
 	InvalidAgreementId = &AppErrorType{http.StatusBadRequest, "invalid-agreement-id"}
 	AgreementNotFound  = &AppErrorType{http.StatusNotFound, "agreement-not-found"}
