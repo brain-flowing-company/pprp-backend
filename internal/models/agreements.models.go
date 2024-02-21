@@ -11,6 +11,7 @@ type Agreements struct {
 	PropertyID    uuid.UUID `json:"property_id"`
 	OwnerUserID   uuid.UUID `json:"owner_user_id"`
 	DwellerUserID uuid.UUID `json:"dweller_user_id"`
+	AgreementDate time.Time `json:"agreement_date"`
 	CommonModels
 }
 

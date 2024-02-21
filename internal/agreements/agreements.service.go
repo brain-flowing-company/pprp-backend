@@ -12,11 +12,11 @@ import (
 )
 
 type Service interface {
-	GetAllAgreements(*[]models.Agreement) *apperror.AppError
-	GetAgreementById(*models.Agreement, string) *apperror.AppError
-	GetAgreementsByOwnerId(*[]models.Agreement, string) *apperror.AppError
-	GetAgreementsByDwellerId(*[]models.Agreement, string) *apperror.AppError
-	CreateAgreement(*models.CreatingAgreement) *apperror.AppError
+	GetAllAgreements(*[]models.Agreements) *apperror.AppError
+	GetAgreementById(*models.Agreements, string) *apperror.AppError
+	GetAgreementsByOwnerId(*[]models.Agreements, string) *apperror.AppError
+	GetAgreementsByDwellerId(*[]models.Agreements, string) *apperror.AppError
+	CreateAgreement(*models.CreatingAgreements) *apperror.AppError
 	DeleteAgreement(string) *apperror.AppError
 }
 
@@ -31,7 +31,7 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 		logger,
 	}
 }
-func (s *serviceImpl) GetAllAgreements(results *[]models.Agreement) *apperror.AppError {
+func (s *serviceImpl) GetAllAgreements(results *[]models.Agreements) *apperror.AppError {
 	err := s.repo.GetAllAgreements(results)
 	if err != nil {
 		s.logger.Error("Error getting all agreements", zap.Error(err))
@@ -40,7 +40,7 @@ func (s *serviceImpl) GetAllAgreements(results *[]models.Agreement) *apperror.Ap
 	return nil
 }
 
-func (s *serviceImpl) GetAgreementById(result *models.Agreement, id string) *apperror.AppError {
+func (s *serviceImpl) GetAgreementById(result *models.Agreements, id string) *apperror.AppError {
 	if !utils.IsValidUUID(id) {
 		return apperror.New(apperror.InvalidAgreementId).Describe("Invalid agreement id")
 	}
@@ -55,7 +55,7 @@ func (s *serviceImpl) GetAgreementById(result *models.Agreement, id string) *app
 	return nil
 }
 
-func (s *serviceImpl) GetAgreementsByOwnerId(agreements *[]models.Agreement, userId string) *apperror.AppError {
+func (s *serviceImpl) GetAgreementsByOwnerId(agreements *[]models.Agreements, userId string) *apperror.AppError {
 	err := s.repo.GetAgreementsByOwnerId(agreements, userId)
 	if err != nil {
 		s.logger.Error("Could not get agreements by owner id", zap.Error(err))
@@ -67,8 +67,8 @@ func (s *serviceImpl) GetAgreementsByOwnerId(agreements *[]models.Agreement, use
 	return nil
 }
 
-func (s *serviceImpl) CreateAgreement(creatingAgreement *models.CreatingAgreement) *apperror.AppError {
-	agreement := models.Agreement{
+func (s *serviceImpl) CreateAgreement(creatingAgreement *models.CreatingAgreements) *apperror.AppError {
+	agreement := models.Agreements{
 		AgreementID:   uuid.New(),
 		PropertyID:    creatingAgreement.PropertyID,
 		OwnerUserID:   creatingAgreement.OwnerUserID,
@@ -106,7 +106,7 @@ func (s *serviceImpl) DeleteAgreement(id string) *apperror.AppError {
 	return nil
 }
 
-func (s *serviceImpl) GetAgreementsByDwellerId(agreements *[]models.Agreement, userId string) *apperror.AppError {
+func (s *serviceImpl) GetAgreementsByDwellerId(agreements *[]models.Agreements, userId string) *apperror.AppError {
 	err := s.repo.GetAgreementsByDwellerId(agreements, userId)
 	if err != nil {
 		s.logger.Error("Could not get agreements by dweller id", zap.Error(err))

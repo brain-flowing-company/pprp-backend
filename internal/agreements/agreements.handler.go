@@ -29,10 +29,10 @@ func NewHandler(service Service) Handler {
 // @description  Get all agreements
 // @tags agreements
 // @produce json
-// @success 200 {object} []models.Agreement
+// @success 200 {object} []models.Agreements
 // @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAllAgreements(c *fiber.Ctx) error {
-	var apps []models.Agreement
+	var apps []models.Agreements
 	err := h.service.GetAllAgreements(&apps)
 	if err != nil {
 		return apperror.New(apperror.InternalServerError).Describe("Error getting all agreements")
@@ -46,13 +46,13 @@ func (h *handlerImpl) GetAllAgreements(c *fiber.Ctx) error {
 // @description  Get an agreement by its id
 // @tags agreements
 // @produce json
-// @success 200 {object} models.Agreement
+// @success 200 {object} models.Agreements
 // @failure 400 {object} models.ErrorResponse "Invalid agreement id"
 // @failure 404 {object} models.ErrorResponse "Agreement not found"
 // @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 	id := c.Params("agreementId")
-	var app models.Agreement
+	var app models.Agreements
 	err := h.service.GetAgreementById(&app, id)
 	if err != nil {
 		return apperror.New(apperror.InternalServerError).Describe("Error getting agreement by id")
@@ -65,11 +65,11 @@ func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 // @description  Get all agreements by owner id
 // @tags agreements
 // @produce json
-// @success 200 {object} []models.Agreement
+// @success 200 {object} []models.Agreements
 // @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAgreementsByOwnerId(c *fiber.Ctx) error {
 	id := c.Params("userId")
-	var apps []models.Agreement
+	var apps []models.Agreements
 	err := h.service.GetAgreementsByOwnerId(&apps, id)
 	if err != nil {
 		return apperror.New(apperror.InternalServerError).Describe("Error getting agreements by owner id")
@@ -82,11 +82,11 @@ func (h *handlerImpl) GetAgreementsByOwnerId(c *fiber.Ctx) error {
 // @description  Get all agreements by dweller id
 // @tags agreements
 // @produce json
-// @success 200 {object} []models.Agreement
+// @success 200 {object} []models.Agreements
 // @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) GetAgreementsByDwellerId(c *fiber.Ctx) error {
 	id := c.Params("userId")
-	var apps []models.Agreement
+	var apps []models.Agreements
 	err := h.service.GetAgreementsByDwellerId(&apps, id)
 	if err != nil {
 		return apperror.New(apperror.InternalServerError).Describe("Error getting agreements by dweller id")
@@ -102,7 +102,7 @@ func (h *handlerImpl) GetAgreementsByDwellerId(c *fiber.Ctx) error {
 // @success 201
 // @failure 500 {object} models.ErrorResponse
 func (h *handlerImpl) CreateAgreement(c *fiber.Ctx) error {
-	var creatingAgreement models.CreatingAgreement
+	var creatingAgreement models.CreatingAgreements
 	if err := c.BodyParser(&creatingAgreement); err != nil {
 		return apperror.New(apperror.InvalidBody).Describe("Invalid body")
 	}
