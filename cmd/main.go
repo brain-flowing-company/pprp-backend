@@ -7,6 +7,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/database"
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
+	"github.com/brain-flowing-company/pprp-backend/internal/agreements"
 	"github.com/brain-flowing-company/pprp-backend/internal/appointments"
 	"github.com/brain-flowing-company/pprp-backend/internal/auth"
 	"github.com/brain-flowing-company/pprp-backend/internal/email"
@@ -82,6 +83,10 @@ func main() {
 	propertyService := property.NewService(logger, propertyRepo)
 	propertyHandler := property.NewHandler(propertyService)
 
+	agreementsRepo := agreements.NewRepository(db)
+	agreementsService := agreements.NewService(logger, agreementsRepo)
+	agreementsHandler := agreements.NewHandler(agreementsService)
+
 	usersRepo := users.NewRepository(db)
 	usersService := users.NewService(logger, cfg, usersRepo, storage)
 	usersHandler := users.NewHandler(usersService)
@@ -148,6 +153,13 @@ func main() {
 	apiv1.Post("/register", usersHandler.Register)
 	apiv1.Post("/login", authHandler.Login)
 	apiv1.Post("/logout", authHandler.Logout)
+
+	apiv1.Get("/agreements", agreementsHandler.GetAllAgreements)
+	apiv1.Get("/agreement/:agreementId", agreementsHandler.GetAgreementById)
+	apiv1.Get("/user/:userId/agreements", agreementsHandler.GetAgreementsByOwnerId)
+	apiv1.Get("/user/:userId/dwelling-agreements", agreementsHandler.GetAgreementsByDwellerId)
+	apiv1.Post("/agreement", agreementsHandler.CreateAgreement)
+	apiv1.Delete("/agreement/:agreementId", agreementsHandler.DeleteAgreement)
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
