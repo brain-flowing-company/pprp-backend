@@ -22,7 +22,7 @@ type Service interface {
 	GetAllUsers(*[]models.Users) *apperror.AppError
 	GetUserById(*models.Users, string) *apperror.AppError
 	Register(*models.RegisteringUser, *multipart.FileHeader) *apperror.AppError
-	UpdateUser(*models.Users, *multipart.FileHeader) *apperror.AppError
+	UpdateUser(*models.UpdatingUserPersonalInfo, *multipart.FileHeader) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 	GetUserByEmail(*models.Users, string) *apperror.AppError
 }
@@ -147,7 +147,7 @@ func (s *serviceImpl) Register(user *models.RegisteringUser, profileImage *multi
 	return nil
 }
 
-func (s *serviceImpl) UpdateUser(user *models.Users, profileImage *multipart.FileHeader) *apperror.AppError {
+func (s *serviceImpl) UpdateUser(user *models.UpdatingUserPersonalInfo, profileImage *multipart.FileHeader) *apperror.AppError {
 	err := s.repo.UpdateUser(user, user.UserId.String())
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
@@ -165,6 +165,7 @@ func (s *serviceImpl) UpdateUser(user *models.Users, profileImage *multipart.Fil
 		return apperr
 	}
 	user.ProfileImageUrl = url
+
 	return nil
 }
 

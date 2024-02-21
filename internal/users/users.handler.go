@@ -73,7 +73,7 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 
 // @router      /api/v1/register [post]
 // @summary     Register *use cookies*
-// @description Create a user by parsing the body **\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg
+// @description Create user with formData **\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg
 // @tags        users
 // @produce     json
 // @param       formData formData models.RegisteringUser true "User information"
@@ -110,10 +110,10 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 
 // @router      /api/v1/user/:userId [put]
 // @summary     Update user by id
-// @description Update a user with the given id by parsing the body
+// @description Update specifying userId with formData **\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg
 // @tags        users
 // @produce     json
-// @param       formData formData models.Users true "User information"
+// @param       formData formData models.UpdatingUserPersonalInfo true "User information"
 // @success     200	{object} models.Users
 // @failure     400 {object} models.ErrorResponse "Invalid user info"
 // @failure     404 {object} models.ErrorResponse "User not found"
@@ -126,7 +126,7 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 			Describe("Invalid user id"))
 	}
 
-	user := models.Users{UserId: userId}
+	user := models.UpdatingUserPersonalInfo{UserId: userId}
 
 	bodyErr := c.BodyParser(&user)
 	if bodyErr != nil {

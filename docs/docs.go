@@ -547,7 +547,7 @@ const docTemplate = `{
         },
         "/api/v1/register": {
             "post": {
-                "description": "Create a user by parsing the body **\\***upload profile image in formData with field ` + "`" + `profile_image` + "`" + `. Available formats are .png / .jpg / .jpeg",
+                "description": "Create user with formData **\\***upload profile image in formData with field ` + "`" + `profile_image` + "`" + `. Available formats are .png / .jpg / .jpeg",
                 "produces": [
                     "application/json"
                 ],
@@ -647,7 +647,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update a user with the given id by parsing the body",
+                "description": "Update specifying userId with formData **\\***upload profile image in formData with field ` + "`" + `profile_image` + "`" + `. Available formats are .png / .jpg / .jpeg",
                 "produces": [
                     "application/json"
                 ],
@@ -658,101 +658,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "1234567890",
-                        "name": "bank_account_number",
-                        "in": "formData"
-                    },
-                    {
-                        "enum": [
-                            "KASIKORN BANK",
-                            "BANGKOK BANK",
-                            "KRUNG THAI BANK",
-                            "BANK OF AYUDHYA",
-                            "CIMB THAI BANK",
-                            "TMBTHANACHART BANK",
-                            "SIAM COMMERCIAL BANK",
-                            "GOVERNMENT SAVINGS BANK",
-                            "BANK NOT SELECTED"
-                        ],
-                        "type": "string",
-                        "example": "KBANK",
-                        "x-enum-varnames": [
-                            "KBANK",
-                            "BBL",
-                            "KTB",
-                            "BAY",
-                            "CIMB",
-                            "TTB",
-                            "SCB",
-                            "GSB",
-                            "NULL"
-                        ],
-                        "name": "bank_name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "https://image_url.com/abcd",
-                        "name": "citizen_card_image_url",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "1234567890123",
-                        "name": "citizen_id",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "created_at",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "123",
-                        "name": "credit_card_cvv",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "12",
-                        "name": "credit_card_expiration_month",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "2023",
-                        "name": "credit_card_expiration_year",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "1234567890123456",
-                        "name": "credit_card_number",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "JOHN DOE",
-                        "name": "credit_cardholder_name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "email@email.com",
-                        "name": "email",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
                         "example": "John",
                         "name": "first_name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "boolean",
-                        "example": false,
-                        "name": "is_verified",
                         "in": "formData"
                     },
                     {
@@ -763,39 +670,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "example": "password1234",
-                        "name": "password",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
                         "example": "0812345678",
                         "name": "phone_number",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "https://image_url.com/abcd",
-                        "name": "profile_image_url",
-                        "in": "formData"
-                    },
-                    {
-                        "enum": [
-                            "EMAIL",
-                            "GOOGLE"
-                        ],
-                        "type": "string",
-                        "example": "EMAIL",
-                        "x-enum-varnames": [
-                            "EMAIL",
-                            "GOOGLE"
-                        ],
-                        "name": "registered_type",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "user_id",
                         "in": "formData"
                     }
                 ],
