@@ -19,7 +19,7 @@ import (
 
 type Service interface {
 	GoogleLogin() string
-	ExchangeToken(context.Context, *models.GoogleExchangeToken) (string, bool, *apperror.AppError)
+	ExchangeToken(context.Context, *models.GoogleExchangeTokens) (string, bool, *apperror.AppError)
 }
 
 type serviceImpl struct {
@@ -48,7 +48,7 @@ func (s *serviceImpl) GoogleLogin() string {
 	return s.authCfg.AuthCodeURL("state")
 }
 
-func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleExchangeToken) (string, bool, *apperror.AppError) {
+func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleExchangeTokens) (string, bool, *apperror.AppError) {
 	oauthToken, err := s.authCfg.Exchange(c, excToken.Code)
 	if err != nil {
 		s.logger.Error("Could not exchange token from google", zap.Error(err))
@@ -90,7 +90,7 @@ func (s *serviceImpl) ExchangeToken(c context.Context, excToken *models.GoogleEx
 			Describe("Google OAuth failed")
 	}
 
-	session := models.Session{
+	session := models.Sessions{
 		Email:          googleInfo.Email,
 		RegisteredType: enums.GOOGLE,
 		SessionType:    models.SessionRegister,

@@ -42,7 +42,7 @@ func (h *handlerImpl) GoogleLogin(c *fiber.Ctx) error {
 }
 
 func (h *handlerImpl) ExchangeToken(c *fiber.Ctx) error {
-	excToken := models.GoogleExchangeToken{}
+	excToken := models.GoogleExchangeTokens{}
 
 	err := c.QueryParser(&excToken)
 	if err != nil {

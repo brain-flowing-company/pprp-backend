@@ -8,6 +8,6 @@ type GoogleExchangeTokens struct {
 	State    string
 }
 
-type GoogleUserInfos struct {
+type GoogleUserInfo struct {
 	Email string
 }
