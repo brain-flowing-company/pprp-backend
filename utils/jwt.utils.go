@@ -7,11 +7,11 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func CreateJwtToken(session models.Session, maxAge time.Duration, jwtSecret string) (string, error) {
+func CreateJwtToken(session models.Sessions, maxAge time.Duration, jwtSecret string) (string, error) {
 	issuedTime := time.Now().Unix()
 	expiresTime := time.Now().Add(maxAge).Unix()
 
-	customClaim := models.SessionClaim{
+	customClaim := models.SessionClaims{
 		Session: session,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  issuedTime,
@@ -29,8 +29,8 @@ func CreateJwtToken(session models.Session, maxAge time.Duration, jwtSecret stri
 	return signedToken, nil
 }
 
-func ParseToken(token string, jwtSecret string) (*models.SessionClaim, error) {
-	claim, err := jwt.ParseWithClaims(token, &models.SessionClaim{}, func(t *jwt.Token) (interface{}, error) {
+func ParseToken(token string, jwtSecret string) (*models.SessionClaims, error) {
+	claim, err := jwt.ParseWithClaims(token, &models.SessionClaims{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(jwtSecret), nil
 	})
 
@@ -38,5 +38,5 @@ func ParseToken(token string, jwtSecret string) (*models.SessionClaim, error) {
 		return nil, err
 	}
 
-	return claim.Claims.(*models.SessionClaim), nil
+	return claim.Claims.(*models.SessionClaims), nil
 }

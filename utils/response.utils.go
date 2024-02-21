@@ -7,7 +7,7 @@ import (
 )
 
 func ResponseError(c *fiber.Ctx, err interface{}) error {
-	r := models.ErrorResponse{}
+	r := models.ErrorResponses{}
 
 	switch appErr := err.(type) {
 	case *apperror.AppError:
