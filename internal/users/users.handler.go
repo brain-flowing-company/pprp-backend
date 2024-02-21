@@ -76,6 +76,7 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 // @description Create a user by prasing the body
 // @tags        users
 // @produce     json
+// @param       formData formData models.Users true "User information"
 // @success     200	{object} models.Users
 // @failure     400 {object} models.ErrorResponse "Invalid user info"
 // @failure     500 {object} models.ErrorResponse
@@ -112,6 +113,7 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 // @description Update a user with the given id by parsing the body
 // @tags        users
 // @produce     json
+// @param       formData formData models.Users true "User information"
 // @success     200	{object} models.Users
 // @failure     400 {object} models.ErrorResponse "Invalid user info"
 // @failure     404 {object} models.ErrorResponse "User not found"
