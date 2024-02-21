@@ -142,7 +142,7 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/user/:userId [delete]
-// @summary     Delete user by id
+// @summary     Delete user by id  *use cookies*
 // @description Delete a user by its id
 // @tags        users
 // @produce     json

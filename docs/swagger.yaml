@@ -229,6 +229,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/models.SessionType'
         example: LOGIN / REGISTER
+      user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
     type: object
   models.SessionType:
     enum:
@@ -699,53 +702,7 @@ paths:
       summary: Register *use cookies*
       tags:
       - users
-  /api/v1/user/:userId:
-    delete:
-      description: Delete a user by its id
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Invalid user id
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "404":
-          description: User not found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Delete user by id
-      tags:
-      - users
-    get:
-      description: Get a user by its id
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Users'
-        "400":
-          description: Invalid user id
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "404":
-          description: User not found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get user by id
-      tags:
-      - users
+  /api/v1/user/:
     put:
       description: Update specifying userId with formData **\***upload profile image
         in formData with field `profile_image`. Available formats are .png / .jpg
@@ -782,7 +739,54 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Update user by id
+      summary: Update current user personal information *use cookies*
+      tags:
+      - users
+  /api/v1/user/:userId:
+    delete:
+      description: Delete a user by its id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid user id
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete user by id  *use cookies*
+      tags:
+      - users
+    get:
+      description: Get a user by its id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Users'
+        "400":
+          description: Invalid user id
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get user by id
       tags:
       - users
   /api/v1/user/greeting:
