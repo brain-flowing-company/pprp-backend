@@ -1,4 +1,4 @@
-package greeting
+package greetings
 
 import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -27,7 +27,7 @@ func NewHandler(service Service) Handler {
 // @produce     json
 // @success     200	{object}	models.Greeting
 func (h *handlerImpl) Greeting(c *fiber.Ctx) error {
-	msg := models.Greeting{}
+	msg := models.Greetings{}
 	h.service.Greeting(&msg)
 
 	return c.JSON(msg)
@@ -41,9 +41,9 @@ func (h *handlerImpl) Greeting(c *fiber.Ctx) error {
 // @success     200	{object}	models.Greeting
 // @failure     401 {object}	models.ErrorResponse
 func (h *handlerImpl) UserGreeting(c *fiber.Ctx) error {
-	session := (c.Locals("session").(models.Session))
+	session := (c.Locals("session").(models.Sessions))
 
-	msg := models.Greeting{}
+	msg := models.Greetings{}
 	h.service.UserGreeting(&msg, session.Email)
 
 	return c.JSON(msg)
