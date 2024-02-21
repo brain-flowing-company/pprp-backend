@@ -465,14 +465,23 @@
         },
         "/api/v1/properties": {
             "get": {
-                "description": "Get all properties",
+                "description": "If a query parameter is provided, search properties by project name or description. Otherwise, get all properties.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "property"
                 ],
-                "summary": "Get all properties",
+                "summary": "Get all properties or search properties",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
