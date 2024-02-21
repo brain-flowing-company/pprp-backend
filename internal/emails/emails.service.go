@@ -1,4 +1,4 @@
-package email
+package emails
 
 import (
 	"bytes"
@@ -17,7 +17,7 @@ import (
 
 type Service interface {
 	SendVerificationEmail(string) *apperror.AppError
-	VerifyEmail(*models.EmailVerificationRequest) (string, *apperror.AppError)
+	VerifyEmail(*models.EmailVerificationRequests) (string, *apperror.AppError)
 }
 
 type serviceImpl struct {
@@ -60,13 +60,13 @@ func (s *serviceImpl) SendVerificationEmail(userEmail string) *apperror.AppError
 	emailVerificationCodeExpire := s.cfg.EmailVerificationCodeExpire
 	expiredAt := time.Now().Add(time.Duration(emailVerificationCodeExpire) * time.Second)
 
-	verificationData := models.EmailVerificationData{
+	verificationData := models.EmailVerificationCodes{
 		Email:     userEmail,
 		Code:      code,
 		ExpiredAt: expiredAt,
 	}
 
-	if s.repo.CreateEmailVerificationData(&verificationData) != nil {
+	if s.repo.CreateEmailVerificationCode(&verificationData) != nil {
 		s.logger.Error("Could not create email verification data", zap.Error(findEmailErr))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -75,7 +75,7 @@ func (s *serviceImpl) SendVerificationEmail(userEmail string) *apperror.AppError
 
 	to := []string{userEmail}
 	subject := "Email Verification from suechaokhai.com"
-	emailStructure := models.VerificationEmail{
+	emailStructure := models.VerificationEmails{
 		// VerificationLink: "https://www.youtube.com/@oreo10baht",
 		// VerificationLink: "http://localhost:8000/email/verify?email=" + userEmail + "&code=" + code,
 		VerificationLink: "http://localhost:3000/register",
@@ -126,7 +126,7 @@ func (s *serviceImpl) sendEmail(to []string, subject string, emailStructure mode
 	return nil
 }
 
-func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationRequest) (string, *apperror.AppError) {
+func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationRequests) (string, *apperror.AppError) {
 
 	userEmail := verificationReq.Email
 	userCode := verificationReq.Code
@@ -143,10 +143,10 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 			Describe("Invalid verification code")
 	}
 
-	verificationData := models.EmailVerificationData{}
+	verificationData := models.EmailVerificationCodes{}
 
 	var countData int64
-	countDataErr := s.repo.CountEmailVerificationData(&countData, userEmail)
+	countDataErr := s.repo.CountEmailVerificationCode(&countData, userEmail)
 	if countDataErr != nil {
 		s.logger.Error("Could not count email verification data", zap.Error(countDataErr))
 		return "", apperror.
@@ -158,7 +158,7 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 			Describe("Could not verify email. Please try again later")
 	}
 
-	getDataErr := s.repo.GetEmailVerificationDataByEmail(&verificationData, userEmail)
+	getDataErr := s.repo.GetEmailVerificationCodeByEmail(&verificationData, userEmail)
 	if getDataErr != nil {
 		s.logger.Error("Could not get email verification data", zap.Error(getDataErr))
 		return "", apperror.
@@ -167,7 +167,7 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 	}
 
 	if verificationData.ExpiredAt.Before(time.Now()) {
-		err := s.repo.DeleteEmailVerificationData(userEmail)
+		err := s.repo.DeleteEmailVerificationCode(userEmail)
 		if err != nil {
 			s.logger.Error("Could not delete email verification data", zap.Error(err))
 			return "", apperror.
@@ -185,7 +185,7 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 			Describe("Invalid verification code")
 	}
 
-	deleteErr := s.repo.DeleteEmailVerificationData(userEmail)
+	deleteErr := s.repo.DeleteEmailVerificationCode(userEmail)
 	if deleteErr != nil {
 		s.logger.Error("Could not delete email verification data", zap.Error(deleteErr))
 		return "", apperror.
@@ -193,7 +193,7 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 			Describe("Server Error. Please try again later")
 	}
 
-	session := models.Session{
+	session := models.Sessions{
 		Email:          userEmail,
 		RegisteredType: enums.EMAIL,
 		SessionType:    models.SessionRegister,

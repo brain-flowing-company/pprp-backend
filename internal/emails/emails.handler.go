@@ -1,4 +1,4 @@
-package email
+package emails
 
 import (
 	"net/http"
@@ -52,7 +52,7 @@ func (h *handlerImpl) SendVerificationEmail(c *fiber.Ctx) error {
 }
 
 func (h *handlerImpl) VerifyEmail(c *fiber.Ctx) error {
-	verificationReq := models.EmailVerificationRequest{}
+	verificationReq := models.EmailVerificationRequests{}
 
 	requestErr := c.QueryParser(&verificationReq)
 	if requestErr != nil {
