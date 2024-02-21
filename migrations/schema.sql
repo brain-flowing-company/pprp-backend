@@ -129,7 +129,6 @@ CREATE TABLE agreements
     UNIQUE (property_id, agreement_date)
 );
 
-
 -------------------- DUMMY DATA --------------------
 
 INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, credit_card_cardholder_name, credit_card_number, credit_card_expiration_month, credit_card_expiration_year, credit_card_cvv, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified) VALUES
