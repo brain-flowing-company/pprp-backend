@@ -154,7 +154,6 @@ func main() {
 
 	apiv1.Post("/email", emailHandler.SendVerificationEmail)
 	apiv1.Post("/email/verify", emailHandler.VerifyEmail)
-	apiv1.Delete("/email/:email", emailHandler.DeleteEmailVerificationData)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {

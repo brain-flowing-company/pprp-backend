@@ -17,7 +17,6 @@ import (
 type Service interface {
 	SendVerificationEmail(string) *apperror.AppError
 	VerifyEmail(string, string) *apperror.AppError
-	DeleteEmailVerificationData(string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -166,24 +165,6 @@ func (s *serviceImpl) VerifyEmail(userEmail string, userCode string) *apperror.A
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Server Error. Please try again later")
-	}
-
-	return nil
-}
-
-func (s *serviceImpl) DeleteEmailVerificationData(userEmail string) *apperror.AppError {
-	if !utils.IsValidEmail(userEmail) {
-		return apperror.
-			New(apperror.InvalidEmail).
-			Describe("Invalid email")
-	}
-
-	err := s.repo.DeleteEmailVerificationData(userEmail)
-	if err != nil {
-		s.logger.Error("Could not delete email verification data", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not delete email verification data. Please try again later")
 	}
 
 	return nil

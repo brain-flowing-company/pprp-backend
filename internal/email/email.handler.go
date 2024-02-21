@@ -9,7 +9,6 @@ import (
 type Handler interface {
 	SendVerificationEmail(c *fiber.Ctx) error
 	VerifyEmail(c *fiber.Ctx) error
-	DeleteEmailVerificationData(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -54,15 +53,4 @@ func (h *handlerImpl) VerifyEmail(c *fiber.Ctx) error {
 	}
 
 	return utils.ResponseMessage(c, 200, "Email verified successfully")
-}
-
-func (h *handlerImpl) DeleteEmailVerificationData(c *fiber.Ctx) error {
-	email := c.Params("email")
-
-	appErr := h.service.DeleteEmailVerificationData(email)
-	if appErr != nil {
-		return utils.ResponseError(c, appErr)
-	}
-
-	return utils.ResponseMessage(c, 200, "Email verification data deleted successfully")
 }
