@@ -1,4 +1,4 @@
-package property
+package properties
 
 import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -6,9 +6,9 @@ import (
 )
 
 type Repository interface {
-	GetPropertyById(*models.Property, string) error
-	GetAllProperties(*[]models.Property) error
-	SearchProperties(*[]models.Property, string) error
+	GetPropertyById(*models.Properties, string) error
+	GetAllProperties(*[]models.Properties) error
+	SearchProperties(*[]models.Properties, string) error
 }
 
 type repositoryImpl struct {
@@ -21,24 +21,24 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetPropertyById(result *models.Property, id string) error {
-	return repo.db.Model(&models.Property{}).
+func (repo *repositoryImpl) GetPropertyById(result *models.Properties, id string) error {
+	return repo.db.Model(&models.Properties{}).
 		Preload("PropertyImages").
 		Preload("SellingProperty").
 		Preload("RentingProperty").
 		First(result, "property_id = ?", id).Error
 }
 
-func (repo *repositoryImpl) GetAllProperties(result *[]models.Property) error {
-	return repo.db.Model(&models.Property{}).
+func (repo *repositoryImpl) GetAllProperties(result *[]models.Properties) error {
+	return repo.db.Model(&models.Properties{}).
 		Preload("PropertyImages").
 		Preload("SellingProperty").
 		Preload("RentingProperty").
 		Find(result).Error
 }
 
-func (repo *repositoryImpl) SearchProperties(result *[]models.Property, query string) error {
-	return repo.db.Model(&models.Property{}).
+func (repo *repositoryImpl) SearchProperties(result *[]models.Properties, query string) error {
+	return repo.db.Model(&models.Properties{}).
 		Preload("PropertyImages").
 		Preload("SellingProperty").
 		Preload("RentingProperty").

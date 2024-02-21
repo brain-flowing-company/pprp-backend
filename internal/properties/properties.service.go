@@ -1,4 +1,4 @@
-package property
+package properties
 
 import (
 	"errors"
@@ -12,9 +12,9 @@ import (
 )
 
 type Service interface {
-	GetPropertyById(*models.Property, string) *apperror.AppError
-	GetAllProperties(*[]models.Property) *apperror.AppError
-	SearchProperties(*[]models.Property, string) *apperror.AppError
+	GetPropertyById(*models.Properties, string) *apperror.AppError
+	GetAllProperties(*[]models.Properties) *apperror.AppError
+	SearchProperties(*[]models.Properties, string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -29,7 +29,7 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 	}
 }
 
-func (s *serviceImpl) GetPropertyById(property *models.Property, id string) *apperror.AppError {
+func (s *serviceImpl) GetPropertyById(property *models.Properties, id string) *apperror.AppError {
 	if !utils.IsValidUUID(id) {
 		return apperror.
 			New(apperror.InvalidPropertyId).
@@ -51,7 +51,7 @@ func (s *serviceImpl) GetPropertyById(property *models.Property, id string) *app
 	return nil
 }
 
-func (s *serviceImpl) GetAllProperties(properties *[]models.Property) *apperror.AppError {
+func (s *serviceImpl) GetAllProperties(properties *[]models.Properties) *apperror.AppError {
 	err := s.repo.GetAllProperties(properties)
 	if err != nil {
 		s.logger.Error("Could not get all properties", zap.Error(err))
@@ -63,7 +63,7 @@ func (s *serviceImpl) GetAllProperties(properties *[]models.Property) *apperror.
 	return nil
 }
 
-func (s *serviceImpl) SearchProperties(properties *[]models.Property, query string) *apperror.AppError {
+func (s *serviceImpl) SearchProperties(properties *[]models.Properties, query string) *apperror.AppError {
 	query = strings.ToLower(strings.TrimSpace(query))
 	err := s.repo.SearchProperties(properties, query)
 	if err != nil {
