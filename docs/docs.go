@@ -609,43 +609,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/:userId": {
-            "get": {
-                "description": "Get a user by its id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get user by id",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Users"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid user id",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            },
+        "/api/v1/user/": {
             "put": {
                 "description": "Update specifying userId with formData **\\***upload profile image in formData with field ` + "`" + `profile_image` + "`" + `. Available formats are .png / .jpg / .jpeg",
                 "produces": [
@@ -654,7 +618,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Update user by id",
+                "summary": "Update current user personal information *use cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -701,6 +665,44 @@ const docTemplate = `{
                         }
                     }
                 }
+            }
+        },
+        "/api/v1/user/:userId": {
+            "get": {
+                "description": "Get a user by its id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Users"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user id",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
             },
             "delete": {
                 "description": "Delete a user by its id",
@@ -710,7 +712,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Delete user by id",
+                "summary": "Delete user by id  *use cookies*",
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -1163,6 +1165,10 @@ const docTemplate = `{
                         }
                     ],
                     "example": "LOGIN / REGISTER"
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 }
             }
         },

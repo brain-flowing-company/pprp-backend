@@ -148,6 +148,12 @@ func (s *serviceImpl) Register(user *models.RegisteringUser, profileImage *multi
 }
 
 func (s *serviceImpl) UpdateUser(user *models.UpdatingUserPersonalInfo, profileImage *multipart.FileHeader) *apperror.AppError {
+	url, apperr := s.uploadProfileImage(user.UserId, profileImage)
+	if apperr != nil {
+		return apperr
+	}
+	user.ProfileImageUrl = url
+
 	err := s.repo.UpdateUser(user, user.UserId.String())
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
@@ -159,12 +165,6 @@ func (s *serviceImpl) UpdateUser(user *models.UpdatingUserPersonalInfo, profileI
 			New(apperror.InternalServerError).
 			Describe("Could not update user information. Please try again later")
 	}
-
-	url, apperr := s.uploadProfileImage(user.UserId, profileImage)
-	if apperr != nil {
-		return apperr
-	}
-	user.ProfileImageUrl = url
 
 	return nil
 }
