@@ -33,5 +33,7 @@ jobs:
             git reset --hard origin/cloud &&
             git pull origin cloud &&
             echo "$(cat .env.example)\n\n$(echo "GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET\nAWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY\nEMAIL_PASSWORD=EMAIL_PASSWORD")" > .env
-            sudo docker compose down && sudo docker compose up -d --build --no-deps
+            sudo docker compose build --no-cache &&
+            sudo docker compose down &&
+            sudo docker compose up -d
           '
