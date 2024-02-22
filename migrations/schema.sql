@@ -129,6 +129,22 @@ CREATE TABLE agreements
     UNIQUE (property_id, agreement_date)
 );
 
+CREATE TABLE messages (
+  message_id  UUID PRIMARY KEY         NOT NULL,
+  sender_id   UUID                     NOT NULL REFERENCES users(user_id),
+  receiver_id UUID                     NOT NULL REFERENCES users(user_id),
+  content     VARCHAR(4096)            NOT NULL,
+  read        boolean                  NOT NULL,
+  created_at  TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE chat_status (
+  sender_id      UUID                     NOT NULL REFERENCES users(user_id),
+  receiver_id    UUID                     NOT NULL REFERENCES users(user_id),
+  last_active_at TIMESTAMP WITH TIME ZONE NOT NULL, 
+  PRIMARY KEY (sender_id, receiver_id)
+);
+
 -------------------- DUMMY DATA --------------------
 
 INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified) VALUES
@@ -287,3 +303,4 @@ CREATE INDEX idx_property_images_deleted_at     ON _property_images (deleted_at)
 CREATE INDEX idx_selling_properties_deleted_at  ON _selling_properties (deleted_at);
 CREATE INDEX idx_renting_properties_deleted_at  ON _renting_properties (deleted_at);
 CREATE INDEX idx_appointments_deleted_at        ON _appointments (deleted_at);
+CREATE INDEX idx_messages                       ON messages (receiver_id, sender_id, created_at)
