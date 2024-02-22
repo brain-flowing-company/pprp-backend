@@ -12,8 +12,8 @@ import (
 )
 
 type Service interface {
-	GetPropertyById(*models.Properties, string) *apperror.AppError
 	GetAllProperties(*[]models.Properties) *apperror.AppError
+	GetPropertyById(*models.Properties, string) *apperror.AppError
 	SearchProperties(*[]models.Properties, string) *apperror.AppError
 }
 
@@ -27,6 +27,18 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 		repo,
 		logger,
 	}
+}
+
+func (s *serviceImpl) GetAllProperties(properties *[]models.Properties) *apperror.AppError {
+	err := s.repo.GetAllProperties(properties)
+	if err != nil {
+		s.logger.Error("Could not get all properties", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get all properties. Please try again later.")
+	}
+
+	return nil
 }
 
 func (s *serviceImpl) GetPropertyById(property *models.Properties, id string) *apperror.AppError {
@@ -46,18 +58,6 @@ func (s *serviceImpl) GetPropertyById(property *models.Properties, id string) *a
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get property. Please try again later.")
-	}
-
-	return nil
-}
-
-func (s *serviceImpl) GetAllProperties(properties *[]models.Properties) *apperror.AppError {
-	err := s.repo.GetAllProperties(properties)
-	if err != nil {
-		s.logger.Error("Could not get all properties", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not get all properties. Please try again later.")
 	}
 
 	return nil
