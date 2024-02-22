@@ -20,7 +20,8 @@ services:
       - sck
 
   backend:
-    image: cosmtrek/air
+    build:
+      context: .
     container_name: sck-backend
     working_dir: /app
     ports:
@@ -29,26 +30,9 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./:/app/
+      - .env:/app/.env
     environment:
       - DB_URL=postgres://postgres:123456@sck-database:5432/postgres
-      - APP_ENV=development
-      - APP_PORT=8000
-      - APP_ALLOW_ORIGIN=http://localhost:3000
-      - APP_HOME_PATH=http://localhost:3000
-      - JWT_SECRET=secret
-      - SESSION_EXPIRE=86400
-      - GOOGLE_CLIENT_ID=784140310844-71giihsb58cg5kkevilab3ddmdhqdm96.apps.googleusercontent.com
-      - GOOGLE_REDIRECT=http://localhost:8000/api/v1/oauth/callback
-      - GOOGLE_SCOPE=openid,email
-      - GOOGLE_REGISTER_REDIRECT=http://localhost:3000/register
-      - AWS_REGION=ap-southeast-1
-      - AWS_ACCESS_KEY_ID=AKIASNYKPVTR5QT4EWXR
-      - AWS_S3_BUCKET_NAME=suechaokhai
-      - EMAIL=brainflowingcompany@gmail.com
-      - EMAIL_VERIFICATION_CODE_EXPIRE=300
-      - SMTP_HOST=smtp.gmail.com
-      - SMTP_PORT=587
     networks:
       - sck
 
