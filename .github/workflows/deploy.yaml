@@ -1,0 +1,35 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+
+jobs:
+  Deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build & Deploy
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{secrets.SSH_HOST}}
+          SSH_USERNAME: ${{secrets.SSH_USERNAME}}
+          GOOGLE_CLIENT_SECRET: ${{secrest.GOOGLE_CLIENT_SECRET}}
+          AWS_SECRET_ACCESS_KEY: ${{secrest.AWS_SECRET_ACCESS_KEY}}
+          EMAIL_PASSWORD: ${{secrest.EMAIL_PASSWORD}}
+
+        run: |
+          echo "$PRIVATSSH_PRIVATE_KEYE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${SSH_USERNAME}@${SSH_HOST} '
+
+              cd /home/ubuntu/suechaokhai-backend &&
+              git checkout dev &&
+              git fetch --all &&
+              git reset --hard origin/dev &&
+              git pull origin dev &&
+              echo "$(cat .env.example)\n\n$(echo "GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}\nAWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}\nEMAIL_PASSWORD=${EMAIL_PASSWORD}")" > .env
+              docker-compose down && docker-compose up -d --build --no-deps
+              '
