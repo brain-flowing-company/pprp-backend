@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Chat Example</title>
+    <script type="text/javascript" src="index.js"></script>
+  </head>
+  <body>
+    <form id="form">
+      <div>
+        <p>Connection</p>
+        <input type="text" id="chat-user-id" size="64" />
+        <input type="button" value="Connect" onclick="connect()" />
+        <input type="button" value="Login" onclick="login()" />
+      </div>
+      <div>
+        <p>Chat</p>
+        <input type="text" id="msg" size="64" autofocus />
+        <input type="submit" value="Send" />
+      </div>
+    </form>
+    <div id="log"></div>
+  </body>
+</html>

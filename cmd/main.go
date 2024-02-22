@@ -18,6 +18,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/middleware"
 	"github.com/brain-flowing-company/pprp-backend/storage"
 	"github.com/gofiber/contrib/fiberzap"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
@@ -74,6 +75,9 @@ func main() {
 
 	if cfg.IsDevelopment() {
 		app.Get("/docs/*", swagger.HandlerDefault)
+
+		// test websocket
+		app.Static("/", "./internal/core/chats/public/")
 	}
 
 	hwService := greetings.NewService()
@@ -110,7 +114,7 @@ func main() {
 
 	chatRepository := chats.NewRepository(db)
 	chatService := chats.NewService(logger, chatRepository)
-	chatHandler := chats.NewHandler(chatService)
+	chatHandler := chats.NewHandler(cfg, chatService)
 
 	mw := middleware.NewMiddleware(cfg)
 
@@ -153,6 +157,9 @@ func main() {
 
 	apiv1.Get("/chats", mw.AuthMiddlewareWrapper(chatHandler.GetAllChats))
 	apiv1.Get("/chats/:recvUserId", mw.AuthMiddlewareWrapper(chatHandler.GetMessagesInChat))
+
+	ws := app.Group("/ws")
+	ws.Get("/chats/:recvUserId", websocket.New(chatHandler.JoinChat))
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {

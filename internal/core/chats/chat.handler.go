@@ -1,9 +1,13 @@
 package chats
 
 import (
+	"fmt"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -11,15 +15,18 @@ import (
 type Handler interface {
 	GetAllChats(c *fiber.Ctx) error
 	GetMessagesInChat(c *fiber.Ctx) error
+	JoinChat(conn *websocket.Conn)
 }
 
 type handlerImpl struct {
 	service Service
+	cfg     *config.Config
 }
 
-func NewHandler(service Service) Handler {
+func NewHandler(cfg *config.Config, service Service) Handler {
 	return &handlerImpl{
 		service,
+		cfg,
 	}
 }
 
@@ -76,4 +83,25 @@ func (h *handlerImpl) GetMessagesInChat(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(msgs)
+}
+
+func (h *handlerImpl) JoinChat(conn *websocket.Conn) {
+	session := conn.Cookies("session")
+
+	claim, err := utils.ParseToken(session, h.cfg.JWTSecret)
+	if err != nil {
+		utils.WebsocketError(conn, apperror.Unauthorized)
+		return
+	}
+
+	recvUserId, err := uuid.Parse(conn.Params("recvUserId"))
+	if err != nil {
+		utils.WebsocketError(conn, apperror.InvalidUserId)
+		return
+	}
+
+	fmt.Println(claim)
+	fmt.Println(recvUserId)
+
+	conn.WriteJSON(claim)
 }
