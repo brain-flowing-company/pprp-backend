@@ -400,6 +400,55 @@
                 }
             }
         },
+        "/api/v1/chats/:recvUserId": {
+            "get": {
+                "description": "Get messages chatting with recvUserId. Pagination is available.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Get messages in a chat with recvUserId *use cookies*",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "default 50, max 50",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Messages"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/email": {
             "post": {
                 "description": "Send a verification email to the user",
@@ -1147,6 +1196,35 @@
                 "message": {
                     "type": "string",
                     "example": "Message sent successfully"
+                }
+            }
+        },
+        "models.Messages": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "hello, world"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2024-02-22T03:06:53.313735Z"
+                },
+                "message_id": {
+                    "type": "string",
+                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
+                },
+                "read": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "receiver_id": {
+                    "type": "string",
+                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
+                },
+                "sender_id": {
+                    "type": "string",
+                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
                 }
             }
         },

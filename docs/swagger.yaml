@@ -151,6 +151,27 @@ definitions:
         example: Message sent successfully
         type: string
     type: object
+  models.Messages:
+    properties:
+      content:
+        example: hello, world
+        type: string
+      created_at:
+        example: "2024-02-22T03:06:53.313735Z"
+        type: string
+      message_id:
+        example: 27b79b15-a56f-464a-90f7-bab515ba4c02
+        type: string
+      read:
+        example: false
+        type: boolean
+      receiver_id:
+        example: 27b79b15-a56f-464a-90f7-bab515ba4c02
+        type: string
+      sender_id:
+        example: 27b79b15-a56f-464a-90f7-bab515ba4c02
+        type: string
+    type: object
   models.Properties:
     properties:
       address:
@@ -573,6 +594,38 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponses'
       summary: Get current users chat *use cookies*
+      tags:
+      - chats
+  /api/v1/chats/:recvUserId:
+    get:
+      description: Get messages chatting with recvUserId. Pagination is available.
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: default 50, max 50
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Messages'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get messages in a chat with recvUserId *use cookies*
       tags:
       - chats
   /api/v1/email:

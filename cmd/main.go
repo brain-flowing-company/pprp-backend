@@ -173,6 +173,7 @@ func main() {
 	apiv1.Post("/email/verify", emailHandler.VerifyEmail)
 
 	apiv1.Get("/chats", mw.AuthMiddlewareWrapper(chatHandler.GetAllChats))
+	apiv1.Get("/chats/:recvUserId", mw.AuthMiddlewareWrapper(chatHandler.GetMessagesInChat))
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {

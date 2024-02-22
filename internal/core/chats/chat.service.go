@@ -3,12 +3,14 @@ package chats
 import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
 type Service interface {
 	GetAllChats(*[]models.ChatsResponses, uuid.UUID) *apperror.AppError
+	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -30,6 +32,23 @@ func (s *serviceImpl) GetAllChats(chats *[]models.ChatsResponses, userId uuid.UU
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get all chats")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid.UUID, recvUserId uuid.UUID, offset int, limit int) *apperror.AppError {
+	limit = utils.Min(limit, 50)
+
+	err := s.repo.GetMessagesInChat(msgs, sendUserId, recvUserId, offset, limit)
+	if err != nil {
+		s.logger.Error("Could not get messages in chat",
+			zap.Error(err),
+			zap.String("senderUserId", sendUserId.String()),
+			zap.String("receiveruserId", recvUserId.String()))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get messages in chat")
 	}
 
 	return nil

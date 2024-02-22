@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	GetAllChats(*[]models.ChatsResponses, uuid.UUID) error
+	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) error
 }
 
 type repositoryImpl struct {
@@ -39,4 +40,17 @@ func (repo *repositoryImpl) GetAllChats(results *[]models.ChatsResponses, userId
 		Joins("LEFT JOIN (?) AS b ON a.sender_id = b.sender_id", latestMessages).
 		Order("created_at DESC").
 		Find(results).Error
+}
+
+func (repo *repositoryImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid.UUID, recvUserId uuid.UUID, offset int, limit int) error {
+	subQuery := repo.db.Model(&models.Messages{}).
+		Order("created_at DESC").
+		Offset(offset).Limit(limit).
+		Where("(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
+			sendUserId, recvUserId, recvUserId, sendUserId)
+
+	return repo.db.Select("*").
+		Table("(?) AS a", subQuery).
+		Order("created_at ASC").
+		Find(msgs).Error
 }
