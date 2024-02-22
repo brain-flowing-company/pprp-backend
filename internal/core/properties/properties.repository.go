@@ -13,7 +13,7 @@ type Repository interface {
 	DeletePropertyById(string) error
 	SearchProperties(*[]models.Properties, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
-	RemoveFavoriteProperty(*models.FavoriteProperties) error
+	RemoveFavoriteProperty(string, string) error
 }
 
 type repositoryImpl struct {
@@ -72,6 +72,11 @@ func (repo *repositoryImpl) AddFavoriteProperty(favoriteProperty *models.Favorit
 	return repo.db.Create(favoriteProperty).Error
 }
 
-func (repo *repositoryImpl) RemoveFavoriteProperty(favoriteProperty *models.FavoriteProperties) error {
-	return repo.db.Delete(favoriteProperty).Error
+func (repo *repositoryImpl) RemoveFavoriteProperty(propertyId string, userId string) error {
+	err := repo.db.First(&models.FavoriteProperties{}, "property_id = ? AND user_id = ?", propertyId, userId).Error
+	if err != nil {
+		return err
+	}
+
+	return repo.db.Where("property_id = ? AND user_id = ?", propertyId, userId).Delete(&models.FavoriteProperties{}).Error
 }

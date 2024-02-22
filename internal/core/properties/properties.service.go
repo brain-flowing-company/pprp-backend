@@ -7,6 +7,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -15,6 +16,8 @@ type Service interface {
 	GetAllProperties(*[]models.Properties) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
 	SearchProperties(*[]models.Properties, string) *apperror.AppError
+	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
+	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -71,6 +74,48 @@ func (s *serviceImpl) SearchProperties(properties *[]models.Properties, query st
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not search properties. Please try again later.")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) AddFavoriteProperty(propertyId string, userId uuid.UUID) *apperror.AppError {
+	if !utils.IsValidUUID(propertyId) {
+		return apperror.
+			New(apperror.InvalidPropertyId).
+			Describe("Invalid property id")
+	}
+	propertyIdUuid, _ := uuid.Parse(propertyId)
+
+	favoriteProperty := models.FavoriteProperties{
+		PropertyId: propertyIdUuid,
+		UserId:     userId,
+	}
+
+	err := s.repo.AddFavoriteProperty(&favoriteProperty)
+	if err != nil {
+		s.logger.Error("Could not add favorite property", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not add favorite property. Please try again later.")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) RemoveFavoriteProperty(propertyId string, userId uuid.UUID) *apperror.AppError {
+	if !utils.IsValidUUID(propertyId) {
+		return apperror.
+			New(apperror.InvalidPropertyId).
+			Describe("Invalid property id")
+	}
+
+	err := s.repo.RemoveFavoriteProperty(propertyId, userId.String())
+	if err != nil {
+		s.logger.Error("Could not remove favorite property", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not remove favorite property. Please try again later.")
 	}
 
 	return nil

@@ -1,6 +1,8 @@
 package properties
 
 import (
+	"net/http"
+
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
@@ -11,6 +13,8 @@ type Handler interface {
 	GetAllProperties(c *fiber.Ctx) error
 	SeachProperties(c *fiber.Ctx) error
 	GetOrSearchProperties(c *fiber.Ctx) error
+	AddFavoriteProperty(c *fiber.Ctx) error
+	RemoveFavoriteProperty(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -81,4 +85,28 @@ func (h *handlerImpl) SeachProperties(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(properties)
+}
+
+func (h *handlerImpl) AddFavoriteProperty(c *fiber.Ctx) error {
+	propertyId := c.Params("propertyId")
+	userId := c.Locals("session").(models.Sessions).UserId
+
+	err := h.service.AddFavoriteProperty(propertyId, userId)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return utils.ResponseMessage(c, http.StatusOK, "Property added to favorites")
+}
+
+func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
+	propertyId := c.Params("propertyId")
+	userId := c.Locals("session").(models.Sessions).UserId
+
+	err := h.service.RemoveFavoriteProperty(propertyId, userId)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return utils.ResponseMessage(c, http.StatusOK, "Property removed from favorites")
 }
