@@ -1,10 +1,10 @@
-CREATE TYPE bank_name AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB', 'GSB');
+CREATE TYPE bank_names AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB', 'GSB');
 
-CREATE TYPE registered_type AS ENUM('EMAIL', 'GOOGLE');
+CREATE TYPE registered_types AS ENUM('EMAIL', 'GOOGLE');
 
 CREATE TYPE appointments_status AS ENUM('PENDING', 'APPROVED', 'REJECTED', 'REQUEST_CHANGE', 'CANCELLED', 'COMPLETED');
 
-CREATE TYPE card_color AS ENUM('LIGHT_BLUE', 'BLUE', 'DARK_BLUE', 'VERY_DARK_BLUE');
+CREATE TYPE card_colors AS ENUM('LIGHT_BLUE', 'BLUE', 'DARK_BLUE', 'VERY_DARK_BLUE');
 
 CREATE TABLE email_verification_codes
 (
@@ -16,14 +16,14 @@ CREATE TABLE email_verification_codes
 CREATE TABLE users
 (
     user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
-    registered_type                     registered_type                 NOT NULL,
+    registered_type                     registered_types                 NOT NULL,
     email                               VARCHAR(50)                     NOT NULL,
     password                            VARCHAR(64)                     DEFAULT NULL,
     first_name                          VARCHAR(50)                     NOT NULL,
     last_name                           VARCHAR(50)                     NOT NULL,
     phone_number                        VARCHAR(10)                     NOT NULL,
     profile_image_url                   VARCHAR(2000)                   DEFAULT NULL,
-    bank_name                           bank_name                       DEFAULT NULL,
+    bank_name                           bank_names                       DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
     citizen_id                          VARCHAR(13)                     DEFAULT NULL,
     citizen_card_image_url              VARCHAR(2000)                   DEFAULT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE credit_cards
     expire_month                        VARCHAR(2)                      NOT NULL,
     expire_year                         VARCHAR(4)                      NOT NULL,
     cvv                                 VARCHAR(3)                      NOT NULL,
-    card_color                          card_color                      DEFAULT 'LIGHT_BLUE',
+    card_color                          card_colors                      DEFAULT 'LIGHT_BLUE',
     created_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
     updated_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
     deleted_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT NULL
