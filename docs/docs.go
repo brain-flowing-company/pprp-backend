@@ -29,25 +29,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Agreement"
+                            "$ref": "#/definitions/models.Agreements"
                         }
                     },
                     "400": {
                         "description": "Invalid agreement id",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "404": {
                         "description": "Agreement not found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -68,7 +68,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -90,14 +90,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Agreement"
+                                "$ref": "#/definitions/models.Agreements"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -118,7 +118,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -140,14 +140,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Agreement"
+                                "$ref": "#/definitions/models.Agreements"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -169,14 +169,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Agreement"
+                                "$ref": "#/definitions/models.Agreements"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -205,7 +205,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -240,13 +240,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Empty dates or some of appointments duplicate with existing one",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -286,7 +286,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -315,19 +315,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid appointment id",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "404": {
                         "description": "Appointment id not found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -365,13 +365,89 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/email": {
+            "post": {
+                "description": "Send a verification email to the user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "emails"
+                ],
+                "summary": "Send verification email",
+                "parameters": [
+                    {
+                        "description": "User email address",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SendingEmailRequests"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/email/verify": {
+            "post": {
+                "description": "Verify email and verification code from the user's email",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "emails"
+                ],
+                "summary": "Verify email and verification code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User email address",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User email verification code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -391,7 +467,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Greeting"
+                            "$ref": "#/definitions/models.Greetings"
                         }
                     }
                 }
@@ -411,31 +487,31 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Property"
+                            "$ref": "#/definitions/models.Properties"
                         }
                     },
                     "400": {
                         "description": "Empty or invalid credentials",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "401": {
                         "description": "Password mismatch",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -494,14 +570,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Property"
+                                "$ref": "#/definitions/models.Properties"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -521,25 +597,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Property"
+                            "$ref": "#/definitions/models.Properties"
                         }
                     },
                     "400": {
                         "description": "Invalid property id",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "404": {
                         "description": "Property id not found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -597,13 +673,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid user info",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -649,19 +725,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid user info",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -687,19 +763,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid user id",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -720,19 +796,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid user id",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "404": {
                         "description": "User not found",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -752,13 +828,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Greeting"
+                            "$ref": "#/definitions/models.Greetings"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -784,7 +860,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -804,7 +880,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Session"
+                            "$ref": "#/definitions/models.Sessions"
                         }
                     }
                 }
@@ -833,7 +909,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -841,7 +917,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "enums.BankName": {
+        "enums.BankNames": {
             "type": "string",
             "enum": [
                 "KASIKORN BANK",
@@ -866,7 +942,7 @@ const docTemplate = `{
                 "NULL"
             ]
         },
-        "enums.RegisteredType": {
+        "enums.RegisteredTypes": {
             "type": "string",
             "enum": [
                 "EMAIL",
@@ -877,7 +953,7 @@ const docTemplate = `{
                 "GOOGLE"
             ]
         },
-        "models.Agreement": {
+        "models.Agreements": {
             "type": "object",
             "properties": {
                 "agreement_date": {
@@ -886,10 +962,7 @@ const docTemplate = `{
                 "agreement_id": {
                     "type": "string"
                 },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "dweller_user_id": {
@@ -899,9 +972,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "property_id": {
-                    "type": "string"
-                },
-                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -1001,7 +1071,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.ErrorResponse": {
+        "models.ErrorResponses": {
             "type": "object",
             "properties": {
                 "code": {
@@ -1018,7 +1088,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Greeting": {
+        "models.Greetings": {
             "type": "object",
             "properties": {
                 "message": {
@@ -1027,7 +1097,16 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Property": {
+        "models.MessageResponses": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Message sent successfully"
+                }
+            }
+        },
+        "models.Properties": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1056,7 +1135,7 @@ const docTemplate = `{
                 "images": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.PropertyImage"
+                        "$ref": "#/definitions/models.PropertyImages"
                     }
                 },
                 "owner_id": {
@@ -1080,14 +1159,14 @@ const docTemplate = `{
                     "example": "Pattaya"
                 },
                 "renting": {
-                    "$ref": "#/definitions/models.RentingProperty"
+                    "$ref": "#/definitions/models.RentingProperties"
                 },
                 "residential_type": {
                     "type": "string",
                     "example": "Condo"
                 },
                 "selling": {
-                    "$ref": "#/definitions/models.SellingProperty"
+                    "$ref": "#/definitions/models.SellingProperties"
                 },
                 "street": {
                     "type": "string",
@@ -1099,7 +1178,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.PropertyImage": {
+        "models.PropertyImages": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -1111,7 +1190,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.RentingProperty": {
+        "models.RentingProperties": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -1127,7 +1206,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.SellingProperty": {
+        "models.SellingProperties": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -1143,7 +1222,29 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Session": {
+        "models.SendingEmailRequests": {
+            "type": "object",
+            "properties": {
+                "emails": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.SessionType": {
+            "type": "string",
+            "enum": [
+                "REGISTER",
+                "LOGIN"
+            ],
+            "x-enum-varnames": [
+                "SessionRegister",
+                "SessionLogin"
+            ]
+        },
+        "models.Sessions": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1153,7 +1254,7 @@ const docTemplate = `{
                 "registered_type": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/enums.RegisteredType"
+                            "$ref": "#/definitions/enums.RegisteredTypes"
                         }
                     ],
                     "example": "EMAIL / GOOGLE"
@@ -1172,17 +1273,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.SessionType": {
-            "type": "string",
-            "enum": [
-                "REGISTER",
-                "LOGIN"
-            ],
-            "x-enum-varnames": [
-                "SessionRegister",
-                "SessionLogin"
-            ]
-        },
         "models.Users": {
             "type": "object",
             "properties": {
@@ -1193,7 +1283,7 @@ const docTemplate = `{
                 "bank_name": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/enums.BankName"
+                            "$ref": "#/definitions/enums.BankNames"
                         }
                     ],
                     "example": "KBANK"
@@ -1208,26 +1298,6 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string"
-                },
-                "credit_card_cvv": {
-                    "type": "string",
-                    "example": "123"
-                },
-                "credit_card_expiration_month": {
-                    "type": "string",
-                    "example": "12"
-                },
-                "credit_card_expiration_year": {
-                    "type": "string",
-                    "example": "2023"
-                },
-                "credit_card_number": {
-                    "type": "string",
-                    "example": "1234567890123456"
-                },
-                "credit_cardholder_name": {
-                    "type": "string",
-                    "example": "JOHN DOE"
                 },
                 "email": {
                     "type": "string",
@@ -1260,7 +1330,7 @@ const docTemplate = `{
                 "registered_type": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/enums.RegisteredType"
+                            "$ref": "#/definitions/enums.RegisteredTypes"
                         }
                     ],
                     "example": "EMAIL"

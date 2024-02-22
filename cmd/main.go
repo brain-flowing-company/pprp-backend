@@ -7,15 +7,15 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/database"
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
-	"github.com/brain-flowing-company/pprp-backend/internal/agreements"
-	"github.com/brain-flowing-company/pprp-backend/internal/appointments"
-	"github.com/brain-flowing-company/pprp-backend/internal/auth"
-	"github.com/brain-flowing-company/pprp-backend/internal/email"
-	"github.com/brain-flowing-company/pprp-backend/internal/google"
-	"github.com/brain-flowing-company/pprp-backend/internal/greeting"
-	"github.com/brain-flowing-company/pprp-backend/internal/property"
-	"github.com/brain-flowing-company/pprp-backend/internal/users"
-	"github.com/brain-flowing-company/pprp-backend/middleware"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/agreements"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/appointments"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/auth"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/emails"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/google"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/greetings"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/properties"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/users"
+	"github.com/brain-flowing-company/pprp-backend/internal/middleware"
 	"github.com/brain-flowing-company/pprp-backend/storage"
 	"github.com/gofiber/contrib/fiberzap"
 	"github.com/gofiber/fiber/v2"
@@ -76,12 +76,12 @@ func main() {
 		app.Get("/docs/*", swagger.HandlerDefault)
 	}
 
-	hwService := greeting.NewService()
-	hwHandler := greeting.NewHandler(hwService)
+	hwService := greetings.NewService()
+	hwHandler := greetings.NewHandler(hwService)
 
-	propertyRepo := property.NewRepository(db)
-	propertyService := property.NewService(logger, propertyRepo)
-	propertyHandler := property.NewHandler(propertyService)
+	propertyRepo := properties.NewRepository(db)
+	propertyService := properties.NewService(logger, propertyRepo)
+	propertyHandler := properties.NewHandler(propertyService)
 
 	agreementsRepo := agreements.NewRepository(db)
 	agreementsService := agreements.NewService(logger, agreementsRepo)
@@ -104,9 +104,9 @@ func main() {
 	appointmentService := appointments.NewService(logger, appointmentRepository)
 	appointmentHandler := appointments.NewHandler(appointmentService)
 
-	emailRepository := email.NewRepository(db)
-	emailService := email.NewService(logger, cfg, emailRepository)
-	emailHandler := email.NewHandler(logger, cfg, emailService)
+	emailRepository := emails.NewRepository(db)
+	emailService := emails.NewService(logger, cfg, emailRepository)
+	emailHandler := emails.NewHandler(logger, cfg, emailService)
 
 	mw := middleware.NewMiddleware(cfg)
 
