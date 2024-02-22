@@ -14,6 +14,7 @@ type Repository interface {
 	SearchProperties(*[]models.Properties, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
 	RemoveFavoriteProperty(string, string) error
+	GetFavoritePropertiesByUserId(*[]models.Properties, string) error
 }
 
 type repositoryImpl struct {
@@ -79,4 +80,14 @@ func (repo *repositoryImpl) RemoveFavoriteProperty(propertyId string, userId str
 	}
 
 	return repo.db.Where("property_id = ? AND user_id = ?", propertyId, userId).Delete(&models.FavoriteProperties{}).Error
+}
+
+func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *[]models.Properties, userId string) error {
+	return repo.db.Model(&models.Properties{}).
+		Preload("PropertyImages").
+		Preload("SellingProperty").
+		Preload("RentingProperty").
+		Joins("JOIN favorite_properties ON favorite_properties.property_id = properties.property_id").
+		Where("favorite_properties.user_id = ?", userId).
+		Find(properties).Error
 }

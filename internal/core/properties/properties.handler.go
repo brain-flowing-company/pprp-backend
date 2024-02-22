@@ -15,6 +15,7 @@ type Handler interface {
 	GetOrSearchProperties(c *fiber.Ctx) error
 	AddFavoriteProperty(c *fiber.Ctx) error
 	RemoveFavoriteProperty(c *fiber.Ctx) error
+	GetMyFavoriteProperties(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -109,4 +110,16 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 	}
 
 	return utils.ResponseMessage(c, http.StatusOK, "Property removed from favorites")
+}
+
+func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
+	userId := c.Locals("session").(models.Sessions).UserId.String()
+
+	properties := []models.Properties{}
+	err := h.service.GetFavoritePropertiesByUserId(&properties, userId)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return c.JSON(properties)
 }

@@ -18,6 +18,7 @@ type Service interface {
 	SearchProperties(*[]models.Properties, string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
+	GetFavoritePropertiesByUserId(*[]models.Properties, string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -116,6 +117,24 @@ func (s *serviceImpl) RemoveFavoriteProperty(propertyId string, userId uuid.UUID
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not remove favorite property. Please try again later.")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *[]models.Properties, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	err := s.repo.GetFavoritePropertiesByUserId(properties, userId)
+	if err != nil {
+		s.logger.Error("Could not get favorite properties by user id", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get favorite properties. Please try again later.")
 	}
 
 	return nil

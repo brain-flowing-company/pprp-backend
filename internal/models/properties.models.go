@@ -72,3 +72,7 @@ func (p SellingProperties) TableName() string {
 func (p RentingProperties) TableName() string {
 	return "renting_properties"
 }
+
+func (p FavoriteProperties) TableName() string {
+	return "favorite_properties"
+}
