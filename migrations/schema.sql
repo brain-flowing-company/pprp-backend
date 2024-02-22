@@ -8,7 +8,7 @@ CREATE TYPE card_colors AS ENUM('LIGHT_BLUE', 'BLUE', 'DARK_BLUE', 'VERY_DARK_BL
 
 CREATE TYPE furnishing AS ENUM('UNFURNISHED', 'PARTIALLY_FURNISHED', 'FULLY_FURNISHED', 'READY_TO_MOVE_IN');
 
-CREATE TYPE floor_type_units AS ENUM('SQM', 'SQFT');
+CREATE TYPE floor_size_units AS ENUM('SQM', 'SQFT');
 
 CREATE TABLE email_verification_codes
 (
@@ -76,7 +76,7 @@ CREATE TABLE properties
     furnishing               furnishing                                             NOT NULL,
     floor                    INTEGER                                                NOT NULL,
     floor_size               DOUBLE PRECISION                                       NOT NULL,
-    floor_type_unit          floor_type_units                                       DEFAULT 'SQM',
+    floor_size_unit          floor_size_units                                       DEFAULT 'SQM',
     unit_number              INTEGER                                                NOT NULL,
     created_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
     updated_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
@@ -118,7 +118,7 @@ CREATE TABLE favorite_properties
     user_id         UUID REFERENCES users (user_id)             ON DELETE CASCADE   NOT NULL,
     property_id     UUID REFERENCES properties (property_id)    ON DELETE CASCADE   NOT NULL,
     PRIMARY KEY (user_id, property_id)
-)
+);
 
 CREATE TABLE appointments
 (
@@ -154,16 +154,16 @@ INSERT INTO users (user_id, registered_type, email, password, first_name, last_n
 ('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, 'BBL', '1234567890', NULL, NULL, FALSE),
 ('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', 'SCB', '1234567890', '3333333333333', 'https://picsum.photos/200/300?random=4', TRUE);
 
-INSERT INTO properties (property_id, owner_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code) VALUES
-('f38f80b3-f326-4825-9afc-ebc331626875', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Et sequi dolor praes', 'Sequi reiciendis odi', 'Anita', 'Quas iusto expedita ', 'Delisa', 'Grace', 'Michael', 'Christine', 'Anthony', 'Andrew', '53086'),
-('41a448d4-43ec-411a-a692-2d68e06e0282', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Impedit quae itaque ', 'Mollitia quidem quas', 'Rose', 'Sunt fuga quo perspi', 'Raquel', 'Brandy', 'Jacob', 'Lino', 'Edward', 'Reginald', '12894'),
-('414854bf-bdee-45a5-929f-073aedaceea0', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Architecto iure labo', 'Maiores magnam quaer', 'Michele', 'Pariatur temporibus ', 'Robert', 'Nancy', 'Barbara', 'David', 'Henry', 'David', '24264'),
-('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Optio in asperiores ', 'Consectetur doloribu', 'Charles', 'Ea nobis mollitia ea', 'Tina', 'Linda', 'Ronald', 'Julia', 'Russell', 'William', '10287'),
-('bc5891ce-6d5e-40d6-8563-f7cebe9667e8', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Sunt at totam animi ', 'In ratione veritatis', 'Jonathan', 'Unde natus nesciunt ', 'Norma', 'Gregory', 'Donovan', 'Charles', 'Kevin', 'Tyrone', '10055'),
-('3df779f2-1f72-44d1-9a31-51929ed130a2', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Animi vero ipsa nihi', 'Itaque porro veniam ', 'Roger', 'Totam nam minus veni', 'Allen', 'Linda', 'Bobby', 'Nora', 'James', 'Lucinda', '01229'),
-('a8329428-6971-42e8-974a-4df030cd27be', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Numquam sit dicta be', 'Dignissimos corrupti', 'Diane', 'Consequatur incidunt', 'Cecil', 'David', 'Nancy', 'Brandon', 'John', 'Lillian', '48668'),
-('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Iure nostrum ab reru', 'Natus aliquid fuga, ', 'Matthew', 'Nisi officia nemo au', 'Keith', 'Joseph', 'Joseph', 'Goldie', 'Danika', 'Bernice', '47550'),
-('b7c8ce65-8fa3-4759-bc4e-42a396ef4fc1', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Aut nemo incidunt ul', 'Quasi facilis aliqui', 'Annie', 'Porro molestias rati', 'Brian', 'Gregory', 'Geraldine', 'Edward', 'Charles', 'James', '97186');
+INSERT INTO properties (property_id, owner_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, floor_size_unit, unit_number) VALUES
+('f38f80b3-f326-4825-9afc-ebc331626875', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Et sequi dolor praes', 'Sequi reiciendis odi', 'Anita', 'Quas iusto expedita ', 'Delisa', 'Grace', 'Michael', 'Christine', 'Anthony', 'Andrew', '53086', 3, 2, 'UNFURNISHED', 20, 45.78, 'SQM', 1123),
+('41a448d4-43ec-411a-a692-2d68e06e0282', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Impedit quae itaque ', 'Mollitia quidem quas', 'Rose', 'Sunt fuga quo perspi', 'Raquel', 'Brandy', 'Jacob', 'Lino', 'Edward', 'Reginald', '12894', 2, 1, 'FULLY_FURNISHED',18, 22.13, 'SQM', 1233),
+('414854bf-bdee-45a5-929f-073aedaceea0', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Architecto iure labo', 'Maiores magnam quaer', 'Michele', 'Pariatur temporibus ', 'Robert', 'Nancy', 'Barbara', 'David', 'Henry', 'David', '24264', 3, 2, 'READY_TO_MOVE_IN', 1, 200.00, 'SQFT', 555),
+('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Optio in asperiores ', 'Consectetur doloribu', 'Charles', 'Ea nobis mollitia ea', 'Tina', 'Linda', 'Ronald', 'Julia', 'Russell', 'William', '10287', 9, 9, 'FULLY_FURNISHED', 9, 90.99, 'SQM', 9909),
+('bc5891ce-6d5e-40d6-8563-f7cebe9667e8', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Sunt at totam animi ', 'In ratione veritatis', 'Jonathan', 'Unde natus nesciunt ', 'Norma', 'Gregory', 'Donovan', 'Charles', 'Kevin', 'Tyrone', '10055', 1, 1, 'PARTIALLY_FURNISHED', 30, 90.99, 'SQFT', 1234),
+('3df779f2-1f72-44d1-9a31-51929ed130a2', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Animi vero ipsa nihi', 'Itaque porro veniam ', 'Roger', 'Totam nam minus veni', 'Allen', 'Linda', 'Bobby', 'Nora', 'James', 'Lucinda', '01229', 7, 2, 'UNFURNISHED', 12, 127.27, 'SQFT', 1207),
+('a8329428-6971-42e8-974a-4df030cd27be', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Numquam sit dicta be', 'Dignissimos corrupti', 'Diane', 'Consequatur incidunt', 'Cecil', 'David', 'Nancy', 'Brandon', 'John', 'Lillian', '48668', 3, 2, 'FULLY_FURNISHED', 6, 66.00, 'SQFT', 6666),
+('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Iure nostrum ab reru', 'Natus aliquid fuga, ', 'Matthew', 'Nisi officia nemo au', 'Keith', 'Joseph', 'Joseph', 'Goldie', 'Danika', 'Bernice', '47550', 1, 1, 'READY_TO_MOVE_IN', 4, 44.44, 'SQM', 4444),
+('b7c8ce65-8fa3-4759-bc4e-42a396ef4fc1', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Aut nemo incidunt ul', 'Quasi facilis aliqui', 'Annie', 'Porro molestias rati', 'Brian', 'Gregory', 'Geraldine', 'Edward', 'Charles', 'James', '97186', 3, 1, 'UNFURNISHED', 13, 1313.13, 'SQFT', 1313);
 
 INSERT INTO property_images (property_id, image_url) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 'https://picsum.photos/800/600?random=1'),
@@ -209,11 +209,11 @@ VALUES
 ('123e4567-e89b-12d3-a456-426614174003', 'GOOGLE', 'user3@gmail.com', NULL, 'User', 'Three', '3333333333', 'https://example.com/image3.jpg', 'KTB', '1234567890', '3333333333333', 'https://example.com/card_image3.jpg', TRUE);
 
 -- Insert mock data into the properties table
-INSERT INTO properties (property_id, owner_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code)
+INSERT INTO properties (property_id, owner_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, unit_number)
 VALUES
-('223e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174001', 'Beautiful House', 'House', 'Dream House', '123 Main St', NULL, 'Dream Street', 'Dreamville', 'Dream District', 'Dream Province', 'Dream Country', '12345'),
-('223e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174002', 'Cozy Apartment', 'Apartment', 'Sky Towers', '456 Sky Blvd', 'Sky Alley', 'Cloud Street', 'Cloudsville', 'Cloud District', 'Cloud Province', 'Cloud Country', '56789'),
-('223e4567-e89b-12d3-a456-426614174003', '123e4567-e89b-12d3-a456-426614174003', 'Luxury Condo', 'Condo', 'Golden Heights', '789 Gold Ave', 'Gold Alley', 'Golden Street', 'Goldenville', 'Gold District', 'Gold Province', 'Gold Country', '98765');
+('223e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174001', 'Beautiful House', 'House', 'Dream House', '123 Main St', NULL, 'Dream Street', 'Dreamville', 'Dream District', 'Dream Province', 'Dream Country', '12345', 1, 1, 'UNFURNISHED', 1, 11.11, 1010),
+('223e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174002', 'Cozy Apartment', 'Apartment', 'Sky Towers', '456 Sky Blvd', 'Sky Alley', 'Cloud Street', 'Cloudsville', 'Cloud District', 'Cloud Province', 'Cloud Country', '56789', 2, 2, 'PARTIALLY_FURNISHED', 2, 22.22, 2020),
+('223e4567-e89b-12d3-a456-426614174003', '123e4567-e89b-12d3-a456-426614174003', 'Luxury Condo', 'Condo', 'Golden Heights', '789 Gold Ave', 'Gold Alley', 'Golden Street', 'Goldenville', 'Gold District', 'Gold Province', 'Gold Country', '98765', 3, 3, 'FULLY_FURNISHED', 3, 33.33, 3030);
 
 -- Insert mock data into the agreements table
 INSERT INTO agreements (agreement_id, property_id, owner_user_id, dweller_user_id, agreement_date)
