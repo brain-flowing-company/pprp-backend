@@ -6,6 +6,10 @@ CREATE TYPE appointments_status AS ENUM('PENDING', 'APPROVED', 'REJECTED', 'REQU
 
 CREATE TYPE card_colors AS ENUM('LIGHT_BLUE', 'BLUE', 'DARK_BLUE', 'VERY_DARK_BLUE');
 
+CREATE TYPE furnishing AS ENUM('UNFURNISHED', 'PARTIALLY_FURNISHED', 'FULLY_FURNISHED', 'READY_TO_MOVE_IN');
+
+CREATE TYPE floor_type_units AS ENUM('SQM', 'SQFT');
+
 CREATE TABLE email_verification_codes
 (
     email                     VARCHAR(50) PRIMARY KEY           NOT NULL,
@@ -16,14 +20,14 @@ CREATE TABLE email_verification_codes
 CREATE TABLE users
 (
     user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
-    registered_type                     registered_types                 NOT NULL,
+    registered_type                     registered_types                NOT NULL,
     email                               VARCHAR(50)                     NOT NULL,
     password                            VARCHAR(64)                     DEFAULT NULL,
     first_name                          VARCHAR(50)                     NOT NULL,
     last_name                           VARCHAR(50)                     NOT NULL,
     phone_number                        VARCHAR(10)                     NOT NULL,
     profile_image_url                   VARCHAR(2000)                   DEFAULT NULL,
-    bank_name                           bank_names                       DEFAULT NULL,
+    bank_name                           bank_names                      DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
     citizen_id                          VARCHAR(13)                     DEFAULT NULL,
     citizen_card_image_url              VARCHAR(2000)                   DEFAULT NULL,
@@ -46,7 +50,7 @@ CREATE TABLE credit_cards
     expire_month                        VARCHAR(2)                      NOT NULL,
     expire_year                         VARCHAR(4)                      NOT NULL,
     cvv                                 VARCHAR(3)                      NOT NULL,
-    card_color                          card_colors                      DEFAULT 'LIGHT_BLUE',
+    card_color                          card_colors                     DEFAULT 'LIGHT_BLUE',
     created_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
     updated_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
     deleted_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT NULL
@@ -67,6 +71,13 @@ CREATE TABLE properties
     province                 VARCHAR(50)                                            NOT NULL,
     country                  VARCHAR(50)                                            NOT NULL,
     postal_code              CHAR(5)                                                NOT NULL,
+    bedrooms                 INTEGER                                                NOT NULL,
+    bathrooms                INTEGER                                                NOT NULL,
+    furnishing               furnishing                                             NOT NULL,
+    floor                    INTEGER                                                NOT NULL,
+    floor_size               DOUBLE PRECISION                                       NOT NULL,
+    floor_type_unit          floor_type_units                                       DEFAULT 'SQM',
+    unit_number              INTEGER                                                NOT NULL,
     created_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
     updated_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
     deleted_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT NULL
@@ -74,7 +85,7 @@ CREATE TABLE properties
 
 CREATE TABLE property_images
 (
-    property_id UUID REFERENCES properties (property_id) ON DELETE CASCADE            NOT NULL,
+    property_id UUID REFERENCES properties (property_id) ON DELETE CASCADE          NOT NULL,
     image_url       VARCHAR(2000)                                                   NOT NULL,
     created_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
     updated_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
@@ -84,7 +95,7 @@ CREATE TABLE property_images
 
 CREATE TABLE selling_properties
 (
-    property_id UUID PRIMARY KEY REFERENCES properties (property_id) ON DELETE CASCADE    NOT NULL,
+    property_id UUID PRIMARY KEY REFERENCES properties (property_id) ON DELETE CASCADE  NOT NULL,
     price       DOUBLE PRECISION                                                        NOT NULL,
     is_sold     BOOLEAN                                                                 NOT NULL,
     created_at               TIMESTAMP(0) WITH TIME ZONE                                DEFAULT CURRENT_TIMESTAMP,
@@ -94,7 +105,7 @@ CREATE TABLE selling_properties
 
 CREATE TABLE renting_properties
 (
-    property_id     UUID PRIMARY KEY REFERENCES properties (property_id) ON DELETE CASCADE    NOT NULL,
+    property_id     UUID PRIMARY KEY REFERENCES properties (property_id) ON DELETE CASCADE  NOT NULL,
     price_per_month DOUBLE PRECISION                                                        NOT NULL,
     is_occupied     BOOLEAN                                                                 NOT NULL,
     created_at               TIMESTAMP(0) WITH TIME ZONE                                    DEFAULT CURRENT_TIMESTAMP,
@@ -102,10 +113,17 @@ CREATE TABLE renting_properties
     deleted_at               TIMESTAMP(0) WITH TIME ZONE                                    DEFAULT NULL
 );
 
+CREATE TABLE favorite_properties
+(
+    user_id         UUID REFERENCES users (user_id)             ON DELETE CASCADE   NOT NULL,
+    property_id     UUID REFERENCES properties (property_id)    ON DELETE CASCADE   NOT NULL,
+    PRIMARY KEY (user_id, property_id)
+)
+
 CREATE TABLE appointments
 (
     appointment_id      UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-    property_id         UUID REFERENCES properties (property_id)     NOT NULL,
+    property_id         UUID REFERENCES properties (property_id)   NOT NULL,
     owner_user_id       UUID REFERENCES users (user_id)            NOT NULL,
     dweller_user_id     UUID REFERENCES users (user_id)            NOT NULL,
     appointments_status appointments_status DEFAULT 'PENDING'      NOT NULL,
@@ -118,11 +136,11 @@ CREATE TABLE appointments
 
 CREATE TABLE agreements
 (
-    agreement_id   UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-    property_id      UUID REFERENCES properties (property_id)     NOT NULL,
+    agreement_id   UUID PRIMARY KEY DEFAULT gen_random_uuid()   NOT NULL,
+    property_id      UUID REFERENCES properties (property_id)   NOT NULL,
     owner_user_id    UUID REFERENCES users (user_id)            NOT NULL,
     dweller_user_id  UUID REFERENCES users (user_id)            NOT NULL,
-    agreement_date TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
+    agreement_date TIMESTAMP(0) WITH TIME ZONE                  NOT NULL,
     created_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
     deleted_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL,
