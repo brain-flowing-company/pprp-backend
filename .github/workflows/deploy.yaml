@@ -25,6 +25,7 @@ jobs:
 
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key && chmod 600 private_key
+          echo "$SSH_USERNAME@$SSH_HOST"
           ssh -o StrictHostKeyChecking=no -i private_key $SSH_USERNAME@$SSH_HOST '
             cd /home/ubuntu/suechaokhai-backend &&
             git checkout dev &&
