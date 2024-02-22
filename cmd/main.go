@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/database"
@@ -116,26 +115,6 @@ func main() {
 	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
-
-	apiv1.Post("/upload", func(c *fiber.Ctx) error {
-		file, err := c.FormFile("profile")
-		if err != nil {
-			return c.Status(http.StatusInternalServerError).SendString(err.Error())
-		}
-
-		fileReader, err := file.Open()
-		if err != nil {
-			return c.Status(http.StatusInternalServerError).SendString(err.Error())
-		}
-
-		url, err := storage.Upload(fmt.Sprintf("profiles/%v", file.Filename), fileReader)
-		if err != nil {
-			return c.Status(http.StatusInternalServerError).SendString(err.Error())
-		}
-
-		return c.SendString(url)
-	})
-
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/user/greeting", mw.AuthMiddlewareWrapper(hwHandler.UserGreeting))
 
