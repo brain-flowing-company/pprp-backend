@@ -6,7 +6,7 @@ import (
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/brain-flowing-company/pprp-backend/utils"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )

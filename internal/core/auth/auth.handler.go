@@ -5,7 +5,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/brain-flowing-company/pprp-backend/utils"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -31,11 +31,11 @@ func NewHandler(cfg *config.Config, service Service) Handler {
 // @description Login with email and password
 // @tags        auth
 // @produce     json
-// @success     200	{object} models.Property
-// @failure     400 {object} models.ErrorResponse "Empty or invalid credentials"
-// @failure     401 {object} models.ErrorResponse "Password mismatch"
-// @failure     404 {object} models.ErrorResponse "User not found"
-// @failure     500 {object} models.ErrorResponse
+// @success     200	{object} models.Properties
+// @failure     400 {object} models.ErrorResponses "Empty or invalid credentials"
+// @failure     401 {object} models.ErrorResponses "Password mismatch"
+// @failure     404 {object} models.ErrorResponses "User not found"
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) Login(c *fiber.Ctx) error {
 	// Parse login request from the request body
 	var loginRequest models.LoginRequests

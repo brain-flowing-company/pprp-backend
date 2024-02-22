@@ -10,7 +10,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/brain-flowing-company/pprp-backend/utils"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"

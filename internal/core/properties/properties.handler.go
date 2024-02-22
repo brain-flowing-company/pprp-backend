@@ -2,7 +2,7 @@ package properties
 
 import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/brain-flowing-company/pprp-backend/utils"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -29,9 +29,9 @@ func NewHandler(service Service) Handler {
 // @tags        property
 // @produce     json
 // @success     200	{object} models.Properties
-// @failure     400 {object} models.ErrorResponse "Invalid property id"
-// @failure     404 {object} models.ErrorResponse "Property id not found"
-// @failure     500 {object} models.ErrorResponse
+// @failure     400 {object} models.ErrorResponses "Invalid property id"
+// @failure     404 {object} models.ErrorResponses "Property id not found"
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 
@@ -51,7 +51,7 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 // @produce     json
 // @param       query query string true "Search query"
 // @success     200	{object} []models.Properties
-// @failure     500 {object} models.ErrorResponse
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetOrSearchProperties(c *fiber.Ctx) error {
 	query := c.Query("query")
 	if query != "" {

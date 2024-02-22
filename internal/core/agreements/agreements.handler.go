@@ -30,7 +30,7 @@ func NewHandler(service Service) Handler {
 // @tags agreements
 // @produce json
 // @success 200 {object} []models.Agreements
-// @failure 500 {object} models.ErrorResponse
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAllAgreements(c *fiber.Ctx) error {
 	var apps []models.Agreements
 	err := h.service.GetAllAgreements(&apps)
@@ -47,9 +47,9 @@ func (h *handlerImpl) GetAllAgreements(c *fiber.Ctx) error {
 // @tags agreements
 // @produce json
 // @success 200 {object} models.Agreements
-// @failure 400 {object} models.ErrorResponse "Invalid agreement id"
-// @failure 404 {object} models.ErrorResponse "Agreement not found"
-// @failure 500 {object} models.ErrorResponse
+// @failure 400 {object} models.ErrorResponses "Invalid agreement id"
+// @failure 404 {object} models.ErrorResponses "Agreement not found"
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 	id := c.Params("agreementId")
 	var app models.Agreements
@@ -66,7 +66,7 @@ func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 // @tags agreements
 // @produce json
 // @success 200 {object} []models.Agreements
-// @failure 500 {object} models.ErrorResponse
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAgreementsByOwnerId(c *fiber.Ctx) error {
 	id := c.Params("userId")
 	var apps []models.Agreements
@@ -83,7 +83,7 @@ func (h *handlerImpl) GetAgreementsByOwnerId(c *fiber.Ctx) error {
 // @tags agreements
 // @produce json
 // @success 200 {object} []models.Agreements
-// @failure 500 {object} models.ErrorResponse
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAgreementsByDwellerId(c *fiber.Ctx) error {
 	id := c.Params("userId")
 	var apps []models.Agreements
@@ -100,7 +100,7 @@ func (h *handlerImpl) GetAgreementsByDwellerId(c *fiber.Ctx) error {
 // @tags agreements
 // @produce json
 // @success 201
-// @failure 500 {object} models.ErrorResponse
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) CreateAgreement(c *fiber.Ctx) error {
 	var creatingAgreement models.CreatingAgreements
 	if err := c.BodyParser(&creatingAgreement); err != nil {
@@ -119,7 +119,7 @@ func (h *handlerImpl) CreateAgreement(c *fiber.Ctx) error {
 // @tags agreements
 // @produce json
 // @success 204
-// @failure 500 {object} models.ErrorResponse
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) DeleteAgreement(c *fiber.Ctx) error {
 	id := c.Params("agreementId")
 	err := h.service.DeleteAgreement(id)

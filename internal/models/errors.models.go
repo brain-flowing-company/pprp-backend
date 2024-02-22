@@ -5,3 +5,7 @@ type ErrorResponses struct {
 	Name    string `json:"name"    example:"internal-server-error"`
 	Message string `json:"message,omitempty" example:"internal server error"`
 }
+
+type MessageResponses struct {
+	Message string `json:"message" example:"Message sent successfully"`
+}

@@ -6,7 +6,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/brain-flowing-company/pprp-backend/utils"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
@@ -30,10 +30,16 @@ func NewHandler(logger *zap.Logger, cfg *config.Config, service Service) Handler
 	}
 }
 
+// @router      /api/v1/email [post]
+// @summary     Send verification email
+// @description Send a verification email to the user
+// @tags        emails
+// @produce     json
+// @param       body body models.SendingEmailRequests true "User email address"
+// @success     200 {object} models.MessageResponses
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) SendVerificationEmail(c *fiber.Ctx) error {
-	body := struct {
-		Email string `json:"email"`
-	}{}
+	body := models.SendingEmailRequests{}
 
 	bodyErr := c.BodyParser(&body)
 	if bodyErr != nil {
@@ -43,7 +49,7 @@ func (h *handlerImpl) SendVerificationEmail(c *fiber.Ctx) error {
 			Describe("Invalid request body"))
 	}
 
-	appErr := h.service.SendVerificationEmail(body.Email)
+	appErr := h.service.SendVerificationEmail(body.Emails)
 	if appErr != nil {
 		return utils.ResponseError(c, appErr)
 	}
@@ -51,6 +57,15 @@ func (h *handlerImpl) SendVerificationEmail(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Email sent successfully")
 }
 
+// @router      /api/v1/email/verify [post]
+// @summary     Verify email and verification code
+// @description Verify email and verification code from the user's email
+// @tags        emails
+// @produce     json
+// @param       email query string true "User email address"
+// @param       code query string true "User email verification code"
+// @success     200
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) VerifyEmail(c *fiber.Ctx) error {
 	verificationReq := models.EmailVerificationRequests{}
 

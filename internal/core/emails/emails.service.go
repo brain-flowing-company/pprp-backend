@@ -11,12 +11,12 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/brain-flowing-company/pprp-backend/utils"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"go.uber.org/zap"
 )
 
 type Service interface {
-	SendVerificationEmail(string) *apperror.AppError
+	SendVerificationEmail([]string) *apperror.AppError
 	VerifyEmail(*models.EmailVerificationRequests) (string, *apperror.AppError)
 }
 
@@ -34,8 +34,9 @@ func NewService(logger *zap.Logger, cfg *config.Config, repo Repository) Service
 	}
 }
 
-func (s *serviceImpl) SendVerificationEmail(userEmail string) *apperror.AppError {
+func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError {
 
+	userEmail := emails[0]
 	if !utils.IsValidEmail(userEmail) {
 		return apperror.
 			New(apperror.InvalidEmail).
@@ -73,7 +74,6 @@ func (s *serviceImpl) SendVerificationEmail(userEmail string) *apperror.AppError
 			Describe("Could not send email. Please try again later")
 	}
 
-	to := []string{userEmail}
 	subject := "Email Verification from suechaokhai.com"
 	emailStructure := models.VerificationEmails{
 		// VerificationLink: "https://www.youtube.com/@oreo10baht",
@@ -81,7 +81,7 @@ func (s *serviceImpl) SendVerificationEmail(userEmail string) *apperror.AppError
 		VerificationLink: "http://localhost:3000/register",
 	}
 
-	return s.sendEmail(to, subject, emailStructure)
+	return s.sendEmail(emails, subject, emailStructure)
 }
 
 func (s *serviceImpl) sendEmail(to []string, subject string, emailStructure models.EmailType) *apperror.AppError {

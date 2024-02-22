@@ -25,7 +25,7 @@ func NewHandler(service Service) Handler {
 // @description says hello, world
 // @tags        greeting
 // @produce     json
-// @success     200	{object}	models.Greeting
+// @success     200	{object}	models.Greetings
 func (h *handlerImpl) Greeting(c *fiber.Ctx) error {
 	msg := models.Greetings{}
 	h.service.Greeting(&msg)
@@ -38,8 +38,8 @@ func (h *handlerImpl) Greeting(c *fiber.Ctx) error {
 // @description says hello to current user
 // @tags        greeting
 // @produce     json
-// @success     200	{object}	models.Greeting
-// @failure     401 {object}	models.ErrorResponse
+// @success     200	{object}	models.Greetings
+// @failure     401 {object}	models.ErrorResponses
 func (h *handlerImpl) UserGreeting(c *fiber.Ctx) error {
 	session := (c.Locals("session").(models.Sessions))
 

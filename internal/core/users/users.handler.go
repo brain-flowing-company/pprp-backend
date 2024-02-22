@@ -7,7 +7,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/brain-flowing-company/pprp-backend/utils"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -38,7 +38,7 @@ func NewHandler(service Service) Handler {
 // @tags        users
 // @produce     json
 // @success     200	{object} []models.Users
-// @failure     500 {object} models.ErrorResponse
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 	users := []models.Users{}
 
@@ -56,9 +56,9 @@ func (h *handlerImpl) GetAllUsers(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @success     200	{object} models.Users
-// @failure     400 {object} models.ErrorResponse "Invalid user id"
-// @failure     404 {object} models.ErrorResponse "User not found"
-// @failure     500 {object} models.ErrorResponse
+// @failure     400 {object} models.ErrorResponses "Invalid user id"
+// @failure     404 {object} models.ErrorResponses "User not found"
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 	user := models.Users{}
@@ -78,8 +78,8 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 // @produce     json
 // @param       formData formData models.RegisteringUsers true "User information"
 // @success     200	{object} models.Users
-// @failure     400 {object} models.ErrorResponse "Invalid user info"
-// @failure     500 {object} models.ErrorResponse
+// @failure     400 {object} models.ErrorResponses "Invalid user info"
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	user := &models.RegisteringUsers{
 		UserId: uuid.New(),
@@ -116,9 +116,9 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 // @produce     json
 // @param       formData formData models.UpdatingUserPersonalInfo true "User information"
 // @success     200	{object} models.Users
-// @failure     400 {object} models.ErrorResponse "Invalid user info"
-// @failure     404 {object} models.ErrorResponse "User not found"
-// @failure     500 {object} models.ErrorResponse
+// @failure     400 {object} models.ErrorResponses "Invalid user info"
+// @failure     404 {object} models.ErrorResponses "User not found"
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Sessions)
 	if !ok {
@@ -147,9 +147,9 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @success     200
-// @failure     400 {object} models.ErrorResponse "Invalid user id"
-// @failure     404 {object} models.ErrorResponse "User not found"
-// @failure     500 {object} models.ErrorResponse
+// @failure     400 {object} models.ErrorResponses "Invalid user id"
+// @failure     404 {object} models.ErrorResponses "User not found"
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 	userId := c.Params("userId")
 
@@ -167,7 +167,7 @@ func (h *handlerImpl) DeleteUser(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @success     200 {object} models.Users
-// @failure     500 {object} models.ErrorResponse
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
 	session := c.Locals("session").(models.Sessions)
 	user := models.Users{}
@@ -183,7 +183,7 @@ func (h *handlerImpl) GetCurrentUser(c *fiber.Ctx) error {
 // @description Get user registered type
 // @tags        users
 // @produce     json
-// @success     200 {object} models.Session
+// @success     200 {object} models.Sessions
 func (h *handlerImpl) GetRegisteredType(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Sessions)
 	if !ok {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/brain-flowing-company/pprp-backend/utils"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -34,7 +34,7 @@ func NewHandler(service Service) Handler {
 // @tags        appointments
 // @produce     json
 // @success     200	{object} []models.Appointments
-// @failure     500 {object} models.ErrorResponse
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 	var apps []models.Appointments
 	err := h.service.GetAllAppointments(&apps)
@@ -51,9 +51,9 @@ func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 // @tags        appointments
 // @produce     json
 // @success     200	{object} []models.Appointments
-// @failure     400 {object} models.ErrorResponse "Invalid appointment id"
-// @failure     404 {object} models.ErrorResponse "Appointment id not found"
-// @failure     500 {object} models.ErrorResponse
+// @failure     400 {object} models.ErrorResponses "Invalid appointment id"
+// @failure     404 {object} models.ErrorResponses "Appointment id not found"
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 	appointmentId := c.Params("appointmentId")
 
@@ -73,8 +73,8 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 // @produce     json
 // @param       body body models.CreatingAppointments true "Appointment details"
 // @success     201	{object} models.Appointments
-// @failure     400 {object} models.ErrorResponse "Empty dates or some of appointments duplicate with existing one"
-// @failure     500 {object} models.ErrorResponse
+// @failure     400 {object} models.ErrorResponses "Empty dates or some of appointments duplicate with existing one"
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) CreateAppointments(c *fiber.Ctx) error {
 	apps := &models.CreatingAppointments{}
 	err := c.BodyParser(apps)
@@ -99,7 +99,7 @@ func (h *handlerImpl) CreateAppointments(c *fiber.Ctx) error {
 // @produce     json
 // @param       body body models.DeletingAppointments true "Appointment id deleting lists"
 // @success     200	{object} []models.Appointments
-// @failure     500 {object} models.ErrorResponse
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) DeleteAppointments(c *fiber.Ctx) error {
 	appIds := &[]string{}
 	err := c.BodyParser(appIds)
@@ -124,8 +124,8 @@ func (h *handlerImpl) DeleteAppointments(c *fiber.Ctx) error {
 // @produce     json
 // @param       body body models.DeletingAppointments true "Appointment id deleting lists"
 // @success     200	{object} []models.Appointments
-// @failure     400 {object} models.ErrorResponse
-// @failure     500 {object} models.ErrorResponse
+// @failure     400 {object} models.ErrorResponses
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) UpdateAppointmentStatus(c *fiber.Ctx) error {
 	status := models.UpdatingAppointmentStatus{}
 	err := c.BodyParser(&status)
