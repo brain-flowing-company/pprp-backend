@@ -85,6 +85,21 @@ definitions:
     - RequestChange
     - Cancelled
     - Completed
+  models.ChatsResponses:
+    properties:
+      created_at:
+        example: "2024-02-22T03:06:53.313735Z"
+        type: string
+      latest_message:
+        example: hello, world
+        type: string
+      sender_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      unread_count:
+        example: 9
+        type: integer
+    type: object
   models.CreatingAppointments:
     properties:
       appointment_dates:
@@ -541,6 +556,25 @@ paths:
       summary: Update appointment status
       tags:
       - appointments
+  /api/v1/chats:
+    get:
+      description: Get current users chat
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ChatsResponses'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get current users chat *use cookies*
+      tags:
+      - chats
   /api/v1/email:
     post:
       description: Send a verification email to the user

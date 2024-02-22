@@ -377,6 +377,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/chats": {
+            "get": {
+                "description": "Get current users chat",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Get current users chat *use cookies*",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ChatsResponses"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/email": {
             "post": {
                 "description": "Send a verification email to the user",
@@ -1030,6 +1059,27 @@ const docTemplate = `{
                 "Cancelled",
                 "Completed"
             ]
+        },
+        "models.ChatsResponses": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2024-02-22T03:06:53.313735Z"
+                },
+                "latest_message": {
+                    "type": "string",
+                    "example": "hello, world"
+                },
+                "sender_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "unread_count": {
+                    "type": "integer",
+                    "example": 9
+                }
+            }
         },
         "models.CreatingAppointments": {
             "type": "object",

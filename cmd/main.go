@@ -10,6 +10,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/core/agreements"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/appointments"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/auth"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/chats"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/emails"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/google"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/greetings"
@@ -108,6 +109,10 @@ func main() {
 	emailService := emails.NewService(logger, cfg, emailRepository)
 	emailHandler := emails.NewHandler(logger, cfg, emailService)
 
+	chatRepository := chats.NewRepository(db)
+	chatService := chats.NewService(logger, chatRepository)
+	chatHandler := chats.NewHandler(chatService)
+
 	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
@@ -166,6 +171,8 @@ func main() {
 
 	apiv1.Post("/email", emailHandler.SendVerificationEmail)
 	apiv1.Post("/email/verify", emailHandler.VerifyEmail)
+
+	apiv1.Get("/chats", mw.AuthMiddlewareWrapper(chatHandler.GetAllChats))
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
