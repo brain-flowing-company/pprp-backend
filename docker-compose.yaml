@@ -31,6 +31,7 @@ services:
     volumes:
       - ./:/app/
     environment:
+      - DB_URL=postgres://postgres:123456@sck-database:5432/postgres
       - APP_ENV=development
       - APP_PORT=8000
       - APP_ALLOW_ORIGIN=http://localhost:3000
