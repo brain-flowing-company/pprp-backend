@@ -16,16 +16,16 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build & Deploy
         env:
-          - SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          - SSH_HOST: ${{secrets.SSH_HOST}}
-          - SSH_USERNAME: ${{secrets.SSH_USERNAME}}
-          - GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
-          - AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          - EMAIL_PASSWORD: ${{secrets.EMAIL_PASSWORD}}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
 
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key &&
-          chmod 600 private_key
+s          chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${SSH_USERNAME}@${SSH_HOST} '
             cd /home/ubuntu/suechaokhai-backend &&
             git checkout dev &&
