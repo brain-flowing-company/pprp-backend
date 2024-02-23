@@ -1,5 +1,28 @@
+var conn;
+
+function send() {
+  if (!conn) {
+    return false;
+  }
+
+  if (!msg.value) {
+    return false;
+  }
+
+  conn.send(
+    JSON.stringify({
+      content: msg.value,
+      receiver_id: document.getElementById("chat-user-id").value,
+      created_at: new Date(Date.now()).toISOString(),
+      tag: "3o8qtahiubfv3kuwefbis",
+    })
+  );
+  msg.value = "";
+
+  return false;
+}
+
 function connect() {
-  var conn;
   var msg = document.getElementById("msg");
   var log = document.getElementById("log");
 
@@ -10,21 +33,6 @@ function connect() {
       log.scrollTop = log.scrollHeight - log.clientHeight;
     }
   }
-
-  document.getElementById("form").onsubmit = function () {
-    if (!conn) {
-      return false;
-    }
-
-    if (!msg.value) {
-      return false;
-    }
-
-    conn.send(msg.value);
-    msg.value = "";
-
-    return false;
-  };
 
   if (window["WebSocket"]) {
     conn = new WebSocket(`ws://localhost:8000/ws/chats`);
@@ -46,9 +54,10 @@ function connect() {
       console.log(evt);
       var msg = JSON.parse(evt.data);
       var item = document.createElement("div");
-      item.innerHTML = `<b>${new Date(msg.created_at).toLocaleTimeString()} ${
-        msg.sender.username
-      }</b>: ${msg.content}`;
+      // item.innerHTML = `<b>${new Date(msg.created_at).toLocaleTimeString()} ${
+      //   msg.sender.username
+      // }</b>: ${msg.content}`;
+      item.innerHTML = evt.data;
       appendLog(item);
     };
   } else {
@@ -66,8 +75,8 @@ function login() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      email: "johnd@email.com",
-      password: "abcdefg",
+      email: document.getElementById("user").value,
+      password: document.getElementById("pass").value,
     }),
   }).then((res) => console.log(res));
 }

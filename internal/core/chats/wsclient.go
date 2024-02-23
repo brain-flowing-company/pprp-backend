@@ -1,4 +1,4 @@
-package ws
+package chats
 
 import (
 	"encoding/json"
@@ -27,19 +27,25 @@ func NewClient(conn *websocket.Conn, hub *Hub, userId uuid.UUID) *WebsocketClien
 	}
 }
 
-func (c *WebsocketClients) Listen() error {
+func (c *WebsocketClients) Listen() {
 	errCh := make(chan error)
+	term := make(chan bool)
 
 	go c.writerHandler()
-	go c.readHandler(errCh)
+	go c.readHandler(term, errCh)
 
 	for {
-		err := <-errCh
+		select {
+		case <-term:
+			return
 
-		utils.WebsocketError(c.conn, apperror.
-			New(apperror.InternalServerError).
-			Describe(err.Error()))
+		case err := <-errCh:
+			utils.WebsocketError(c.conn, apperror.
+				New(apperror.InternalServerError).
+				Describe(err.Error()))
+		}
 	}
+
 }
 
 func (c *WebsocketClients) writerHandler() {
@@ -53,13 +59,14 @@ func (c *WebsocketClients) writerHandler() {
 	}
 }
 
-func (c *WebsocketClients) readHandler(errCh chan error) {
+func (c *WebsocketClients) readHandler(term chan bool, errCh chan error) {
 	for {
 		_, data, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				fmt.Println(err)
 			}
+			term <- true
 			break
 		}
 
@@ -77,6 +84,7 @@ func (c *WebsocketClients) readHandler(errCh chan error) {
 			ReceiverId: raw.ReceiverId,
 			Content:    raw.Content,
 			CreatedAt:  raw.CreatedAt,
+			Tag:        raw.Tag,
 		}
 
 		c.hub.SendMessage <- msg

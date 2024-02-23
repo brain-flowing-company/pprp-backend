@@ -17,7 +17,6 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/core/users"
 	"github.com/brain-flowing-company/pprp-backend/internal/middleware"
 	"github.com/brain-flowing-company/pprp-backend/storage"
-	"github.com/brain-flowing-company/pprp-backend/ws"
 	"github.com/gofiber/contrib/fiberzap"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
@@ -56,7 +55,6 @@ func main() {
 		panic(fmt.Sprintf("Could not establish connection with AWS S3 with err: %v", err.Error()))
 	}
 
-	hub := ws.NewHub(db)
 	app := fiber.New()
 
 	var logger *zap.Logger
@@ -116,6 +114,7 @@ func main() {
 
 	chatRepository := chats.NewRepository(db)
 	chatService := chats.NewService(logger, chatRepository)
+	hub := chats.NewHub(chatRepository)
 	chatHandler := chats.NewHandler(cfg, hub, chatService)
 
 	mw := middleware.NewMiddleware(cfg)

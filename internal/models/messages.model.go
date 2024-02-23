@@ -13,11 +13,12 @@ type Messages struct {
 	Content    string    `json:"content"     example:"hello, world"`
 	Read       bool      `json:"read"        example:"false"`
 	CreatedAt  time.Time `json:"created_at"  example:"2024-02-22T03:06:53.313735Z"`
+	Tag        string    `json:"tag,omitempty" gorm:"-"`
 }
 
 type RawMessages struct {
 	Content    string    `json:"content"`
 	ReceiverId uuid.UUID `json:"receiver_id"`
 	CreatedAt  time.Time `json:"created_at"`
-	Etag       string    `json:"etag"`
+	Tag        string    `json:"tag"`
 }

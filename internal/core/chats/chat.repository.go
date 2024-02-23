@@ -12,6 +12,7 @@ type Repository interface {
 	GetAllChats(*[]models.ChatsResponses, uuid.UUID) error
 	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) error
 	CreateChatStatus(uuid.UUID, uuid.UUID) error
+	CreateMessages(msg *models.Messages) error
 }
 
 type repositoryImpl struct {
@@ -73,4 +74,8 @@ func (repo *repositoryImpl) CreateChatStatus(sendUserId uuid.UUID, recvUserId uu
 		},
 	}
 	return repo.db.CreateInBatches(status, 2).Error
+}
+
+func (repo *repositoryImpl) CreateMessages(msg *models.Messages) error {
+	return repo.db.Model(&models.Messages{}).Create(msg).Error
 }
