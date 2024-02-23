@@ -10,6 +10,7 @@ type Repository interface {
 	GetUserByEmail(user *models.Users, email string) error
 	CreateState(state *models.GoogleOAuthStates) error
 	GetState(result *models.GoogleOAuthStates, state string) error
+	DeleteState(state string) error
 }
 
 type repositoryImpl struct {
@@ -36,4 +37,8 @@ func (repo *repositoryImpl) CreateState(state *models.GoogleOAuthStates) error {
 
 func (repo *repositoryImpl) GetState(result *models.GoogleOAuthStates, state string) error {
 	return repo.db.Model(&models.GoogleOAuthStates{}).Find(result, "code = ? AND expired_at < NOW()", state).Error
+}
+
+func (repo *repositoryImpl) DeleteState(state string) error {
+	return repo.db.Where("state = ?", state).Delete(&models.GoogleOAuthStates{}).Error
 }

@@ -299,4 +299,3 @@ CREATE INDEX idx_property_images_deleted_at     ON _property_images (deleted_at)
 CREATE INDEX idx_selling_properties_deleted_at  ON _selling_properties (deleted_at);
 CREATE INDEX idx_renting_properties_deleted_at  ON _renting_properties (deleted_at);
 CREATE INDEX idx_appointments_deleted_at        ON _appointments (deleted_at);
-CREATE INDEX idx_google_oauth_states            ON google_oauth_states USING HASH (code)

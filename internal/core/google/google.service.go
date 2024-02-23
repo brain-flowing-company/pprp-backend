@@ -74,6 +74,14 @@ func (s *serviceImpl) ExchangeToken(c context.Context, callback *models.Callback
 			Describe("Google OAuth failed")
 	}
 
+	deleteErr := s.repo.DeleteState(callback.State)
+	if deleteErr != nil {
+		s.logger.Error("Could not delete state", zap.Error(deleteErr))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Google OAuth failed")
+	}
+
 	oauthToken, err := s.authCfg.Exchange(c, callback.Code)
 	if err != nil {
 		s.logger.Error("Could not exchange token from google", zap.Error(err))
