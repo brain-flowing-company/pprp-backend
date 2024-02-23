@@ -667,7 +667,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Users"
+                            "$ref": "#/definitions/models.MessageResponses"
                         }
                     },
                     "400": {
@@ -719,7 +719,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Users"
+                            "$ref": "#/definitions/models.MessageResponses"
                         }
                     },
                     "400": {
@@ -791,7 +791,10 @@ const docTemplate = `{
                 "summary": "Delete user by id  *use cookies*",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
                     },
                     "400": {
                         "description": "Invalid user id",

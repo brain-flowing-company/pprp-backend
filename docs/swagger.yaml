@@ -728,7 +728,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Users'
+            $ref: '#/definitions/models.MessageResponses'
         "400":
           description: Invalid user info
           schema:
@@ -764,7 +764,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Users'
+            $ref: '#/definitions/models.MessageResponses'
         "400":
           description: Invalid user info
           schema:
@@ -788,6 +788,8 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
         "400":
           description: Invalid user id
           schema:
