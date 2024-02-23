@@ -34,11 +34,12 @@ func NewHandler(service Service) Handler {
 	}
 }
 
-// @router      /api/v1/property/:id [get]
-// @summary     Get property by id
+// @router      /api/v1/property/:propertyId [get]
+// @summary     Get property by propertyId
 // @description Get property by its id
 // @tags        property
 // @produce     json
+// @param	    propertyId path string true "Property id"
 // @success     200	{object} models.Properties
 // @failure     400 {object} models.ErrorResponses "Invalid property id"
 // @failure     404 {object} models.ErrorResponses "Property id not found"
@@ -82,6 +83,17 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	return c.JSON(properties)
 }
 
+// @router      /api/v1/property [post]
+// @summary     Create a property
+// @description Create a property with the provided details
+// @tags        property
+// @produce     json
+// @param       body body models.Properties true "Property details"
+// @success     200	{object} []models.Properties
+// @failure     400 {object} models.ErrorResponses "Invalid request body"
+// @failure	    403 {object} models.ErrorResponses "Unauthorized"
+// @failure     404 {object} models.ErrorResponses "Property id not found"
+// @failure     500 {object} models.ErrorResponses "Could not create property"
 func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 	property := models.Properties{}
 	if err := c.BodyParser(&property); err != nil {
@@ -101,6 +113,18 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 	return c.JSON(property)
 }
 
+// @router      /api/v1/property/:propertyId [put]
+// @summary     Update a property
+// @description Update a property, owned by the current user, by its id with the provided details
+// @tags        property
+// @produce     json
+// @param	    propertyId path string true "Property id"
+// @param       body body models.Properties true "Property details"
+// @success     200	{object} []models.Properties
+// @failure     400 {object} models.ErrorResponses "Invalid request body"
+// @failure	    403 {object} models.ErrorResponses "Unauthorized"
+// @failure     404 {object} models.ErrorResponses "Property id not found"
+// @failure     500 {object} models.ErrorResponses "Could not update property"
 func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 	property := models.Properties{}
@@ -122,6 +146,17 @@ func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
 	return c.JSON(property)
 }
 
+// @router      /api/v1/property/:propertyId [delete]
+// @summary     Delete a property
+// @description Delete a property, owned by the current user, by its id
+// @tags        property
+// @produce     json
+// @param	    propertyId path string true "Property id"
+// @success     200	{object} models.MessageResponses "Property deleted"
+// @failure     400 {object} models.ErrorResponses "Invalid request body"
+// @failure	    403 {object} models.ErrorResponses "Unauthorized"
+// @failure     404 {object} models.ErrorResponses "Property id not found"
+// @failure     500 {object} models.ErrorResponses "Could not delete property"
 func (h *handlerImpl) DeletePropertyById(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 
@@ -145,6 +180,16 @@ func (h *handlerImpl) SeachProperties(c *fiber.Ctx) error {
 	return c.JSON(properties)
 }
 
+// @router      /api/v1/property/:propertyId [post]
+// @summary     Add property to favorites
+// @description Add property to the current user favorites
+// @tags        property
+// @produce     json
+// @param       propertyId path string true "Property id"
+// @success     200	{object} models.MessageResponses "Property added to favorites"
+// @failure	    403 {object} models.ErrorResponses "Unauthorized"
+// @failure     404 {object} models.ErrorResponses "Property id not found"
+// @failure     500 {object} models.ErrorResponses "Could not add favorite property"
 func (h *handlerImpl) AddFavoriteProperty(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 	userId := c.Locals("session").(models.Sessions).UserId
@@ -157,6 +202,16 @@ func (h *handlerImpl) AddFavoriteProperty(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property added to favorites")
 }
 
+// @router      /api/v1/property/:propertyId [delete]
+// @summary     Remove property to favorites
+// @description Remove property to the current user favorites
+// @tags        property
+// @produce     json
+// @param       propertyId path string true "Property id"
+// @success     200	{object} models.MessageResponses "Property removed from favorites"
+// @failure	    403 {object} models.ErrorResponses "Unauthorized"
+// @failure     404 {object} models.ErrorResponses "Property id not found"
+// @failure     500 {object} models.ErrorResponses "Could not remove favorite property"
 func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 	userId := c.Locals("session").(models.Sessions).UserId
@@ -169,6 +224,14 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property removed from favorites")
 }
 
+// @router      /api/v1/user/me/favorites [get]
+// @summary     Get my favorite properties
+// @description Get all properties that the current user has added to favorites
+// @tags        property
+// @produce     json
+// @success     200	{object} []models.Properties
+// @failure	    403 {object} models.ErrorResponses "Unauthorized"
+// @failure     500 {object} models.ErrorResponses "Could not get favorite properties"
 func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
@@ -181,6 +244,13 @@ func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	return c.JSON(properties)
 }
 
+// @router      /api/v1/properties/top10 [get]
+// @summary     Get top 10 properties
+// @description Get top 10 properties with the most favorites, sorted by the number of favorites then by the newest properties
+// @tags        property
+// @produce     json
+// @success     200	{object} []models.Properties
+// @failure     500 {object} models.ErrorResponses "Could not get top 10 properties"
 func (h *handlerImpl) GetTop10Properties(c *fiber.Ctx) error {
 	properties := []models.Properties{}
 	err := h.service.GetTop10Properties(&properties)
