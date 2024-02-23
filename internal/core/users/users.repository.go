@@ -2,7 +2,6 @@ package users
 
 import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -15,8 +14,6 @@ type Repository interface {
 	DeleteUser(string) error
 	CountEmail(*int64, string) error
 	CountPhoneNumber(*int64, string) error
-	CreateUserVerification(*models.UserVerifications) error
-	CountUserVerification(cnt *int64, userId uuid.UUID) error
 }
 
 type repositoryImpl struct {
@@ -69,14 +66,4 @@ func (repo *repositoryImpl) CountEmail(count *int64, email string) error {
 
 func (repo *repositoryImpl) CountPhoneNumber(count *int64, phoneNumber string) error {
 	return repo.db.Model(&models.Users{}).Where("phone_number = ?", phoneNumber).Count(count).Error
-}
-
-func (repo *repositoryImpl) CountUserVerification(cnt *int64, userId uuid.UUID) error {
-	return repo.db.Model(&models.UserVerifications{}).
-		Where("user_id = ?", userId).
-		Count(cnt).Error
-}
-
-func (repo *repositoryImpl) CreateUserVerification(user *models.UserVerifications) error {
-	return repo.db.Model(&models.UserVerifications{}).Create(user).Error
 }
