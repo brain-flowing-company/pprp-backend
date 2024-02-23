@@ -1,10 +1,13 @@
 package chats
 
 import (
+	"fmt"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
+	"github.com/brain-flowing-company/pprp-backend/ws"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -18,12 +21,14 @@ type Handler interface {
 }
 
 type handlerImpl struct {
+	hub     *ws.Hub
 	service Service
 	cfg     *config.Config
 }
 
-func NewHandler(cfg *config.Config, service Service) Handler {
+func NewHandler(cfg *config.Config, hub *ws.Hub, service Service) Handler {
 	return &handlerImpl{
+		hub,
 		service,
 		cfg,
 	}
@@ -108,9 +113,18 @@ func (h *handlerImpl) OpenConnection(conn *websocket.Conn) {
 
 	claim, err := utils.ParseToken(session, h.cfg.JWTSecret)
 	if err != nil {
-		utils.WebsocketError(conn, apperror.Unauthorized)
+		utils.WebsocketFatal(conn, apperror.Unauthorized)
 		return
 	}
 
-	conn.WriteJSON(claim)
+	client := ws.NewClient(conn, h.hub, claim.Session.UserId)
+
+	h.hub.Register <- client
+	err = client.Listen()
+	fmt.Println(err)
+
+	defer func() {
+		h.hub.Unregister <- client
+		conn.Close()
+	}()
 }

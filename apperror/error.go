@@ -76,5 +76,7 @@ var (
 	AgreementNotFound  = &AppErrorType{http.StatusNotFound, "agreement-not-found"}
 	DuplicateAgreement = &AppErrorType{http.StatusBadRequest, "duplicate-agreement"}
 
+	WebSocketDuplicatedConnection = &AppErrorType{http.StatusBadRequest, "websocket-duplicated-connection"}
+
 	Unauthorized = &AppErrorType{http.StatusUnauthorized, "unauthorized"}
 )

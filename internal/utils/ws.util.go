@@ -9,29 +9,41 @@ import (
 	"github.com/gofiber/contrib/websocket"
 )
 
-func WebsocketError(conn *websocket.Conn, err interface{}) {
-	r := struct {
-		Error models.ErrorResponses `json:"error"`
-	}{}
+func parseError(err interface{}) models.ErrorResponses {
+	var r models.ErrorResponses
 
 	switch apperr := err.(type) {
 	case *apperror.AppError:
-		r.Error = models.ErrorResponses{
+		r = models.ErrorResponses{
 			Code:    apperr.Code(),
 			Name:    apperr.Name(),
 			Message: apperr.Error(),
 		}
 
 	case *apperror.AppErrorType:
-		r.Error = models.ErrorResponses{
+		r = models.ErrorResponses{
 			Code: apperr.Code,
 			Name: apperr.Name,
 		}
 	}
 
+	return r
+}
+
+func WebsocketError(conn *websocket.Conn, err interface{}) {
+	r := struct{ Error models.ErrorResponses }{
+		Error: parseError(err),
+	}
+
+	conn.WriteJSON(r)
+}
+
+func WebsocketFatal(conn *websocket.Conn, err interface{}) {
+	r := struct{ Error models.ErrorResponses }{
+		Error: parseError(err),
+	}
+
 	reason, _ := json.Marshal(r)
 	data := websocket.FormatCloseMessage(websocket.CloseMessage, string(reason))
-	conn.WriteControl(websocket.CloseMessage,
-		data,
-		time.Now().Add(5*time.Second))
+	conn.WriteControl(websocket.CloseMessage, data, time.Now().Add(5*time.Second))
 }

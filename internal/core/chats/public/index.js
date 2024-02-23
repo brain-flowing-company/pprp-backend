@@ -27,9 +27,7 @@ function connect() {
   };
 
   if (window["WebSocket"]) {
-    conn = new WebSocket(
-      `ws://localhost:8000/ws/chats/${document.getElementById("chat-user-id").value}`
-    );
+    conn = new WebSocket(`ws://localhost:8000/ws/chats`);
 
     conn.onopen = function (evt) {
       var item = document.createElement("div");

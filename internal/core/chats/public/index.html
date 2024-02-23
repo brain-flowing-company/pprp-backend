@@ -8,12 +8,14 @@
     <form id="form">
       <div>
         <p>Connection</p>
-        <input type="text" id="chat-user-id" size="64" />
         <input type="button" value="Connect" onclick="connect()" />
         <input type="button" value="Login" onclick="login()" />
       </div>
       <div>
         <p>Chat</p>
+        <label>To userId: </label>
+        <input type="text" id="chat-user-id" size="64" /><br />
+        <label>Message: </label>
         <input type="text" id="msg" size="64" autofocus />
         <input type="submit" value="Send" />
       </div>
