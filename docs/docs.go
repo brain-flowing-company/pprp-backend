@@ -637,10 +637,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Properties"
-                            }
+                            "$ref": "#/definitions/models.Properties"
                         }
                     },
                     "400": {
@@ -747,10 +744,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Properties"
-                            }
+                            "$ref": "#/definitions/models.Properties"
                         }
                     },
                     "400": {
@@ -1143,6 +1137,41 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Could not get favorite properties",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/me/properties": {
+            "get": {
+                "description": "Get all properties owned by the current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Get my properties",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Properties"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }

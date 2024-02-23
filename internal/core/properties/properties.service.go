@@ -15,6 +15,7 @@ import (
 type Service interface {
 	GetAllProperties(*[]models.Properties) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
+	GetPropertyByOwnerId(*[]models.Properties, string) *apperror.AppError
 	CreateProperty(*models.Properties) *apperror.AppError
 	UpdatePropertyById(*models.Properties, string) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
@@ -76,6 +77,24 @@ func (s *serviceImpl) GetPropertyById(property *models.Properties, propertyId st
 			Describe("Could not find the specified property")
 	} else if err != nil {
 		s.logger.Error("Could not get property by id", zap.String("id", propertyId), zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get property. Please try again later.")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) GetPropertyByOwnerId(properties *[]models.Properties, ownerId string) *apperror.AppError {
+	if !utils.IsValidUUID(ownerId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	err := s.repo.GetPropertyByOwnerId(properties, ownerId)
+	if err != nil {
+		s.logger.Error("Could not get property by owner id", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get property. Please try again later.")

@@ -136,6 +136,7 @@ func main() {
 
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
 	apiv1.Get("/properties", propertyHandler.GetOrSearchProperties)
+	apiv1.Get("/user/me/properties", mw.AuthMiddlewareWrapper(propertyHandler.GetMyProperties))
 	apiv1.Post("/properties", mw.AuthMiddlewareWrapper(propertyHandler.CreateProperty))
 	apiv1.Put("/property/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.UpdatePropertyById))
 	apiv1.Delete("/property/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.DeletePropertyById))

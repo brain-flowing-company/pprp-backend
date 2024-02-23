@@ -8,6 +8,7 @@ import (
 type Repository interface {
 	GetAllProperties(*[]models.Properties) error
 	GetPropertyById(*models.Properties, string) error
+	GetPropertyByOwnerId(*[]models.Properties, string) error
 	CreateProperty(*models.Properties) error
 	UpdatePropertyById(*models.Properties, string) error
 	DeletePropertyById(string) error
@@ -43,6 +44,15 @@ func (repo *repositoryImpl) GetPropertyById(result *models.Properties, id string
 		Preload("SellingProperty").
 		Preload("RentingProperty").
 		First(result, "property_id = ?", id).Error
+}
+
+func (repo *repositoryImpl) GetPropertyByOwnerId(result *[]models.Properties, ownerId string) error {
+	return repo.db.Model(&models.Properties{}).
+		Preload("PropertyImages").
+		Preload("SellingProperty").
+		Preload("RentingProperty").
+		Where("owner_id = ?", ownerId).
+		Find(result).Error
 }
 
 func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {

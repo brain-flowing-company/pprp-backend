@@ -773,9 +773,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Properties'
-            type: array
+            $ref: '#/definitions/models.Properties'
         "400":
           description: Invalid request body
           schema:
@@ -907,9 +905,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Properties'
-            type: array
+            $ref: '#/definitions/models.Properties'
         "400":
           description: Invalid request body
           schema:
@@ -1114,6 +1110,29 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponses'
       summary: Get my favorite properties
+      tags:
+      - property
+  /api/v1/user/me/properties:
+    get:
+      description: Get all properties owned by the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Properties'
+            type: array
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get my properties
       tags:
       - property
   /api/v1/user/me/registered:

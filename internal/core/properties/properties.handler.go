@@ -13,6 +13,7 @@ import (
 type Handler interface {
 	GetPropertyById(c *fiber.Ctx) error
 	GetAllProperties(c *fiber.Ctx) error
+	GetMyProperties(c *fiber.Ctx) error
 	CreateProperty(c *fiber.Ctx) error
 	UpdatePropertyById(c *fiber.Ctx) error
 	DeletePropertyById(c *fiber.Ctx) error
@@ -83,13 +84,33 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	return c.JSON(properties)
 }
 
+// @router      /api/v1/user/me/properties [get]
+// @summary     Get my properties
+// @description Get all properties owned by the current user
+// @tags        property
+// @produce     json
+// @success     200	{object} []models.Properties
+// @failure	    403 {object} models.ErrorResponses "Unauthorized"
+// @failure     500 {object} models.ErrorResponses
+func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
+	userId := c.Locals("session").(models.Sessions).UserId.String()
+
+	properties := []models.Properties{}
+	err := h.service.GetPropertyByOwnerId(&properties, userId)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return c.JSON(properties)
+}
+
 // @router      /api/v1/property [post]
 // @summary     Create a property
 // @description Create a property with the provided details
 // @tags        property
 // @produce     json
 // @param       body body models.Properties true "Property details"
-// @success     200	{object} []models.Properties
+// @success     200	{object} models.Properties
 // @failure     400 {object} models.ErrorResponses "Invalid request body"
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     404 {object} models.ErrorResponses "Property id not found"
@@ -120,7 +141,7 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 // @produce     json
 // @param	    propertyId path string true "Property id"
 // @param       body body models.Properties true "Property details"
-// @success     200	{object} []models.Properties
+// @success     200	{object} models.Properties
 // @failure     400 {object} models.ErrorResponses "Invalid request body"
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     404 {object} models.ErrorResponses "Property id not found"
