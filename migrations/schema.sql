@@ -44,6 +44,13 @@ CREATE TABLE users
     UNIQUE(phone_number, deleted_at)
 );
 
+CREATE TABLE user_verifications (
+    user_id                 UUID PRIMARY KEY NOT NULL REFERENCES users(user_id),
+    citizen_id              VARCHAR(13)      NOT NULL,
+    citizen_card_image_url  VARCHAR(2000)    NOT NULL,
+    verified_at             TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE credit_cards
 (
     credit_card_id                      UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
@@ -151,15 +158,6 @@ CREATE TABLE agreements
     UNIQUE (property_id, agreement_date)
 );
 
-CREATE TABLE user_verifications (
-    user_id                 UUID PRIMARY KEY NOT NULL REFERENCES users(user_id),
-    citizen_id              VARCHAR(13)      NOT NULL,
-    citizen_card_image_url  VARCHAR(2000)    NOT NULL,
-    created_at              TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at              TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at              TIMESTAMP(0) WITH TIME ZONE DEFAULT NULL
-);
-
 -------------------- DUMMY DATA --------------------
 
 INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, bank_name, bank_account_number, is_verified) VALUES
@@ -241,11 +239,7 @@ ALTER TABLE users RENAME TO _users;
 CREATE VIEW users AS SELECT * FROM _users WHERE deleted_at IS NULL;
 
 ALTER TABLE user_verifications RENAME TO _user_verifications;
-CREATE VIEW user_verifications AS SELECT *
-    FROM _user_verifications WHERE (
-        deleted_at IS NULL AND
-        user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL)
-    );
+CREATE VIEW user_verifications AS SELECT * FROM _user_verifications WHERE user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL);
 
 ALTER TABLE properties RENAME TO _properties;
 CREATE VIEW properties AS SELECT *
@@ -278,10 +272,6 @@ CREATE VIEW appointments AS SELECT *
 
 CREATE RULE soft_deletion AS ON DELETE TO users DO INSTEAD (
     UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = old.user_id and deleted_at IS NULL
-);
-
-CREATE RULE soft_deletion AS ON DELETE TO user_verifications DO INSTEAD (
-    UPDATE user_verifications SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = old.user_id and deleted_at IS NULL
 );
 
 CREATE RULE soft_deletion AS ON DELETE TO properties DO INSTEAD (
