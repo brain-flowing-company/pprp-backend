@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/database"
@@ -111,11 +112,38 @@ func main() {
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
 
+	apiv1.Post("/upload", func(c *fiber.Ctx) error {
+		file, err := c.FormFile("profile")
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).SendString(err.Error())
+		}
+
+		fileReader, err := file.Open()
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).SendString(err.Error())
+		}
+
+		url, err := storage.Upload(fmt.Sprintf("profiles/%v", file.Filename), fileReader)
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).SendString(err.Error())
+		}
+
+		return c.SendString(url)
+	})
+
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/user/greeting", mw.AuthMiddlewareWrapper(hwHandler.UserGreeting))
 
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
-	apiv1.Get("/properties", propertyHandler.GetOrSearchProperties)
+	apiv1.Get("/properties", propertyHandler.GetAllProperties)
+	apiv1.Get("/user/me/properties", mw.AuthMiddlewareWrapper(propertyHandler.GetMyProperties))
+	apiv1.Post("/properties", mw.AuthMiddlewareWrapper(propertyHandler.CreateProperty))
+	apiv1.Put("/property/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.UpdatePropertyById))
+	apiv1.Delete("/property/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.DeletePropertyById))
+	apiv1.Post("/property/favorites/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.AddFavoriteProperty))
+	apiv1.Delete("/property/favorites/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.RemoveFavoriteProperty))
+	apiv1.Get("/user/me/favorites", mw.AuthMiddlewareWrapper(propertyHandler.GetMyFavoriteProperties))
+	apiv1.Get("/properties/top10", propertyHandler.GetTop10Properties)
 
 	apiv1.Get("/appointments/:appointmentId", appointmentHandler.GetAppointmentById)
 	apiv1.Get("/appointments", appointmentHandler.GetAllAppointments)
@@ -129,7 +157,6 @@ func main() {
 	apiv1.Get("/user/:userId", usersHandler.GetUserById)
 	apiv1.Put("/user/me", mw.AuthMiddlewareWrapper(usersHandler.UpdateUser))
 	apiv1.Delete("/user/:userId", mw.AuthMiddlewareWrapper(usersHandler.DeleteUser))
-	apiv1.Post("/user/verify", mw.AuthMiddlewareWrapper(usersHandler.VerifyCitizenId))
 
 	apiv1.Post("/register", usersHandler.Register)
 	apiv1.Post("/login", authHandler.Login)

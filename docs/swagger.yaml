@@ -22,6 +22,42 @@ definitions:
     - SCB
     - GSB
     - "NULL"
+  enums.FloorSizeUnits:
+    enum:
+    - sqm
+    - sqft
+    type: string
+    x-enum-varnames:
+    - SQM
+    - SQFT
+  enums.Furnishing:
+    enum:
+    - UNFURNISHED
+    - PARTIALLY FURNISHED
+    - FULLY FURNISHED
+    - READY TO MOVE IN
+    type: string
+    x-enum-varnames:
+    - UNFURNISHED
+    - PARTIALLY_FURNISHED
+    - FULLY_FURNISHED
+    - READY_TO_MOVE_IN
+  enums.PropertyTypes:
+    enum:
+    - CONDOMINIUM
+    - APARTMENT
+    - SEMI-DETACHED HOUSE
+    - HOUSE
+    - SERVICED APARTMENT
+    - TOWNHOUSE
+    type: string
+    x-enum-varnames:
+    - CONDOMINIUM
+    - APARTMENT
+    - SEMI_DETACHED_HOUSE
+    - HOUSE
+    - SERVICED_APARTMENT
+    - TOWNHOUSE
   enums.RegisteredTypes:
     enum:
     - EMAIL
@@ -166,31 +202,54 @@ definitions:
       alley:
         example: Pattaya Nua 78
         type: string
+      bathrooms:
+        example: 2
+        type: integer
+      bedrooms:
+        example: 3
+        type: integer
       country:
         example: Thailand
         type: string
       created_at:
         type: string
-      description:
-        example: Et sequi dolor praes
-        type: string
       district:
         example: Bang Phli
         type: string
+      floor:
+        example: 5
+        type: integer
+      floor_size:
+        example: 123.45
+        type: number
+      floor_size_unit:
+        allOf:
+        - $ref: '#/definitions/enums.FloorSizeUnits'
+        example: SQM
+      furnishing:
+        allOf:
+        - $ref: '#/definitions/enums.Furnishing'
+        example: UNFURNISHED
       images:
         items:
           $ref: '#/definitions/models.PropertyImages'
         type: array
       owner_id:
-        description: foreign key
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       postal_code:
         example: "69096"
         type: string
-      project_name:
+      property_description:
+        example: Et sequi dolor praes
+        type: string
+      property_name:
         example: Supalai
         type: string
+      property_type:
+        allOf:
+        - $ref: '#/definitions/enums.PropertyTypes'
+        example: CONDOMINIUM
       propertyId:
         type: string
       province:
@@ -198,9 +257,6 @@ definitions:
         type: string
       renting:
         $ref: '#/definitions/models.RentingProperties'
-      residential_type:
-        example: Condo
-        type: string
       selling:
         $ref: '#/definitions/models.SellingProperties'
       street:
@@ -209,6 +265,9 @@ definitions:
       sub_district:
         example: Bang Bon
         type: string
+      unit_number:
+        example: 123
+        type: integer
     type: object
   models.PropertyImages:
     properties:
@@ -265,6 +324,12 @@ definitions:
         allOf:
         - $ref: '#/definitions/enums.BankNames'
         example: KBANK
+      citizen_card_image_url:
+        example: https://image_url.com/abcd
+        type: string
+      citizen_id:
+        example: "1234567890123"
+        type: string
       created_at:
         type: string
       email:
@@ -666,13 +731,11 @@ paths:
       - auth
   /api/v1/properties:
     get:
-      description: If a query parameter is provided, search properties by project
-        name or description. Otherwise, get all properties.
+      description: Get all properties or search properties by query
       parameters:
       - description: Search query
         in: query
         name: query
-        required: true
         type: string
       produces:
       - application/json
@@ -684,15 +747,107 @@ paths:
               $ref: '#/definitions/models.Properties'
             type: array
         "500":
-          description: Internal Server Error
+          description: Could not get properties
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get all properties or search properties
+      summary: Get or search properties
       tags:
       - property
-  /api/v1/property/:id:
+  /api/v1/properties/top10:
+    get:
+      description: Get top 10 properties with the most favorites, sorted by the number
+        of favorites then by the newest properties
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Properties'
+            type: array
+        "500":
+          description: Could not get top 10 properties
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get top 10 properties
+      tags:
+      - property
+  /api/v1/property:
+    post:
+      description: Create a property with the provided details
+      parameters:
+      - description: Property details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Properties'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Properties'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "404":
+          description: Property id not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Could not create property
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Create a property
+      tags:
+      - property
+  /api/v1/property/:propertyId:
+    delete:
+      description: Remove property to the current user favorites
+      parameters:
+      - description: Property id
+        in: path
+        name: propertyId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property removed from favorites
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "404":
+          description: Property id not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Could not remove favorite property
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Remove property to favorites
+      tags:
+      - property
     get:
       description: Get property by its id
+      parameters:
+      - description: Property id
+        in: path
+        name: propertyId
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -712,7 +867,78 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get property by id
+      summary: Get property by propertyId
+      tags:
+      - property
+    post:
+      description: Add property to the current user favorites
+      parameters:
+      - description: Property id
+        in: path
+        name: propertyId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property added to favorites
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "404":
+          description: Property id not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Could not add favorite property
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Add property to favorites
+      tags:
+      - property
+    put:
+      description: Update a property, owned by the current user, by its id with the
+        provided details
+      parameters:
+      - description: Property id
+        in: path
+        name: propertyId
+        required: true
+        type: string
+      - description: Property details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Properties'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Properties'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "404":
+          description: Property id not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Could not update property
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Update a property
       tags:
       - property
   /api/v1/register:
@@ -755,7 +981,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: '#/definitions/models.Users'
         "400":
           description: Invalid user info
           schema:
@@ -791,7 +1017,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: '#/definitions/models.Users'
         "400":
           description: Invalid user info
           schema:
@@ -815,8 +1041,6 @@ paths:
       responses:
         "200":
           description: OK
-          schema:
-            $ref: '#/definitions/models.MessageResponses'
         "400":
           description: Invalid user id
           schema:
@@ -890,6 +1114,52 @@ paths:
       summary: Get current user info *use cookies*
       tags:
       - users
+  /api/v1/user/me/favorites:
+    get:
+      description: Get all properties that the current user has added to favorites
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Properties'
+            type: array
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Could not get favorite properties
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get my favorite properties
+      tags:
+      - property
+  /api/v1/user/me/properties:
+    get:
+      description: Get all properties owned by the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Properties'
+            type: array
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get my properties
+      tags:
+      - property
   /api/v1/user/me/registered:
     get:
       description: Get user registered type
@@ -901,28 +1171,6 @@ paths:
           schema:
             $ref: '#/definitions/models.Sessions'
       summary: Get user registered type *use cookies*
-      tags:
-      - users
-  /api/v1/user/me/verify:
-    post:
-      description: Verify user by citizen id and citizen id image
-      parameters:
-      - example: "1100111111111"
-        in: formData
-        name: citizen_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.MessageResponses'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-      summary: Verify user *use cookies*
       tags:
       - users
   /api/v1/users:

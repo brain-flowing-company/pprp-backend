@@ -566,21 +566,20 @@ const docTemplate = `{
         },
         "/api/v1/properties": {
             "get": {
-                "description": "If a query parameter is provided, search properties by project name or description. Otherwise, get all properties.",
+                "description": "Get all properties or search properties by query",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "property"
                 ],
-                "summary": "Get all properties or search properties",
+                "summary": "Get or search properties",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Search query",
                         "name": "query",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -594,7 +593,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Could not get properties",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -602,7 +601,91 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/property/:id": {
+        "/api/v1/properties/top10": {
+            "get": {
+                "description": "Get top 10 properties with the most favorites, sorted by the number of favorites then by the newest properties",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Get top 10 properties",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Properties"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not get top 10 properties",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/property": {
+            "post": {
+                "description": "Create a property with the provided details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Create a property",
+                "parameters": [
+                    {
+                        "description": "Property details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Properties"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Properties"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "404": {
+                        "description": "Property id not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not create property",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/property/:propertyId": {
             "get": {
                 "description": "Get property by its id",
                 "produces": [
@@ -611,7 +694,16 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Get property by id",
+                "summary": "Get property by propertyId",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property id",
+                        "name": "propertyId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -633,6 +725,156 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a property, owned by the current user, by its id with the provided details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Update a property",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property id",
+                        "name": "propertyId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Property details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Properties"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Properties"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "404": {
+                        "description": "Property id not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not update property",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add property to the current user favorites",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Add property to favorites",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property id",
+                        "name": "propertyId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property added to favorites",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "404": {
+                        "description": "Property id not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not add favorite property",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove property to the current user favorites",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Remove property to favorites",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property id",
+                        "name": "propertyId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property removed from favorites",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "404": {
+                        "description": "Property id not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not remove favorite property",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -699,7 +941,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
+                            "$ref": "#/definitions/models.Users"
                         }
                     },
                     "400": {
@@ -751,7 +993,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
+                            "$ref": "#/definitions/models.Users"
                         }
                     },
                     "400": {
@@ -823,10 +1065,7 @@ const docTemplate = `{
                 "summary": "Delete user by id  *use cookies*",
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Invalid user id",
@@ -901,6 +1140,76 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user/me/favorites": {
+            "get": {
+                "description": "Get all properties that the current user has added to favorites",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Get my favorite properties",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Properties"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not get favorite properties",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/me/properties": {
+            "get": {
+                "description": "Get all properties owned by the current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Get my properties",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Properties"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/me/registered": {
             "get": {
                 "description": "Get user registered type",
@@ -916,40 +1225,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Sessions"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/me/verify": {
-            "post": {
-                "description": "Verify user by citizen id and citizen id image",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Verify user *use cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "1100111111111",
-                        "name": "citizen_id",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -1009,6 +1284,51 @@ const docTemplate = `{
                 "SCB",
                 "GSB",
                 "NULL"
+            ]
+        },
+        "enums.FloorSizeUnits": {
+            "type": "string",
+            "enum": [
+                "sqm",
+                "sqft"
+            ],
+            "x-enum-varnames": [
+                "SQM",
+                "SQFT"
+            ]
+        },
+        "enums.Furnishing": {
+            "type": "string",
+            "enum": [
+                "UNFURNISHED",
+                "PARTIALLY FURNISHED",
+                "FULLY FURNISHED",
+                "READY TO MOVE IN"
+            ],
+            "x-enum-varnames": [
+                "UNFURNISHED",
+                "PARTIALLY_FURNISHED",
+                "FULLY_FURNISHED",
+                "READY_TO_MOVE_IN"
+            ]
+        },
+        "enums.PropertyTypes": {
+            "type": "string",
+            "enum": [
+                "CONDOMINIUM",
+                "APARTMENT",
+                "SEMI-DETACHED HOUSE",
+                "HOUSE",
+                "SERVICED APARTMENT",
+                "TOWNHOUSE"
+            ],
+            "x-enum-varnames": [
+                "CONDOMINIUM",
+                "APARTMENT",
+                "SEMI_DETACHED_HOUSE",
+                "HOUSE",
+                "SERVICED_APARTMENT",
+                "TOWNHOUSE"
             ]
         },
         "enums.RegisteredTypes": {
@@ -1222,6 +1542,14 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Pattaya Nua 78"
                 },
+                "bathrooms": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "bedrooms": {
+                    "type": "integer",
+                    "example": 3
+                },
                 "country": {
                     "type": "string",
                     "example": "Thailand"
@@ -1229,13 +1557,33 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "description": {
-                    "type": "string",
-                    "example": "Et sequi dolor praes"
-                },
                 "district": {
                     "type": "string",
                     "example": "Bang Phli"
+                },
+                "floor": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "floor_size": {
+                    "type": "number",
+                    "example": 123.45
+                },
+                "floor_size_unit": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.FloorSizeUnits"
+                        }
+                    ],
+                    "example": "SQM"
+                },
+                "furnishing": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.Furnishing"
+                        }
+                    ],
+                    "example": "UNFURNISHED"
                 },
                 "images": {
                     "type": "array",
@@ -1244,7 +1592,6 @@ const docTemplate = `{
                     }
                 },
                 "owner_id": {
-                    "description": "foreign key",
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
@@ -1252,12 +1599,24 @@ const docTemplate = `{
                     "type": "string",
                     "example": "69096"
                 },
-                "project_name": {
+                "propertyId": {
+                    "type": "string"
+                },
+                "property_description": {
+                    "type": "string",
+                    "example": "Et sequi dolor praes"
+                },
+                "property_name": {
                     "type": "string",
                     "example": "Supalai"
                 },
-                "propertyId": {
-                    "type": "string"
+                "property_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.PropertyTypes"
+                        }
+                    ],
+                    "example": "CONDOMINIUM"
                 },
                 "province": {
                     "type": "string",
@@ -1265,10 +1624,6 @@ const docTemplate = `{
                 },
                 "renting": {
                     "$ref": "#/definitions/models.RentingProperties"
-                },
-                "residential_type": {
-                    "type": "string",
-                    "example": "Condo"
                 },
                 "selling": {
                     "$ref": "#/definitions/models.SellingProperties"
@@ -1280,6 +1635,10 @@ const docTemplate = `{
                 "sub_district": {
                     "type": "string",
                     "example": "Bang Bon"
+                },
+                "unit_number": {
+                    "type": "integer",
+                    "example": 123
                 }
             }
         },
@@ -1365,6 +1724,14 @@ const docTemplate = `{
                         }
                     ],
                     "example": "KBANK"
+                },
+                "citizen_card_image_url": {
+                    "type": "string",
+                    "example": "https://image_url.com/abcd"
+                },
+                "citizen_id": {
+                    "type": "string",
+                    "example": "1234567890123"
                 },
                 "created_at": {
                     "type": "string"

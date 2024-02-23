@@ -28,6 +28,7 @@ func ResponseStatus(c *fiber.Ctx, status int) error {
 }
 
 func ResponseMessage(c *fiber.Ctx, status int, message string) error {
-	msg := models.MessageResponses{Message: message}
-	return c.Status(status).JSON(msg)
+	return c.Status(status).JSON(fiber.Map{
+		"message": message,
+	})
 }

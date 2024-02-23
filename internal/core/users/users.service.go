@@ -6,9 +6,7 @@ import (
 	"mime/multipart"
 	"path/filepath"
 	"strings"
-	"time"
 
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
@@ -27,7 +25,6 @@ type Service interface {
 	UpdateUser(*models.UpdatingUserPersonalInfo, *multipart.FileHeader) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 	GetUserByEmail(*models.Users, string) *apperror.AppError
-	VerifyCitizenId(*models.UserVerifications, *multipart.FileHeader) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -283,106 +280,7 @@ func (s *serviceImpl) uploadProfileImage(userId uuid.UUID, profileImage *multipa
 			Describe("Could not process image")
 	}
 
-	url, err := s.storage.Upload(fmt.Sprintf("profiles/%v.jpeg", userId.String()), processedFile, types.ObjectCannedACLPublicRead)
-
-	if err != nil {
-		return "", apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not upload profile image")
-	}
-
-	return url, nil
-}
-
-func (s *serviceImpl) VerifyCitizenId(user *models.UserVerifications, profileImage *multipart.FileHeader) *apperror.AppError {
-	var cnt int64
-	err := s.repo.CountUserVerification(&cnt, user.UserId)
-	if err != nil {
-		s.logger.Error("Could not count user verification", zap.String("id", user.UserId.String()), zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not verify user. Please try again later")
-	}
-
-	if cnt > 0 {
-		return apperror.
-			New(apperror.UserHasVerified).
-			Describe("User has already verified")
-	}
-
-	url, apperr := s.uploadCitizenImage(user.UserId, profileImage)
-	if apperr != nil {
-		return apperr
-	}
-
-	user.CitizenCardImageUrl = url
-	user.VerifiedAt = time.Now()
-
-	err = s.repo.CreateUserVerification(user)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return apperror.
-			New(apperror.UserNotFound).
-			Describe("Could not find the specified user")
-	} else if err != nil {
-		s.logger.Error("Could not verify user", zap.String("id", user.UserId.String()), zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not verify user. Please try again later")
-	}
-
-	return nil
-}
-
-func (s *serviceImpl) uploadCitizenImage(userId uuid.UUID, profileImage *multipart.FileHeader) (string, *apperror.AppError) {
-	if profileImage == nil {
-		return "", apperror.
-			New(apperror.BadRequest).
-			Describe("No citizen card found")
-	}
-
-	file, err := profileImage.Open()
-	if err != nil {
-		return "", apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not upload profile image")
-	}
-
-	ext := filepath.Ext(profileImage.Filename)
-	ip := utils.NewImageProcessor()
-
-	switch strings.ToLower(ext) {
-	case ".jpg":
-		fallthrough
-
-	case ".jpeg":
-		err = ip.LoadJPEG(file)
-
-	case ".png":
-		err = ip.LoadPNG(file)
-
-	default:
-		return "", apperror.
-			New(apperror.InvalidProfileImageExtension).
-			Describe(fmt.Sprintf("App does not support %v extension", ext))
-	}
-
-	if err != nil {
-		s.logger.Error("Could not load image", zap.Error(err))
-		return "", apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not process image")
-	}
-
-	processedFile, err := ip.Save()
-	if err != nil {
-		s.logger.Error("Could not create new image", zap.Error(err))
-		return "", apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not process image")
-	}
-
-	url, err := s.storage.Upload(fmt.Sprintf("verifications/%v.jpeg", userId.String()), processedFile, types.ObjectCannedACLPrivate)
-
+	url, err := s.storage.Upload(fmt.Sprintf("profiles/%v.jpeg", userId.String()), processedFile)
 	if err != nil {
 		return "", apperror.
 			New(apperror.InternalServerError).
