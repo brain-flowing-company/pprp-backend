@@ -1,8 +1,6 @@
 package chats
 
 import (
-	"fmt"
-
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -100,8 +98,11 @@ func (h *handlerImpl) JoinChat(conn *websocket.Conn) {
 		return
 	}
 
-	fmt.Println(claim)
-	fmt.Println(recvUserId)
+	apperr := h.service.JoinChat(claim.Session.UserId, recvUserId)
+	if apperr != nil {
+		utils.WebsocketError(conn, apperr)
+		return
+	}
 
 	conn.WriteJSON(claim)
 }
