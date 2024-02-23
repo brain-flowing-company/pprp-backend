@@ -71,6 +71,7 @@ var (
 	InvalidCredentials            = &AppErrorType{http.StatusUnauthorized, "invalid-credentials"}
 	ServiceUnavailable            = &AppErrorType{http.StatusServiceUnavailable, "service-unavailable"}
 	InvalidProfileImageExtension  = &AppErrorType{http.StatusBadRequest, "invalid-profile-image-extensions"}
+	UserHasVerified               = &AppErrorType{http.StatusBadRequest, "user-has-verified"}
 
 	InvalidAgreementId = &AppErrorType{http.StatusBadRequest, "invalid-agreement-id"}
 	AgreementNotFound  = &AppErrorType{http.StatusNotFound, "agreement-not-found"}

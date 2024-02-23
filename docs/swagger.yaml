@@ -259,12 +259,6 @@ definitions:
         allOf:
         - $ref: '#/definitions/enums.BankNames'
         example: KBANK
-      citizen_card_image_url:
-        example: https://image_url.com/abcd
-        type: string
-      citizen_id:
-        example: "1234567890123"
-        type: string
       created_at:
         type: string
       email:
@@ -878,6 +872,28 @@ paths:
           schema:
             $ref: '#/definitions/models.Sessions'
       summary: Get user registered type *use cookies*
+      tags:
+      - users
+  /api/v1/user/me/verify:
+    post:
+      description: Verify user by citizen id and citizen id image
+      parameters:
+      - example: "1100111111111"
+        in: formData
+        name: citizen_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Verify user *use cookies*
       tags:
       - users
   /api/v1/users:

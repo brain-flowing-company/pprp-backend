@@ -20,6 +20,7 @@ type Handler interface {
 	UpdateUser(c *fiber.Ctx) error
 	DeleteUser(c *fiber.Ctx) error
 	GetRegisteredType(c *fiber.Ctx) error
+	VerifyCitizenId(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -97,8 +98,6 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	} else {
 		user.RegisteredType = session.RegisteredType
 	}
-
-	fmt.Println(user)
 
 	profileImage, _ := c.FormFile("profile_image")
 	apperr := h.service.Register(user, profileImage)
@@ -191,4 +190,33 @@ func (h *handlerImpl) GetRegisteredType(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(session)
+}
+
+// @router      /api/v1/user/me/verify [post]
+// @summary     Verify user *use cookies*
+// @description Verify user by citizen id and citizen id image
+// @tags        users
+// @produce     json
+// @param       formData formData models.UserVerifications true "Verification information"
+// @success     200 {object} models.MessageResponses
+// @success     500 {object} models.ErrorResponses
+func (h *handlerImpl) VerifyCitizenId(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Sessions)
+	if !ok {
+		session = models.Sessions{}
+	}
+
+	user := models.UserVerifications{UserId: session.UserId}
+	bodyErr := c.BodyParser(&user)
+	if bodyErr != nil {
+		return utils.ResponseError(c, apperror.InvalidBody)
+	}
+
+	profileImage, _ := c.FormFile("citizen_card_image")
+	err := h.service.VerifyCitizenId(&user, profileImage)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return utils.ResponseMessage(c, http.StatusOK, "Verified")
 }
