@@ -57,6 +57,7 @@ var (
 	AppointmentNotFound      = &AppErrorType{http.StatusNotFound, "appointment-not-found"}
 	DuplicateAppointment     = &AppErrorType{http.StatusBadRequest, "duplicate-appointment"}
 	InvalidAppointmentStatus = &AppErrorType{http.StatusBadRequest, "invalid-appointment-status"}
+	UserHasVerified          = &AppErrorType{http.StatusBadRequest, "user-has-verified"}
 
 	// user errors
 	InvalidUserId                 = &AppErrorType{http.StatusBadRequest, "invalid-user-id"}
