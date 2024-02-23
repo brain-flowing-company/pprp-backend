@@ -65,40 +65,12 @@ func (s *serviceImpl) JoinChat(sendUserId uuid.UUID, recvUserId uuid.UUID) *appe
 			Describe("Could not chat with yourself")
 	}
 
-	var cnt int64
-	err := s.repo.CountUsers(&cnt, recvUserId)
-	if err != nil {
-		s.logger.Error("Could not count user",
-			zap.Error(err),
-			zap.String("receiveruserId", recvUserId.String()))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not count user")
-	}
-
-	if cnt == 0 {
+	err := s.repo.CreateChatStatus(sendUserId, recvUserId)
+	if errors.Is(err, gorm.ErrForeignKeyViolated) {
 		return apperror.
 			New(apperror.BadRequest).
-			Describe("Could not find the specified user")
-	}
-
-	err = s.repo.CountChatStatus(&cnt, sendUserId, recvUserId)
-	if err != nil {
-		s.logger.Error("Could not count chat status",
-			zap.Error(err),
-			zap.String("senderUserId", sendUserId.String()),
-			zap.String("receiveruserId", recvUserId.String()))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not join chat")
-	}
-
-	if cnt == 2 {
-		return nil
-	}
-
-	err = s.repo.CreateChatStatus(sendUserId, recvUserId)
-	if err != nil && !errors.Is(err, gorm.ErrDuplicatedKey) {
+			Describe("Could not find the specified recvUserId")
+	} else if err != nil && !errors.Is(err, gorm.ErrDuplicatedKey) {
 		s.logger.Error("Could not create chat status",
 			zap.Error(err),
 			zap.String("senderUserId", sendUserId.String()),

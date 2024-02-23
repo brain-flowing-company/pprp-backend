@@ -12,8 +12,6 @@ type Repository interface {
 	GetAllChats(*[]models.ChatsResponses, uuid.UUID) error
 	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) error
 	CreateChatStatus(uuid.UUID, uuid.UUID) error
-	CountChatStatus(*int64, uuid.UUID, uuid.UUID) error
-	CountUsers(*int64, uuid.UUID) error
 }
 
 type repositoryImpl struct {
@@ -60,12 +58,6 @@ func (repo *repositoryImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserI
 		Find(msgs).Error
 }
 
-func (repo *repositoryImpl) CountChatStatus(result *int64, sendUserId uuid.UUID, recvUserId uuid.UUID) error {
-	return repo.db.Model(&models.ChatStatus{}).
-		Where("(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
-			sendUserId, recvUserId, recvUserId, sendUserId).Count(result).Error
-}
-
 func (repo *repositoryImpl) CreateChatStatus(sendUserId uuid.UUID, recvUserId uuid.UUID) error {
 	now := time.Now()
 	status := []models.ChatStatus{
@@ -81,10 +73,4 @@ func (repo *repositoryImpl) CreateChatStatus(sendUserId uuid.UUID, recvUserId uu
 		},
 	}
 	return repo.db.CreateInBatches(status, 2).Error
-}
-
-func (repo *repositoryImpl) CountUsers(result *int64, userId uuid.UUID) error {
-	return repo.db.Model(&models.Users{}).
-		Where("user_id = ?", userId).
-		Count(result).Error
 }
