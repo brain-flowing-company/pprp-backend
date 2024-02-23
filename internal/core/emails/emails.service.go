@@ -17,7 +17,7 @@ import (
 
 type Service interface {
 	SendVerificationEmail([]string) *apperror.AppError
-	VerifyEmail(*models.EmailVerificationRequests) (string, *apperror.AppError)
+	VerifyEmail(*models.Callbacks, *models.CallbackResponses) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -35,7 +35,6 @@ func NewService(logger *zap.Logger, cfg *config.Config, repo Repository) Service
 }
 
 func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError {
-
 	userEmail := emails[0]
 	if !utils.IsValidEmail(userEmail) {
 		return apperror.
@@ -56,7 +55,7 @@ func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError 
 			Describe("Email already exists")
 	}
 
-	code := "SCK-" + utils.RandomString(16)
+	code := s.cfg.EmailCodePrefix + utils.RandomString(16)
 
 	emailVerificationCodeExpire := s.cfg.AuthVerificationExpire
 	expiredAt := time.Now().Add(time.Duration(emailVerificationCodeExpire) * time.Second)
@@ -74,11 +73,12 @@ func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError 
 			Describe("Could not send email. Please try again later")
 	}
 
+	link := fmt.Sprintf("%v?email=%v&code=%v", s.cfg.AuthRedirect, userEmail, code)
 	subject := "Email Verification from suechaokhai.com"
 	emailStructure := models.VerificationEmails{
 		// VerificationLink: "https://www.youtube.com/@oreo10baht",
 		// VerificationLink: "http://localhost:8000/email/verify?email=" + userEmail + "&code=" + code,
-		VerificationLink: "http://localhost:3000/register",
+		VerificationLink: link,
 	}
 
 	return s.sendEmail(emails, subject, emailStructure)
@@ -126,19 +126,18 @@ func (s *serviceImpl) sendEmail(to []string, subject string, emailStructure mode
 	return nil
 }
 
-func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationRequests) (string, *apperror.AppError) {
-
+func (s *serviceImpl) VerifyEmail(verificationReq *models.Callbacks, callbackResponse *models.CallbackResponses) *apperror.AppError {
 	userEmail := verificationReq.Email
 	userCode := verificationReq.Code
 
 	if !utils.IsValidEmail(userEmail) {
-		return "", apperror.
+		return apperror.
 			New(apperror.InvalidEmail).
 			Describe("Invalid email")
 	}
 
 	if !utils.IsValidEmailVerificationCode(userCode) {
-		return "", apperror.
+		return apperror.
 			New(apperror.InvalidEmailVerificationCode).
 			Describe("Invalid verification code")
 	}
@@ -149,11 +148,11 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 	countDataErr := s.repo.CountEmailVerificationCode(&countData, userEmail)
 	if countDataErr != nil {
 		s.logger.Error("Could not count email verification data", zap.Error(countDataErr))
-		return "", apperror.
+		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not verify email. Please try again later")
 	} else if countData == 0 {
-		return "", apperror.
+		return apperror.
 			New(apperror.EmailVerificationDataNotFound).
 			Describe("Could not verify email. Please try again later")
 	}
@@ -161,7 +160,7 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 	getDataErr := s.repo.GetEmailVerificationCodeByEmail(&verificationData, userEmail)
 	if getDataErr != nil {
 		s.logger.Error("Could not get email verification data", zap.Error(getDataErr))
-		return "", apperror.
+		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not verify email. Please try again later")
 	}
@@ -170,17 +169,17 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 		err := s.repo.DeleteEmailVerificationCode(userEmail)
 		if err != nil {
 			s.logger.Error("Could not delete email verification data", zap.Error(err))
-			return "", apperror.
+			return apperror.
 				New(apperror.InternalServerError).
 				Describe("Verification code expired")
 		}
-		return "", apperror.
+		return apperror.
 			New(apperror.EmailVerificationCodeExpired).
 			Describe("Verification code expired")
 	}
 
 	if userCode != verificationData.Code {
-		return "", apperror.
+		return apperror.
 			New(apperror.InvalidEmailVerificationCode).
 			Describe("Invalid verification code")
 	}
@@ -188,24 +187,16 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 	deleteErr := s.repo.DeleteEmailVerificationCode(userEmail)
 	if deleteErr != nil {
 		s.logger.Error("Could not delete email verification data", zap.Error(deleteErr))
-		return "", apperror.
+		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Server Error. Please try again later")
 	}
 
-	session := models.Sessions{
+	*callbackResponse = models.CallbackResponses{
 		Email:          userEmail,
 		RegisteredType: enums.EMAIL,
 		SessionType:    enums.SessionRegister,
 	}
 
-	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
-	if err != nil {
-		s.logger.Error("Could not create JWT token", zap.Error(err))
-		return "", apperror.
-			New(apperror.InternalServerError).
-			Describe("Server Error. Please try again later")
-	}
-
-	return token, nil
+	return nil
 }

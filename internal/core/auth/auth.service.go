@@ -7,6 +7,7 @@ import (
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/emails"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/google"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -24,14 +25,16 @@ type serviceImpl struct {
 	cfg           *config.Config
 	logger        *zap.Logger
 	googleService google.Service
+	emailService  emails.Service
 }
 
-func NewService(logger *zap.Logger, cfg *config.Config, repo Repository, googleService google.Service) Service {
+func NewService(logger *zap.Logger, cfg *config.Config, repo Repository, googleService google.Service, emailService emails.Service) Service {
 	return &serviceImpl{
 		repo,
 		cfg,
 		logger,
 		googleService,
+		emailService,
 	}
 }
 
@@ -70,7 +73,15 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 }
 
 func (s *serviceImpl) Callback(ctx context.Context, callback *models.Callbacks, callbackResponse *models.CallbackResponses) *apperror.AppError {
-	err := s.googleService.ExchangeToken(ctx, callback, callbackResponse)
+	var err *apperror.AppError
+
+	prefix := s.cfg.EmailCodePrefix
+	if callback.Code[:len(prefix)] == s.cfg.EmailCodePrefix {
+		err = s.emailService.VerifyEmail(callback, callbackResponse)
+	} else {
+		err = s.googleService.ExchangeToken(ctx, callback, callbackResponse)
+	}
+
 	if err != nil {
 		return err
 	}

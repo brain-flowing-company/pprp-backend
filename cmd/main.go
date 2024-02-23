@@ -94,18 +94,18 @@ func main() {
 	googleService := google.NewService(logger, cfg, googleRepo)
 	googleHandler := google.NewHandler(logger, cfg, googleService)
 
+	emailRepository := emails.NewRepository(db)
+	emailService := emails.NewService(logger, cfg, emailRepository)
+	emailHandler := emails.NewHandler(logger, cfg, emailService)
+
 	// Initialize the repository, service, and handler
 	authRepository := auth.NewRepository(db)
-	authService := auth.NewService(logger, cfg, authRepository, googleService)
+	authService := auth.NewService(logger, cfg, authRepository, googleService, emailService)
 	authHandler := auth.NewHandler(cfg, authService)
 
 	appointmentRepository := appointments.NewRepository(db)
 	appointmentService := appointments.NewService(logger, appointmentRepository)
 	appointmentHandler := appointments.NewHandler(appointmentService)
-
-	emailRepository := emails.NewRepository(db)
-	emailService := emails.NewService(logger, cfg, emailRepository)
-	emailHandler := emails.NewHandler(logger, cfg, emailService)
 
 	mw := middleware.NewMiddleware(cfg)
 
