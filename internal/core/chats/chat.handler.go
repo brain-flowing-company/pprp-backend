@@ -13,7 +13,8 @@ import (
 type Handler interface {
 	GetAllChats(c *fiber.Ctx) error
 	GetMessagesInChat(c *fiber.Ctx) error
-	JoinChat(conn *websocket.Conn)
+	CreateChat(c *fiber.Ctx) error
+	OpenConnection(conn *websocket.Conn)
 }
 
 type handlerImpl struct {
@@ -83,24 +84,31 @@ func (h *handlerImpl) GetMessagesInChat(c *fiber.Ctx) error {
 	return c.JSON(msgs)
 }
 
-func (h *handlerImpl) JoinChat(conn *websocket.Conn) {
+func (h *handlerImpl) CreateChat(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Sessions)
+	if !ok {
+		session = models.Sessions{}
+	}
+
+	recvUserId, err := uuid.Parse(c.Params("recvUserId"))
+	if err != nil {
+		return utils.ResponseError(c, apperror.InvalidUserId)
+	}
+
+	apperr := h.service.CreateChat(session.UserId, recvUserId)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+
+	return nil
+}
+
+func (h *handlerImpl) OpenConnection(conn *websocket.Conn) {
 	session := conn.Cookies("session")
 
 	claim, err := utils.ParseToken(session, h.cfg.JWTSecret)
 	if err != nil {
 		utils.WebsocketError(conn, apperror.Unauthorized)
-		return
-	}
-
-	recvUserId, err := uuid.Parse(conn.Params("recvUserId"))
-	if err != nil {
-		utils.WebsocketError(conn, apperror.InvalidUserId)
-		return
-	}
-
-	apperr := h.service.JoinChat(claim.Session.UserId, recvUserId)
-	if apperr != nil {
-		utils.WebsocketError(conn, apperr)
 		return
 	}
 

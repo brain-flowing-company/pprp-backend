@@ -157,9 +157,10 @@ func main() {
 
 	apiv1.Get("/chats", mw.AuthMiddlewareWrapper(chatHandler.GetAllChats))
 	apiv1.Get("/chats/:recvUserId", mw.AuthMiddlewareWrapper(chatHandler.GetMessagesInChat))
+	apiv1.Post("/chats/:recvUserId", mw.AuthMiddlewareWrapper(chatHandler.CreateChat))
 
 	ws := app.Group("/ws")
-	ws.Get("/chats/:recvUserId", websocket.New(chatHandler.JoinChat))
+	ws.Get("/chats", websocket.New(chatHandler.OpenConnection))
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {

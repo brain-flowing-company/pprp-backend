@@ -14,7 +14,7 @@ import (
 type Service interface {
 	GetAllChats(*[]models.ChatsResponses, uuid.UUID) *apperror.AppError
 	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) *apperror.AppError
-	JoinChat(uuid.UUID, uuid.UUID) *apperror.AppError
+	CreateChat(uuid.UUID, uuid.UUID) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -58,7 +58,7 @@ func (s *serviceImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid
 	return nil
 }
 
-func (s *serviceImpl) JoinChat(sendUserId uuid.UUID, recvUserId uuid.UUID) *apperror.AppError {
+func (s *serviceImpl) CreateChat(sendUserId uuid.UUID, recvUserId uuid.UUID) *apperror.AppError {
 	if sendUserId == recvUserId {
 		return apperror.
 			New(apperror.BadRequest).
