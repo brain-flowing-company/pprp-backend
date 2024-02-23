@@ -19,6 +19,7 @@ type Service interface {
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	GetFavoritePropertiesByUserId(*[]models.Properties, string) *apperror.AppError
+	GetTop10Properties(*[]models.Properties) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -135,6 +136,18 @@ func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *[]models.Propert
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get favorite properties. Please try again later.")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) GetTop10Properties(properties *[]models.Properties) *apperror.AppError {
+	err := s.repo.GetTop10Properties(properties)
+	if err != nil {
+		s.logger.Error("Could not get top 10 properties", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get top 10 properties. Please try again later.")
 	}
 
 	return nil

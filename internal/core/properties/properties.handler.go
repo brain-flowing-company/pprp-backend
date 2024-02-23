@@ -16,6 +16,7 @@ type Handler interface {
 	AddFavoriteProperty(c *fiber.Ctx) error
 	RemoveFavoriteProperty(c *fiber.Ctx) error
 	GetMyFavoriteProperties(c *fiber.Ctx) error
+	GetTop10Properties(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -117,6 +118,16 @@ func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 
 	properties := []models.Properties{}
 	err := h.service.GetFavoritePropertiesByUserId(&properties, userId)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return c.JSON(properties)
+}
+
+func (h *handlerImpl) GetTop10Properties(c *fiber.Ctx) error {
+	properties := []models.Properties{}
+	err := h.service.GetTop10Properties(&properties)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}

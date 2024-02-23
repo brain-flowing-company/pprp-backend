@@ -15,6 +15,7 @@ type Repository interface {
 	AddFavoriteProperty(*models.FavoriteProperties) error
 	RemoveFavoriteProperty(string, string) error
 	GetFavoritePropertiesByUserId(*[]models.Properties, string) error
+	GetTop10Properties(*[]models.Properties) error
 }
 
 type repositoryImpl struct {
@@ -89,5 +90,21 @@ func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *[]models.P
 		Preload("RentingProperty").
 		Joins("JOIN favorite_properties ON favorite_properties.property_id = properties.property_id").
 		Where("favorite_properties.user_id = ?", userId).
+		Find(properties).Error
+}
+
+func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties) error {
+	countPropertyFavorite := repo.db.Model(&models.FavoriteProperties{}).
+		Select("property_id, COUNT(property_id) as favorites").
+		Group("property_id")
+
+	return repo.db.Model(&models.Properties{}).
+		Preload("PropertyImages").
+		Preload("SellingProperty").
+		Preload("RentingProperty").
+		Select("properties.*, COALESCE(count_property_favorite.favorites, 0) AS favorite_count").
+		Joins("LEFT JOIN (?) AS count_property_favorite ON count_property_favorite.property_id = properties.property_id", countPropertyFavorite).
+		Limit(10).
+		Order("favorite_count DESC").
 		Find(properties).Error
 }
