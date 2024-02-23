@@ -2,10 +2,12 @@
 package auth
 
 import (
+	"context"
 	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/google"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
@@ -14,19 +16,22 @@ import (
 
 type Service interface {
 	AuthenticateUser(email, password string) (string, *apperror.AppError)
+	Callback(ctx context.Context, callback *models.Callbacks, callbackResponse *models.CallbackResponses) *apperror.AppError
 }
 
 type serviceImpl struct {
-	repo   Repository
-	cfg    *config.Config
-	logger *zap.Logger
+	repo          Repository
+	cfg           *config.Config
+	logger        *zap.Logger
+	googleService google.Service
 }
 
-func NewService(logger *zap.Logger, cfg *config.Config, repo Repository) Service {
+func NewService(logger *zap.Logger, cfg *config.Config, repo Repository, googleService google.Service) Service {
 	return &serviceImpl{
 		repo,
 		cfg,
 		logger,
+		googleService,
 	}
 }
 
@@ -49,7 +54,7 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 	session := models.Sessions{
 		Email:          user.Email,
 		RegisteredType: enums.EMAIL,
-		SessionType:    models.SessionLogin,
+		SessionType:    enums.SessionLogin,
 		UserId:         user.UserId,
 	}
 
@@ -62,4 +67,13 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 	}
 
 	return token, nil
+}
+
+func (s *serviceImpl) Callback(ctx context.Context, callback *models.Callbacks, callbackResponse *models.CallbackResponses) *apperror.AppError {
+	err := s.googleService.ExchangeToken(ctx, callback, callbackResponse)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

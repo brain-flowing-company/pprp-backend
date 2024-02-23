@@ -12,6 +12,7 @@ import (
 type Handler interface {
 	Login(*fiber.Ctx) error
 	Logout(*fiber.Ctx) error
+	Callback(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -71,4 +72,22 @@ func (h *handlerImpl) Logout(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"success": true,
 	})
+}
+
+func (h *handlerImpl) Callback(c *fiber.Ctx) error {
+	callback := models.Callbacks{}
+	err := c.QueryParser(&callback)
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.InvalidCallbackRequest).
+			Describe("Invalid callback request"))
+	}
+
+	var callbackResponse models.CallbackResponses
+	apperr := h.service.Callback(c.Context(), &callback, &callbackResponse)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+
+	return c.JSON(callbackResponse)
 }
