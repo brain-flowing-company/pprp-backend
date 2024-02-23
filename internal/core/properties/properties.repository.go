@@ -104,7 +104,9 @@ func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties) 
 		Preload("RentingProperty").
 		Select("properties.*, COALESCE(count_property_favorite.favorites, 0) AS favorite_count").
 		Joins("LEFT JOIN (?) AS count_property_favorite ON count_property_favorite.property_id = properties.property_id", countPropertyFavorite).
-		Limit(10).
 		Order("favorite_count DESC").
+		Order("created_at DESC").
+		Order("property_id DESC").
+		Limit(10).
 		Find(properties).Error
 }
