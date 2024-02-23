@@ -16,6 +16,7 @@ type Config struct {
 	LoginRedirect          string   `mapstructure:"GOOGLE_REGISTER_REDIRECT"`
 	S3Bucket               string   `mapstructure:"AWS_S3_BUCKET_NAME"`
 	Email                  string   `mapstructure:"EMAIL"`
+	EmailCodePrefix        string   `mapstructure:"EMAIL_CODE_PREFIX"`
 	EmailPassword          string   `mapstructure:"EMAIL_PASSWORD"`
 	SmtpHost               string   `mapstructure:"SMTP_HOST"`
 	SmtpPort               string   `mapstructure:"SMTP_PORT"`
@@ -41,6 +42,7 @@ func Load(config *Config) error {
 	_ = viper.BindEnv("GOOGLE_REGISTER_REDIRECT")
 	_ = viper.BindEnv("AWS_S3_BUCKET_NAME")
 	_ = viper.BindEnv("EMAIL")
+	_ = viper.BindEnv("EMAIL_CODE_PREFIX")
 	_ = viper.BindEnv("EMAIL_PASSWORD")
 	_ = viper.BindEnv("AUTH_REDIRECT")
 	_ = viper.BindEnv("AUTH_VERIFICATION_EXPIRE")
