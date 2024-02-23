@@ -9,7 +9,6 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/emails"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/google"
-	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"go.uber.org/zap"
@@ -55,10 +54,8 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 	}
 
 	session := models.Sessions{
-		Email:          user.Email,
-		RegisteredType: enums.EMAIL,
-		SessionType:    enums.SessionLogin,
-		UserId:         user.UserId,
+		UserId: user.UserId,
+		Email:  email,
 	}
 
 	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
@@ -82,9 +79,5 @@ func (s *serviceImpl) Callback(ctx context.Context, callback *models.Callbacks, 
 		err = s.googleService.ExchangeToken(ctx, callback, callbackResponse)
 	}
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

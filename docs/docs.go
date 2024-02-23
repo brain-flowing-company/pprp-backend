@@ -377,6 +377,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/auth/callback": {
+            "get": {
+                "description": "Callback from google / register redirect. Basically put all query strings to this request.",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Callback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "code",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "email",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "state",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CallbackResponses"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/email": {
             "post": {
                 "description": "Send a verification email to the user",
@@ -404,45 +456,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.MessageResponses"
                         }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/email/verify": {
-            "post": {
-                "description": "Verify email and verification code from the user's email",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "emails"
-                ],
-                "summary": "Verify email and verification code",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User email address",
-                        "name": "email",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "User email verification code",
-                        "name": "code",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
                     },
                     "500": {
                         "description": "Internal Server Error",
@@ -541,6 +554,12 @@ const docTemplate = `{
                 "responses": {
                     "307": {
                         "description": "Temporary Redirect"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "model"
+                        }
                     }
                 }
             }
@@ -660,6 +679,19 @@ const docTemplate = `{
                         "type": "string",
                         "example": "0812345678",
                         "name": "phone_number",
+                        "in": "formData"
+                    },
+                    {
+                        "enum": [
+                            "EMAIL",
+                            "GOOGLE"
+                        ],
+                        "type": "string",
+                        "x-enum-varnames": [
+                            "EMAIL",
+                            "GOOGLE"
+                        ],
+                        "name": "registered_type",
                         "in": "formData"
                     }
                 ],
@@ -990,6 +1022,17 @@ const docTemplate = `{
                 "GOOGLE"
             ]
         },
+        "enums.SessionType": {
+            "type": "string",
+            "enum": [
+                "REGISTER",
+                "LOGIN"
+            ],
+            "x-enum-varnames": [
+                "SessionRegister",
+                "SessionLogin"
+            ]
+        },
         "models.Agreements": {
             "type": "object",
             "properties": {
@@ -1067,6 +1110,31 @@ const docTemplate = `{
                 "Cancelled",
                 "Completed"
             ]
+        },
+        "models.CallbackResponses": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "johnd@email.com"
+                },
+                "registered_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.RegisteredTypes"
+                        }
+                    ],
+                    "example": "EMAIL / GOOGLE"
+                },
+                "session_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.SessionType"
+                        }
+                    ],
+                    "example": "REGISTER / LOGIN"
+                }
+            }
         },
         "models.CreatingAppointments": {
             "type": "object",
@@ -1270,39 +1338,12 @@ const docTemplate = `{
                 }
             }
         },
-        "models.SessionType": {
-            "type": "string",
-            "enum": [
-                "REGISTER",
-                "LOGIN"
-            ],
-            "x-enum-varnames": [
-                "SessionRegister",
-                "SessionLogin"
-            ]
-        },
         "models.Sessions": {
             "type": "object",
             "properties": {
                 "email": {
                     "type": "string",
                     "example": "admim@email.com"
-                },
-                "registered_type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.RegisteredTypes"
-                        }
-                    ],
-                    "example": "EMAIL / GOOGLE"
-                },
-                "session_type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.SessionType"
-                        }
-                    ],
-                    "example": "LOGIN / REGISTER"
                 },
                 "user_id": {
                     "type": "string",

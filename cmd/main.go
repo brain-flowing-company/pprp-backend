@@ -143,10 +143,7 @@ func main() {
 	apiv1.Delete("/agreement/:agreementId", agreementsHandler.DeleteAgreement)
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
-
 	apiv1.Post("/email", emailHandler.SendVerificationEmail)
-	apiv1.Post("/email/verify", emailHandler.VerifyEmail)
-
 	apiv1.Get("/auth/callback", authHandler.Callback)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))

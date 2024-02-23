@@ -10,6 +10,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
@@ -120,6 +121,20 @@ func (s *serviceImpl) ExchangeToken(c context.Context, callback *models.Callback
 	}
 
 	if registered {
+		session := models.Sessions{
+			UserId: user.UserId,
+			Email:  googleInfo.Email,
+		}
+
+		token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
+		if err != nil {
+			s.logger.Error("Could not create JWT token", zap.Error(err))
+			return apperror.
+				New(apperror.InternalServerError).
+				Describe("Could not login. Please try again later")
+		}
+
+		callbackResponse.Token = token
 		callbackResponse.SessionType = enums.SessionLogin
 	}
 

@@ -9,7 +9,8 @@ type Callbacks struct {
 }
 
 type CallbackResponses struct {
-	Email          string                `json:"email"`
-	RegisteredType enums.RegisteredTypes `json:"registered_type"`
-	SessionType    enums.SessionType     `json:"session_type,omitempty"`
+	Email          string                `json:"email"                  example:"johnd@email.com"`
+	RegisteredType enums.RegisteredTypes `json:"registered_type"        example:"EMAIL / GOOGLE"`
+	SessionType    enums.SessionType     `json:"session_type,omitempty" example:"REGISTER / LOGIN"`
+	Token          string                `json:"-"                      swaggerignore:"true"`
 }

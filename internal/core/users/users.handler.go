@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
-	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
@@ -91,12 +90,6 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperror.
 			New(apperror.BadRequest).
 			Describe(fmt.Sprintf("Could not parse form data: %v", err.Error())))
-	}
-
-	if session, ok := c.Locals("session").(models.Sessions); !ok {
-		user.RegisteredType = enums.EMAIL
-	} else {
-		user.RegisteredType = session.RegisteredType
 	}
 
 	profileImage, _ := c.FormFile("profile_image")
