@@ -49,20 +49,33 @@ func (s *serviceImpl) GetAllProperties(properties *[]models.Properties) *apperro
 	return nil
 }
 
-func (s *serviceImpl) GetPropertyById(property *models.Properties, id string) *apperror.AppError {
-	if !utils.IsValidUUID(id) {
+func (s *serviceImpl) GetPropertyById(property *models.Properties, propertyId string) *apperror.AppError {
+	if !utils.IsValidUUID(propertyId) {
 		return apperror.
 			New(apperror.InvalidPropertyId).
 			Describe("Invalid property id")
 	}
 
-	err := s.repo.GetPropertyById(property, id)
+	var countProperty int64
+	countErr := s.repo.CountProperty(&countProperty, propertyId)
+	if countErr != nil {
+		s.logger.Error("Could not count property by id", zap.Error(countErr))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not update property. Please try again later.")
+	} else if countProperty == 0 {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	}
+
+	err := s.repo.GetPropertyById(property, propertyId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.PropertyNotFound).
 			Describe("Could not find the specified property")
 	} else if err != nil {
-		s.logger.Error("Could not get property by id", zap.String("id", id), zap.Error(err))
+		s.logger.Error("Could not get property by id", zap.String("id", propertyId), zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get property. Please try again later.")
@@ -90,9 +103,22 @@ func (s *serviceImpl) UpdatePropertyById(property *models.Properties, propertyId
 			Describe("Invalid property id")
 	}
 
+	var countProperty int64
+	countErr := s.repo.CountProperty(&countProperty, propertyId)
+	if countErr != nil {
+		s.logger.Error("Could not count property by id", zap.String("id", propertyId), zap.Error(countErr))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not update property. Please try again later.")
+	} else if countProperty == 0 {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	}
+
 	err := s.repo.UpdatePropertyById(property, propertyId)
 	if err != nil {
-		s.logger.Error("Could not update property by id", zap.Error(err))
+		s.logger.Error("Could not update property by id", zap.String("id", propertyId), zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not update property. Please try again later.")
@@ -108,9 +134,22 @@ func (s *serviceImpl) DeletePropertyById(propertyId string) *apperror.AppError {
 			Describe("Invalid property id")
 	}
 
+	var countProperty int64
+	countErr := s.repo.CountProperty(&countProperty, propertyId)
+	if countErr != nil {
+		s.logger.Error("Could not count property by id", zap.String("id", propertyId), zap.Error(countErr))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not update property. Please try again later.")
+	} else if countProperty == 0 {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	}
+
 	err := s.repo.DeletePropertyById(propertyId)
 	if err != nil {
-		s.logger.Error("Could not delete property by id", zap.Error(err))
+		s.logger.Error("Could not delete property by id", zap.String("id", propertyId), zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not delete property. Please try again later.")

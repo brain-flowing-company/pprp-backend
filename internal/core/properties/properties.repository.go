@@ -11,6 +11,7 @@ type Repository interface {
 	CreateProperty(*models.Properties) error
 	UpdatePropertyById(*models.Properties, string) error
 	DeletePropertyById(string) error
+	CountProperty(*int64, string) error
 	SearchProperties(*[]models.Properties, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
 	RemoveFavoriteProperty(string, string) error
@@ -64,6 +65,10 @@ func (repo *repositoryImpl) DeletePropertyById(propertyId string) error {
 	}
 
 	return repo.db.Where("property_id = ?", propertyId).Delete(&models.Properties{}).Error
+}
+
+func (repo *repositoryImpl) CountProperty(countProperty *int64, propertyId string) error {
+	return repo.db.Model(&models.Properties{}).Where("property_id = ?", propertyId).Count(countProperty).Error
 }
 
 func (repo *repositoryImpl) SearchProperties(result *[]models.Properties, query string) error {
