@@ -58,7 +58,7 @@ func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError 
 
 	code := "SCK-" + utils.RandomString(16)
 
-	emailVerificationCodeExpire := s.cfg.EmailVerificationCodeExpire
+	emailVerificationCodeExpire := s.cfg.AuthVerificationExpire
 	expiredAt := time.Now().Add(time.Duration(emailVerificationCodeExpire) * time.Second)
 
 	verificationData := models.EmailVerificationCodes{
@@ -196,7 +196,7 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.EmailVerificationReque
 	session := models.Sessions{
 		Email:          userEmail,
 		RegisteredType: enums.EMAIL,
-		SessionType:    models.SessionRegister,
+		SessionType:    enums.SessionRegister,
 	}
 
 	token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
