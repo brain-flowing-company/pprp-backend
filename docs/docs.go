@@ -667,7 +667,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Users"
+                            "$ref": "#/definitions/models.MessageResponses"
                         }
                     },
                     "400": {
@@ -719,7 +719,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Users"
+                            "$ref": "#/definitions/models.MessageResponses"
                         }
                     },
                     "400": {
@@ -791,7 +791,10 @@ const docTemplate = `{
                 "summary": "Delete user by id  *use cookies*",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
                     },
                     "400": {
                         "description": "Invalid user id",
@@ -881,6 +884,40 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Sessions"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/me/verify": {
+            "post": {
+                "description": "Verify user by citizen id and citizen id image",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Verify user *use cookies*",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "1100111111111",
+                        "name": "citizen_id",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -1287,14 +1324,6 @@ const docTemplate = `{
                         }
                     ],
                     "example": "KBANK"
-                },
-                "citizen_card_image_url": {
-                    "type": "string",
-                    "example": "https://image_url.com/abcd"
-                },
-                "citizen_id": {
-                    "type": "string",
-                    "example": "1234567890123"
                 },
                 "created_at": {
                     "type": "string"

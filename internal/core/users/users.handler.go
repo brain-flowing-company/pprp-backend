@@ -20,6 +20,7 @@ type Handler interface {
 	UpdateUser(c *fiber.Ctx) error
 	DeleteUser(c *fiber.Ctx) error
 	GetRegisteredType(c *fiber.Ctx) error
+	VerifyCitizenId(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -77,7 +78,7 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @param       formData formData models.RegisteringUsers true "User information"
-// @success     200	{object} models.Users
+// @success     200	{object} models.MessageResponses
 // @failure     400 {object} models.ErrorResponses "Invalid user info"
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
@@ -98,8 +99,6 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 		user.RegisteredType = session.RegisteredType
 	}
 
-	fmt.Println(user)
-
 	profileImage, _ := c.FormFile("profile_image")
 	apperr := h.service.Register(user, profileImage)
 	if apperr != nil {
@@ -115,7 +114,7 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @param       formData formData models.UpdatingUserPersonalInfo true "User information"
-// @success     200	{object} models.Users
+// @success     200	{object} models.MessageResponses
 // @failure     400 {object} models.ErrorResponses "Invalid user info"
 // @failure     404 {object} models.ErrorResponses "User not found"
 // @failure     500 {object} models.ErrorResponses
@@ -146,7 +145,7 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 // @description Delete a user by its id
 // @tags        users
 // @produce     json
-// @success     200
+// @success     200 {object} models.MessageResponses
 // @failure     400 {object} models.ErrorResponses "Invalid user id"
 // @failure     404 {object} models.ErrorResponses "User not found"
 // @failure     500 {object} models.ErrorResponses
@@ -191,4 +190,33 @@ func (h *handlerImpl) GetRegisteredType(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(session)
+}
+
+// @router      /api/v1/user/me/verify [post]
+// @summary     Verify user *use cookies*
+// @description Verify user by citizen id and citizen id image
+// @tags        users
+// @produce     json
+// @param       formData formData models.UserVerifications true "Verification information"
+// @success     200 {object} models.MessageResponses
+// @success     500 {object} models.ErrorResponses
+func (h *handlerImpl) VerifyCitizenId(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Sessions)
+	if !ok {
+		session = models.Sessions{}
+	}
+
+	user := models.UserVerifications{UserId: session.UserId}
+	bodyErr := c.BodyParser(&user)
+	if bodyErr != nil {
+		return utils.ResponseError(c, apperror.InvalidBody)
+	}
+
+	profileImage, _ := c.FormFile("citizen_card_image")
+	err := h.service.VerifyCitizenId(&user, profileImage)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return utils.ResponseMessage(c, http.StatusOK, "Verified")
 }
