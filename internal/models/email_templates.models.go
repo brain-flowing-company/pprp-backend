@@ -13,5 +13,5 @@ type VerificationEmails struct {
 }
 
 func (v VerificationEmails) Path() string {
-	return "/internal/templates/VerificationEmail.html"
+	return "internal/templates/VerificationEmail.html"
 }
