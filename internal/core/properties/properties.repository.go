@@ -54,7 +54,7 @@ func (repo *repositoryImpl) UpdatePropertyById(property *models.Properties, prop
 		return err
 	}
 
-	return repo.db.Where("property_id = ?", propertyId).Save(property).Error
+	return repo.db.Model(&models.Properties{}).Where("property_id = ?", propertyId).Updates(property).Error
 }
 
 func (repo *repositoryImpl) DeletePropertyById(propertyId string) error {

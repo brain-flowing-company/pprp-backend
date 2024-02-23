@@ -84,6 +84,12 @@ func (s *serviceImpl) CreateProperty(property *models.Properties) *apperror.AppE
 }
 
 func (s *serviceImpl) UpdatePropertyById(property *models.Properties, propertyId string) *apperror.AppError {
+	if !utils.IsValidUUID(propertyId) {
+		return apperror.
+			New(apperror.InvalidPropertyId).
+			Describe("Invalid property id")
+	}
+
 	err := s.repo.UpdatePropertyById(property, propertyId)
 	if err != nil {
 		s.logger.Error("Could not update property by id", zap.Error(err))
