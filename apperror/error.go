@@ -76,5 +76,7 @@ var (
 	AgreementNotFound  = &AppErrorType{http.StatusNotFound, "agreement-not-found"}
 	DuplicateAgreement = &AppErrorType{http.StatusBadRequest, "duplicate-agreement"}
 
+	InvalidCallbackRequest = &AppErrorType{http.StatusBadRequest, "invalid-callback-request"}
+
 	Unauthorized = &AppErrorType{http.StatusUnauthorized, "unauthorized"}
 )

@@ -24,12 +24,12 @@ type Users struct {
 
 type RegisteringUsers struct {
 	UserId          uuid.UUID             `form:"-" swaggerignore:"true"`
-	RegisteredType  enums.RegisteredTypes `form:"-" swaggerignore:"true"`
-	Email           string                `form:"email"        example:"email@email.com"`
-	Password        string                `form:"password"     example:"password1234"`
-	FirstName       string                `form:"first_name"   example:"John"`
-	LastName        string                `form:"last_name"    example:"Doe"`
-	PhoneNumber     string                `form:"phone_number" example:"0812345678"`
+	RegisteredType  enums.RegisteredTypes `form:"registered_type" exmaple:"EMAIL / GOOGLE"`
+	Email           string                `form:"email"           example:"email@email.com"`
+	Password        string                `form:"password"        example:"password1234"`
+	FirstName       string                `form:"first_name"      example:"John"`
+	LastName        string                `form:"last_name"       example:"Doe"`
+	PhoneNumber     string                `form:"phone_number"    example:"0812345678"`
 	ProfileImageUrl string                `form:"-" swaggerignore:"true"`
 	CommonModels    `swaggerignore:"true"`
 }

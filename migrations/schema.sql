@@ -19,6 +19,11 @@ CREATE TABLE email_verification_codes
     expired_at                TIMESTAMP(0) WITH TIME ZONE       NOT NULL
 );
 
+CREATE TABLE google_oauth_states (
+    code       UUID PRIMARY KEY            NOT NULL,
+    expired_at TIMESTAMP(0) WITH TIME ZONE NOT NULL
+);
+
 CREATE TABLE users
 (
     user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),

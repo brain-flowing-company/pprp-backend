@@ -12,6 +12,7 @@ import (
 type Handler interface {
 	Login(*fiber.Ctx) error
 	Logout(*fiber.Ctx) error
+	Callback(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -71,4 +72,35 @@ func (h *handlerImpl) Logout(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"success": true,
 	})
+}
+
+// @router      /api/v1/auth/callback [get]
+// @summary     Callback
+// @description Callback from google / register redirect. Basically put all query strings to this request.
+// @tags        auth
+// @param       query query models.Callbacks true "Callbacks"
+// @success     200 {object} models.CallbackResponses
+// @failure     400 {object} models.ErrorResponses
+// @failure     500 {object} models.ErrorResponses
+// @failure     503 {object} models.ErrorResponses
+func (h *handlerImpl) Callback(c *fiber.Ctx) error {
+	callback := models.Callbacks{}
+	err := c.QueryParser(&callback)
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.InvalidCallbackRequest).
+			Describe("Invalid callback request"))
+	}
+
+	callbackResponse := models.CallbackResponses{Token: ""}
+	apperr := h.service.Callback(c.Context(), &callback, &callbackResponse)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+
+	if callbackResponse.Token != "" {
+		c.Cookie(utils.CreateSessionCookie(callbackResponse.Token, h.cfg.SessionExpire))
+	}
+
+	return c.JSON(callbackResponse)
 }

@@ -1,13 +1,16 @@
 package models
 
-type GoogleExchangeTokens struct {
-	Authuser string
-	Code     string
-	Prompt   string
-	Scope    string
-	State    string
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
+type GoogleOAuthStates struct {
+	Code      uuid.UUID
+	ExpiredAt time.Time
 }
 
-type GoogleUserInfo struct {
-	Email string
+func (g GoogleOAuthStates) TableName() string {
+	return "google_oauth_states"
 }

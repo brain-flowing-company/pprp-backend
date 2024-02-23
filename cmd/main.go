@@ -95,18 +95,18 @@ func main() {
 	googleService := google.NewService(logger, cfg, googleRepo)
 	googleHandler := google.NewHandler(logger, cfg, googleService)
 
+	emailRepository := emails.NewRepository(db)
+	emailService := emails.NewService(logger, cfg, emailRepository)
+	emailHandler := emails.NewHandler(logger, cfg, emailService)
+
 	// Initialize the repository, service, and handler
 	authRepository := auth.NewRepository(db)
-	authService := auth.NewService(logger, cfg, authRepository)
+	authService := auth.NewService(logger, cfg, authRepository, googleService, emailService)
 	authHandler := auth.NewHandler(cfg, authService)
 
 	appointmentRepository := appointments.NewRepository(db)
 	appointmentService := appointments.NewService(logger, appointmentRepository)
 	appointmentHandler := appointments.NewHandler(appointmentService)
-
-	emailRepository := emails.NewRepository(db)
-	emailService := emails.NewService(logger, cfg, emailRepository)
-	emailHandler := emails.NewHandler(logger, cfg, emailService)
 
 	mw := middleware.NewMiddleware(cfg)
 
@@ -170,10 +170,8 @@ func main() {
 	apiv1.Delete("/agreement/:agreementId", agreementsHandler.DeleteAgreement)
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
-	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
-
 	apiv1.Post("/email", emailHandler.SendVerificationEmail)
-	apiv1.Post("/email/verify", emailHandler.VerifyEmail)
+	apiv1.Get("/auth/callback", authHandler.Callback)
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
