@@ -547,21 +547,20 @@ const docTemplate = `{
         },
         "/api/v1/properties": {
             "get": {
-                "description": "If a query parameter is provided, search properties by project name or description. Otherwise, get all properties.",
+                "description": "Get all properties or search properties by query",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "property"
                 ],
-                "summary": "Get all properties or search properties",
+                "summary": "Get or search properties",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Search query",
                         "name": "query",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -575,7 +574,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Could not get properties",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }

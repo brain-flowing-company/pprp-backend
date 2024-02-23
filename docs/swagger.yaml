@@ -713,13 +713,11 @@ paths:
       - auth
   /api/v1/properties:
     get:
-      description: If a query parameter is provided, search properties by project
-        name or description. Otherwise, get all properties.
+      description: Get all properties or search properties by query
       parameters:
       - description: Search query
         in: query
         name: query
-        required: true
         type: string
       produces:
       - application/json
@@ -731,10 +729,10 @@ paths:
               $ref: '#/definitions/models.Properties'
             type: array
         "500":
-          description: Internal Server Error
+          description: Could not get properties
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get all properties or search properties
+      summary: Get or search properties
       tags:
       - property
   /api/v1/properties/top10:

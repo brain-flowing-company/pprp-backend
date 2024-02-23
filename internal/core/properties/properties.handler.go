@@ -17,8 +17,6 @@ type Handler interface {
 	CreateProperty(c *fiber.Ctx) error
 	UpdatePropertyById(c *fiber.Ctx) error
 	DeletePropertyById(c *fiber.Ctx) error
-	SeachProperties(c *fiber.Ctx) error
-	GetOrSearchProperties(c *fiber.Ctx) error
 	AddFavoriteProperty(c *fiber.Ctx) error
 	RemoveFavoriteProperty(c *fiber.Ctx) error
 	GetMyFavoriteProperties(c *fiber.Ctx) error
@@ -58,27 +56,27 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/properties [get]
-// @summary     Get all properties or search properties
-// @description If a query parameter is provided, search properties by project name or description. Otherwise, get all properties.
+// @summary     Get or search properties
+// @description Get all properties or search properties by query
 // @tags        property
 // @produce     json
-// @param       query query string true "Search query"
+// @param       query query string false "Search query"
 // @success     200	{object} []models.Properties
-// @failure     500 {object} models.ErrorResponses
-func (h *handlerImpl) GetOrSearchProperties(c *fiber.Ctx) error {
-	query := c.Query("query")
-	if query != "" {
-		return h.SeachProperties(c)
-	} else {
-		return h.GetAllProperties(c)
-	}
-}
-
+// @failure     500 {object} models.ErrorResponses "Could not get properties"
 func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
+	query := c.Query("query")
 	properties := []models.Properties{}
-	err := h.service.GetAllProperties(&properties)
-	if err != nil {
-		return utils.ResponseError(c, err)
+
+	if query != "" {
+		err := h.service.SearchProperties(&properties, query)
+		if err != nil {
+			return utils.ResponseError(c, err)
+		}
+	} else {
+		err := h.service.GetAllProperties(&properties)
+		if err != nil {
+			return utils.ResponseError(c, err)
+		}
 	}
 
 	return c.JSON(properties)
@@ -187,18 +185,6 @@ func (h *handlerImpl) DeletePropertyById(c *fiber.Ctx) error {
 	}
 
 	return utils.ResponseMessage(c, http.StatusOK, "Property deleted")
-}
-
-func (h *handlerImpl) SeachProperties(c *fiber.Ctx) error {
-	query := c.Query("query")
-
-	properties := []models.Properties{}
-	err := h.service.SearchProperties(&properties, query)
-	if err != nil {
-		return utils.ResponseError(c, err)
-	}
-
-	return c.JSON(properties)
 }
 
 // @router      /api/v1/property/:propertyId [post]
