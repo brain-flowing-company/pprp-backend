@@ -13,6 +13,11 @@ CREATE TABLE email_verification_codes
     expired_at                TIMESTAMP(0) WITH TIME ZONE       NOT NULL
 );
 
+CREATE TABLE google_oauth_states (
+    code       UUID PRIMARY KEY            NOT NULL,
+    expired_at TIMESTAMP(0) WITH TIME ZONE NOT NULL
+);
+
 CREATE TABLE users
 (
     user_id                             UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
@@ -294,3 +299,4 @@ CREATE INDEX idx_property_images_deleted_at     ON _property_images (deleted_at)
 CREATE INDEX idx_selling_properties_deleted_at  ON _selling_properties (deleted_at);
 CREATE INDEX idx_renting_properties_deleted_at  ON _renting_properties (deleted_at);
 CREATE INDEX idx_appointments_deleted_at        ON _appointments (deleted_at);
+CREATE INDEX idx_google_oauth_states            ON google_oauth_states USING HASH (code)
