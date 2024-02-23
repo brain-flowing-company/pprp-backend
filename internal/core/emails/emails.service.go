@@ -12,6 +12,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -55,7 +56,7 @@ func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError 
 			Describe("Email already exists")
 	}
 
-	code := s.cfg.EmailCodePrefix + utils.RandomString(16)
+	code := s.cfg.EmailCodePrefix + uuid.NewString()
 
 	emailVerificationCodeExpire := s.cfg.AuthVerificationExpire
 	expiredAt := time.Now().Add(time.Duration(emailVerificationCodeExpire) * time.Second)
