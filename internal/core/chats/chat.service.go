@@ -68,7 +68,7 @@ func (s *serviceImpl) CreateChat(sendUserId uuid.UUID, recvUserId uuid.UUID) *ap
 	err := s.repo.CreateChatStatus(sendUserId, recvUserId)
 	if errors.Is(err, gorm.ErrForeignKeyViolated) {
 		return apperror.
-			New(apperror.BadRequest).
+			New(apperror.UserNotFound).
 			Describe("Could not find the specified recvUserId")
 	} else if err != nil && !errors.Is(err, gorm.ErrDuplicatedKey) {
 		s.logger.Error("Could not create chat status",

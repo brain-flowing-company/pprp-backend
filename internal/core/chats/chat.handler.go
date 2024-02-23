@@ -1,6 +1,8 @@
 package chats
 
 import (
+	"net/http"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -86,6 +88,15 @@ func (h *handlerImpl) GetMessagesInChat(c *fiber.Ctx) error {
 	return c.JSON(msgs)
 }
 
+// @router      /api/v1/chats/:recvUserId [post]
+// @summary     Create chat with recvUserId *use cookies*
+// @description Create chat with recvUserId. `Must` be called before sending any messages.
+// @tags        chats
+// @produce     json
+// @success     200	{object} []models.Messages
+// @failure     400 {object} models.ErrorResponses
+// @failure     404 {object} models.ErrorResponses
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) CreateChat(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Sessions)
 	if !ok {
@@ -102,7 +113,7 @@ func (h *handlerImpl) CreateChat(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperr)
 	}
 
-	return nil
+	return utils.ResponseMessage(c, http.StatusCreated, "Chat created")
 }
 
 func (h *handlerImpl) OpenConnection(conn *websocket.Conn) {

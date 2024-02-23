@@ -447,6 +447,45 @@
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Create chat with recvUserId. `Must` be called before sending any messages.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Create chat with recvUserId *use cookies*",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Messages"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/email": {
@@ -1225,6 +1264,9 @@
                 "sender_id": {
                     "type": "string",
                     "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
+                },
+                "tag": {
+                    "type": "string"
                 }
             }
         },

@@ -171,6 +171,8 @@ definitions:
       sender_id:
         example: 27b79b15-a56f-464a-90f7-bab515ba4c02
         type: string
+      tag:
+        type: string
     type: object
   models.Properties:
     properties:
@@ -626,6 +628,33 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponses'
       summary: Get messages in a chat with recvUserId *use cookies*
+      tags:
+      - chats
+    post:
+      description: Create chat with recvUserId. `Must` be called before sending any
+        messages.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Messages'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Create chat with recvUserId *use cookies*
       tags:
       - chats
   /api/v1/email:
