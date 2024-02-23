@@ -25,15 +25,19 @@ CREATE TABLE users
     profile_image_url                   VARCHAR(2000)                   DEFAULT NULL,
     bank_name                           bank_name                       DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
-    citizen_id                          VARCHAR(13)                     DEFAULT NULL,
-    citizen_card_image_url              VARCHAR(2000)                   DEFAULT NULL,
     is_verified                         BOOLEAN                         DEFAULT FALSE,
     created_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
     updated_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
     deleted_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT NULL,
     UNIQUE(email, deleted_at),
-    UNIQUE(phone_number, deleted_at),
-    UNIQUE(citizen_id, deleted_at)
+    UNIQUE(phone_number, deleted_at)
+);
+
+CREATE TABLE user_verifications (
+    user_id                 UUID PRIMARY KEY NOT NULL REFERENCES users(user_id),
+    citizen_id              VARCHAR(13)      NOT NULL,
+    citizen_card_image_url  VARCHAR(2000)    NOT NULL,
+    verified_at             TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE credit_cards
@@ -147,10 +151,10 @@ CREATE TABLE chat_status (
 
 -------------------- DUMMY DATA --------------------
 
-INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified) VALUES
-('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', 'KBANK', '1234567890', '1234567890123', 'https://picsum.photos/200/300?random=2', TRUE),
-('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, 'BBL', '1234567890', NULL, NULL, FALSE),
-('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', 'SCB', '1234567890', '3333333333333', 'https://picsum.photos/200/300?random=4', TRUE);
+INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, bank_name, bank_account_number, is_verified) VALUES
+('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', 'KBANK', '1234567890', TRUE),
+('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, 'BBL', '1234567890', FALSE),
+('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', 'SCB', '1234567890', TRUE);
 
 INSERT INTO properties (property_id, owner_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Et sequi dolor praes', 'Sequi reiciendis odi', 'Anita', 'Quas iusto expedita ', 'Delisa', 'Grace', 'Michael', 'Christine', 'Anthony', 'Andrew', '53086'),
@@ -213,11 +217,11 @@ INSERT INTO chat_status (sender_id, receiver_id, last_active_at) VALUES
 -- mock data for appointments
 
 -- Insert mock data into the users table
-INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, bank_name, bank_account_number, citizen_id, citizen_card_image_url, is_verified)
+INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, bank_name, bank_account_number, is_verified)
 VALUES
-('123e4567-e89b-12d3-a456-426614174001', 'EMAIL', 'user1@email.com', 'password123', 'User', 'One', '1234567890', 'https://example.com/image1.jpg', 'KBANK', '9876543210', '1234567890123', 'https://example.com/card_image1.jpg', TRUE),
-('123e4567-e89b-12d3-a456-426614174002', 'EMAIL', 'user2@email.com', 'password456', 'User', 'Two', '9876543210', 'https://example.com/image2.jpg', 'BBL', '1234567890', '9876543210987', 'https://example.com/card_image2.jpg', FALSE),
-('123e4567-e89b-12d3-a456-426614174003', 'GOOGLE', 'user3@gmail.com', NULL, 'User', 'Three', '3333333333', 'https://example.com/image3.jpg', 'KTB', '1234567890', '3333333333333', 'https://example.com/card_image3.jpg', TRUE);
+('123e4567-e89b-12d3-a456-426614174001', 'EMAIL', 'user1@email.com', 'password123', 'User', 'One', '1234567890', 'https://example.com/image1.jpg', 'KBANK', '9876543210', TRUE),
+('123e4567-e89b-12d3-a456-426614174002', 'EMAIL', 'user2@email.com', 'password456', 'User', 'Two', '9876543210', 'https://example.com/image2.jpg', 'BBL', '1234567890', FALSE),
+('123e4567-e89b-12d3-a456-426614174003', 'GOOGLE', 'user3@gmail.com', NULL, 'User', 'Three', '3333333333', 'https://example.com/image3.jpg', 'KTB', '1234567890', TRUE);
 
 -- Insert mock data into the properties table
 INSERT INTO properties (property_id, owner_id, description, residential_type, project_name, address, alley, street, sub_district, district, province, country, postal_code)
@@ -237,6 +241,9 @@ VALUES
 
 ALTER TABLE users RENAME TO _users;
 CREATE VIEW users AS SELECT * FROM _users WHERE deleted_at IS NULL;
+
+ALTER TABLE user_verifications RENAME TO _user_verifications;
+CREATE VIEW user_verifications AS SELECT * FROM _user_verifications WHERE user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL);
 
 ALTER TABLE properties RENAME TO _properties;
 CREATE VIEW properties AS SELECT *

@@ -120,6 +120,7 @@ func main() {
 	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
+
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/user/greeting", mw.AuthMiddlewareWrapper(hwHandler.UserGreeting))
 
@@ -138,6 +139,7 @@ func main() {
 	apiv1.Get("/user/:userId", usersHandler.GetUserById)
 	apiv1.Put("/user/me", mw.AuthMiddlewareWrapper(usersHandler.UpdateUser))
 	apiv1.Delete("/user/:userId", mw.AuthMiddlewareWrapper(usersHandler.DeleteUser))
+	apiv1.Post("/user/verify", mw.AuthMiddlewareWrapper(usersHandler.VerifyCitizenId))
 
 	apiv1.Post("/register", usersHandler.Register)
 	apiv1.Post("/login", authHandler.Login)
