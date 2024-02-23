@@ -66,7 +66,7 @@ CREATE TABLE properties
     property_description     TEXT                                                   NOT NULL,
     property_type            property_types                                         NOT NULL,
     address                  VARCHAR(50)                                            NOT NULL,
-    alley                    VARCHAR(50),
+    alley                    VARCHAR(50)                                            DEFAULT NULL,
     street                   VARCHAR(50)                                            NOT NULL,
     sub_district             VARCHAR(50)                                            NOT NULL,
     district                 VARCHAR(50)                                            NOT NULL,

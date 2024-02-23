@@ -9,7 +9,7 @@ type Repository interface {
 	GetAllProperties(*[]models.Properties) error
 	GetPropertyById(*models.Properties, string) error
 	CreateProperty(*models.Properties) error
-	UpdatePropertyById(*models.Properties) error
+	UpdatePropertyById(*models.Properties, string) error
 	DeletePropertyById(string) error
 	SearchProperties(*[]models.Properties, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
@@ -48,8 +48,13 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 	return repo.db.Create(property).Error
 }
 
-func (repo *repositoryImpl) UpdatePropertyById(property *models.Properties) error {
-	return repo.db.Save(property).Error
+func (repo *repositoryImpl) UpdatePropertyById(property *models.Properties, propertyId string) error {
+	err := repo.db.First(&models.Properties{}, "property_id = ?", propertyId).Error
+	if err != nil {
+		return err
+	}
+
+	return repo.db.Where("property_id = ?", propertyId).Save(property).Error
 }
 
 func (repo *repositoryImpl) DeletePropertyById(propertyId string) error {

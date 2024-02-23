@@ -15,6 +15,9 @@ import (
 type Service interface {
 	GetAllProperties(*[]models.Properties) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
+	CreateProperty(*models.Properties) *apperror.AppError
+	UpdatePropertyById(*models.Properties, string) *apperror.AppError
+	DeletePropertyById(string) *apperror.AppError
 	SearchProperties(*[]models.Properties, string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
@@ -63,6 +66,48 @@ func (s *serviceImpl) GetPropertyById(property *models.Properties, id string) *a
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get property. Please try again later.")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) CreateProperty(property *models.Properties) *apperror.AppError {
+	err := s.repo.CreateProperty(property)
+	if err != nil {
+		s.logger.Error("Could not create property", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not create property. Please try again later.")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) UpdatePropertyById(property *models.Properties, propertyId string) *apperror.AppError {
+	err := s.repo.UpdatePropertyById(property, propertyId)
+	if err != nil {
+		s.logger.Error("Could not update property by id", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not update property. Please try again later.")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) DeletePropertyById(propertyId string) *apperror.AppError {
+	if !utils.IsValidUUID(propertyId) {
+		return apperror.
+			New(apperror.InvalidPropertyId).
+			Describe("Invalid property id")
+	}
+
+	err := s.repo.DeletePropertyById(propertyId)
+	if err != nil {
+		s.logger.Error("Could not delete property by id", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not delete property. Please try again later.")
 	}
 
 	return nil

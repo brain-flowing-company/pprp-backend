@@ -3,14 +3,19 @@ package properties
 import (
 	"net/http"
 
+	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type Handler interface {
 	GetPropertyById(c *fiber.Ctx) error
 	GetAllProperties(c *fiber.Ctx) error
+	CreateProperty(c *fiber.Ctx) error
+	UpdatePropertyById(c *fiber.Ctx) error
+	DeletePropertyById(c *fiber.Ctx) error
 	SeachProperties(c *fiber.Ctx) error
 	GetOrSearchProperties(c *fiber.Ctx) error
 	AddFavoriteProperty(c *fiber.Ctx) error
@@ -75,6 +80,57 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(properties)
+}
+
+func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
+	property := models.Properties{}
+	if err := c.BodyParser(&property); err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.InvalidBody).
+			Describe("Invalid request body"))
+	}
+
+	userId := c.Locals("session").(models.Sessions).UserId
+	property.OwnerId = userId
+
+	err := h.service.CreateProperty(&property)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return c.JSON(property)
+}
+
+func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
+	propertyId := c.Params("propertyId")
+	property := models.Properties{}
+	if err := c.BodyParser(&property); err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.InvalidBody).
+			Describe("Invalid request body"))
+	}
+
+	userId := c.Locals("session").(models.Sessions).UserId
+	property.OwnerId = userId
+	property.PropertyId, _ = uuid.Parse(propertyId)
+
+	err := h.service.UpdatePropertyById(&property, propertyId)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return c.JSON(property)
+}
+
+func (h *handlerImpl) DeletePropertyById(c *fiber.Ctx) error {
+	propertyId := c.Params("propertyId")
+
+	err := h.service.DeletePropertyById(propertyId)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return utils.ResponseMessage(c, http.StatusOK, "Property deleted")
 }
 
 func (h *handlerImpl) SeachProperties(c *fiber.Ctx) error {

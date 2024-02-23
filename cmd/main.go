@@ -136,6 +136,9 @@ func main() {
 
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
 	apiv1.Get("/properties", propertyHandler.GetOrSearchProperties)
+	apiv1.Post("/properties", mw.AuthMiddlewareWrapper(propertyHandler.CreateProperty))
+	apiv1.Put("/property/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.UpdatePropertyById))
+	apiv1.Delete("/property/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.DeletePropertyById))
 	apiv1.Post("/property/favorites/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.AddFavoriteProperty))
 	apiv1.Delete("/property/favorites/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.RemoveFavoriteProperty))
 	apiv1.Get("/user/me/favorites", mw.AuthMiddlewareWrapper(propertyHandler.GetMyFavoriteProperties))

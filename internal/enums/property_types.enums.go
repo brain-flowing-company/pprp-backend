@@ -5,8 +5,8 @@ type PropertyTypes string
 const (
 	CONDOMINIUM         PropertyTypes = "CONDOMINIUM"
 	APARTMENT           PropertyTypes = "APARTMENT"
-	SEMI_DETACHED_HOUSE PropertyTypes = "SEMI_DETACHED_HOUSE"
+	SEMI_DETACHED_HOUSE PropertyTypes = "SEMI-DETACHED HOUSE"
 	HOUSE               PropertyTypes = "HOUSE"
-	SERVICED_APARTMENT  PropertyTypes = "SERVICED_APARTMENT"
+	SERVICED_APARTMENT  PropertyTypes = "SERVICED APARTMENT"
 	TOWNHOUSE           PropertyTypes = "TOWNHOUSE"
 )
