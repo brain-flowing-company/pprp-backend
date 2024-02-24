@@ -34,8 +34,6 @@ CREATE TABLE users
     last_name                           VARCHAR(50)                     NOT NULL,
     phone_number                        VARCHAR(10)                     NOT NULL,
     profile_image_url                   VARCHAR(2000)                   DEFAULT NULL,
-    bank_name                           bank_names                      DEFAULT NULL,
-    bank_account_number                 VARCHAR(10)                     DEFAULT NULL,
     is_verified                         BOOLEAN                         DEFAULT FALSE,
     created_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
     updated_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
@@ -44,17 +42,20 @@ CREATE TABLE users
     UNIQUE(phone_number, deleted_at)
 );
 
-CREATE TABLE user_verifications (
-    user_id                 UUID PRIMARY KEY NOT NULL REFERENCES users(user_id),
-    citizen_id              VARCHAR(13)      NOT NULL,
-    citizen_card_image_url  VARCHAR(2000)    NOT NULL,
-    verified_at             TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE user_financial_informations
+(
+    user_id                             UUID PRIMARY KEY REFERENCES users(user_id)  NOT NULL,
+    bank_name                           bank_names                                  NOT NULL,
+    bank_account_number                 VARCHAR(10)                                 NOT NULL,
+    created_at                          TIMESTAMP(0) WITH TIME ZONE                 DEFAULT CURRENT_TIMESTAMP,
+    updated_at                          TIMESTAMP(0) WITH TIME ZONE                 DEFAULT CURRENT_TIMESTAMP,
+    deleted_at                          TIMESTAMP(0) WITH TIME ZONE                 DEFAULT NULL
 );
 
 CREATE TABLE credit_cards
 (
-    credit_card_id                      UUID PRIMARY KEY                DEFAULT gen_random_uuid(),
     user_id                             UUID REFERENCES users (user_id) ON DELETE CASCADE,
+    tag_number                          INTEGER CHECK(1 <= tag_number AND tag_number <= 4) NOT NULL,
     card_nickname                       VARCHAR(50)                     NOT NULL,
     cardholder_name                     VARCHAR(50)                     NOT NULL,
     card_number                         VARCHAR(16)                     NOT NULL,
@@ -62,9 +63,15 @@ CREATE TABLE credit_cards
     expire_year                         VARCHAR(4)                      NOT NULL,
     cvv                                 VARCHAR(3)                      NOT NULL,
     card_color                          card_colors                     DEFAULT 'LIGHT_BLUE',
-    created_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
-    updated_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT CURRENT_TIMESTAMP,
-    deleted_at                          TIMESTAMP(0) WITH TIME ZONE     DEFAULT NULL
+    PRIMARY KEY (user_id, tag_number)
+);
+
+CREATE TABLE user_verifications 
+(
+    user_id                 UUID PRIMARY KEY NOT NULL REFERENCES users(user_id),
+    citizen_id              VARCHAR(13)      NOT NULL,
+    citizen_card_image_url  VARCHAR(2000)    NOT NULL,
+    verified_at             TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE properties
@@ -160,10 +167,10 @@ CREATE TABLE agreements
 
 -------------------- DUMMY DATA --------------------
 
-INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, bank_name, bank_account_number, is_verified) VALUES
-('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', 'KBANK', '1234567890', TRUE),
-('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, 'BBL', '1234567890', FALSE),
-('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', 'SCB', '1234567890', TRUE);
+INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, is_verified) VALUES
+('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', TRUE),
+('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, FALSE),
+('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', TRUE);
 
 INSERT INTO properties (property_id, owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, floor_size_unit, unit_number) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Et sequi dolor praes', 'sdfasdfdsalflvasdldk', 'HOUSE', 'Quas iusto expedita ', 'Delisa', 'Grace', 'Michael', 'Christine', 'Anthony', 'Andrew', '53086', 3, 2, 'UNFURNISHED', 20, 45.78, 'SQM', 1123),
@@ -213,11 +220,11 @@ INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUE
 -- mock data for appointments
 
 -- Insert mock data into the users table
-INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, bank_name, bank_account_number, is_verified)
+INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, is_verified)
 VALUES
-('123e4567-e89b-12d3-a456-426614174001', 'EMAIL', 'user1@email.com', 'password123', 'User', 'One', '1234567890', 'https://example.com/image1.jpg', 'KBANK', '9876543210', TRUE),
-('123e4567-e89b-12d3-a456-426614174002', 'EMAIL', 'user2@email.com', 'password456', 'User', 'Two', '9876543210', 'https://example.com/image2.jpg', 'BBL', '1234567890', FALSE),
-('123e4567-e89b-12d3-a456-426614174003', 'GOOGLE', 'user3@gmail.com', NULL, 'User', 'Three', '3333333333', 'https://example.com/image3.jpg', 'KTB', '1234567890', TRUE);
+('123e4567-e89b-12d3-a456-426614174001', 'EMAIL', 'user1@email.com', 'password123', 'User', 'One', '1234567890', 'https://example.com/image1.jpg', TRUE),
+('123e4567-e89b-12d3-a456-426614174002', 'EMAIL', 'user2@email.com', 'password456', 'User', 'Two', '9876543210', 'https://example.com/image2.jpg', FALSE),
+('123e4567-e89b-12d3-a456-426614174003', 'GOOGLE', 'user3@gmail.com', NULL, 'User', 'Three', '3333333333', 'https://example.com/image3.jpg', TRUE);
 
 -- Insert mock data into the properties table
 INSERT INTO properties (property_id, owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, unit_number) 
