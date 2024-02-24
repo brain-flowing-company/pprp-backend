@@ -73,6 +73,15 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+// @router      /api/v1/user/me/financial-information [get]
+// @summary     Get current user financial information *use cookies*
+// @description Get current user financial information
+// @tags        users
+// @produce     json
+// @success     200 {object} models.UserFinancialInformations
+// @failure     400 {object} models.ErrorResponses "Invalid user id"
+// @failure     403 {object} models.ErrorResponses "Unauthorized"
+// @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetUserFinancialInformation(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Sessions)
 	if !ok {
@@ -94,9 +103,9 @@ func (h *handlerImpl) GetUserFinancialInformation(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @param       formData formData models.RegisteringUsers true "User information"
-// @success     200	{object} models.Users
+// @success     200	{object} models.MessageResponses "User created"
 // @failure     400 {object} models.ErrorResponses "Invalid user info"
-// @failure     500 {object} models.ErrorResponses
+// @failure     500 {object} models.ErrorResponses "Could not create user"
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	user := &models.RegisteringUsers{
 		UserId: uuid.New(),
@@ -118,16 +127,16 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusCreated, "User created")
 }
 
-// @router      /api/v1/user/ [put]
+// @router      /api/v1/user/me/personal-information [put]
 // @summary     Update current user personal information *use cookies*
 // @description Update specifying userId with formData **\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg
 // @tags        users
 // @produce     json
-// @param       formData formData models.UpdatingUserPersonalInfo true "User information"
-// @success     200	{object} models.Users
+// @param       formData formData models.UpdatingUserPersonalInfos true "User information"
+// @success     200	{object} models.Users "User personal information updated"
 // @failure     400 {object} models.ErrorResponses "Invalid user info"
 // @failure     404 {object} models.ErrorResponses "User not found"
-// @failure     500 {object} models.ErrorResponses
+// @failure     500 {object} models.ErrorResponses "Could not update user"
 func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Sessions)
 	if !ok {
@@ -147,9 +156,19 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperr)
 	}
 
-	return utils.ResponseMessage(c, http.StatusOK, "User updated")
+	return utils.ResponseMessage(c, http.StatusOK, "User personal information updated")
 }
 
+// @router      /api/v1/user/me/financial-information [put]
+// @summary     Update the current user financial information *use cookies*
+// @description Update the current user financial information with data from the body
+// @tags        users
+// @produce     json
+// @param       body body models.UserFinancialInformations true "User financial information"
+// @success     200 {object} models.MessageResponses "User financial information updated"
+// @failure     400 {object} models.ErrorResponses "Invalid user financial information"
+// @failure     403 {object} models.ErrorResponses "Unauthorized"
+// @failure     500 {object} models.ErrorResponses "Could not update user financial information"
 func (h *handlerImpl) UpdateUserFinancialInformation(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Sessions)
 	if !ok {
@@ -175,7 +194,7 @@ func (h *handlerImpl) UpdateUserFinancialInformation(c *fiber.Ctx) error {
 // @description Delete a user by its id
 // @tags        users
 // @produce     json
-// @success     200
+// @success     200 {object} models.MessageResponses "User deleted"
 // @failure     400 {object} models.ErrorResponses "Invalid user id"
 // @failure     404 {object} models.ErrorResponses "User not found"
 // @failure     500 {object} models.ErrorResponses

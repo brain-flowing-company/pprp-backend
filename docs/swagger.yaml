@@ -22,6 +22,18 @@ definitions:
     - SCB
     - GSB
     - "NULL"
+  enums.CardColors:
+    enum:
+    - LIGHT BLUE
+    - BLUE
+    - DARK BLUE
+    - VERY DARK BLUE
+    type: string
+    x-enum-varnames:
+    - LIGHT_BLUE
+    - BLUE
+    - DARK_BLUE
+    - VERY_DARK_BLUE
   enums.FloorSizeUnits:
     enum:
     - sqm
@@ -160,6 +172,34 @@ definitions:
       property_id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
+    type: object
+  models.CreditCards:
+    properties:
+      card_color:
+        allOf:
+        - $ref: '#/definitions/enums.CardColors'
+        example: BLUE
+      card_nickname:
+        example: John's Card
+        type: string
+      card_number:
+        example: "1234567890123456"
+        type: string
+      cardholder_name:
+        example: John Doe
+        type: string
+      cvv:
+        example: "123"
+        type: string
+      expire_month:
+        example: "12"
+        type: string
+      expire_year:
+        example: "2023"
+        type: string
+      tag_number:
+        example: 1
+        type: integer
     type: object
   models.DeletingAppointments:
     properties:
@@ -315,21 +355,21 @@ definitions:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
     type: object
-  models.Users:
+  models.UserFinancialInformations:
     properties:
       bank_account_number:
-        example: "1234567890"
         type: string
       bank_name:
-        allOf:
-        - $ref: '#/definitions/enums.BankNames'
-        example: KBANK
-      citizen_card_image_url:
-        example: https://image_url.com/abcd
+        $ref: '#/definitions/enums.BankNames'
+      created_at:
         type: string
-      citizen_id:
-        example: "1234567890123"
-        type: string
+      credit_cards:
+        items:
+          $ref: '#/definitions/models.CreditCards'
+        type: array
+    type: object
+  models.Users:
+    properties:
       created_at:
         type: string
       email:
@@ -811,7 +851,7 @@ paths:
       - property
   /api/v1/property/:propertyId:
     delete:
-      description: Remove property to the current user favorites
+      description: Delete a property, owned by the current user, by its id
       parameters:
       - description: Property id
         in: path
@@ -822,9 +862,13 @@ paths:
       - application/json
       responses:
         "200":
-          description: Property removed from favorites
+          description: Property deleted
           schema:
             $ref: '#/definitions/models.MessageResponses'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
         "403":
           description: Unauthorized
           schema:
@@ -834,10 +878,10 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponses'
         "500":
-          description: Could not remove favorite property
+          description: Could not delete property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Remove property to favorites
+      summary: Delete a property
       tags:
       - property
     get:
@@ -941,6 +985,37 @@ paths:
       summary: Update a property
       tags:
       - property
+  /api/v1/property/favorites/:propertyId:
+    delete:
+      description: Remove property to the current user favorites
+      parameters:
+      - description: Property id
+        in: path
+        name: propertyId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property removed from favorites
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "404":
+          description: Property id not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Could not remove favorite property
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Remove property to favorites
+      tags:
+      - property
   /api/v1/register:
     post:
       description: Create user with formData **\***upload profile image in formData
@@ -979,58 +1054,18 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: User created
           schema:
-            $ref: '#/definitions/models.Users'
+            $ref: '#/definitions/models.MessageResponses'
         "400":
           description: Invalid user info
           schema:
             $ref: '#/definitions/models.ErrorResponses'
         "500":
-          description: Internal Server Error
+          description: Could not create user
           schema:
             $ref: '#/definitions/models.ErrorResponses'
       summary: Register *use cookies*
-      tags:
-      - users
-  /api/v1/user/:
-    put:
-      description: Update specifying userId with formData **\***upload profile image
-        in formData with field `profile_image`. Available formats are .png / .jpg
-        / .jpeg
-      parameters:
-      - example: John
-        in: formData
-        name: first_name
-        type: string
-      - example: Doe
-        in: formData
-        name: last_name
-        type: string
-      - example: "0812345678"
-        in: formData
-        name: phone_number
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Users'
-        "400":
-          description: Invalid user info
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-        "404":
-          description: User not found
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-      summary: Update current user personal information *use cookies*
       tags:
       - users
   /api/v1/user/:userId:
@@ -1040,7 +1075,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: User deleted
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
         "400":
           description: Invalid user id
           schema:
@@ -1137,6 +1174,103 @@ paths:
       summary: Get my favorite properties
       tags:
       - property
+  /api/v1/user/me/financial-information:
+    get:
+      description: Get current user financial information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserFinancialInformations'
+        "400":
+          description: Invalid user id
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get current user financial information *use cookies*
+      tags:
+      - users
+    put:
+      description: Update the current user financial information with data from the
+        body
+      parameters:
+      - description: User financial information
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserFinancialInformations'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User financial information updated
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "400":
+          description: Invalid user financial information
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Could not update user financial information
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Update the current user financial information *use cookies*
+      tags:
+      - users
+  /api/v1/user/me/personal-information:
+    put:
+      description: Update specifying userId with formData **\***upload profile image
+        in formData with field `profile_image`. Available formats are .png / .jpg
+        / .jpeg
+      parameters:
+      - example: John
+        in: formData
+        name: first_name
+        type: string
+      - example: Doe
+        in: formData
+        name: last_name
+        type: string
+      - example: "0812345678"
+        in: formData
+        name: phone_number
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User personal information updated
+          schema:
+            $ref: '#/definitions/models.Users'
+        "400":
+          description: Invalid user info
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Could not update user
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Update current user personal information *use cookies*
+      tags:
+      - users
   /api/v1/user/me/properties:
     get:
       description: Get all properties owned by the current user
@@ -1171,6 +1305,28 @@ paths:
           schema:
             $ref: '#/definitions/models.Sessions'
       summary: Get user registered type *use cookies*
+      tags:
+      - users
+  /api/v1/user/me/verify:
+    post:
+      description: Verify user by citizen id and citizen id image
+      parameters:
+      - example: "1100111111111"
+        in: formData
+        name: citizen_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Verify user *use cookies*
       tags:
       - users
   /api/v1/users:
