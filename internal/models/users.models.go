@@ -25,10 +25,10 @@ func (u Users) TableName() string {
 }
 
 type UserFinancialInformations struct {
-	UserId            uuid.UUID       `json:"-" 					swaggerignore:"true"`
-	CreditCards       []CreditCards   `json:"credit_cards" 			gorm:"foreignKey:UserId; references:UserId;" swaggerignore:"true"`
-	BankName          enums.BankNames `json:"bank_name" 			gorm:"default:null" 	example:"KBANK"`
-	BankAccountNumber string          `json:"bank_account_number" 	gorm:"default:null" 	example:"1234567890"`
+	UserId            uuid.UUID       `json:"-" swaggerignore:"true"`
+	CreditCards       []CreditCards   `json:"credit_cards" gorm:"foreignKey:UserId; references:UserId;" swaggerignore:"true"`
+	BankName          enums.BankNames `json:"bank_name" gorm:"default:null" example:"KBANK"`
+	BankAccountNumber string          `json:"bank_account_number" gorm:"default:null" example:"1234567890"`
 	CommonModels
 }
 
@@ -37,15 +37,15 @@ func (uf UserFinancialInformations) TableName() string {
 }
 
 type CreditCards struct {
-	UserId         uuid.UUID        `json:"-" 				swaggerignore:"true"`
-	TagNumber      int              `json:"tag_number" 		example:"1"`
-	CardNickname   string           `json:"card_nickname" 	example:"John's Card"`
+	UserId         uuid.UUID        `json:"-" swaggerignore:"true"`
+	TagNumber      int              `json:"tag_number" example:"1"`
+	CardNickname   string           `json:"card_nickname" example:"John's Card"`
 	CardholderName string           `json:"cardholder_name" example:"John Doe"`
-	CardNumber     string           `json:"card_number" 	example:"1234567890123456"`
-	ExpireMonth    string           `json:"expire_month" 	example:"12"`
-	ExpireYear     string           `json:"expire_year" 	example:"2023"`
-	CVV            string           `json:"cvv" 			example:"123"`
-	CardColor      enums.CardColors `json:"card_color" 		example:"BLUE"`
+	CardNumber     string           `json:"card_number" example:"1234567890123456"`
+	ExpireMonth    string           `json:"expire_month" example:"12"`
+	ExpireYear     string           `json:"expire_year" example:"2023"`
+	CVV            string           `json:"cvv" example:"123"`
+	CardColor      enums.CardColors `json:"card_color" example:"BLUE"`
 }
 
 func (cc CreditCards) TableName() string {
