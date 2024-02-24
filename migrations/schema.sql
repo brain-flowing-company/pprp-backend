@@ -308,6 +308,12 @@ VALUES
 ALTER TABLE users RENAME TO _users;
 CREATE VIEW users AS SELECT * FROM _users WHERE deleted_at IS NULL;
 
+ALTER TABLE user_financial_informations RENAME TO _user_financial_informations;
+CREATE VIEW user_financial_informations AS SELECT * FROM _user_financial_informations WHERE user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL);
+
+ALTER TABLE credit_cards RENAME TO _credit_cards;
+CREATE VIEW credit_cards AS SELECT * FROM _credit_cards WHERE user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL);
+
 ALTER TABLE user_verifications RENAME TO _user_verifications;
 CREATE VIEW user_verifications AS SELECT * FROM _user_verifications WHERE user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL);
 
@@ -340,10 +346,10 @@ CREATE VIEW appointments AS SELECT *
 
 -------------------- INDEX --------------------
 
-CREATE INDEX idx_users_deleted_at               ON _users (deleted_at);
-CREATE INDEX idx_user_financial_information_deleted_at               ON _users (deleted_at);
-CREATE INDEX idx_properties_deleted_at          ON _properties (deleted_at);
-CREATE INDEX idx_property_images_deleted_at     ON _property_images (deleted_at);
-CREATE INDEX idx_selling_properties_deleted_at  ON _selling_properties (deleted_at);
-CREATE INDEX idx_renting_properties_deleted_at  ON _renting_properties (deleted_at);
-CREATE INDEX idx_appointments_deleted_at        ON _appointments (deleted_at);
+CREATE INDEX idx_users_deleted_at                       ON _users (deleted_at);
+CREATE INDEX idx_user_financial_information_deleted_at  ON _users_financial_informations (deleted_at);
+CREATE INDEX idx_properties_deleted_at                  ON _properties (deleted_at);
+CREATE INDEX idx_property_images_deleted_at             ON _property_images (deleted_at);
+CREATE INDEX idx_selling_properties_deleted_at          ON _selling_properties (deleted_at);
+CREATE INDEX idx_renting_properties_deleted_at          ON _renting_properties (deleted_at);
+CREATE INDEX idx_appointments_deleted_at                ON _appointments (deleted_at);
