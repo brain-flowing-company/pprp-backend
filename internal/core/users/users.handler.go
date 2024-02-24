@@ -15,8 +15,10 @@ type Handler interface {
 	GetAllUsers(c *fiber.Ctx) error
 	GetUserById(c *fiber.Ctx) error
 	GetCurrentUser(c *fiber.Ctx) error
+	GetUserFinancialInformation(c *fiber.Ctx) error
 	Register(c *fiber.Ctx) error
 	UpdateUser(c *fiber.Ctx) error
+	UpdateUserFinancialInformation(c *fiber.Ctx) error
 	DeleteUser(c *fiber.Ctx) error
 	GetRegisteredType(c *fiber.Ctx) error
 	VerifyCitizenId(c *fiber.Ctx) error
@@ -71,6 +73,21 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+func (h *handlerImpl) GetUserFinancialInformation(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Sessions)
+	if !ok {
+		session = models.Sessions{}
+	}
+	userFinancialInformation := models.UserFinancialInformations{}
+
+	err := h.service.GetUserFinancialInforamtionById(&userFinancialInformation, session.UserId.String())
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return c.JSON(userFinancialInformation)
+}
+
 // @router      /api/v1/register [post]
 // @summary     Register *use cookies*
 // @description Create user with formData **\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg
@@ -117,7 +134,7 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 		session = models.Sessions{}
 	}
 
-	user := models.UpdatingUserPersonalInfo{UserId: session.UserId}
+	user := models.Users{UserId: session.UserId}
 	bodyErr := c.BodyParser(&user)
 	if bodyErr != nil {
 		return utils.ResponseError(c, apperror.InvalidBody)
@@ -131,6 +148,26 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 	}
 
 	return utils.ResponseMessage(c, http.StatusOK, "User updated")
+}
+
+func (h *handlerImpl) UpdateUserFinancialInformation(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Sessions)
+	if !ok {
+		session = models.Sessions{}
+	}
+
+	userFinancialInformation := models.UserFinancialInformations{}
+	bodyErr := c.BodyParser(&userFinancialInformation)
+	if bodyErr != nil {
+		return utils.ResponseError(c, apperror.InvalidBody)
+	}
+
+	apperr := h.service.UpdateUserFinancialInformationById(&userFinancialInformation, session.UserId.String())
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+
+	return utils.ResponseMessage(c, http.StatusOK, "User financial information updated")
 }
 
 // @router      /api/v1/user/:userId [delete]

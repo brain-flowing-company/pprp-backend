@@ -23,8 +23,10 @@ import (
 type Service interface {
 	GetAllUsers(*[]models.Users) *apperror.AppError
 	GetUserById(*models.Users, string) *apperror.AppError
+	GetUserFinancialInforamtionById(*models.UserFinancialInformations, string) *apperror.AppError
 	Register(*models.RegisteringUsers, *multipart.FileHeader) *apperror.AppError
-	UpdateUser(*models.UpdatingUserPersonalInfo, *multipart.FileHeader) *apperror.AppError
+	UpdateUser(*models.Users, *multipart.FileHeader) *apperror.AppError
+	UpdateUserFinancialInformationById(*models.UserFinancialInformations, string) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 	GetUserByEmail(*models.Users, string) *apperror.AppError
 	VerifyCitizenId(*models.UserVerifications, *multipart.FileHeader) *apperror.AppError
@@ -76,6 +78,28 @@ func (s *serviceImpl) GetUserById(user *models.Users, userId string) *apperror.A
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get user information. Please try again later.")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) GetUserFinancialInforamtionById(userFinancialInformation *models.UserFinancialInformations, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	err := s.repo.GetUserFinancialInforamtionById(userFinancialInformation, userId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.UserNotFound).
+			Describe("Could not find the specified user")
+	} else if err != nil {
+		s.logger.Error("Could not get user financial information by id", zap.String("id", userId), zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get user financial information. Please try again later.")
 	}
 
 	return nil
@@ -150,14 +174,14 @@ func (s *serviceImpl) Register(user *models.RegisteringUsers, profileImage *mult
 	return nil
 }
 
-func (s *serviceImpl) UpdateUser(user *models.UpdatingUserPersonalInfo, profileImage *multipart.FileHeader) *apperror.AppError {
+func (s *serviceImpl) UpdateUser(user *models.Users, profileImage *multipart.FileHeader) *apperror.AppError {
 	url, apperr := s.uploadProfileImage(user.UserId, profileImage)
 	if apperr != nil {
 		return apperr
 	}
 	user.ProfileImageUrl = url
 
-	err := s.repo.UpdateUser(user, user.UserId.String())
+	err := s.repo.UpdateUserById(user, user.UserId.String())
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.UserNotFound).
@@ -167,6 +191,34 @@ func (s *serviceImpl) UpdateUser(user *models.UpdatingUserPersonalInfo, profileI
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not update user information. Please try again later")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) UpdateUserFinancialInformationById(userFinancialInformation *models.UserFinancialInformations, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	creditCards := &userFinancialInformation.CreditCards
+	for i := range *creditCards {
+		(*creditCards)[i].UserId, _ = uuid.Parse(userId)
+	}
+
+	fmt.Println(userFinancialInformation)
+	err := s.repo.UpdateUserFinancialInformationById(userFinancialInformation, userId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.UserNotFound).
+			Describe("Could not find the specified user")
+	} else if err != nil {
+		s.logger.Error("Could not update user financial information", zap.String("id", userId), zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not update user financial information. Please try again later")
 	}
 
 	return nil

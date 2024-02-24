@@ -37,15 +37,15 @@ func (uf UserFinancialInformations) TableName() string {
 }
 
 type CreditCards struct {
-	UserId         uuid.UUID        `json:"user_id" 			example:"123e4567-e89b-12d3-a456-426614174000"`
-	TagNumber      int64            `json:"tag_number" 			example:"1"`
-	CardNickname   string           `json:"card_nickname" 		example:"My Card"`
-	CardholderName string           `json:"cardholder_name"		example:"JOHN DOE"`
-	CardNumber     string           `json:"card_number" 		example:"1234567890123456"`
-	ExpireMonth    string           `json:"expire_month" 		example:"12"`
-	ExpireYear     string           `json:"expire_year" 		example:"2023"`
-	CVV            string           `json:"cvv" 				example:"123"`
-	CardColor      enums.CardColors `json:"card_color" 			example:"LIGHT BLUE"`
+	UserId         uuid.UUID        `json:"-" swaggerignore:"true"`
+	TagNumber      int64            `json:"tag_number" example:"1234"`
+	CardNickname   string           `json:"card_nickname" example:"John's Card"`
+	CardholderName string           `json:"cardholder_name" example:"John Doe"`
+	CardNumber     string           `json:"card_number" example:"1234567890123456"`
+	ExpireMonth    string           `json:"expire_month" example:"12"`
+	ExpireYear     string           `json:"expire_year" example:"2023"`
+	CVV            string           `json:"cvv" example:"123"`
+	CardColor      enums.CardColors `json:"card_color" example:"BLUE"`
 }
 
 func (cc CreditCards) TableName() string {
@@ -79,7 +79,7 @@ func (r RegisteringUsers) TableName() string {
 	return "users"
 }
 
-type UpdatingUserPersonalInfo struct {
+type UpdatingUserPersonalInfos struct {
 	UserId          uuid.UUID `form:"-"            swaggerignore:"true"`
 	FirstName       string    `form:"first_name"   example:"John"`
 	LastName        string    `form:"last_name"    example:"Doe"`
@@ -88,7 +88,7 @@ type UpdatingUserPersonalInfo struct {
 	CommonModels    `swaggerignore:"true"`
 }
 
-func (r UpdatingUserPersonalInfo) TableName() string {
+func (r UpdatingUserPersonalInfos) TableName() string {
 	return "users"
 }
 

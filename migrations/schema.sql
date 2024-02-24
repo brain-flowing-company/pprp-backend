@@ -45,8 +45,8 @@ CREATE TABLE users
 CREATE TABLE user_financial_informations
 (
     user_id                             UUID PRIMARY KEY REFERENCES users(user_id)  NOT NULL,
-    bank_name                           bank_names                                  NOT NULL,
-    bank_account_number                 VARCHAR(10)                                 NOT NULL,
+    bank_name                           bank_names                                  DEFAULT NULL,
+    bank_account_number                 VARCHAR(10)                                 DEFAULT NULL,
     created_at                          TIMESTAMP(0) WITH TIME ZONE                 DEFAULT CURRENT_TIMESTAMP,
     updated_at                          TIMESTAMP(0) WITH TIME ZONE                 DEFAULT CURRENT_TIMESTAMP,
     deleted_at                          TIMESTAMP(0) WITH TIME ZONE                 DEFAULT NULL
@@ -165,6 +165,69 @@ CREATE TABLE agreements
     UNIQUE (property_id, agreement_date)
 );
 
+-------------------- RULES --------------------
+
+CREATE RULE soft_deletion AS ON DELETE TO users DO INSTEAD (
+    UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = old.user_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO user_financial_informations DO INSTEAD (
+    UPDATE user_financial_informations SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = old.user_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO properties DO INSTEAD (
+    UPDATE properties SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO property_images DO INSTEAD (
+    UPDATE property_images SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO selling_properties DO INSTEAD (
+    UPDATE selling_properties SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO renting_properties DO INSTEAD (
+    UPDATE renting_properties SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO appointments DO INSTEAD (
+    UPDATE appointments SET deleted_at = CURRENT_TIMESTAMP WHERE appointment_id = old.appointment_id and deleted_at IS NULL
+);
+
+CREATE RULE delete_users AS ON UPDATE TO users
+    WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
+    DO ALSO (
+        UPDATE properties SET deleted_at = new.deleted_at WHERE owner_id = old.user_id;
+        UPDATE appointments SET deleted_at = new.deleted_at WHERE owner_user_id = old.user_id OR dweller_user_id = old.user_id;
+        DELETE FROM favorite_properties WHERE user_id = old.user_id;
+        DELETE FROM user_verifications WHERE user_id = old.user_id;
+        UPDATE user_financial_informations SET deleted_at = new.deleted_at WHERE user_id = old.user_id;
+    );
+
+CREATE RULE delete_properties AS ON UPDATE TO properties
+    WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
+    DO ALSO (
+        UPDATE property_images SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+        UPDATE selling_properties SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+        UPDATE renting_properties SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+        DELETE FROM favorite_properties WHERE property_id = old.property_id;
+        UPDATE appointments SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+    );
+
+CREATE RULE create_email_verification_codes AS ON INSERT TO email_verification_codes
+    WHERE new.email = (SELECT email FROM email_verification_codes WHERE email = new.email) DO INSTEAD(
+        UPDATE email_verification_codes SET code = new.code, expired_at = new.expired_at WHERE email = new.email
+    );
+
+CREATE RULE creat_user_financial_informations AS ON INSERT TO users DO ALSO (
+    INSERT INTO user_financial_informations (user_id) VALUES (new.user_id)
+);
+
+CREATE RULE update_user_verified AS ON INSERT TO user_verifications DO ALSO (
+    UPDATE users SET is_verified = TRUE WHERE user_id = new.user_id
+);
+
 -------------------- DUMMY DATA --------------------
 
 INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, is_verified) VALUES
@@ -275,52 +338,10 @@ CREATE VIEW appointments AS SELECT *
         owner_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL)
     );
 
--------------------- RULES --------------------
-
-CREATE RULE soft_deletion AS ON DELETE TO users DO INSTEAD (
-    UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE user_id = old.user_id and deleted_at IS NULL
-);
-
-CREATE RULE soft_deletion AS ON DELETE TO properties DO INSTEAD (
-    UPDATE properties SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
-);
-
-CREATE RULE soft_deletion AS ON DELETE TO property_images DO INSTEAD (
-    UPDATE property_images SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
-);
-
-CREATE RULE soft_deletion AS ON DELETE TO selling_properties DO INSTEAD (
-    UPDATE selling_properties SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
-);
-
-CREATE RULE soft_deletion AS ON DELETE TO renting_properties DO INSTEAD (
-    UPDATE renting_properties SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
-);
-
-CREATE RULE soft_deletion AS ON DELETE TO appointments DO INSTEAD (
-    UPDATE appointments SET deleted_at = CURRENT_TIMESTAMP WHERE appointment_id = old.appointment_id and deleted_at IS NULL
-);
-
-CREATE RULE delete_users AS ON UPDATE TO users
-    WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
-    DO ALSO UPDATE properties SET deleted_at = new.deleted_at WHERE owner_id = old.user_id;
-
-CREATE RULE delete_properties AS ON UPDATE TO properties
-    WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
-    DO ALSO (
-        UPDATE property_images SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
-        UPDATE selling_properties SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
-        UPDATE renting_properties SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
-    );
-
-CREATE RULE create_email_verification_codes AS ON INSERT TO email_verification_codes
-    WHERE new.email = (SELECT email FROM email_verification_codes WHERE email = new.email) DO INSTEAD(
-        UPDATE email_verification_codes SET code = new.code, expired_at = new.expired_at WHERE email = new.email
-    );
-
 -------------------- INDEX --------------------
 
 CREATE INDEX idx_users_deleted_at               ON _users (deleted_at);
+CREATE INDEX idx_user_financial_information_deleted_at               ON _users (deleted_at);
 CREATE INDEX idx_properties_deleted_at          ON _properties (deleted_at);
 CREATE INDEX idx_property_images_deleted_at     ON _property_images (deleted_at);
 CREATE INDEX idx_selling_properties_deleted_at  ON _selling_properties (deleted_at);
