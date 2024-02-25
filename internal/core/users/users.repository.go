@@ -78,10 +78,8 @@ func (repo *repositoryImpl) UpdateUserFinancialInformationById(userFinancialInfo
 			}
 		}
 
-		for _, creditCard := range userFinancialInformation.CreditCards {
-			if err := tx.Model(&models.CreditCards{}).Create(&creditCard).Error; err != nil {
-				return err
-			}
+		if err := tx.Create(&userFinancialInformation.CreditCards).Error; err != nil {
+			return err
 		}
 
 		return tx.Model(&models.UserFinancialInformations{}).Where("user_id = ?", userId).Updates(userFinancialInformation).Error
