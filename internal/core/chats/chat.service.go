@@ -1,20 +1,16 @@
 package chats
 
 import (
-	"errors"
-
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
 type Service interface {
 	GetAllChats(*[]models.ChatsResponses, uuid.UUID) *apperror.AppError
 	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) *apperror.AppError
-	CreateChat(uuid.UUID, uuid.UUID) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -53,31 +49,6 @@ func (s *serviceImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get messages in chat")
-	}
-
-	return nil
-}
-
-func (s *serviceImpl) CreateChat(sendUserId uuid.UUID, recvUserId uuid.UUID) *apperror.AppError {
-	if sendUserId == recvUserId {
-		return apperror.
-			New(apperror.BadRequest).
-			Describe("Could not chat with yourself")
-	}
-
-	err := s.repo.CreateChatStatus(sendUserId, recvUserId)
-	if errors.Is(err, gorm.ErrForeignKeyViolated) {
-		return apperror.
-			New(apperror.UserNotFound).
-			Describe("Could not find the specified recvUserId")
-	} else if err != nil && !errors.Is(err, gorm.ErrDuplicatedKey) {
-		s.logger.Error("Could not create chat status",
-			zap.Error(err),
-			zap.String("senderUserId", sendUserId.String()),
-			zap.String("receiveruserId", recvUserId.String()))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not join chat")
 	}
 
 	return nil

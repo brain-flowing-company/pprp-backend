@@ -1,8 +1,6 @@
 package chats
 
 import (
-	"net/http"
-
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -15,7 +13,6 @@ import (
 type Handler interface {
 	GetAllChats(c *fiber.Ctx) error
 	GetMessagesInChat(c *fiber.Ctx) error
-	CreateChat(c *fiber.Ctx) error
 	OpenConnection(conn *websocket.Conn)
 }
 
@@ -86,34 +83,6 @@ func (h *handlerImpl) GetMessagesInChat(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(msgs)
-}
-
-// @router      /api/v1/chats/:recvUserId [post]
-// @summary     Create chat with recvUserId *use cookies*
-// @description Create chat with recvUserId. `Must` be called before sending any messages.
-// @tags        chats
-// @produce     json
-// @success     200	{object} []models.Messages
-// @failure     400 {object} models.ErrorResponses
-// @failure     404 {object} models.ErrorResponses
-// @failure     500 {object} models.ErrorResponses
-func (h *handlerImpl) CreateChat(c *fiber.Ctx) error {
-	session, ok := c.Locals("session").(models.Sessions)
-	if !ok {
-		session = models.Sessions{}
-	}
-
-	recvUserId, err := uuid.Parse(c.Params("recvUserId"))
-	if err != nil {
-		return utils.ResponseError(c, apperror.InvalidUserId)
-	}
-
-	apperr := h.service.CreateChat(session.UserId, recvUserId)
-	if apperr != nil {
-		return utils.ResponseError(c, apperr)
-	}
-
-	return utils.ResponseMessage(c, http.StatusCreated, "Chat created")
 }
 
 func (h *handlerImpl) OpenConnection(conn *websocket.Conn) {

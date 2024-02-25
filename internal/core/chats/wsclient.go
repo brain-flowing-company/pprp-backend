@@ -86,13 +86,17 @@ func (c *WebsocketClients) readHandler(term chan bool, errCh chan error) {
 		msg := &models.Messages{
 			MessageId:  uuid.New(),
 			SenderId:   c.UserId,
-			Read:       false,
+			ReadAt:     nil,
 			ReceiverId: raw.ReceiverId,
 			Content:    raw.Content,
-			CreatedAt:  raw.CreatedAt,
+			SentAt:     raw.SentAt,
 			Tag:        raw.Tag,
 		}
 
-		c.hub.SendMessage <- msg
+		if msg.Tag == "leave" {
+			c.hub.LeaveChat <- msg
+		} else {
+			c.hub.SendMessage <- msg
+		}
 	}
 }

@@ -13,7 +13,7 @@ function send() {
     JSON.stringify({
       content: msg.value,
       receiver_id: document.getElementById("chat-user-id").value,
-      created_at: new Date(Date.now()).toISOString(),
+      sent_at: new Date(Date.now()).toISOString(),
       tag: "3o8qtahiubfv3kuwefbis",
     })
   );
