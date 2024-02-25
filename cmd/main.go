@@ -132,12 +132,14 @@ func main() {
 	apiv1.Patch("/appointments/:appointmentId", appointmentHandler.UpdateAppointmentStatus)
 
 	apiv1.Get("/users", usersHandler.GetAllUsers)
-	apiv1.Get("/user/me", mw.AuthMiddlewareWrapper(usersHandler.GetCurrentUser))
+	apiv1.Get("/user/me/personal-information", mw.AuthMiddlewareWrapper(usersHandler.GetCurrentUser))
+	apiv1.Get("/user/me/financial-information", mw.AuthMiddlewareWrapper(usersHandler.GetUserFinancialInformation))
 	apiv1.Get("/user/me/registered", usersHandler.GetRegisteredType)
 	apiv1.Get("/user/:userId", usersHandler.GetUserById)
-	apiv1.Put("/user/me", mw.AuthMiddlewareWrapper(usersHandler.UpdateUser))
+	apiv1.Put("/user/me/personal-information", mw.AuthMiddlewareWrapper(usersHandler.UpdateUser))
+	apiv1.Put("/user/me/financial-information", mw.AuthMiddlewareWrapper(usersHandler.UpdateUserFinancialInformation))
+	apiv1.Post("/user/me/verify", mw.AuthMiddlewareWrapper(usersHandler.VerifyCitizenId))
 	apiv1.Delete("/user/:userId", mw.AuthMiddlewareWrapper(usersHandler.DeleteUser))
-	apiv1.Post("/user/verify", mw.AuthMiddlewareWrapper(usersHandler.VerifyCitizenId))
 
 	apiv1.Post("/register", usersHandler.Register)
 	apiv1.Post("/login", authHandler.Login)

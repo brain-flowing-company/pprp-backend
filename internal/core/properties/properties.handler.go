@@ -209,7 +209,7 @@ func (h *handlerImpl) AddFavoriteProperty(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property added to favorites")
 }
 
-// @router      /api/v1/property/:propertyId [delete]
+// @router      /api/v1/property/favorites/:propertyId [delete]
 // @summary     Remove property to favorites
 // @description Remove property to the current user favorites
 // @tags        property
