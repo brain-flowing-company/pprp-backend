@@ -63,14 +63,15 @@ func (repo *repositoryImpl) GetAllChats(results *[]models.ChatsResponses, userId
 
 func (repo *repositoryImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid.UUID, recvUserId uuid.UUID, offset int, limit int) error {
 	subQuery := repo.db.Model(&models.Messages{}).
-		Order("created_at DESC").
+		Order("sent_at DESC").
 		Offset(offset).Limit(limit).
-		Where("(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
-			sendUserId, recvUserId, recvUserId, sendUserId)
+		Where("(sender_id = @sender_id AND receiver_id = @receiver_id) OR (sender_id = @receiver_id AND receiver_id = @sender_id)",
+			sql.Named("sender_id", sendUserId),
+			sql.Named("receiver_id", recvUserId))
 
 	return repo.db.Select("*").
 		Table("(?) AS a", subQuery).
-		Order("created_at ASC").
+		Order("sent_at ASC").
 		Find(msgs).Error
 }
 
