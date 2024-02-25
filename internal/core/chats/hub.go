@@ -42,9 +42,6 @@ func (h *Hub) Run() {
 
 		case msg := <-h.SendMessage:
 			h.sendMessage(msg)
-
-		case msg := <-h.LeaveChat:
-			h.leaveChat(msg)
 		}
 	}
 }
@@ -102,16 +99,4 @@ func (h *Hub) sendMessage(msg *models.Messages) {
 	}()
 
 	wg.Wait()
-}
-
-func (h *Hub) leaveChat(msg *models.Messages) {
-	// sendUser, sendUserOnline := h.Clients[msg.SenderId]
-
-	// err := h.chatRepo.UpdateChatStatus(msg.SenderId, msg.ReceiverId)
-	// if sendUserOnline && err != nil {
-	// 	fmt.Println(err)
-	// 	utils.WebsocketError(sendUser.conn, apperror.
-	// 		New(apperror.InternalServerError).
-	// 		Describe("Could not save chat status"))
-	// }
 }

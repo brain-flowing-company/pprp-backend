@@ -17,8 +17,7 @@ type Messages struct {
 }
 
 type RawMessages struct {
-	Content    string    `json:"content"`
-	ReceiverId uuid.UUID `json:"receiver_id"`
-	SentAt     time.Time `json:"sent_at"`
-	Tag        string    `json:"tag"`
+	Content string    `json:"content"`
+	SentAt  time.Time `json:"sent_at"`
+	Tag     string    `json:"tag"`
 }

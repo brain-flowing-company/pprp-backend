@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -13,18 +14,20 @@ import (
 )
 
 type WebsocketClients struct {
-	conn    *websocket.Conn
-	hub     *Hub
-	UserId  uuid.UUID
-	Message chan *models.Messages
+	conn       *websocket.Conn
+	hub        *Hub
+	UserId     uuid.UUID
+	RecvUserId *uuid.UUID
+	Message    chan *models.Messages
 }
 
 func NewClient(conn *websocket.Conn, hub *Hub, userId uuid.UUID) *WebsocketClients {
 	return &WebsocketClients{
-		conn:    conn,
-		hub:     hub,
-		UserId:  userId,
-		Message: make(chan *models.Messages),
+		conn:       conn,
+		hub:        hub,
+		UserId:     userId,
+		RecvUserId: nil,
+		Message:    make(chan *models.Messages),
 	}
 }
 
@@ -78,24 +81,44 @@ func (c *WebsocketClients) readHandler(term chan bool, errCh chan error) {
 			continue
 		}
 
-		if c.UserId == raw.ReceiverId {
-			errCh <- errors.New("could not send message to yourself")
-			continue
-		}
-
 		msg := &models.Messages{
 			MessageId:  uuid.New(),
 			SenderId:   c.UserId,
+			ReceiverId: *c.RecvUserId,
 			ReadAt:     nil,
-			ReceiverId: raw.ReceiverId,
 			Content:    raw.Content,
 			SentAt:     raw.SentAt,
 			Tag:        raw.Tag,
 		}
 
-		if msg.Tag == "leave" {
-			c.hub.LeaveChat <- msg
-		} else {
+		send := false
+		for _, tag := range strings.Split(msg.Tag, ";") {
+			key, val := utils.SplitByFirstString(tag, "=")
+			switch strings.ToLower(key) {
+			case "tag":
+				msg.Tag = tag
+				send = true
+
+			case "join":
+				uuid, err := uuid.Parse(val)
+				if err != nil {
+					errCh <- errors.New("invalid receiver uuid")
+					continue
+				}
+
+				if c.UserId == uuid {
+					errCh <- errors.New("could not send message to yourself")
+					continue
+				}
+
+				c.RecvUserId = &uuid
+
+			case "leave":
+				c.RecvUserId = nil
+			}
+		}
+
+		if send {
 			c.hub.SendMessage <- msg
 		}
 	}
