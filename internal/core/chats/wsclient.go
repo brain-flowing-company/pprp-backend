@@ -2,6 +2,7 @@ package chats
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -74,6 +75,11 @@ func (c *WebsocketClients) readHandler(term chan bool, errCh chan error) {
 		err = json.Unmarshal(data, &raw)
 		if err != nil {
 			errCh <- err
+			continue
+		}
+
+		if c.UserId == raw.ReceiverId {
+			errCh <- errors.New("could not send message to yourself")
 			continue
 		}
 
