@@ -133,20 +133,14 @@ CREATE TABLE agreements
     UNIQUE (property_id, agreement_date)
 );
 
-CREATE TABLE messages (
-  message_id  UUID PRIMARY KEY         NOT NULL,
-  sender_id   UUID                     NOT NULL REFERENCES users(user_id),
-  receiver_id UUID                     NOT NULL REFERENCES users(user_id),
-  content     VARCHAR(4096)            NOT NULL,
-  read        boolean                  NOT NULL,
-  created_at  TIMESTAMP WITH TIME ZONE NOT NULL
-);
 
-CREATE TABLE chat_status (
-  sender_id      UUID                     NOT NULL REFERENCES users(user_id),
-  receiver_id    UUID                     NOT NULL REFERENCES users(user_id),
-  last_active_at TIMESTAMP WITH TIME ZONE NOT NULL, 
-  PRIMARY KEY (sender_id, receiver_id)
+CREATE TABLE messages (
+    message_id  UUID PRIMARY KEY         NOT NULL,
+    sender_id   UUID                     NOT NULL REFERENCES users(user_id),
+    receiver_id UUID                     NOT NULL REFERENCES users(user_id),
+    content     VARCHAR(4096)            NOT NULL,
+    read_at     TIMESTAMP WITH TIME ZONE NOT NULL,
+    sent_at     TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 -------------------- DUMMY DATA --------------------
@@ -200,19 +194,6 @@ INSERT INTO selling_properties (property_id, price, is_sold) VALUES
 INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 123423.2931847312, FALSE),
 ('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', 112302.9182347433, TRUE);
-
-INSERT INTO messages (message_id, sender_id, receiver_id, content, read, created_at) VALUES
-('27b79b15-a56f-464a-90f7-bab515ba4c02', '62dd40da-f326-4825-9afc-2d68e06e0282', 'f38f80b3-f326-4825-9afc-ebc331626555', 'hello user 1', false, '2024-02-22 10:06:46.244081+07'),
-('6359e829-f71a-4e38-9cbd-24865c737d02', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'f38f80b3-f326-4825-9afc-ebc331626555', 'hey', false, '2024-02-22 10:07:04.062585+07'),
-('66edfa82-e7fe-475d-bc34-a7a7c9402170', '62dd40da-f326-4825-9afc-2d68e06e0282', 'f38f80b3-f326-4825-9afc-ebc331626555', 'how are you doing?', false, '2024-02-22 10:06:53.313735+07'),
-('d2055c3a-e5ba-4b8b-b9b4-86869c7498f7', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'f38f80b3-f326-4825-9afc-ebc331626555', 'what are you up ?', false, '2024-02-22 10:07:08.394247+07'),
-('f21ad034-df44-4f7f-b5c0-2b4b0dfe684a', '62dd40da-f326-4825-9afc-2d68e06e0282', 'f38f80b3-f326-4825-9afc-ebc331626555', 'good morning', false, '2024-02-22 10:06:50.406191+07');
-
-INSERT INTO chat_status (sender_id, receiver_id, last_active_at) VALUES
-('62dd40da-f326-4825-9afc-2d68e06e0282', 'f38f80b3-f326-4825-9afc-ebc331626555', '2024-02-22 10:06:43.085352+07'),
-('f38f80b3-f326-4825-9afc-ebc331626555', '62dd40da-f326-4825-9afc-2d68e06e0282', '2024-02-22 10:07:22.268759+07'),
-('f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-22 10:07:22.296624+07'),
-('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'f38f80b3-f326-4825-9afc-ebc331626555', '2024-02-22 10:07:00.625764+07');
 
 -- mock data for appointments
 
@@ -323,5 +304,3 @@ CREATE INDEX idx_property_images_deleted_at     ON _property_images (deleted_at)
 CREATE INDEX idx_selling_properties_deleted_at  ON _selling_properties (deleted_at);
 CREATE INDEX idx_renting_properties_deleted_at  ON _renting_properties (deleted_at);
 CREATE INDEX idx_appointments_deleted_at        ON _appointments (deleted_at);
-CREATE INDEX idx_messages                       ON messages (receiver_id, sender_id, created_at);
-CREATE INDEX idx_messages_id                    ON messages (message_id);
