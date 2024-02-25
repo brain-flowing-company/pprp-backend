@@ -139,7 +139,7 @@ CREATE TABLE messages (
     sender_id   UUID                     NOT NULL REFERENCES users(user_id),
     receiver_id UUID                     NOT NULL REFERENCES users(user_id),
     content     VARCHAR(4096)            NOT NULL,
-    read_at     TIMESTAMP WITH TIME ZONE NOT NULL,
+    read_at     TIMESTAMP WITH TIME ZONE,
     sent_at     TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
@@ -194,6 +194,13 @@ INSERT INTO selling_properties (property_id, price, is_sold) VALUES
 INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 123423.2931847312, FALSE),
 ('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', 112302.9182347433, TRUE);
+
+INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent_at) VALUES
+('541dfc60-2f5b-473a-ac09-76a2aa3e5276', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Good morning' , NULL, '2024-02-25 19:04:18.818+07'),
+('e74361f2-00de-40d8-b3fc-dc1f85547700', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Hello mate' , NULL, '2024-02-25 19:04:27.436+07'),
+('3f25b89f-b183-4ba8-b7b5-98d5f5fd374a', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'what are you up to?' , NULL, '2024-02-25 19:04:36.119+07'),
+('f48c2f66-3450-41f1-8307-db6386187472', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Hi' , NULL, '2024-02-25 19:05:10.519+07'),
+('8d7a913b-0bd4-4554-8286-bc8ad2b8817e', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '?' , NULL, '2024-02-25 19:05:12.953+07');
 
 -- mock data for appointments
 
