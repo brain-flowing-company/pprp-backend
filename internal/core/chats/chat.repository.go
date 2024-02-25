@@ -6,6 +6,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repository interface {
@@ -78,4 +79,16 @@ func (repo *repositoryImpl) CreateChatStatus(sendUserId uuid.UUID, recvUserId uu
 
 func (repo *repositoryImpl) CreateMessages(msg *models.Messages) error {
 	return repo.db.Model(&models.Messages{}).Create(msg).Error
+}
+
+func (repo *repositoryImpl) UpdateChatStatus(status *models.ChatStatus) error {
+	return repo.db.Model(&models.ChatStatus{}).
+		Clauses(clause.OnConflict{
+			Columns: []clause.Column{
+				{Name: "sender_id"},
+				{Name: "receiver_id"},
+			},
+			DoUpdates: clause.AssignmentColumns([]string{"last_active_at"}),
+		}).
+		Create(status).Error
 }
