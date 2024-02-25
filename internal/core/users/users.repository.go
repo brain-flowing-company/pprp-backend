@@ -12,7 +12,7 @@ type Repository interface {
 	GetUserFinancialInforamtionById(*models.UserFinancialInformations, string) error
 	GetUserByEmail(*models.Users, string) error
 	CreateUser(*models.RegisteringUsers) error
-	UpdateUserById(*models.Users, string) error
+	UpdateUserById(*models.UpdatingUserPersonalInfos, string) error
 	UpdateUserFinancialInformationById(*models.UserFinancialInformations, string) error
 	DeleteUser(string) error
 	CountEmail(*int64, string) error
@@ -53,7 +53,7 @@ func (repo *repositoryImpl) CreateUser(user *models.RegisteringUsers) error {
 	return repo.db.Create(user).Error
 }
 
-func (repo *repositoryImpl) UpdateUserById(user *models.Users, userId string) error {
+func (repo *repositoryImpl) UpdateUserById(user *models.UpdatingUserPersonalInfos, userId string) error {
 	err := repo.db.First(&models.Users{}, "user_id = ?", userId).Error
 	if err != nil {
 		return err

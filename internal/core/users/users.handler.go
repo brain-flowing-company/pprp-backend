@@ -133,7 +133,7 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @param       formData formData models.UpdatingUserPersonalInfos true "User information"
-// @success     200	{object} models.Users "User personal information updated"
+// @success     200	{object} models.MessageResponses "User personal information updated"
 // @failure     400 {object} models.ErrorResponses "Invalid user info"
 // @failure     404 {object} models.ErrorResponses "User not found"
 // @failure     500 {object} models.ErrorResponses "Could not update user"
@@ -143,7 +143,7 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 		session = models.Sessions{}
 	}
 
-	user := models.Users{UserId: session.UserId}
+	user := models.UpdatingUserPersonalInfos{UserId: session.UserId}
 	bodyErr := c.BodyParser(&user)
 	if bodyErr != nil {
 		return utils.ResponseError(c, apperror.InvalidBody)
@@ -247,7 +247,7 @@ func (h *handlerImpl) GetRegisteredType(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @param       formData formData models.UserVerifications true "Verification information"
-// @success     200 {object} models.MessageResponses
+// @success     200 {object} models.MessageResponses "Verified"
 // @success     500 {object} models.ErrorResponses
 func (h *handlerImpl) VerifyCitizenId(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Sessions)

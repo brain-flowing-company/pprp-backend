@@ -25,7 +25,7 @@ type Service interface {
 	GetUserById(*models.Users, string) *apperror.AppError
 	GetUserFinancialInforamtionById(*models.UserFinancialInformations, string) *apperror.AppError
 	Register(*models.RegisteringUsers, *multipart.FileHeader) *apperror.AppError
-	UpdateUser(*models.Users, *multipart.FileHeader) *apperror.AppError
+	UpdateUser(*models.UpdatingUserPersonalInfos, *multipart.FileHeader) *apperror.AppError
 	UpdateUserFinancialInformationById(*models.UserFinancialInformations, string) *apperror.AppError
 	DeleteUser(string) *apperror.AppError
 	GetUserByEmail(*models.Users, string) *apperror.AppError
@@ -174,12 +174,26 @@ func (s *serviceImpl) Register(user *models.RegisteringUsers, profileImage *mult
 	return nil
 }
 
-func (s *serviceImpl) UpdateUser(user *models.Users, profileImage *multipart.FileHeader) *apperror.AppError {
+func (s *serviceImpl) UpdateUser(user *models.UpdatingUserPersonalInfos, profileImage *multipart.FileHeader) *apperror.AppError {
 	url, apperr := s.uploadProfileImage(user.UserId, profileImage)
 	if apperr != nil {
 		return apperr
 	}
 	user.ProfileImageUrl = url
+
+	if user.PhoneNumber != "" {
+		var count int64
+		countErr := s.repo.CountPhoneNumber(&count, user.PhoneNumber)
+		if countErr != nil {
+			return apperror.
+				New(apperror.InternalServerError).
+				Describe("Could not count phone numbers")
+		} else if count > 0 {
+			return apperror.
+				New(apperror.PhoneNumberAlreadyExists).
+				Describe("Phone number already exists")
+		}
+	}
 
 	err := s.repo.UpdateUserById(user, user.UserId.String())
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -208,7 +222,6 @@ func (s *serviceImpl) UpdateUserFinancialInformationById(userFinancialInformatio
 		(*creditCards)[i].UserId, _ = uuid.Parse(userId)
 	}
 
-	fmt.Println(userFinancialInformation)
 	err := s.repo.UpdateUserFinancialInformationById(userFinancialInformation, userId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
