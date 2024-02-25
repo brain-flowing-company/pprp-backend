@@ -2,6 +2,7 @@ package chats
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/google/uuid"
@@ -12,6 +13,7 @@ type Repository interface {
 	GetAllChats(*[]models.ChatsResponses, uuid.UUID) error
 	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) error
 	CreateMessages(msg *models.Messages) error
+	ReadMessages(sendUserId uuid.UUID, recvUserId uuid.UUID) error
 }
 
 type repositoryImpl struct {
@@ -77,4 +79,10 @@ func (repo *repositoryImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserI
 
 func (repo *repositoryImpl) CreateMessages(msg *models.Messages) error {
 	return repo.db.Model(&models.Messages{}).Create(msg).Error
+}
+
+func (repo *repositoryImpl) ReadMessages(sendUserId uuid.UUID, recvUserId uuid.UUID) error {
+	return repo.db.Model(&models.Messages{}).
+		Where("sender_id = ? AND receiver_id = ?", sendUserId, recvUserId).
+		Update("read_at", time.Now()).Error
 }

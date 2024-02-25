@@ -16,8 +16,7 @@ type Hub struct {
 	Register    chan *WebsocketClients
 	Unregister  chan *WebsocketClients
 	SendMessage chan *models.Messages
-	LeaveChat   chan *models.Messages
-	chatRepo    Repository
+	ChatRepo    Repository
 }
 
 func NewHub(chatRepo Repository) *Hub {
@@ -26,8 +25,7 @@ func NewHub(chatRepo Repository) *Hub {
 		Register:    make(chan *WebsocketClients),
 		Unregister:  make(chan *WebsocketClients),
 		SendMessage: make(chan *models.Messages),
-		LeaveChat:   make(chan *models.Messages),
-		chatRepo:    chatRepo,
+		ChatRepo:    chatRepo,
 	}
 }
 
@@ -65,11 +63,11 @@ func (h *Hub) unregister(client *WebsocketClients) {
 
 func (h *Hub) sendMessage(msg *models.Messages) {
 	sendUser, sendUserOnline := h.Clients[msg.SenderId]
-	recvUser, recvUserOnline := h.Clients[msg.ReceiverId]
 
-	now := time.Now()
-	if recvUserOnline {
-		msg.ReadAt = &now
+	var recvUser *WebsocketClients
+	recvUserOnline := false
+	if msg.ReceiverId != nil {
+		recvUser, recvUserOnline = h.Clients[*msg.ReceiverId]
 	}
 
 	wg := sync.WaitGroup{}
@@ -77,7 +75,7 @@ func (h *Hub) sendMessage(msg *models.Messages) {
 
 	go func() {
 		defer wg.Done()
-		err := h.chatRepo.CreateMessages(msg)
+		err := h.ChatRepo.CreateMessages(msg)
 		if sendUserOnline && err != nil {
 			fmt.Println(err)
 			utils.WebsocketError(sendUser.conn, apperror.
@@ -92,7 +90,9 @@ func (h *Hub) sendMessage(msg *models.Messages) {
 			sendUser.Message <- msg
 		}
 
-		if recvUserOnline {
+		if recvUserOnline && recvUser.RecvUserId != nil && *recvUser.RecvUserId == sendUser.UserId {
+			now := time.Now()
+			msg.ReadAt = &now
 			msg.Tag = ""
 			recvUser.Message <- msg
 		}

@@ -84,7 +84,7 @@ func (c *WebsocketClients) readHandler(term chan bool, errCh chan error) {
 		msg := &models.Messages{
 			MessageId:  uuid.New(),
 			SenderId:   c.UserId,
-			ReceiverId: *c.RecvUserId,
+			ReceiverId: c.RecvUserId,
 			ReadAt:     nil,
 			Content:    raw.Content,
 			SentAt:     raw.SentAt,
@@ -100,6 +100,7 @@ func (c *WebsocketClients) readHandler(term chan bool, errCh chan error) {
 				send = true
 
 			case "join":
+				fmt.Println("joining", val)
 				uuid, err := uuid.Parse(val)
 				if err != nil {
 					errCh <- errors.New("invalid receiver uuid")
@@ -111,9 +112,12 @@ func (c *WebsocketClients) readHandler(term chan bool, errCh chan error) {
 					continue
 				}
 
+				c.hub.ChatRepo.ReadMessages(uuid, c.UserId)
+
 				c.RecvUserId = &uuid
 
 			case "leave":
+				fmt.Println("leaving")
 				c.RecvUserId = nil
 			}
 		}
