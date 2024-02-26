@@ -112,9 +112,9 @@ func main() {
 	emailService := emails.NewService(logger, cfg, emailRepository)
 	emailHandler := emails.NewHandler(logger, cfg, emailService)
 
+	hub := chats.NewHub()
 	chatRepository := chats.NewRepository(db)
 	chatService := chats.NewService(logger, chatRepository)
-	hub := chats.NewHub(chatRepository)
 	chatHandler := chats.NewHandler(cfg, hub, chatService)
 
 	mw := middleware.NewMiddleware(cfg)
@@ -164,7 +164,6 @@ func main() {
 	ws := app.Group("/ws")
 	ws.Get("/chats", websocket.New(chatHandler.OpenConnection))
 
-	go hub.Run()
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
 		panic(fmt.Sprintf("Server could not start with error: %v", err.Error()))

@@ -94,13 +94,13 @@ func (h *handlerImpl) OpenConnection(conn *websocket.Conn) {
 		return
 	}
 
-	client := NewClient(conn, h.hub, claim.Session.UserId)
+	client := NewClient(conn, h.hub, h.service, claim.Session.UserId)
 
-	h.hub.Register <- client
+	h.hub.Register(client)
 	client.Listen()
 
 	defer func() {
-		h.hub.Unregister <- client
+		h.hub.Unregister(client)
 		conn.Close()
 	}()
 }

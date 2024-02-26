@@ -10,25 +10,31 @@ message.addEventListener("keydown", (e) => {
 
 let sent_tags = {};
 
-function send() {
-  if (!conn || !message.value) return;
-
-  let now = new Date(Date.now()).toISOString();
+function send_ws_msg(event, content, sent_at, value) {
   let tag = Math.random().toString(16).substring(2);
 
   let msg = {
-    content: message.value,
-    sent_at: now,
-    tag: `tag=${tag}`,
+    event,
+    content,
+    sent_at,
+    tag,
   };
 
+  sent_tags[tag] = value;
+  conn.send(JSON.stringify(msg));
+}
+
+function send() {
+  if (!conn || !message.value) return;
+
+  let sent_at = new Date(Date.now()).toISOString();
   let node = push_message({
-    ...msg,
+    content: message.value,
+    sent_at,
     sender_id: "sending",
   });
 
-  sent_tags[tag] = node;
-  conn.send(JSON.stringify(msg));
+  send_ws_msg("MSG", message.value, sent_at, node);
 
   message.value = "";
 }
@@ -57,12 +63,8 @@ function add() {
 }
 
 function open_chat(id) {
-  conn.send(
-    JSON.stringify({
-      sent_at: new Date(Date.now()).toISOString(),
-      tag: `join=${id}`,
-    })
-  );
+  let sent_at = new Date(Date.now()).toISOString();
+  send_ws_msg("JOIN", id, sent_at, true);
 
   fetch(`http://localhost:8000/api/v1/chats/${id}`, {
     method: "GET",
@@ -134,7 +136,7 @@ function connect() {
       // push_message(msg);
       if (sent_tags[msg.tag] !== undefined) {
         sent_tags[msg.tag].querySelector("#status").innerText = "sent";
-        sent_tags[msg.tag].querySelector("#sender-id").innerText = msg.sender_id;
+        sent_tags[msg.tag].querySelector("#sender-id").innerText = msg.payload.sender_id;
 
         sent_tags[msg.message_id] = sent_tags[msg.tag];
         delete sent_tags[msg.tag];

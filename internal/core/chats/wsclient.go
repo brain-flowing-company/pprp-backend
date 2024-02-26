@@ -2,11 +2,11 @@ package chats
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"strings"
+	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/contrib/websocket"
@@ -14,25 +14,27 @@ import (
 )
 
 type WebsocketClients struct {
-	conn       *websocket.Conn
-	hub        *Hub
-	UserId     uuid.UUID
-	RecvUserId *uuid.UUID
-	Message    chan *models.Messages
+	conn             *websocket.Conn
+	hub              *Hub
+	Service          Service
+	OutBoundMessages chan *models.OutBoundMessages
+	UserId           uuid.UUID
+	RecvUserId       *uuid.UUID
 }
 
-func NewClient(conn *websocket.Conn, hub *Hub, userId uuid.UUID) *WebsocketClients {
+func NewClient(conn *websocket.Conn, hub *Hub, service Service, userId uuid.UUID) *WebsocketClients {
 	return &WebsocketClients{
-		conn:       conn,
-		hub:        hub,
-		UserId:     userId,
-		RecvUserId: nil,
-		Message:    make(chan *models.Messages),
+		conn:             conn,
+		hub:              hub,
+		Service:          service,
+		OutBoundMessages: make(chan *models.OutBoundMessages),
+		UserId:           userId,
+		RecvUserId:       nil,
 	}
 }
 
 func (c *WebsocketClients) Listen() {
-	errCh := make(chan error)
+	errCh := make(chan *apperror.AppError)
 	term := make(chan bool)
 
 	go c.writerHandler()
@@ -44,17 +46,14 @@ func (c *WebsocketClients) Listen() {
 			return
 
 		case err := <-errCh:
-			utils.WebsocketError(c.conn, apperror.
-				New(apperror.InternalServerError).
-				Describe(err.Error()))
+			utils.WebsocketError(c.conn, err)
 		}
 	}
-
 }
 
 func (c *WebsocketClients) writerHandler() {
 	for {
-		msg, isAlive := <-c.Message
+		msg, isAlive := <-c.OutBoundMessages
 		if !isAlive {
 			return
 		}
@@ -63,7 +62,7 @@ func (c *WebsocketClients) writerHandler() {
 	}
 }
 
-func (c *WebsocketClients) readHandler(term chan bool, errCh chan error) {
+func (c *WebsocketClients) readHandler(term chan bool, errCh chan *apperror.AppError) {
 	for {
 		_, data, err := c.conn.ReadMessage()
 		if err != nil {
@@ -74,56 +73,86 @@ func (c *WebsocketClients) readHandler(term chan bool, errCh chan error) {
 			break
 		}
 
-		var raw models.RawMessages
-		err = json.Unmarshal(data, &raw)
+		var inbound models.InBoundMessages
+		err = json.Unmarshal(data, &inbound)
 		if err != nil {
-			errCh <- err
+			errCh <- apperror.
+				New(apperror.BadRequest).
+				Describe("could not parse json")
 			continue
 		}
 
-		msg := &models.Messages{
-			MessageId:  uuid.New(),
-			SenderId:   c.UserId,
-			ReceiverId: c.RecvUserId,
-			ReadAt:     nil,
-			Content:    raw.Content,
-			SentAt:     raw.SentAt,
-			Tag:        raw.Tag,
-		}
-
-		send := false
-		for _, tag := range strings.Split(msg.Tag, ";") {
-			key, val := utils.SplitByFirstString(tag, "=")
-			switch strings.ToLower(key) {
-			case "tag":
-				msg.Tag = tag
-				send = true
-
-			case "join":
-				fmt.Println("joining", val)
-				uuid, err := uuid.Parse(val)
-				if err != nil {
-					errCh <- errors.New("invalid receiver uuid")
-					continue
-				}
-
-				if c.UserId == uuid {
-					errCh <- errors.New("could not send message to yourself")
-					continue
-				}
-
-				c.hub.ChatRepo.ReadMessages(uuid, c.UserId)
-
-				c.RecvUserId = &uuid
-
-			case "leave":
-				fmt.Println("leaving")
-				c.RecvUserId = nil
+		switch inbound.Event {
+		case enums.INBOUND_MSG:
+			err := c.inBoundMsgHandler(&inbound)
+			if err != nil {
+				errCh <- err
+				continue
 			}
-		}
 
-		if send {
-			c.hub.SendMessage <- msg
+		case enums.INBOUND_JOIN:
+			err := c.inBoundJoinHandler(&inbound)
+			if err != nil {
+				errCh <- err
+				continue
+			}
+
+		case enums.INBOUND_LEFT:
+			c.inBoundLeftHandler()
+
+		default:
+			errCh <- apperror.
+				New(apperror.BadRequest).
+				Describe("invalid event type")
 		}
 	}
+}
+
+func (c *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessages) *apperror.AppError {
+	now := time.Now()
+	var readAt *time.Time
+	if c.hub.IsUserInChat(c.UserId, *c.RecvUserId) {
+		readAt = &now
+	}
+
+	msg := &models.Messages{
+		MessageId:  uuid.New(),
+		SenderId:   c.UserId,
+		ReceiverId: c.RecvUserId,
+		ReadAt:     readAt,
+		Content:    inbound.Content,
+		SentAt:     inbound.SentAt,
+	}
+
+	err := c.Service.SaveMessages(msg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessages) *apperror.AppError {
+	uuid, err := uuid.Parse(inbound.Content)
+	if err != nil {
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("invalid receiver uuid")
+	}
+
+	if c.UserId == uuid {
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("could not send message to yourself")
+	}
+
+	fmt.Println("Joining", uuid)
+	c.RecvUserId = &uuid
+
+	return nil
+}
+
+func (c *WebsocketClients) inBoundLeftHandler() {
+	fmt.Println("Leaving", c.RecvUserId)
+	c.RecvUserId = nil
 }

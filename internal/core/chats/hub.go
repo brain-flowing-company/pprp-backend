@@ -3,100 +3,58 @@ package chats
 import (
 	"fmt"
 	"sync"
-	"time"
 
-	"github.com/brain-flowing-company/pprp-backend/apperror"
-	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/google/uuid"
 )
 
 type Hub struct {
-	Clients     map[uuid.UUID]*WebsocketClients
-	Register    chan *WebsocketClients
-	Unregister  chan *WebsocketClients
-	SendMessage chan *models.Messages
-	ChatRepo    Repository
+	sync.Mutex
+	clients map[uuid.UUID]*WebsocketClients
 }
 
-func NewHub(chatRepo Repository) *Hub {
+func NewHub() *Hub {
 	return &Hub{
-		Clients:     make(map[uuid.UUID]*WebsocketClients),
-		Register:    make(chan *WebsocketClients),
-		Unregister:  make(chan *WebsocketClients),
-		SendMessage: make(chan *models.Messages),
-		ChatRepo:    chatRepo,
+		clients: make(map[uuid.UUID]*WebsocketClients),
 	}
 }
 
-func (h *Hub) Run() {
-	for {
-		select {
-		case client := <-h.Register:
-			h.register(client)
-
-		case client := <-h.Unregister:
-			h.unregister(client)
-
-		case msg := <-h.SendMessage:
-			h.sendMessage(msg)
-		}
-	}
+func (h *Hub) GetUser(userId uuid.UUID) *WebsocketClients {
+	return h.clients[userId]
 }
 
-func (h *Hub) register(client *WebsocketClients) {
+func (h *Hub) IsUserOnline(userId uuid.UUID) bool {
+	_, online := h.clients[userId]
+	return online
+}
+
+func (h *Hub) IsUserInChat(sendUserId uuid.UUID, recvUserId uuid.UUID) bool {
+	sendUser, sendOnline := h.clients[sendUserId]
+	recvUser, recvOnline := h.clients[recvUserId]
+
+	if !sendOnline || !recvOnline {
+		return false
+	}
+
+	return *sendUser.RecvUserId == recvUserId && *recvUser.RecvUserId == sendUserId
+}
+
+func (h *Hub) Register(client *WebsocketClients) {
+	h.Lock()
 	fmt.Println("Registering", client.UserId)
-	_, ok := h.Clients[client.UserId]
+	_, ok := h.clients[client.UserId]
 	if !ok {
-		h.Clients[client.UserId] = client
+		h.clients[client.UserId] = client
 	}
+	h.Unlock()
 }
 
-func (h *Hub) unregister(client *WebsocketClients) {
+func (h *Hub) Unregister(client *WebsocketClients) {
+	h.Lock()
 	fmt.Println("Unregistering", client.UserId)
-	_, ok := h.Clients[client.UserId]
+	_, ok := h.clients[client.UserId]
 	if ok {
-		delete(h.Clients, client.UserId)
-		close(client.Message)
+		delete(h.clients, client.UserId)
+		close(client.OutBoundMessages)
 	}
-}
-
-func (h *Hub) sendMessage(msg *models.Messages) {
-	sendUser, sendUserOnline := h.Clients[msg.SenderId]
-
-	var recvUser *WebsocketClients
-	recvUserOnline := false
-	if msg.ReceiverId != nil {
-		recvUser, recvUserOnline = h.Clients[*msg.ReceiverId]
-	}
-
-	wg := sync.WaitGroup{}
-	wg.Add(2)
-
-	go func() {
-		defer wg.Done()
-		err := h.ChatRepo.CreateMessages(msg)
-		if sendUserOnline && err != nil {
-			fmt.Println(err)
-			utils.WebsocketError(sendUser.conn, apperror.
-				New(apperror.InternalServerError).
-				Describe("Could not send message"))
-		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		if sendUserOnline {
-			sendUser.Message <- msg
-		}
-
-		if recvUserOnline && recvUser.RecvUserId != nil && *recvUser.RecvUserId == sendUser.UserId {
-			now := time.Now()
-			msg.ReadAt = &now
-			msg.Tag = ""
-			recvUser.Message <- msg
-		}
-	}()
-
-	wg.Wait()
+	h.Unlock()
 }

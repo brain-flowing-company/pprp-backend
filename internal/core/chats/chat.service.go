@@ -11,6 +11,7 @@ import (
 type Service interface {
 	GetAllChats(*[]models.ChatsResponses, uuid.UUID) *apperror.AppError
 	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) *apperror.AppError
+	SaveMessages(*models.Messages) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -49,6 +50,17 @@ func (s *serviceImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get messages in chat")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) SaveMessages(msg *models.Messages) *apperror.AppError {
+	err := s.repo.SaveMessages(msg)
+	if err != nil {
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("error while sending message")
 	}
 
 	return nil
