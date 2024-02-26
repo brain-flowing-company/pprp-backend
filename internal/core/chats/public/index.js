@@ -170,7 +170,7 @@ function connect() {
             }
             delete sent_tags[msg.tag];
           } else {
-            push_message(msg, msg.receiver_id === current_chat);
+            push_message(msg.payload, msg.payload.receiver_id === current_chat);
           }
 
           break;
