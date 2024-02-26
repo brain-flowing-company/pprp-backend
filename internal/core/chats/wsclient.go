@@ -109,9 +109,11 @@ func (c *WebsocketClients) readHandler(term chan bool, errCh chan *apperror.AppE
 }
 
 func (c *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessages) *apperror.AppError {
-	now := time.Now()
+	isInChat := c.hub.IsUserInChat(c.UserId, *c.RecvUserId)
+
 	var readAt *time.Time
-	if c.hub.IsUserInChat(c.UserId, *c.RecvUserId) {
+	now := time.Now()
+	if isInChat {
 		readAt = &now
 	}
 
@@ -127,6 +129,14 @@ func (c *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessages) *a
 	err := c.Service.SaveMessages(msg)
 	if err != nil {
 		return err
+	}
+
+	if c.hub.IsUserOnline(c.UserId) {
+		c.OutBoundMessages <- msg.ToOutBound(inbound.Tag)
+	}
+
+	if isInChat {
+		c.hub.GetUser(*c.RecvUserId).OutBoundMessages <- msg.ToOutBound("")
 	}
 
 	return nil
@@ -149,7 +159,21 @@ func (c *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessages) *
 	fmt.Println("Joining", uuid)
 	c.RecvUserId = &uuid
 
-	return c.Service.ReadMessages(uuid, c.UserId)
+	apperr := c.Service.ReadMessages(uuid, c.UserId)
+	if apperr != nil {
+		return apperr
+	}
+
+	if c.hub.IsUserOnline(uuid) {
+		read := models.ReadEvents{
+			SenderId:   uuid,
+			ReceiverId: c.UserId,
+			ReadAt:     time.Now(),
+		}
+		c.hub.GetUser(uuid).OutBoundMessages <- read.ToOutBound("")
+	}
+
+	return nil
 }
 
 func (c *WebsocketClients) inBoundLeftHandler() {

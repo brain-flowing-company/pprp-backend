@@ -35,7 +35,8 @@ func (h *Hub) IsUserInChat(sendUserId uuid.UUID, recvUserId uuid.UUID) bool {
 		return false
 	}
 
-	return *sendUser.RecvUserId == recvUserId && *recvUser.RecvUserId == sendUserId
+	return sendUser.RecvUserId != nil && recvUser.RecvUserId != nil &&
+		*sendUser.RecvUserId == recvUserId && *recvUser.RecvUserId == sendUserId
 }
 
 func (h *Hub) Register(client *WebsocketClients) {

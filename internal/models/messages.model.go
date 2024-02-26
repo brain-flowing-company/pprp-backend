@@ -31,10 +31,9 @@ func (e *Messages) ToOutBound(tag string) *OutBoundMessages {
 }
 
 type ReadEvents struct {
-	MessageIds uuid.UUIDs `json:"message_ids"`
-	SenderId   uuid.UUID  `json:"sender_id"`
-	ReceiverId uuid.UUID  `json:"receiver_id"`
-	ReadAt     *time.Time `json:"reat_at"`
+	SenderId   uuid.UUID `json:"sender_id"`
+	ReceiverId uuid.UUID `json:"receiver_id"`
+	ReadAt     time.Time `json:"reat_at"`
 }
 
 func (e *ReadEvents) ToOutBound(tag string) *OutBoundMessages {
