@@ -1,6 +1,7 @@
 var conn;
 var message_pane = document.getElementById("messages");
 var message = document.getElementById("message");
+var current_chat = "";
 
 message.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
@@ -28,26 +29,39 @@ function send() {
   if (!conn || !message.value) return;
 
   let sent_at = new Date(Date.now()).toISOString();
-  let node = push_message({
-    content: message.value,
-    sent_at,
-    sender_id: "sending",
-  });
+  let node = push_message(
+    {
+      content: message.value,
+      sent_at,
+      sender_id: "sending",
+    },
+    true
+  );
 
   send_ws_msg("MSG", message.value, sent_at, node);
 
   message.value = "";
 }
 
-function push_message(e) {
+function push_message(e, author) {
+  console.log(e);
   let d = new Date(e.sent_at);
+  let status = "";
+  if (author) {
+    if (status !== undefined) {
+      status = e.read_at === null ? "sent" : "read";
+    } else {
+      status = "sending";
+    }
+  }
+
   let node = document.createElement("div");
-  node.className = "mb-3";
+  node.className = `mb-3 w-full ${author ? "text-right" : "text-left"}`;
   node.innerHTML = `
   <div class="text-xs">
     <span class=" font-semibold">${d.toDateString()}</span>
     &nbsp;<span id="sender-id">${e.sender_id}</span>
-    &nbsp;<span id="status"></span>
+    &nbsp;<span id="status">${status}</span>
   </div>
   <div class="text-md">${e.content}</div>
   `;
@@ -66,6 +80,8 @@ function open_chat(id) {
   let sent_at = new Date(Date.now()).toISOString();
   send_ws_msg("JOIN", id, sent_at, true);
 
+  current_chat = id;
+
   fetch(`http://localhost:8000/api/v1/chats/${id}`, {
     method: "GET",
     credentials: "include",
@@ -75,7 +91,7 @@ function open_chat(id) {
       message_pane.innerHTML = "";
 
       res.forEach((e) => {
-        push_message(e);
+        push_message(e, e.receiver_id === current_chat);
       });
     });
 }
@@ -131,17 +147,21 @@ function connect() {
     };
 
     conn.onmessage = function (evt) {
-      console.log(evt.data);
       var msg = JSON.parse(evt.data);
-      // push_message(msg);
-      if (sent_tags[msg.tag] !== undefined) {
-        sent_tags[msg.tag].querySelector("#status").innerText = "sent";
-        sent_tags[msg.tag].querySelector("#sender-id").innerText = msg.payload.sender_id;
+      console.log(msg);
 
-        sent_tags[msg.message_id] = sent_tags[msg.tag];
-        delete sent_tags[msg.tag];
-      } else {
-        push_message(msg);
+      switch (msg.event) {
+        case "MSG":
+          if (sent_tags[msg.tag] !== undefined) {
+            console.log(msg.payload);
+            sent_tags[msg.tag].querySelector("#status").innerText = "sent";
+            sent_tags[msg.tag].querySelector("#sender-id").innerText = msg.payload.sender_id;
+
+            sent_tags[msg.message_id] = sent_tags[msg.tag];
+            delete sent_tags[msg.tag];
+          } else {
+            push_message(msg);
+          }
       }
     };
   }
