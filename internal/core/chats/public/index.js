@@ -8,16 +8,27 @@ message.addEventListener("keydown", (e) => {
   }
 });
 
+let sent_tags = {};
+
 function send() {
   if (!conn || !message.value) return;
 
-  conn.send(
-    JSON.stringify({
-      content: message.value,
-      sent_at: new Date(Date.now()).toISOString(),
-      tag: `tag=${Math.random().toString(16).substring(2)}`,
-    })
-  );
+  let now = new Date(Date.now()).toISOString();
+  let tag = Math.random().toString(16).substring(2);
+
+  let msg = {
+    content: message.value,
+    sent_at: now,
+    tag: `tag=${tag}`,
+  };
+
+  let node = push_message({
+    ...msg,
+    sender_id: "sending",
+  });
+
+  sent_tags[tag] = node;
+  conn.send(JSON.stringify(msg));
 
   message.value = "";
 }
@@ -28,13 +39,17 @@ function push_message(e) {
   node.className = "mb-3";
   node.innerHTML = `
   <div class="text-xs">
-    <span class=" font-semibold">${d.toDateString()}</span>&nbsp;${e.sender_id}
+    <span class=" font-semibold">${d.toDateString()}</span>
+    &nbsp;<span id="sender-id">${e.sender_id}</span>
+    &nbsp;<span id="status"></span>
   </div>
   <div class="text-md">${e.content}</div>
   `;
 
   message_pane.appendChild(node);
   message_pane.scrollTo(0, message_pane.scrollHeight);
+
+  return node;
 }
 
 function add() {
@@ -116,7 +131,16 @@ function connect() {
     conn.onmessage = function (evt) {
       console.log(evt.data);
       var msg = JSON.parse(evt.data);
-      push_message(msg);
+      // push_message(msg);
+      if (sent_tags[msg.tag] !== undefined) {
+        sent_tags[msg.tag].querySelector("#status").innerText = "sent";
+        sent_tags[msg.tag].querySelector("#sender-id").innerText = msg.sender_id;
+
+        sent_tags[msg.message_id] = sent_tags[msg.tag];
+        delete sent_tags[msg.tag];
+      } else {
+        push_message(msg);
+      }
     };
   }
 }
