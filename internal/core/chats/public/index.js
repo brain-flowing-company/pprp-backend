@@ -10,6 +10,7 @@ message.addEventListener("keydown", (e) => {
 });
 
 let sent_tags = {};
+let messages = [];
 
 function send_ws_msg(event, content, sent_at, value) {
   let tag = Math.random().toString(16).substring(2);
@@ -66,6 +67,10 @@ function push_message(e, author) {
   <div class="text-md">${e.content}</div>
   `;
 
+  if (author && e.message_id !== undefined && e.read_at === null) {
+    messages.push(node);
+  }
+
   message_pane.appendChild(node);
   message_pane.scrollTo(0, message_pane.scrollHeight);
 
@@ -97,6 +102,7 @@ function open_chat(id) {
 }
 
 function get_all_chats() {
+  messages = [];
   message_pane.innerHTML = "";
 
   let users = document.getElementById("users");
@@ -154,14 +160,28 @@ function connect() {
         case "MSG":
           if (sent_tags[msg.tag] !== undefined) {
             console.log(msg.payload);
-            sent_tags[msg.tag].querySelector("#status").innerText = "sent";
+
+            sent_tags[msg.tag].querySelector("#status").innerText =
+              msg.payload.read_at === null ? "sent" : "read";
             sent_tags[msg.tag].querySelector("#sender-id").innerText = msg.payload.sender_id;
 
-            sent_tags[msg.message_id] = sent_tags[msg.tag];
+            if (msg.payload.read_at === null) {
+              messages.push(sent_tags[msg.tag]);
+            }
             delete sent_tags[msg.tag];
           } else {
-            push_message(msg);
+            push_message(msg, msg.receiver_id === current_chat);
           }
+
+          break;
+
+        case "READ":
+          messages.forEach((e) => {
+            e.querySelector("#status").innerText = "read";
+          });
+
+          messages = [];
+          break;
       }
     };
   }
