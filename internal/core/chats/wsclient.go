@@ -149,7 +149,7 @@ func (c *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessages) *
 	fmt.Println("Joining", uuid)
 	c.RecvUserId = &uuid
 
-	return nil
+	return c.Service.ReadMessages(uuid, c.UserId)
 }
 
 func (c *WebsocketClients) inBoundLeftHandler() {

@@ -12,6 +12,7 @@ type Service interface {
 	GetAllChats(*[]models.ChatsResponses, uuid.UUID) *apperror.AppError
 	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) *apperror.AppError
 	SaveMessages(*models.Messages) *apperror.AppError
+	ReadMessages(uuid.UUID, uuid.UUID) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -58,9 +59,26 @@ func (s *serviceImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid
 func (s *serviceImpl) SaveMessages(msg *models.Messages) *apperror.AppError {
 	err := s.repo.SaveMessages(msg)
 	if err != nil {
+		s.logger.Error("Could not save message",
+			zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("error while sending message")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) ReadMessages(sendUserId uuid.UUID, recvUserId uuid.UUID) *apperror.AppError {
+	err := s.repo.ReadMessages(sendUserId, recvUserId)
+	if err != nil {
+		s.logger.Error("Could not update mesages read status",
+			zap.Error(err),
+			zap.String("senderUserId", sendUserId.String()),
+			zap.String("receiveruserId", recvUserId.String()))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("error while opening chat")
 	}
 
 	return nil
