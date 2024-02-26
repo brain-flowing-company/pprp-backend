@@ -132,11 +132,11 @@ func (c *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessages) *a
 	}
 
 	if c.hub.IsUserOnline(c.UserId) {
-		c.OutBoundMessages <- msg.ToOutBound(inbound.Tag)
+		c.OutBoundMessages <- msg.ToOutBound().SetTag(inbound.Tag)
 	}
 
 	if isInChat {
-		c.hub.GetUser(*c.RecvUserId).OutBoundMessages <- msg.ToOutBound("")
+		c.hub.GetUser(*c.RecvUserId).OutBoundMessages <- msg.ToOutBound()
 	}
 
 	return nil
@@ -170,8 +170,14 @@ func (c *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessages) *
 			ReceiverId: c.UserId,
 			ReadAt:     time.Now(),
 		}
-		c.hub.GetUser(uuid).OutBoundMessages <- read.ToOutBound("")
+		c.hub.GetUser(uuid).OutBoundMessages <- read.ToOutBound()
 	}
+
+	chatResponse := models.ChatsResponses{
+		UnreadMessages: 0,
+		UserId:         uuid,
+	}
+	c.OutBoundMessages <- chatResponse.ToOutBound()
 
 	return nil
 }
