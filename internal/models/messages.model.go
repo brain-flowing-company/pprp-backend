@@ -8,7 +8,7 @@ import (
 )
 
 type OutBoundPayload interface {
-	ToOutBound(tag string) *OutBoundMessages
+	ToOutBound() *OutBoundMessages
 }
 
 type Messages struct {
@@ -20,10 +20,9 @@ type Messages struct {
 	SentAt     time.Time  `json:"sent_at"       example:"2024-02-22T03:06:53.313735Z"`
 }
 
-func (e *Messages) ToOutBound(tag string) *OutBoundMessages {
+func (e *Messages) ToOutBound() *OutBoundMessages {
 	return &OutBoundMessages{
 		Event:   enums.OUTBOUND_MSG,
-		Tag:     tag,
 		Payload: e,
 	}
 }
@@ -34,10 +33,9 @@ type ReadEvents struct {
 	ReadAt     time.Time `json:"read_at"`
 }
 
-func (e *ReadEvents) ToOutBound(tag string) *OutBoundMessages {
+func (e *ReadEvents) ToOutBound() *OutBoundMessages {
 	return &OutBoundMessages{
 		Event:   enums.OUTBOUND_READ,
-		Tag:     tag,
 		Payload: e,
 	}
 }
@@ -46,6 +44,11 @@ type OutBoundMessages struct {
 	Event   enums.MessageOutboundEvents `json:"event"`
 	Tag     string                      `json:"tag,omitempty"`
 	Payload interface{}                 `json:"payload"`
+}
+
+func (m *OutBoundMessages) SetTag(tag string) *OutBoundMessages {
+	m.Tag = tag
+	return m
 }
 
 type InBoundMessages struct {
