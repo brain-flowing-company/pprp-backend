@@ -109,11 +109,9 @@ func (c *WebsocketClients) readHandler(term chan bool, errCh chan *apperror.AppE
 }
 
 func (c *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessages) *apperror.AppError {
-	isInChat := c.hub.IsUserInChat(c.UserId, *c.RecvUserId)
-
 	var readAt *time.Time
 	now := time.Now()
-	if isInChat {
+	if c.hub.IsUserInChat(c.UserId, *c.RecvUserId) {
 		readAt = &now
 	}
 
@@ -135,8 +133,15 @@ func (c *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessages) *a
 		c.OutBoundMessages <- msg.ToOutBound().SetTag(inbound.Tag)
 	}
 
-	if isInChat {
+	if c.hub.IsUserInChat(c.UserId, *c.RecvUserId) {
 		c.hub.GetUser(*c.RecvUserId).OutBoundMessages <- msg.ToOutBound()
+	} else if c.hub.IsUserOnline(*c.RecvUserId) {
+		chatResponse := models.ChatsResponses{
+			Content:        inbound.Content,
+			UnreadMessages: 1,
+			UserId:         c.UserId,
+		}
+		c.hub.GetUser(*c.RecvUserId).OutBoundMessages <- chatResponse.ToOutBound()
 	}
 
 	return nil

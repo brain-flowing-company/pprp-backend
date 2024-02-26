@@ -2,6 +2,7 @@ var conn;
 var message_pane = document.getElementById("messages");
 var message = document.getElementById("message");
 var current_chat = "";
+var chats = [];
 
 message.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
@@ -122,11 +123,12 @@ function get_all_chats() {
         node.innerHTML = `
         <div>
           <div class="text-xs w-full">${e.user_id}</div>
-          <div class="text-xs w-full">${e.content}</div>
+          <div class="text-xs w-full" id="content">${e.content}</div>
         </div>
-        <div class="text-xs w-4 flex items-center justify-center">${e.unread_messages}</div>
+        <div class="text-xs w-4 flex items-center justify-center" id="unread-messages">${e.unread_messages}</div>
         `;
 
+        chats[e.user_id] = node;
         users.appendChild(node);
       });
     })
@@ -181,6 +183,20 @@ function connect() {
           });
 
           messages = [];
+          break;
+
+        case "CHATS":
+          node = chats[msg.payload.user_id];
+          if (node !== undefined) {
+            node.querySelector("#unread-messages").innerText =
+              msg.payload.unread_messages === 0
+                ? 0
+                : parseInt(node.querySelector("#unread-messages").innerText) +
+                  msg.payload.unread_messages;
+
+            if (msg.payload.content !== "")
+              node.querySelector("#content").innerText = msg.payload.content;
+          }
           break;
       }
     };
