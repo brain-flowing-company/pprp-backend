@@ -43,7 +43,7 @@ func (h *handlerImpl) GetAllChats(c *fiber.Ctx) error {
 		session = models.Sessions{}
 	}
 
-	var chats []models.ChatsResponses
+	var chats []models.ChatPreviews
 	err := h.service.GetAllChats(&chats, session.UserId)
 	if err != nil {
 		return utils.ResponseError(c, err)

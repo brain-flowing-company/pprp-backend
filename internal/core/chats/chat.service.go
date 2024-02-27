@@ -9,7 +9,7 @@ import (
 )
 
 type Service interface {
-	GetAllChats(*[]models.ChatsResponses, uuid.UUID) *apperror.AppError
+	GetAllChats(*[]models.ChatPreviews, uuid.UUID) *apperror.AppError
 	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) *apperror.AppError
 	SaveMessages(*models.Messages) *apperror.AppError
 	ReadMessages(uuid.UUID, uuid.UUID) *apperror.AppError
@@ -27,7 +27,7 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 	}
 }
 
-func (s *serviceImpl) GetAllChats(chats *[]models.ChatsResponses, userId uuid.UUID) *apperror.AppError {
+func (s *serviceImpl) GetAllChats(chats *[]models.ChatPreviews, userId uuid.UUID) *apperror.AppError {
 	err := s.repo.GetAllChats(chats, userId)
 	if err != nil {
 		s.logger.Error("Could not get all chats", zap.Error(err), zap.String("userId", userId.String()))

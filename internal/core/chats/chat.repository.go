@@ -10,7 +10,7 @@ import (
 )
 
 type Repository interface {
-	GetAllChats(*[]models.ChatsResponses, uuid.UUID) error
+	GetAllChats(*[]models.ChatPreviews, uuid.UUID) error
 	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) error
 	SaveMessages(msg *models.Messages) error
 	ReadMessages(sendUserId uuid.UUID, recvUserId uuid.UUID) error
@@ -26,7 +26,7 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetAllChats(results *[]models.ChatsResponses, userId uuid.UUID) error {
+func (repo *repositoryImpl) GetAllChats(results *[]models.ChatPreviews, userId uuid.UUID) error {
 	_ = repo.db.Model(&models.Messages{}).
 		Raw(`
 		SELECT *
