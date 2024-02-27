@@ -29,61 +29,61 @@ func NewClient(conn *websocket.Conn, hub *Hub, service Service, userId uuid.UUID
 	}
 }
 
-func (c *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
-	c.router.Send(msg)
+func (client *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
+	client.router.Send(msg)
 }
 
-func (c *WebsocketClients) Listen() {
-	c.router.On(enums.INBOUND_MSG, c.inBoundMsgHandler)
-	c.router.On(enums.INBOUND_JOIN, c.inBoundJoinHandler)
-	c.router.On(enums.INBOUND_LEFT, c.inBoundLeftHandler)
-	c.router.Listen()
+func (client *WebsocketClients) Listen() {
+	client.router.On(enums.INBOUND_MSG, client.inBoundMsgHandler)
+	client.router.On(enums.INBOUND_JOIN, client.inBoundJoinHandler)
+	client.router.On(enums.INBOUND_LEFT, client.inBoundLeftHandler)
+	client.router.Listen()
 }
 
-func (c *WebsocketClients) Close() {
-	c.router.Close()
+func (client *WebsocketClients) Close() {
+	client.router.Close()
 }
 
-func (c *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessages) *apperror.AppError {
+func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessages) *apperror.AppError {
 	var readAt *time.Time
 	now := time.Now()
-	if c.hub.IsUserInChat(c.UserId, *c.RecvUserId) {
+	if client.hub.IsUserInChat(client.UserId, *client.RecvUserId) {
 		readAt = &now
 	}
 
 	msg := &models.Messages{
 		MessageId:  uuid.New(),
-		SenderId:   c.UserId,
-		ReceiverId: c.RecvUserId,
+		SenderId:   client.UserId,
+		ReceiverId: client.RecvUserId,
 		ReadAt:     readAt,
 		Content:    inbound.Content,
 		SentAt:     inbound.SentAt,
 	}
 
-	err := c.Service.SaveMessages(msg)
+	err := client.Service.SaveMessages(msg)
 	if err != nil {
 		return err
 	}
 
-	if c.hub.IsUserOnline(c.UserId) {
-		c.SendMessage(msg.ToOutBound().SetTag(inbound.Tag))
+	if client.hub.IsUserOnline(client.UserId) {
+		client.SendMessage(msg.ToOutBound().SetTag(inbound.Tag))
 	}
 
-	if c.hub.IsUserInChat(c.UserId, *c.RecvUserId) {
-		c.hub.GetUser(*c.RecvUserId).SendMessage(msg.ToOutBound())
-	} else if c.hub.IsUserOnline(*c.RecvUserId) {
+	if client.hub.IsUserInChat(client.UserId, *client.RecvUserId) {
+		client.hub.GetUser(*client.RecvUserId).SendMessage(msg.ToOutBound())
+	} else if client.hub.IsUserOnline(*client.RecvUserId) {
 		chatResponse := models.ChatPreviews{
 			Content:        inbound.Content,
 			UnreadMessages: 1,
-			UserId:         c.UserId,
+			UserId:         client.UserId,
 		}
-		c.hub.GetUser(*c.RecvUserId).SendMessage(chatResponse.ToOutBound())
+		client.hub.GetUser(*client.RecvUserId).SendMessage(chatResponse.ToOutBound())
 	}
 
 	return nil
 }
 
-func (c *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessages) *apperror.AppError {
+func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessages) *apperror.AppError {
 	uuid, err := uuid.Parse(inbound.Content)
 	if err != nil {
 		return apperror.
@@ -91,41 +91,41 @@ func (c *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessages) *
 			Describe("invalid receiver uuid")
 	}
 
-	if c.UserId == uuid {
+	if client.UserId == uuid {
 		return apperror.
 			New(apperror.BadRequest).
 			Describe("could not send message to yourself")
 	}
 
 	fmt.Println("Joining", uuid)
-	c.RecvUserId = &uuid
+	client.RecvUserId = &uuid
 
-	apperr := c.Service.ReadMessages(uuid, c.UserId)
+	apperr := client.Service.ReadMessages(uuid, client.UserId)
 	if apperr != nil {
 		return apperr
 	}
 
-	if c.hub.IsUserOnline(uuid) {
+	if client.hub.IsUserInChat(client.UserId, uuid) {
 		read := models.ReadEvents{
 			SenderId:   uuid,
-			ReceiverId: c.UserId,
+			ReceiverId: client.UserId,
 			ReadAt:     time.Now(),
 		}
-		c.hub.GetUser(uuid).SendMessage(read.ToOutBound())
+		client.hub.GetUser(uuid).SendMessage(read.ToOutBound())
 	}
 
 	chatResponse := models.ChatPreviews{
 		UnreadMessages: 0,
 		UserId:         uuid,
 	}
-	c.SendMessage(chatResponse.ToOutBound())
+	client.SendMessage(chatResponse.ToOutBound())
 
 	return nil
 }
 
-func (c *WebsocketClients) inBoundLeftHandler(inbound *models.InBoundMessages) *apperror.AppError {
-	fmt.Println("Leaving", c.RecvUserId)
-	c.RecvUserId = nil
+func (client *WebsocketClients) inBoundLeftHandler(inbound *models.InBoundMessages) *apperror.AppError {
+	fmt.Println("Leaving", client.RecvUserId)
+	client.RecvUserId = nil
 
 	return nil
 }
