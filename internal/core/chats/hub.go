@@ -55,7 +55,7 @@ func (h *Hub) Unregister(client *WebsocketClients) {
 	_, ok := h.clients[client.UserId]
 	if ok {
 		delete(h.clients, client.UserId)
-		close(client.OutBoundMessages)
+		client.Close()
 	}
 	h.Unlock()
 }
