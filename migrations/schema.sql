@@ -170,7 +170,7 @@ CREATE TABLE messages (
     sender_id   UUID                     NOT NULL REFERENCES users(user_id),
     receiver_id UUID                     NOT NULL REFERENCES users(user_id),
     content     VARCHAR(4096)            NOT NULL,
-    read_at     TIMESTAMP WITH TIME ZONE,
+    read_at     TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     sent_at     TIMESTAMP WITH TIME ZONE NOT NULL
 );
 

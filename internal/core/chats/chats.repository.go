@@ -27,7 +27,7 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (repo *repositoryImpl) GetAllChats(results *[]models.ChatPreviews, userId uuid.UUID) error {
-	_ = repo.db.Model(&models.Messages{}).
+	return repo.db.Model(&models.Messages{}).
 		Raw(`
 		SELECT *
 			FROM (
@@ -60,7 +60,6 @@ func (repo *repositoryImpl) GetAllChats(results *[]models.ChatPreviews, userId u
 		ORDER BY unread_messages DESC, sent_at DESC
 		`, sql.Named("user_id", userId)).
 		Scan(results).Error
-	return nil
 }
 
 func (repo *repositoryImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid.UUID, recvUserId uuid.UUID, offset int, limit int) error {
