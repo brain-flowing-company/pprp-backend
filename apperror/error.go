@@ -77,6 +77,9 @@ var (
 	AgreementNotFound  = &AppErrorType{http.StatusNotFound, "agreement-not-found"}
 	DuplicateAgreement = &AppErrorType{http.StatusBadRequest, "duplicate-agreement"}
 
+	WebSocketDuplicatedConnection = &AppErrorType{http.StatusBadRequest, "websocket-duplicated-connection"}
+	NotInChat                     = &AppErrorType{http.StatusBadRequest, "not-in-chat"}
+
 	InvalidCallbackRequest = &AppErrorType{http.StatusBadRequest, "invalid-callback-request"}
 
 	Unauthorized = &AppErrorType{http.StatusUnauthorized, "unauthorized"}

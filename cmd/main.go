@@ -9,6 +9,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/core/agreements"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/appointments"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/auth"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/chats"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/emails"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/google"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/greetings"
@@ -17,6 +18,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/middleware"
 	"github.com/brain-flowing-company/pprp-backend/storage"
 	"github.com/gofiber/contrib/fiberzap"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
@@ -73,6 +75,9 @@ func main() {
 
 	if cfg.IsDevelopment() {
 		app.Get("/docs/*", swagger.HandlerDefault)
+
+		// test websocket
+		app.Static("/", "./internal/core/chats/public/")
 	}
 
 	hwService := greetings.NewService()
@@ -106,6 +111,11 @@ func main() {
 	appointmentRepository := appointments.NewRepository(db)
 	appointmentService := appointments.NewService(logger, appointmentRepository)
 	appointmentHandler := appointments.NewHandler(appointmentService)
+
+	hub := chats.NewHub()
+	chatRepository := chats.NewRepository(db)
+	chatService := chats.NewService(logger, chatRepository)
+	chatHandler := chats.NewHandler(logger, cfg, hub, chatService)
 
 	mw := middleware.NewMiddleware(cfg)
 
@@ -155,6 +165,12 @@ func main() {
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Post("/email", emailHandler.SendVerificationEmail)
 	apiv1.Get("/auth/callback", authHandler.Callback)
+
+	apiv1.Get("/chats", mw.AuthMiddlewareWrapper(chatHandler.GetAllChats))
+	apiv1.Get("/chats/:recvUserId", mw.AuthMiddlewareWrapper(chatHandler.GetMessagesInChat))
+
+	ws := app.Group("/ws")
+	ws.Get("/chats", websocket.New(chatHandler.OpenConnection))
 
 	err = app.Listen(fmt.Sprintf(":%v", cfg.AppPort))
 	if err != nil {
