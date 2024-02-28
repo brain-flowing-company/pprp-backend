@@ -99,18 +99,18 @@ func main() {
 	googleService := google.NewService(logger, cfg, googleRepo)
 	googleHandler := google.NewHandler(logger, cfg, googleService)
 
+	emailRepository := emails.NewRepository(db)
+	emailService := emails.NewService(logger, cfg, emailRepository)
+	emailHandler := emails.NewHandler(logger, cfg, emailService)
+
 	// Initialize the repository, service, and handler
 	authRepository := auth.NewRepository(db)
-	authService := auth.NewService(logger, cfg, authRepository)
+	authService := auth.NewService(logger, cfg, authRepository, googleService, emailService)
 	authHandler := auth.NewHandler(cfg, authService)
 
 	appointmentRepository := appointments.NewRepository(db)
 	appointmentService := appointments.NewService(logger, appointmentRepository)
 	appointmentHandler := appointments.NewHandler(appointmentService)
-
-	emailRepository := emails.NewRepository(db)
-	emailService := emails.NewService(logger, cfg, emailRepository)
-	emailHandler := emails.NewHandler(logger, cfg, emailService)
 
 	hub := chats.NewHub()
 	chatRepository := chats.NewRepository(db)
@@ -125,7 +125,15 @@ func main() {
 	apiv1.Get("/user/greeting", mw.AuthMiddlewareWrapper(hwHandler.UserGreeting))
 
 	apiv1.Get("/property/:propertyId", propertyHandler.GetPropertyById)
-	apiv1.Get("/properties", propertyHandler.GetOrSearchProperties)
+	apiv1.Get("/properties", propertyHandler.GetAllProperties)
+	apiv1.Get("/user/me/properties", mw.AuthMiddlewareWrapper(propertyHandler.GetMyProperties))
+	apiv1.Post("/properties", mw.AuthMiddlewareWrapper(propertyHandler.CreateProperty))
+	apiv1.Put("/property/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.UpdatePropertyById))
+	apiv1.Delete("/property/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.DeletePropertyById))
+	apiv1.Post("/property/favorites/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.AddFavoriteProperty))
+	apiv1.Delete("/property/favorites/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.RemoveFavoriteProperty))
+	apiv1.Get("/user/me/favorites", mw.AuthMiddlewareWrapper(propertyHandler.GetMyFavoriteProperties))
+	apiv1.Get("/properties/top10", propertyHandler.GetTop10Properties)
 
 	apiv1.Get("/appointments/:appointmentId", appointmentHandler.GetAppointmentById)
 	apiv1.Get("/appointments", appointmentHandler.GetAllAppointments)
@@ -153,10 +161,8 @@ func main() {
 	apiv1.Delete("/agreement/:agreementId", agreementsHandler.DeleteAgreement)
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
-	apiv1.Get("/oauth/callback", googleHandler.ExchangeToken)
-
 	apiv1.Post("/email", emailHandler.SendVerificationEmail)
-	apiv1.Post("/email/verify", emailHandler.VerifyEmail)
+	apiv1.Get("/auth/callback", authHandler.Callback)
 
 	apiv1.Get("/chats", mw.AuthMiddlewareWrapper(chatHandler.GetAllChats))
 	apiv1.Get("/chats/:recvUserId", mw.AuthMiddlewareWrapper(chatHandler.GetMessagesInChat))

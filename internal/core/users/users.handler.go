@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
-	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
@@ -78,7 +77,7 @@ func (h *handlerImpl) GetUserById(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @param       formData formData models.RegisteringUsers true "User information"
-// @success     200	{object} models.MessageResponses
+// @success     200	{object} models.Users
 // @failure     400 {object} models.ErrorResponses "Invalid user info"
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) Register(c *fiber.Ctx) error {
@@ -91,12 +90,6 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperror.
 			New(apperror.BadRequest).
 			Describe(fmt.Sprintf("Could not parse form data: %v", err.Error())))
-	}
-
-	if session, ok := c.Locals("session").(models.Sessions); !ok {
-		user.RegisteredType = enums.EMAIL
-	} else {
-		user.RegisteredType = session.RegisteredType
 	}
 
 	profileImage, _ := c.FormFile("profile_image")
@@ -114,7 +107,7 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 // @tags        users
 // @produce     json
 // @param       formData formData models.UpdatingUserPersonalInfo true "User information"
-// @success     200	{object} models.MessageResponses
+// @success     200	{object} models.Users
 // @failure     400 {object} models.ErrorResponses "Invalid user info"
 // @failure     404 {object} models.ErrorResponses "User not found"
 // @failure     500 {object} models.ErrorResponses
@@ -145,7 +138,7 @@ func (h *handlerImpl) UpdateUser(c *fiber.Ctx) error {
 // @description Delete a user by its id
 // @tags        users
 // @produce     json
-// @success     200 {object} models.MessageResponses
+// @success     200
 // @failure     400 {object} models.ErrorResponses "Invalid user id"
 // @failure     404 {object} models.ErrorResponses "User not found"
 // @failure     500 {object} models.ErrorResponses

@@ -57,6 +57,7 @@ var (
 	AppointmentNotFound      = &AppErrorType{http.StatusNotFound, "appointment-not-found"}
 	DuplicateAppointment     = &AppErrorType{http.StatusBadRequest, "duplicate-appointment"}
 	InvalidAppointmentStatus = &AppErrorType{http.StatusBadRequest, "invalid-appointment-status"}
+	UserHasVerified          = &AppErrorType{http.StatusBadRequest, "user-has-verified"}
 
 	// user errors
 	InvalidUserId                 = &AppErrorType{http.StatusBadRequest, "invalid-user-id"}
@@ -71,7 +72,6 @@ var (
 	InvalidCredentials            = &AppErrorType{http.StatusUnauthorized, "invalid-credentials"}
 	ServiceUnavailable            = &AppErrorType{http.StatusServiceUnavailable, "service-unavailable"}
 	InvalidProfileImageExtension  = &AppErrorType{http.StatusBadRequest, "invalid-profile-image-extensions"}
-	UserHasVerified               = &AppErrorType{http.StatusBadRequest, "user-has-verified"}
 
 	InvalidAgreementId = &AppErrorType{http.StatusBadRequest, "invalid-agreement-id"}
 	AgreementNotFound  = &AppErrorType{http.StatusNotFound, "agreement-not-found"}
@@ -79,6 +79,8 @@ var (
 
 	WebSocketDuplicatedConnection = &AppErrorType{http.StatusBadRequest, "websocket-duplicated-connection"}
 	NotInChat                     = &AppErrorType{http.StatusBadRequest, "not-in-chat"}
+
+	InvalidCallbackRequest = &AppErrorType{http.StatusBadRequest, "invalid-callback-request"}
 
 	Unauthorized = &AppErrorType{http.StatusUnauthorized, "unauthorized"}
 )

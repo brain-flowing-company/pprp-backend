@@ -282,7 +282,6 @@ func (s *serviceImpl) uploadProfileImage(userId uuid.UUID, profileImage *multipa
 			New(apperror.InternalServerError).
 			Describe("Could not process image")
 	}
-
 	url, err := s.storage.Upload(fmt.Sprintf("profiles/%v.jpeg", userId.String()), processedFile, types.ObjectCannedACLPublicRead)
 
 	if err != nil {
