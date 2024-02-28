@@ -50,13 +50,13 @@ func (client *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
 			!client.hub.IsUserInChat(payload.SenderId, payload.ReceiverId) {
 
 			preview, ok := client.chats[payload.SenderId]
-
 			if !ok {
-				client.chats[payload.SenderId] = &models.ChatPreviews{
+				preview = &models.ChatPreviews{
 					Content:        payload.Content,
-					UnreadMessages: 0,
+					UnreadMessages: 1,
 					UserId:         payload.SenderId,
 				}
+				client.chats[payload.SenderId] = preview
 			} else {
 				preview.Content = payload.Content
 				preview.UnreadMessages++
