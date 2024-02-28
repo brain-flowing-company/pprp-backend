@@ -78,6 +78,7 @@ var (
 	DuplicateAgreement = &AppErrorType{http.StatusBadRequest, "duplicate-agreement"}
 
 	WebSocketDuplicatedConnection = &AppErrorType{http.StatusBadRequest, "websocket-duplicated-connection"}
+	NotInChat                     = &AppErrorType{http.StatusBadRequest, "not-in-chat"}
 
 	Unauthorized = &AppErrorType{http.StatusUnauthorized, "unauthorized"}
 )
