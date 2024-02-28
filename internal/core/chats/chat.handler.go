@@ -94,7 +94,11 @@ func (h *handlerImpl) OpenConnection(conn *websocket.Conn) {
 		return
 	}
 
-	client := NewClient(conn, h.hub, h.service, claim.Session.UserId)
+	client, apperr := NewClient(conn, h.hub, h.service, claim.Session.UserId)
+	if apperr != nil {
+		utils.WebsocketFatal(conn, apperror.Unauthorized)
+		return
+	}
 
 	h.hub.Register(client)
 	client.Listen()

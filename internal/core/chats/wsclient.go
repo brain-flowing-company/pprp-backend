@@ -17,16 +17,29 @@ type WebsocketClients struct {
 	Service    Service
 	UserId     uuid.UUID
 	RecvUserId *uuid.UUID
+	chats      map[uuid.UUID]*models.ChatPreviews
 }
 
-func NewClient(conn *websocket.Conn, hub *Hub, service Service, userId uuid.UUID) *WebsocketClients {
+func NewClient(conn *websocket.Conn, hub *Hub, service Service, userId uuid.UUID) (*WebsocketClients, *apperror.AppError) {
+	chatPreviews := []models.ChatPreviews{}
+	err := service.GetAllChats(&chatPreviews, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	chats := map[uuid.UUID]*models.ChatPreviews{}
+	for _, chat := range chatPreviews {
+		chats[chat.UserId] = &chat
+	}
+
 	return &WebsocketClients{
 		router:     NewWebsocketRouter(conn),
 		hub:        hub,
 		Service:    service,
 		UserId:     userId,
 		RecvUserId: nil,
-	}
+		chats:      chats,
+	}, nil
 }
 
 func (client *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
@@ -66,18 +79,21 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 	}
 
 	if client.hub.IsUserOnline(client.UserId) {
-		client.SendMessage(msg.ToOutBound().SetTag(inbound.Tag))
+		msg.Tag = inbound.Tag
+		client.SendMessage(msg.ToOutBound())
 	}
 
 	if client.hub.IsUserInChat(client.UserId, *client.RecvUserId) {
 		client.hub.GetUser(*client.RecvUserId).SendMessage(msg.ToOutBound())
 	} else if client.hub.IsUserOnline(*client.RecvUserId) {
-		chatResponse := models.ChatPreviews{
+		preview := &models.ChatPreviews{
 			Content:        inbound.Content,
-			UnreadMessages: 1,
+			UnreadMessages: client.chats[*client.RecvUserId].UnreadMessages + 1,
 			UserId:         client.UserId,
 		}
-		client.hub.GetUser(*client.RecvUserId).SendMessage(chatResponse.ToOutBound())
+
+		client.chats[*client.RecvUserId] = preview
+		client.hub.GetUser(*client.RecvUserId).SendMessage(preview.ToOutBound())
 	}
 
 	return nil
@@ -106,7 +122,7 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 	}
 
 	if client.hub.IsUserInChat(client.UserId, uuid) {
-		read := models.ReadEvents{
+		read := &models.ReadEvents{
 			SenderId:   uuid,
 			ReceiverId: client.UserId,
 			ReadAt:     time.Now(),
@@ -114,11 +130,13 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 		client.hub.GetUser(uuid).SendMessage(read.ToOutBound())
 	}
 
-	chatResponse := models.ChatPreviews{
+	preview := &models.ChatPreviews{
 		UnreadMessages: 0,
 		UserId:         uuid,
 	}
-	client.SendMessage(chatResponse.ToOutBound())
+
+	client.chats[uuid] = preview
+	client.SendMessage(preview.ToOutBound())
 
 	return nil
 }

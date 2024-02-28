@@ -18,11 +18,13 @@ type Messages struct {
 	Content    string     `json:"content"       example:"hello, world"`
 	ReadAt     *time.Time `json:"read_at"       example:"2024-02-22T03:06:53.313735Z"`
 	SentAt     time.Time  `json:"sent_at"       example:"2024-02-22T03:06:53.313735Z"`
+	Tag        string     `json:"-"             gorm:"-"`
 }
 
 func (e *Messages) ToOutBound() *OutBoundMessages {
 	return &OutBoundMessages{
 		Event:   enums.OUTBOUND_MSG,
+		Tag:     e.Tag,
 		Payload: e,
 	}
 }
@@ -57,11 +59,6 @@ type OutBoundMessages struct {
 	Event   enums.MessageOutboundEvents `json:"event"`
 	Tag     string                      `json:"tag,omitempty"`
 	Payload interface{}                 `json:"payload"`
-}
-
-func (m *OutBoundMessages) SetTag(tag string) *OutBoundMessages {
-	m.Tag = tag
-	return m
 }
 
 type InBoundMessages struct {
