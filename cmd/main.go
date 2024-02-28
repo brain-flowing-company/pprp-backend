@@ -115,7 +115,7 @@ func main() {
 	hub := chats.NewHub()
 	chatRepository := chats.NewRepository(db)
 	chatService := chats.NewService(logger, chatRepository)
-	chatHandler := chats.NewHandler(cfg, hub, chatService)
+	chatHandler := chats.NewHandler(logger, cfg, hub, chatService)
 
 	mw := middleware.NewMiddleware(cfg)
 

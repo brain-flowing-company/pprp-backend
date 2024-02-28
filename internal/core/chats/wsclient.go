@@ -1,7 +1,6 @@
 package chats
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -9,6 +8,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type WebsocketClients struct {
@@ -20,7 +20,7 @@ type WebsocketClients struct {
 	chats      map[uuid.UUID]*models.ChatPreviews
 }
 
-func NewClient(conn *websocket.Conn, hub *Hub, service Service, userId uuid.UUID) (*WebsocketClients, *apperror.AppError) {
+func NewClient(logger *zap.Logger, conn *websocket.Conn, hub *Hub, service Service, userId uuid.UUID) (*WebsocketClients, *apperror.AppError) {
 	chatPreviews := []models.ChatPreviews{}
 	err := service.GetAllChats(&chatPreviews, userId)
 	if err != nil {
@@ -33,7 +33,7 @@ func NewClient(conn *websocket.Conn, hub *Hub, service Service, userId uuid.UUID
 	}
 
 	return &WebsocketClients{
-		router:     NewWebsocketRouter(conn),
+		router:     NewWebsocketRouter(logger, conn),
 		hub:        hub,
 		Service:    service,
 		UserId:     userId,
@@ -136,7 +136,6 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 			Describe("could not send message to yourself")
 	}
 
-	fmt.Println("Joining", uuid)
 	client.RecvUserId = &uuid
 
 	apperr := client.Service.ReadMessages(uuid, client.UserId)
@@ -163,7 +162,6 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 }
 
 func (client *WebsocketClients) inBoundLeftHandler(inbound *models.InBoundMessages) *apperror.AppError {
-	fmt.Println("Leaving", client.RecvUserId)
 	client.RecvUserId = nil
 
 	return nil

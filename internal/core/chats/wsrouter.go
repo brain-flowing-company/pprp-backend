@@ -2,13 +2,13 @@ package chats
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/contrib/websocket"
+	"go.uber.org/zap"
 )
 
 type handlerFunc func(*models.InBoundMessages) *apperror.AppError
@@ -17,13 +17,15 @@ type WebsocketRouter struct {
 	conn             *websocket.Conn
 	handlers         map[enums.MessageInboundEvents]handlerFunc
 	outBoundMessages chan *models.OutBoundMessages
+	logger           *zap.Logger
 }
 
-func NewWebsocketRouter(conn *websocket.Conn) *WebsocketRouter {
+func NewWebsocketRouter(logger *zap.Logger, conn *websocket.Conn) *WebsocketRouter {
 	return &WebsocketRouter{
 		conn:             conn,
 		handlers:         make(map[enums.MessageInboundEvents]handlerFunc),
 		outBoundMessages: make(chan *models.OutBoundMessages),
+		logger:           logger,
 	}
 }
 
@@ -48,7 +50,10 @@ func (r *WebsocketRouter) Listen() {
 			return
 
 		case err := <-errch:
-			utils.WebsocketError(r.conn, err)
+			wserr := utils.WebsocketError(r.conn, err)
+			if wserr != nil {
+				r.logger.Error("Could not send error message", zap.Error(err))
+			}
 		}
 	}
 }
@@ -64,7 +69,8 @@ func (r *WebsocketRouter) handleWrite() {
 			return
 		}
 
-		r.conn.WriteJSON(msg)
+		err := r.conn.WriteJSON(msg)
+		r.logger.Error("Could not write json data", zap.Error(err))
 	}
 }
 
@@ -73,7 +79,7 @@ func (r *WebsocketRouter) handleRead(term chan bool, errch chan *apperror.AppErr
 		_, data, err := r.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				fmt.Println(err)
+				r.logger.Error("WebSocket connection closed unexpectedly", zap.Error(err))
 			}
 			term <- true
 			break

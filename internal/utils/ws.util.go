@@ -30,20 +30,20 @@ func parseError(err interface{}) models.ErrorResponses {
 	return r
 }
 
-func WebsocketError(conn *websocket.Conn, err interface{}) {
+func WebsocketError(conn *websocket.Conn, err interface{}) error {
 	r := struct{ Error models.ErrorResponses }{
 		Error: parseError(err),
 	}
 
-	conn.WriteJSON(r)
+	return conn.WriteJSON(r)
 }
 
-func WebsocketFatal(conn *websocket.Conn, err interface{}) {
+func WebsocketFatal(conn *websocket.Conn, err interface{}) error {
 	r := struct{ Error models.ErrorResponses }{
 		Error: parseError(err),
 	}
 
 	reason, _ := json.Marshal(r)
 	data := websocket.FormatCloseMessage(websocket.CloseMessage, string(reason))
-	conn.WriteControl(websocket.CloseMessage, data, time.Now().Add(5*time.Second))
+	return conn.WriteControl(websocket.CloseMessage, data, time.Now().Add(5*time.Second))
 }

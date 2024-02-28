@@ -1,7 +1,6 @@
 package chats
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/google/uuid"
@@ -41,7 +40,6 @@ func (h *Hub) IsUserInChat(sendUserId uuid.UUID, recvUserId uuid.UUID) bool {
 
 func (h *Hub) Register(client *WebsocketClients) {
 	h.Lock()
-	fmt.Println("Registering", client.UserId)
 	_, ok := h.clients[client.UserId]
 	if !ok {
 		h.clients[client.UserId] = client
@@ -51,7 +49,6 @@ func (h *Hub) Register(client *WebsocketClients) {
 
 func (h *Hub) Unregister(client *WebsocketClients) {
 	h.Lock()
-	fmt.Println("Unregistering", client.UserId)
 	_, ok := h.clients[client.UserId]
 	if ok {
 		delete(h.clients, client.UserId)

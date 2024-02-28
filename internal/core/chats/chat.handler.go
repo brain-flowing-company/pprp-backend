@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type Handler interface {
@@ -19,13 +20,15 @@ type Handler interface {
 type handlerImpl struct {
 	hub     *Hub
 	service Service
+	logger  *zap.Logger
 	cfg     *config.Config
 }
 
-func NewHandler(cfg *config.Config, hub *Hub, service Service) Handler {
+func NewHandler(logger *zap.Logger, cfg *config.Config, hub *Hub, service Service) Handler {
 	return &handlerImpl{
 		hub,
 		service,
+		logger,
 		cfg,
 	}
 }
@@ -90,13 +93,21 @@ func (h *handlerImpl) OpenConnection(conn *websocket.Conn) {
 
 	claim, err := utils.ParseToken(session, h.cfg.JWTSecret)
 	if err != nil {
-		utils.WebsocketFatal(conn, apperror.Unauthorized)
+		err := utils.WebsocketFatal(conn, apperror.Unauthorized)
+		if err != nil {
+			h.logger.Error("Could not send error message", zap.Error(err))
+		}
+
 		return
 	}
 
-	client, apperr := NewClient(conn, h.hub, h.service, claim.Session.UserId)
+	client, apperr := NewClient(h.logger, conn, h.hub, h.service, claim.Session.UserId)
 	if apperr != nil {
-		utils.WebsocketFatal(conn, apperror.Unauthorized)
+		err := utils.WebsocketFatal(conn, apperror.Unauthorized)
+		if err != nil {
+			h.logger.Error("Could not send error message", zap.Error(err))
+		}
+
 		return
 	}
 
