@@ -45,6 +45,23 @@ function send() {
   message.value = "";
 }
 
+function push_chat_preview(e) {
+  let node = document.createElement("div");
+  node.className =
+    "border-t border-gray-400 flex flex-row select-none cursor-pointer hover:bg-gray-200";
+  node.onclick = () => open_chat(e.user_id);
+  node.innerHTML = `
+  <div>
+    <div class="text-xs w-full">${e.user_id}</div>
+    <div class="text-xs w-full" id="content">${e.content}</div>
+  </div>
+  <div class="text-xs w-4 flex items-center justify-center" id="unread-messages">${e.unread_messages}</div>
+  `;
+
+  chats[e.user_id] = node;
+  users.appendChild(node);
+}
+
 function push_message(e, author) {
   console.log(e);
   let d = new Date(e.sent_at);
@@ -116,20 +133,7 @@ function get_all_chats() {
     .then((res) => res.json())
     .then((res) => {
       res.forEach((e) => {
-        let node = document.createElement("div");
-        node.className =
-          "border-t border-gray-400 flex flex-row select-none cursor-pointer hover:bg-gray-200";
-        node.onclick = () => open_chat(e.user_id);
-        node.innerHTML = `
-        <div>
-          <div class="text-xs w-full">${e.user_id}</div>
-          <div class="text-xs w-full" id="content">${e.content}</div>
-        </div>
-        <div class="text-xs w-4 flex items-center justify-center" id="unread-messages">${e.unread_messages}</div>
-        `;
-
-        chats[e.user_id] = node;
-        users.appendChild(node);
+        push_chat_preview(e);
       });
     })
     .catch((err) => console.error(err));
@@ -188,14 +192,12 @@ function connect() {
         case "CHATS":
           node = chats[msg.payload.user_id];
           if (node !== undefined) {
-            node.querySelector("#unread-messages").innerText =
-              msg.payload.unread_messages === 0
-                ? 0
-                : parseInt(node.querySelector("#unread-messages").innerText) +
-                  msg.payload.unread_messages;
+            node.querySelector("#unread-messages").innerText = msg.payload.unread_messages;
 
             if (msg.payload.content !== "")
               node.querySelector("#content").innerText = msg.payload.content;
+          } else {
+            push_chat_preview(msg.payload);
           }
           break;
       }
