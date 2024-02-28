@@ -35,7 +35,7 @@ func NewHandler(cfg *config.Config, hub *Hub, service Service) Handler {
 // @description Get current users chat
 // @tags        chats
 // @produce     json
-// @success     200	{object} []models.ChatsResponses
+// @success     200	{object} []models.ChatPreviews
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAllChats(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Sessions)

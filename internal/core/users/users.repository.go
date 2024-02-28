@@ -9,9 +9,11 @@ import (
 type Repository interface {
 	GetAllUsers(*[]models.Users) error
 	GetUserById(*models.Users, string) error
+	GetUserFinancialInforamtionById(*models.UserFinancialInformations, string) error
 	GetUserByEmail(*models.Users, string) error
 	CreateUser(*models.RegisteringUsers) error
-	UpdateUser(*models.UpdatingUserPersonalInfo, string) error
+	UpdateUserById(*models.UpdatingUserPersonalInfos, string) error
+	UpdateUserFinancialInformationById(*models.UserFinancialInformations, string) error
 	DeleteUser(string) error
 	CountEmail(*int64, string) error
 	CountPhoneNumber(*int64, string) error
@@ -37,6 +39,12 @@ func (repo *repositoryImpl) GetUserById(user *models.Users, userId string) error
 	return repo.db.First(user, "user_id = ?", userId).Error
 }
 
+func (repo *repositoryImpl) GetUserFinancialInforamtionById(userFinancialInformation *models.UserFinancialInformations, userId string) error {
+	return repo.db.Model(&models.UserFinancialInformations{}).
+		Preload("CreditCards").
+		First(userFinancialInformation, "user_id = ?", userId).Error
+}
+
 func (repo *repositoryImpl) GetUserByEmail(user *models.Users, email string) error {
 	return repo.db.First(user, "email = ?", email).Error
 }
@@ -45,13 +53,37 @@ func (repo *repositoryImpl) CreateUser(user *models.RegisteringUsers) error {
 	return repo.db.Create(user).Error
 }
 
-func (repo *repositoryImpl) UpdateUser(user *models.UpdatingUserPersonalInfo, userId string) error {
+func (repo *repositoryImpl) UpdateUserById(user *models.UpdatingUserPersonalInfos, userId string) error {
 	err := repo.db.First(&models.Users{}, "user_id = ?", userId).Error
 	if err != nil {
 		return err
 	}
 
 	return repo.db.Where("user_id = ?", userId).Updates(user).Error
+}
+
+func (repo *repositoryImpl) UpdateUserFinancialInformationById(userFinancialInformation *models.UserFinancialInformations, userId string) error {
+	err := repo.db.First(&models.UserFinancialInformations{}, "user_id = ?", userId).Error
+	if err != nil {
+		return err
+	}
+
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		var countCreditCards int64
+		if err := tx.Model(&models.CreditCards{}).Where("user_id = ?", userId).Count(&countCreditCards).Error; err != nil {
+			return err
+		} else if countCreditCards > 0 {
+			if err := tx.Where("user_id = ?", userId).Delete(&models.CreditCards{}).Error; err != nil {
+				return err
+			}
+		}
+
+		if err := tx.Create(&userFinancialInformation.CreditCards).Error; err != nil {
+			return err
+		}
+
+		return tx.Model(&models.UserFinancialInformations{}).Where("user_id = ?", userId).Updates(userFinancialInformation).Error
+	})
 }
 
 func (repo *repositoryImpl) DeleteUser(userId string) error {

@@ -377,12 +377,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/email": {
-            "post": {
-                "description": "Send a verification email to the user",
-                "produces": [
-                    "application/json"
-                ],
+        "/api/v1/auth/callback": {
+            "get": {
+                "description": "Callback from google / register redirect. Basically put all query strings to this request.",
                 "tags": [
                     "auth"
                 ],
@@ -425,6 +422,84 @@ const docTemplate = `{
                     },
                     "503": {
                         "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/chats": {
+            "get": {
+                "description": "Get current users chat",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Get current users chat *use cookies*",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ChatPreviews"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/chats/:recvUserId": {
+            "get": {
+                "description": "Get messages chatting with recvUserId. Pagination is available.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Get messages in a chat with recvUserId *use cookies*",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "default 50, max 50",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Messages"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -840,6 +915,59 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "description": "Delete a property, owned by the current user, by its id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Delete a property",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property id",
+                        "name": "propertyId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property deleted",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "404": {
+                        "description": "Property id not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not delete property",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/property/favorites/:propertyId": {
+            "delete": {
                 "description": "Remove property to the current user favorites",
                 "produces": [
                     "application/json"
@@ -942,9 +1070,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "User created",
                         "schema": {
-                            "$ref": "#/definitions/models.Users"
+                            "$ref": "#/definitions/models.MessageResponses"
                         }
                     },
                     "400": {
@@ -954,65 +1082,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/": {
-            "put": {
-                "description": "Update specifying userId with formData **\\***upload profile image in formData with field ` + "`" + `profile_image` + "`" + `. Available formats are .png / .jpg / .jpeg",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Update current user personal information *use cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "John",
-                        "name": "first_name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Doe",
-                        "name": "last_name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "0812345678",
-                        "name": "phone_number",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Users"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid user info",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
+                        "description": "Could not create user",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -1068,7 +1138,10 @@ const docTemplate = `{
                 "summary": "Delete user by id  *use cookies*",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "User deleted",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
                     },
                     "400": {
                         "description": "Invalid user id",
@@ -1178,6 +1251,149 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user/me/financial-information": {
+            "get": {
+                "description": "Get current user financial information",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get current user financial information *use cookies*",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserFinancialInformations"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user id",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the current user financial information with data from the body",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update the current user financial information *use cookies*",
+                "parameters": [
+                    {
+                        "description": "User financial information",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserFinancialInformations"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User financial information updated",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user financial information",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not update user financial information",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/me/personal-information": {
+            "put": {
+                "description": "Update specifying userId with formData **\\***upload profile image in formData with field ` + "`" + `profile_image` + "`" + `. Available formats are .png / .jpg / .jpeg",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update current user personal information *use cookies*",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "John",
+                        "name": "first_name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Doe",
+                        "name": "last_name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "0812345678",
+                        "name": "phone_number",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User personal information updated",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user info",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not update user",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/me/properties": {
             "get": {
                 "description": "Get all properties owned by the current user",
@@ -1228,6 +1444,40 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Sessions"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/me/verify": {
+            "post": {
+                "description": "Verify user by citizen id and citizen id image",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Verify user *use cookies*",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "1100111111111",
+                        "name": "citizen_id",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Verified",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
@@ -1434,6 +1684,48 @@ const docTemplate = `{
                 "Completed"
             ]
         },
+        "models.CallbackResponses": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "johnd@email.com"
+                },
+                "registered_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.RegisteredTypes"
+                        }
+                    ],
+                    "example": "EMAIL / GOOGLE"
+                },
+                "session_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.SessionType"
+                        }
+                    ],
+                    "example": "REGISTER / LOGIN"
+                }
+            }
+        },
+        "models.ChatPreviews": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "hello, world"
+                },
+                "unread_messages": {
+                    "type": "integer",
+                    "example": 9
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                }
+            }
+        },
         "models.CreatingAppointments": {
             "type": "object",
             "properties": {
@@ -1516,17 +1808,13 @@ const docTemplate = `{
                     "type": "string",
                     "example": "hello, world"
                 },
-                "created_at": {
-                    "type": "string",
-                    "example": "2024-02-22T03:06:53.313735Z"
-                },
                 "message_id": {
                     "type": "string",
                     "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
                 },
-                "read": {
-                    "type": "boolean",
-                    "example": false
+                "read_at": {
+                    "type": "string",
+                    "example": "2024-02-22T03:06:53.313735Z"
                 },
                 "receiver_id": {
                     "type": "string",
@@ -1536,8 +1824,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
                 },
-                "tag": {
-                    "type": "string"
+                "sent_at": {
+                    "type": "string",
+                    "example": "2024-02-22T03:06:53.313735Z"
                 }
             }
         },
@@ -1720,7 +2009,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Users": {
+        "models.UserFinancialInformations": {
             "type": "object",
             "properties": {
                 "bank_account_number": {
@@ -1735,14 +2024,14 @@ const docTemplate = `{
                     ],
                     "example": "KBANK"
                 },
-                "citizen_card_image_url": {
-                    "type": "string",
-                    "example": "https://image_url.com/abcd"
-                },
-                "citizen_id": {
-                    "type": "string",
-                    "example": "1234567890123"
-                },
+                "created_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Users": {
+            "type": "object",
+            "properties": {
                 "created_at": {
                     "type": "string"
                 },
