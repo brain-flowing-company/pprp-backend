@@ -1,6 +1,8 @@
 package properties
 
 import (
+	"fmt"
+
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"gorm.io/gorm"
 )
@@ -56,7 +58,31 @@ func (repo *repositoryImpl) GetPropertyByOwnerId(result *[]models.Properties, ow
 }
 
 func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
-	return repo.db.Create(property).Error
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(property).Error; err != nil {
+			fmt.Println("Property")
+			return err
+		}
+
+		if len(property.PropertyImages) != 0 {
+			if err := tx.Create(&property.PropertyImages).Error; err != nil {
+				fmt.Println("Image")
+				return err
+			}
+		}
+
+		if err := tx.Create(&property.SellingProperty).Error; err != nil {
+			fmt.Println("Selling")
+			return err
+		}
+
+		if err := tx.Create(&property.RentingProperty).Error; err != nil {
+			fmt.Println("Renting")
+			return err
+		}
+
+		return nil
+	})
 }
 
 func (repo *repositoryImpl) UpdatePropertyById(property *models.Properties, propertyId string) error {
