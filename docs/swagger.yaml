@@ -2,16 +2,26 @@ basePath: /
 definitions:
   enums.BankNames:
     enum:
-    - KASIKORN BANK
-    - BANGKOK BANK
-    - KRUNG THAI BANK
-    - BANK OF AYUDHYA
-    - CIMB THAI BANK
-    - TMBTHANACHART BANK
-    - SIAM COMMERCIAL BANK
-    - GOVERNMENT SAVINGS BANK
-    - BANK NOT SELECTED
+    - KBANK
+    - BBL
+    - KTB
+    - BAY
+    - CIMB
+    - TTB
+    - SCB
+    - GSB
+    - ""
     type: string
+    x-enum-comments:
+      BAY: '"BANK OF AYUDHYA"'
+      BBL: '"BANGKOK BANK"'
+      CIMB: '"CIMB THAI BANK"'
+      GSB: '"GOVERNMENT SAVINGS BANK"'
+      KBANK: '"KASIKORN BANK"'
+      KTB: '"KRUNG THAI BANK"'
+      "NULL": '"BANK NOT SELECTED"'
+      SCB: '"SIAM COMMERCIAL BANK"'
+      TTB: '"TMBTHANACHART BANK"'
     x-enum-varnames:
     - KBANK
     - BBL
@@ -22,6 +32,18 @@ definitions:
     - SCB
     - GSB
     - "NULL"
+  enums.CardColors:
+    enum:
+    - LIGHT BLUE
+    - BLUE
+    - DARK BLUE
+    - VERY DARK BLUE
+    type: string
+    x-enum-varnames:
+    - LIGHT_BLUE
+    - BLUE
+    - DARK_BLUE
+    - VERY_DARK_BLUE
   enums.FloorSizeUnits:
     enum:
     - sqm
@@ -172,6 +194,34 @@ definitions:
       property_id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
+    type: object
+  models.CreditCards:
+    properties:
+      card_color:
+        allOf:
+        - $ref: '#/definitions/enums.CardColors'
+        example: BLUE
+      card_nickname:
+        example: John's Card
+        type: string
+      card_number:
+        example: "1234567890123456"
+        type: string
+      cardholder_name:
+        example: John Doe
+        type: string
+      cvv:
+        example: "123"
+        type: string
+      expire_month:
+        example: "12"
+        type: string
+      expire_year:
+        example: "2023"
+        type: string
+      tag_number:
+        example: 1
+        type: integer
     type: object
   models.DeletingAppointments:
     properties:
@@ -359,6 +409,10 @@ definitions:
         example: KBANK
       created_at:
         type: string
+      credit_cards:
+        items:
+          $ref: '#/definitions/models.CreditCards'
+        type: array
     type: object
   models.Users:
     properties:

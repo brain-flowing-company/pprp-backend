@@ -25,9 +25,9 @@ func (u Users) TableName() string {
 }
 
 type UserFinancialInformations struct {
-	UserId            uuid.UUID       `json:"-" swaggerignore:"true"`
-	CreditCards       []CreditCards   `json:"credit_cards" gorm:"foreignKey:UserId; references:UserId;" swaggerignore:"true"`
-	BankName          enums.BankNames `json:"bank_name" gorm:"default:null" example:"KBANK"`
+	UserId            uuid.UUID       `json:"-"      gorm:"primaryKey" swaggerignore:"true"`
+	CreditCards       []CreditCards   `json:"credit_cards" gorm:"foreignKey:UserId;references:UserId"`
+	BankName          enums.BankNames `json:"bank_name"    gorm:"default:null" example:"KBANK"`
 	BankAccountNumber string          `json:"bank_account_number" gorm:"default:null" example:"1234567890"`
 	CommonModels
 }
