@@ -76,7 +76,7 @@ CREATE TABLE user_verifications
 
 CREATE TABLE properties
 (
-    property_id              UUID PRIMARY KEY                                       DEFAULT gen_random_uuid(),
+    property_id              UUID PRIMARY KEY UNIQUE                                DEFAULT gen_random_uuid(),
     owner_id                 UUID REFERENCES users (user_id) ON DELETE CASCADE      NOT NULL,
     property_name            VARCHAR(50)                                            NOT NULL,
     property_description     TEXT                                                   NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE property_images
 
 CREATE TABLE selling_properties
 (
-    property_id UUID PRIMARY KEY REFERENCES properties (property_id) ON DELETE CASCADE  NOT NULL,
+    property_id UUID REFERENCES properties (property_id) ON DELETE CASCADE          NOT NULL,
     price       DOUBLE PRECISION                                                        NOT NULL,
     is_sold     BOOLEAN                                                                 NOT NULL,
     created_at               TIMESTAMP(0) WITH TIME ZONE                                DEFAULT CURRENT_TIMESTAMP,
@@ -123,7 +123,7 @@ CREATE TABLE selling_properties
 
 CREATE TABLE renting_properties
 (
-    property_id     UUID PRIMARY KEY REFERENCES properties (property_id) ON DELETE CASCADE  NOT NULL,
+    property_id     UUID REFERENCES properties (property_id) ON DELETE CASCADE          NOT NULL,
     price_per_month DOUBLE PRECISION                                                        NOT NULL,
     is_occupied     BOOLEAN                                                                 NOT NULL,
     created_at               TIMESTAMP(0) WITH TIME ZONE                                    DEFAULT CURRENT_TIMESTAMP,

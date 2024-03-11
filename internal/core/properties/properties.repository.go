@@ -58,6 +58,7 @@ func (repo *repositoryImpl) GetPropertyByOwnerId(result *[]models.Properties, ow
 }
 
 func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
+	fmt.Println(property)
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(property).Error; err != nil {
 			fmt.Println("Property")
@@ -65,20 +66,24 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 		}
 
 		if len(property.PropertyImages) != 0 {
-			if err := tx.Create(&property.PropertyImages).Error; err != nil {
+			if err := tx.Create(property.PropertyImages).Error; err != nil {
 				fmt.Println("Image")
 				return err
 			}
 		}
 
-		if err := tx.Create(&property.SellingProperty).Error; err != nil {
-			fmt.Println("Selling")
-			return err
+		if property.SellingProperty.Price != 0 {
+			if err := tx.Create(property.SellingProperty).Error; err != nil {
+				fmt.Println("Selling")
+				return err
+			}
 		}
 
-		if err := tx.Create(&property.RentingProperty).Error; err != nil {
-			fmt.Println("Renting")
-			return err
+		if property.RentingProperty.PricePerMonth != 0 {
+			if err := tx.Create(property.RentingProperty).Error; err != nil {
+				fmt.Println("Renting")
+				return err
+			}
 		}
 
 		return nil
