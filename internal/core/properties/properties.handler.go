@@ -187,7 +187,7 @@ func (h *handlerImpl) DeletePropertyById(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property deleted")
 }
 
-// @router      /api/v1/property/:propertyId [post]
+// @router      /api/v1/property/favorites/:propertyId [post]
 // @summary     Add property to favorites
 // @description Add property to the current user favorites
 // @tags        property

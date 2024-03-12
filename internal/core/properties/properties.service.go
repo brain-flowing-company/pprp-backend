@@ -104,13 +104,6 @@ func (s *serviceImpl) GetPropertyByOwnerId(properties *[]models.Properties, owne
 }
 
 func (s *serviceImpl) CreateProperty(property *models.Properties) *apperror.AppError {
-	property.PropertyId = uuid.New()
-
-	for _, image := range property.PropertyImages {
-		image.PropertyId = property.PropertyId
-	}
-	property.RentingProperty.PropertyId = property.PropertyId
-	property.SellingProperty.PropertyId = property.PropertyId
 
 	err := s.repo.CreateProperty(property)
 	if err != nil {

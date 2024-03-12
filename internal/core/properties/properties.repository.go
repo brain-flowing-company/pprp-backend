@@ -60,27 +60,46 @@ func (repo *repositoryImpl) GetPropertyByOwnerId(result *[]models.Properties, ow
 func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 	fmt.Println(property)
 	return repo.db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(property).Error; err != nil {
+		propertyQuery := `INSERT INTO properties (owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, floor_size_unit, unit_number)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+		if err := tx.Exec(propertyQuery,
+			property.OwnerId, property.PropertyName, property.PropertyDescription, property.PropertyType,
+			property.Address, property.Alley, property.Street, property.SubDistrict, property.District,
+			property.Province, property.Country, property.PostalCode, property.Bedrooms, property.Bathrooms,
+			property.Furnishing, property.Floor, property.FloorSize, property.FloorSizeUnit, property.UnitNumber,
+		).Error; err != nil {
 			fmt.Println("Property")
 			return err
 		}
 
+		propertyTemp := models.Properties{}
+		if err := tx.Find(&propertyTemp, "property_name = ? AND owner_id = ?", property.PropertyName, property.OwnerId).Error; err != nil {
+			fmt.Println("Find")
+			return err
+		}
+		property_id := propertyTemp.PropertyId
+
 		if len(property.PropertyImages) != 0 {
-			if err := tx.Create(property.PropertyImages).Error; err != nil {
-				fmt.Println("Image")
-				return err
+			imageQuery := `INSERT INTO property_images (property_id, image_url) VALUES (?, ?);`
+			for _, image := range property.PropertyImages {
+				if err := tx.Exec(imageQuery, property_id, image.ImageUrl).Error; err != nil {
+					fmt.Println("Image")
+					return err
+				}
 			}
 		}
 
 		if property.SellingProperty.Price != 0 {
-			if err := tx.Create(property.SellingProperty).Error; err != nil {
+			sellingQuery := `INSERT INTO selling_properties (property_id, price, is_sold) VALUES (?, ?, ?);`
+			if err := tx.Exec(sellingQuery, property_id, property.SellingProperty.Price, property.SellingProperty.IsSold).Error; err != nil {
 				fmt.Println("Selling")
 				return err
 			}
 		}
 
 		if property.RentingProperty.PricePerMonth != 0 {
-			if err := tx.Create(property.RentingProperty).Error; err != nil {
+			rentingQuery := `INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUES (?, ?, ?);`
+			if err := tx.Exec(rentingQuery, property_id, property.RentingProperty.PricePerMonth, property.RentingProperty.IsOccupied).Error; err != nil {
 				fmt.Println("Renting")
 				return err
 			}
