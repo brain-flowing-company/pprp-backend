@@ -317,6 +317,9 @@ definitions:
         items:
           $ref: '#/definitions/models.PropertyImages'
         type: array
+      is_favorite:
+        example: true
+        type: boolean
       owner_id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
@@ -326,6 +329,9 @@ definitions:
       property_description:
         example: Et sequi dolor praes
         type: string
+      property_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
       property_name:
         example: Supalai
         type: string
@@ -333,8 +339,6 @@ definitions:
         allOf:
         - $ref: '#/definitions/enums.PropertyTypes'
         example: CONDOMINIUM
-      propertyId:
-        type: string
       province:
         example: Pattaya
         type: string
@@ -1011,36 +1015,6 @@ paths:
       summary: Get property by propertyId
       tags:
       - property
-    post:
-      description: Add property to the current user favorites
-      parameters:
-      - description: Property id
-        in: path
-        name: propertyId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Property added to favorites
-          schema:
-            $ref: '#/definitions/models.MessageResponses'
-        "403":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-        "404":
-          description: Property id not found
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-        "500":
-          description: Could not add favorite property
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-      summary: Add property to favorites
-      tags:
-      - property
     put:
       description: Update a property, owned by the current user, by its id with the
         provided details
@@ -1111,6 +1085,36 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponses'
       summary: Remove property to favorites
+      tags:
+      - property
+    post:
+      description: Add property to the current user favorites
+      parameters:
+      - description: Property id
+        in: path
+        name: propertyId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Property added to favorites
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "403":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "404":
+          description: Property id not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Could not add favorite property
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Add property to favorites
       tags:
       - property
   /api/v1/register:
