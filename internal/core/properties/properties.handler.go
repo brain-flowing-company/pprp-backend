@@ -69,7 +69,7 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 
 	var userId string
 	if _, ok := c.Locals("session").(models.Sessions); !ok {
-		userId = ""
+		userId = "00000000-0000-0000-0000-000000000000"
 	} else {
 		userId = c.Locals("session").(models.Sessions).UserId.String()
 	}
@@ -249,8 +249,6 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
-	// quries := c.Queries()
-
 	properties := models.MyFavoritePropertiesResponses{}
 	err := h.service.GetFavoritePropertiesByUserId(&properties, userId)
 	if err != nil {
@@ -268,8 +266,15 @@ func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 // @success     200	{object} []models.Properties
 // @failure     500 {object} models.ErrorResponses "Could not get top 10 properties"
 func (h *handlerImpl) GetTop10Properties(c *fiber.Ctx) error {
+	var userId string
+	if _, ok := c.Locals("session").(models.Sessions); !ok {
+		userId = "00000000-0000-0000-0000-000000000000"
+	} else {
+		userId = c.Locals("session").(models.Sessions).UserId.String()
+	}
+
 	properties := []models.Properties{}
-	err := h.service.GetTop10Properties(&properties)
+	err := h.service.GetTop10Properties(&properties, userId)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}

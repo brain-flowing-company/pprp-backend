@@ -20,7 +20,7 @@ type Repository interface {
 	AddFavoriteProperty(*models.FavoriteProperties) error
 	RemoveFavoriteProperty(string, string) error
 	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string) error
-	GetTop10Properties(*[]models.Properties) error
+	GetTop10Properties(*[]models.Properties, string) error
 }
 
 type repositoryImpl struct {
@@ -33,8 +33,8 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetAllProperties(results *[]models.Properties, userId string) error {
-	return repo.db.Model(&models.Messages{}).
+func (repo *repositoryImpl) GetAllProperties(properties *[]models.Properties, userId string) error {
+	return repo.db.Model(&models.Properties{}).
 		Raw(`
 		SELECT props.*,
 			CASE
@@ -56,7 +56,7 @@ func (repo *repositoryImpl) GetAllProperties(results *[]models.Properties, userI
 				favorite_properties.user_id = @user_id
 			)
 		`, sql.Named("user_id", userId)).
-		Scan(results).Error
+		Scan(properties).Error
 }
 
 func (repo *repositoryImpl) GetPropertyById(result *models.Properties, id string) error {
@@ -93,7 +93,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 
 		propertyTemp := models.Properties{}
 		if err := tx.Model(&models.Properties{}).Find(&propertyTemp, "property_name = ? AND owner_id = ?", property.PropertyName, property.OwnerId).Error; err != nil {
-			fmt.Println("Find")
 			return err
 		}
 		property_id := propertyTemp.PropertyId
@@ -102,7 +101,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 			imageQuery := `INSERT INTO property_images (property_id, image_url) VALUES (?, ?);`
 			for _, image := range property.PropertyImages {
 				if err := tx.Exec(imageQuery, property_id, image.ImageUrl).Error; err != nil {
-					fmt.Println("Image")
 					return err
 				}
 			}
@@ -111,7 +109,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 		if property.SellingProperty.Price != 0 {
 			sellingQuery := `INSERT INTO selling_properties (property_id, price, is_sold) VALUES (?, ?, ?);`
 			if err := tx.Exec(sellingQuery, property_id, property.SellingProperty.Price, property.SellingProperty.IsSold).Error; err != nil {
-				fmt.Println("Selling")
 				return err
 			}
 		}
@@ -119,7 +116,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 		if property.RentingProperty.PricePerMonth != 0 {
 			rentingQuery := `INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUES (?, ?, ?);`
 			if err := tx.Exec(rentingQuery, property_id, property.RentingProperty.PricePerMonth, property.RentingProperty.IsOccupied).Error; err != nil {
-				fmt.Println("Renting")
 				return err
 			}
 		}
@@ -150,8 +146,8 @@ func (repo *repositoryImpl) CountProperty(countProperty *int64, propertyId strin
 	return repo.db.Model(&models.Properties{}).Where("property_id = ?", propertyId).Count(countProperty).Error
 }
 
-func (repo *repositoryImpl) SearchProperties(results *[]models.Properties, query string, userId string) error {
-	return repo.db.Model(&models.Messages{}).
+func (repo *repositoryImpl) SearchProperties(properties *[]models.Properties, query string, userId string) error {
+	return repo.db.Model(&models.Properties{}).
 		Raw(`
 		SELECT props.*,
 			CASE
@@ -174,7 +170,7 @@ func (repo *repositoryImpl) SearchProperties(results *[]models.Properties, query
 				favorite_properties.user_id = @user_id
 			)
 		`, sql.Named("user_id", userId), sql.Named("query", "%"+query+"%")).
-		Scan(results).Error
+		Scan(properties).Error
 }
 
 func (repo *repositoryImpl) AddFavoriteProperty(favoriteProperty *models.FavoriteProperties) error {
@@ -200,20 +196,41 @@ func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyF
 		Find(properties).Error
 }
 
-func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties) error {
-	countPropertyFavorite := repo.db.Model(&models.FavoriteProperties{}).
-		Select("property_id, COUNT(property_id) as favorites").
-		Group("property_id")
-
+func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties, userId string) error {
 	return repo.db.Model(&models.Properties{}).
-		Preload("PropertyImages").
-		Preload("SellingProperty").
-		Preload("RentingProperty").
-		Select("properties.*, COALESCE(count_property_favorite.favorites, 0) AS favorite_count").
-		Joins("LEFT JOIN (?) AS count_property_favorite ON count_property_favorite.property_id = properties.property_id", countPropertyFavorite).
-		Order("favorite_count DESC").
-		Order("created_at DESC").
-		Order("property_id DESC").
-		Limit(10).
-		Find(properties).Error
+		Raw(`
+		SELECT props.*,
+			CASE
+				WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
+				ELSE FALSE
+			END AS is_favorite
+			FROM (
+				SELECT properties.*,
+					selling_properties.price, 
+					selling_properties.is_sold,
+					renting_properties.price_per_month,
+					renting_properties.is_occupied
+				FROM (
+					SELECT properties.property_id,
+						COALESCE(count_property_favorite.favorites, 0) AS favorite_count
+					FROM properties
+					LEFT JOIN (
+						SELECT property_id,
+							COUNT(property_id) as favorites
+						FROM favorite_properties
+						GROUP BY property_id
+					) AS count_property_favorite ON count_property_favorite.property_id = properties.property_id
+					ORDER BY favorite_count DESC, created_at DESC, property_id DESC
+					LIMIT 10
+				) AS top10
+				LEFT JOIN properties ON top10.property_id = properties.property_id
+				LEFT JOIN selling_properties ON top10.property_id = selling_properties.property_id
+				LEFT JOIN renting_properties ON top10.property_id = renting_properties.property_id
+			) AS props
+			LEFT JOIN favorite_properties ON (
+				favorite_properties.property_id = props.property_id AND
+				favorite_properties.user_id = @user_id
+			)
+		`, sql.Named("user_id", userId)).
+		Scan(properties).Error
 }

@@ -23,7 +23,7 @@ type Service interface {
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string) *apperror.AppError
-	GetTop10Properties(*[]models.Properties) *apperror.AppError
+	GetTop10Properties(*[]models.Properties, string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -185,7 +185,7 @@ func (s *serviceImpl) DeletePropertyById(propertyId string) *apperror.AppError {
 }
 
 func (s *serviceImpl) SearchProperties(properties *[]models.Properties, query string, userId string) *apperror.AppError {
-	if userId != "" && !utils.IsValidUUID(userId) {
+	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
 			Describe("Invalid user id")
@@ -263,8 +263,14 @@ func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavorit
 	return nil
 }
 
-func (s *serviceImpl) GetTop10Properties(properties *[]models.Properties) *apperror.AppError {
-	err := s.repo.GetTop10Properties(properties)
+func (s *serviceImpl) GetTop10Properties(properties *[]models.Properties, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	err := s.repo.GetTop10Properties(properties, userId)
 	if err != nil {
 		s.logger.Error("Could not get top 10 properties", zap.Error(err))
 		return apperror.
