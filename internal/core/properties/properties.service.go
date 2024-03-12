@@ -13,13 +13,13 @@ import (
 )
 
 type Service interface {
-	GetAllProperties(*[]models.Properties) *apperror.AppError
+	GetAllProperties(*[]models.Properties, string) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
 	GetPropertyByOwnerId(*[]models.Properties, string) *apperror.AppError
 	CreateProperty(*models.Properties) *apperror.AppError
 	UpdatePropertyById(*models.Properties, string) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
-	SearchProperties(*[]models.Properties, string) *apperror.AppError
+	SearchProperties(*[]models.Properties, string, string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	GetFavoritePropertiesByUserId(*[]models.Properties, string) *apperror.AppError
@@ -38,8 +38,14 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 	}
 }
 
-func (s *serviceImpl) GetAllProperties(properties *[]models.Properties) *apperror.AppError {
-	err := s.repo.GetAllProperties(properties)
+func (s *serviceImpl) GetAllProperties(properties *[]models.Properties, userId string) *apperror.AppError {
+	if userId != "" && !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	err := s.repo.GetAllProperties(properties, userId)
 	if err != nil {
 		s.logger.Error("Could not get all properties", zap.Error(err))
 		return apperror.
@@ -178,9 +184,15 @@ func (s *serviceImpl) DeletePropertyById(propertyId string) *apperror.AppError {
 	return nil
 }
 
-func (s *serviceImpl) SearchProperties(properties *[]models.Properties, query string) *apperror.AppError {
+func (s *serviceImpl) SearchProperties(properties *[]models.Properties, query string, userId string) *apperror.AppError {
+	if userId != "" && !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
 	query = strings.ToLower(strings.TrimSpace(query))
-	err := s.repo.SearchProperties(properties, query)
+	err := s.repo.SearchProperties(properties, query, userId)
 	if err != nil {
 		s.logger.Error("Could not search properties", zap.Error(err))
 		return apperror.

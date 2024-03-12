@@ -67,13 +67,20 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	query := c.Query("query")
 	properties := []models.Properties{}
 
+	var userId string
+	if _, ok := c.Locals("session").(models.Sessions); !ok {
+		userId = ""
+	} else {
+		userId = c.Locals("session").(models.Sessions).UserId.String()
+	}
+
 	if query != "" {
-		err := h.service.SearchProperties(&properties, query)
+		err := h.service.SearchProperties(&properties, query, userId)
 		if err != nil {
 			return utils.ResponseError(c, err)
 		}
 	} else {
-		err := h.service.GetAllProperties(&properties)
+		err := h.service.GetAllProperties(&properties, userId)
 		if err != nil {
 			return utils.ResponseError(c, err)
 		}

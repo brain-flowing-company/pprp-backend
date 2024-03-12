@@ -27,8 +27,9 @@ type Properties struct {
 	FloorSizeUnit       enums.FloorSizeUnits `json:"floor_size_unit" gorm:"default:SQM" example:"SQM"`
 	UnitNumber          int64                `json:"unit_number"              example:"123"`
 	PropertyImages      []PropertyImages     `gorm:"foreignKey:PropertyId; references:PropertyId" json:"images"`
-	SellingProperty     SellingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId" json:"selling"`
-	RentingProperty     RentingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId" json:"renting"`
+	SellingProperty     SellingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId; embedded" json:"selling"`
+	RentingProperty     RentingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId; embedded" json:"renting"`
+	IsFavorite          bool                 `json:"is_favorite" gorm:"default:false" example:"true"`
 	CommonModels
 }
 
