@@ -16,7 +16,7 @@ type Repository interface {
 	UpdateUserFinancialInformationById(*models.UserFinancialInformations, string) error
 	DeleteUser(string) error
 	CountEmail(*int64, string) error
-	CountPhoneNumber(*int64, string) error
+	CountPhoneNumber(*int64, uuid.UUID, string) error
 	CreateUserVerification(*models.UserVerifications) error
 	CountUserVerification(cnt *int64, userId uuid.UUID) error
 }
@@ -101,8 +101,10 @@ func (repo *repositoryImpl) CountEmail(count *int64, email string) error {
 	return repo.db.Model(&models.Users{}).Where("email = ?", email).Count(count).Error
 }
 
-func (repo *repositoryImpl) CountPhoneNumber(count *int64, phoneNumber string) error {
-	return repo.db.Model(&models.Users{}).Where("phone_number = ?", phoneNumber).Count(count).Error
+func (repo *repositoryImpl) CountPhoneNumber(count *int64, userId uuid.UUID, phoneNumber string) error {
+	return repo.db.Model(&models.Users{}).
+		Where("phone_number = ? AND user_id != ?", phoneNumber, userId).
+		Count(count).Error
 }
 
 func (repo *repositoryImpl) CountUserVerification(cnt *int64, userId uuid.UUID) error {
