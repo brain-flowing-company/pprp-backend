@@ -869,51 +869,6 @@ const docTemplate = `{
                     }
                 }
             },
-            "post": {
-                "description": "Add property to the current user favorites",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Add property to favorites",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property id",
-                        "name": "propertyId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Property added to favorites",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Property id not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not add favorite property",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "description": "Delete a property, owned by the current user, by its id",
                 "produces": [
@@ -967,6 +922,51 @@ const docTemplate = `{
             }
         },
         "/api/v1/property/favorites/:propertyId": {
+            "post": {
+                "description": "Add property to the current user favorites",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Add property to favorites",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property id",
+                        "name": "propertyId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property added to favorites",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "404": {
+                        "description": "Property id not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not add favorite property",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Remove property to the current user favorites",
                 "produces": [
@@ -1517,16 +1517,27 @@ const docTemplate = `{
         "enums.BankNames": {
             "type": "string",
             "enum": [
-                "KASIKORN BANK",
-                "BANGKOK BANK",
-                "KRUNG THAI BANK",
-                "BANK OF AYUDHYA",
-                "CIMB THAI BANK",
-                "TMBTHANACHART BANK",
-                "SIAM COMMERCIAL BANK",
-                "GOVERNMENT SAVINGS BANK",
-                "BANK NOT SELECTED"
+                "KBANK",
+                "BBL",
+                "KTB",
+                "BAY",
+                "CIMB",
+                "TTB",
+                "SCB",
+                "GSB",
+                ""
             ],
+            "x-enum-comments": {
+                "BAY": "\"BANK OF AYUDHYA\"",
+                "BBL": "\"BANGKOK BANK\"",
+                "CIMB": "\"CIMB THAI BANK\"",
+                "GSB": "\"GOVERNMENT SAVINGS BANK\"",
+                "KBANK": "\"KASIKORN BANK\"",
+                "KTB": "\"KRUNG THAI BANK\"",
+                "NULL": "\"BANK NOT SELECTED\"",
+                "SCB": "\"SIAM COMMERCIAL BANK\"",
+                "TTB": "\"TMBTHANACHART BANK\""
+            },
             "x-enum-varnames": [
                 "KBANK",
                 "BBL",
@@ -1537,6 +1548,21 @@ const docTemplate = `{
                 "SCB",
                 "GSB",
                 "NULL"
+            ]
+        },
+        "enums.CardColors": {
+            "type": "string",
+            "enum": [
+                "LIGHT BLUE",
+                "BLUE",
+                "DARK BLUE",
+                "VERY DARK BLUE"
+            ],
+            "x-enum-varnames": [
+                "LIGHT_BLUE",
+                "BLUE",
+                "DARK_BLUE",
+                "VERY_DARK_BLUE"
             ]
         },
         "enums.FloorSizeUnits": {
@@ -1752,6 +1778,47 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreditCards": {
+            "type": "object",
+            "properties": {
+                "card_color": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.CardColors"
+                        }
+                    ],
+                    "example": "BLUE"
+                },
+                "card_nickname": {
+                    "type": "string",
+                    "example": "John's Card"
+                },
+                "card_number": {
+                    "type": "string",
+                    "example": "1234567890123456"
+                },
+                "cardholder_name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "cvv": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "expire_month": {
+                    "type": "string",
+                    "example": "12"
+                },
+                "expire_year": {
+                    "type": "string",
+                    "example": "2023"
+                },
+                "tag_number": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
         "models.DeletingAppointments": {
             "type": "object",
             "properties": {
@@ -1890,6 +1957,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.PropertyImages"
                     }
                 },
+                "is_favorite": {
+                    "type": "boolean",
+                    "example": true
+                },
                 "owner_id": {
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
@@ -1898,12 +1969,13 @@ const docTemplate = `{
                     "type": "string",
                     "example": "69096"
                 },
-                "propertyId": {
-                    "type": "string"
-                },
                 "property_description": {
                     "type": "string",
                     "example": "Et sequi dolor praes"
+                },
+                "property_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "property_name": {
                     "type": "string",
@@ -2026,6 +2098,12 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "credit_cards": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CreditCards"
+                    }
                 }
             }
         },

@@ -132,7 +132,7 @@ func (h *handlerImpl) Register(c *fiber.Ctx) error {
 // @description Update specifying userId with formData **\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg
 // @tags        users
 // @produce     json
-// @param       formData formData models.UpdatingUserPersonalInfos true "User information"
+// @param       formData formData models.UpdatingUserPersonalInfos true "User personal information"
 // @success     200	{object} models.MessageResponses "User personal information updated"
 // @failure     400 {object} models.ErrorResponses "Invalid user info"
 // @failure     404 {object} models.ErrorResponses "User not found"
