@@ -19,7 +19,7 @@ type Repository interface {
 	SearchProperties(*[]models.Properties, string, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
 	RemoveFavoriteProperty(string, string) error
-	GetFavoritePropertiesByUserId(*[]models.Properties, string) error
+	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string) error
 	GetTop10Properties(*[]models.Properties) error
 }
 
@@ -190,7 +190,7 @@ func (repo *repositoryImpl) RemoveFavoriteProperty(propertyId string, userId str
 	return repo.db.Where("property_id = ? AND user_id = ?", propertyId, userId).Delete(&models.FavoriteProperties{}).Error
 }
 
-func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *[]models.Properties, userId string) error {
+func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string) error {
 	return repo.db.Model(&models.Properties{}).
 		Preload("PropertyImages").
 		Preload("SellingProperty").

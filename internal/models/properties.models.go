@@ -77,3 +77,8 @@ func (p RentingProperties) TableName() string {
 func (p FavoriteProperties) TableName() string {
 	return "favorite_properties"
 }
+
+type MyFavoritePropertiesResponses struct {
+	Total      int          `json:"total"`
+	Properties []Properties `json:"properties"`
+}

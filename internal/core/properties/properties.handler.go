@@ -249,7 +249,9 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
-	properties := []models.Properties{}
+	// quries := c.Queries()
+
+	properties := models.MyFavoritePropertiesResponses{}
 	err := h.service.GetFavoritePropertiesByUserId(&properties, userId)
 	if err != nil {
 		return utils.ResponseError(c, err)
