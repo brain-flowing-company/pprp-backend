@@ -67,13 +67,20 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	query := c.Query("query")
 	properties := []models.Properties{}
 
+	var userId string
+	if _, ok := c.Locals("session").(models.Sessions); !ok {
+		userId = ""
+	} else {
+		userId = c.Locals("session").(models.Sessions).UserId.String()
+	}
+
 	if query != "" {
-		err := h.service.SearchProperties(&properties, query)
+		err := h.service.SearchProperties(&properties, query, userId)
 		if err != nil {
 			return utils.ResponseError(c, err)
 		}
 	} else {
-		err := h.service.GetAllProperties(&properties)
+		err := h.service.GetAllProperties(&properties, userId)
 		if err != nil {
 			return utils.ResponseError(c, err)
 		}
@@ -187,7 +194,7 @@ func (h *handlerImpl) DeletePropertyById(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property deleted")
 }
 
-// @router      /api/v1/property/:propertyId [post]
+// @router      /api/v1/property/favorites/:propertyId [post]
 // @summary     Add property to favorites
 // @description Add property to the current user favorites
 // @tags        property
@@ -242,7 +249,9 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
-	properties := []models.Properties{}
+	// quries := c.Queries()
+
+	properties := models.MyFavoritePropertiesResponses{}
 	err := h.service.GetFavoritePropertiesByUserId(&properties, userId)
 	if err != nil {
 		return utils.ResponseError(c, err)

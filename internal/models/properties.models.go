@@ -6,7 +6,7 @@ import (
 )
 
 type Properties struct {
-	PropertyId          uuid.UUID            `gorm:"type:uuid; default:uuid_generate_v4()"`
+	PropertyId          uuid.UUID            `json:"property_id" gorm:"type:uuid;unique;primaryKey;default:uuid_generate_v4()" example:"123e4567-e89b-12d3-a456-426614174000"`
 	OwnerId             uuid.UUID            `json:"owner_id"                 example:"123e4567-e89b-12d3-a456-426614174000"`
 	PropertyName        string               `json:"property_name"            example:"Supalai"`
 	PropertyDescription string               `json:"property_description"              example:"Et sequi dolor praes"`
@@ -27,8 +27,9 @@ type Properties struct {
 	FloorSizeUnit       enums.FloorSizeUnits `json:"floor_size_unit" gorm:"default:SQM" example:"SQM"`
 	UnitNumber          int64                `json:"unit_number"              example:"123"`
 	PropertyImages      []PropertyImages     `gorm:"foreignKey:PropertyId; references:PropertyId" json:"images"`
-	SellingProperty     SellingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId" json:"selling"`
-	RentingProperty     RentingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId" json:"renting"`
+	SellingProperty     SellingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId; embedded" json:"selling"`
+	RentingProperty     RentingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId; embedded" json:"renting"`
+	IsFavorite          bool                 `json:"is_favorite" gorm:"default:false" example:"true"`
 	CommonModels
 }
 
@@ -75,4 +76,9 @@ func (p RentingProperties) TableName() string {
 
 func (p FavoriteProperties) TableName() string {
 	return "favorite_properties"
+}
+
+type MyFavoritePropertiesResponses struct {
+	Total      int          `json:"total"`
+	Properties []Properties `json:"properties"`
 }

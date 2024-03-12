@@ -120,7 +120,7 @@ func (s *serviceImpl) Register(user *models.RegisteringUsers, profileImage *mult
 	}
 
 	var countPhoneNumber int64
-	if s.repo.CountPhoneNumber(&countPhoneNumber, user.PhoneNumber) != nil {
+	if s.repo.CountPhoneNumber(&countPhoneNumber, user.UserId, user.PhoneNumber) != nil {
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get all phone numbers")
@@ -183,7 +183,7 @@ func (s *serviceImpl) UpdateUser(user *models.UpdatingUserPersonalInfos, profile
 
 	if user.PhoneNumber != "" {
 		var count int64
-		countErr := s.repo.CountPhoneNumber(&count, user.PhoneNumber)
+		countErr := s.repo.CountPhoneNumber(&count, user.UserId, user.PhoneNumber)
 		if countErr != nil {
 			return apperror.
 				New(apperror.InternalServerError).
