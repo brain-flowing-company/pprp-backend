@@ -175,12 +175,6 @@ func (repo *repositoryImpl) SearchProperties(results *[]models.Properties, query
 			)
 		`, sql.Named("user_id", userId), sql.Named("query", "%"+query+"%")).
 		Scan(results).Error
-	// return repo.db.Model(&models.Properties{}).
-	// 	Preload("PropertyImages").
-	// 	Preload("SellingProperty").
-	// 	Preload("RentingProperty").
-	// 	Where("LOWER(property_name) LIKE ? OR LOWER(property_description) LIKE ?", "%"+query+"%", "%"+query+"%").
-	// 	Find(result).Error
 }
 
 func (repo *repositoryImpl) AddFavoriteProperty(favoriteProperty *models.FavoriteProperties) error {
