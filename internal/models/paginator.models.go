@@ -1,21 +1,27 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"fmt"
+
+	"gorm.io/gorm"
+)
 
 type paginator struct {
-	page  int
-	limit int
+	offset int
+	limit  int
 }
 
 func NewPaginator(page int, limit int) *paginator {
 	return &paginator{
-		limit,
-		page,
+		offset: (page - 1) * limit,
+		limit:  limit,
 	}
 }
 
 func (p *paginator) PaginatedQuery(db *gorm.DB) *gorm.DB {
-	return db.
-		Offset((p.page - 1) * p.limit).
-		Limit(p.limit)
+	return db.Offset(p.offset).Limit(p.limit)
+}
+
+func (p *paginator) PaginatedSQL() string {
+	return fmt.Sprintf("LIMIT %d OFFSET %d", p.limit, p.offset)
 }
