@@ -22,7 +22,7 @@ type Service interface {
 	SearchProperties(*[]models.Properties, string, string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
-	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string) *apperror.AppError
+	GetFavoritePropertiesByUserId(*[]models.Properties, string) *apperror.AppError
 	GetTop10Properties(*[]models.Properties, string) *apperror.AppError
 }
 
@@ -245,7 +245,7 @@ func (s *serviceImpl) RemoveFavoriteProperty(propertyId string, userId uuid.UUID
 	return nil
 }
 
-func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string) *apperror.AppError {
+func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *[]models.Properties, userId string) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).

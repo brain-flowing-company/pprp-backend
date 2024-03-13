@@ -19,7 +19,7 @@ type Repository interface {
 	SearchProperties(*[]models.Properties, string, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
 	RemoveFavoriteProperty(string, string) error
-	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string) error
+	GetFavoritePropertiesByUserId(*[]models.Properties, string) error
 	GetTop10Properties(*[]models.Properties, string) error
 }
 
@@ -186,22 +186,11 @@ func (repo *repositoryImpl) RemoveFavoriteProperty(propertyId string, userId str
 	return repo.db.Where("property_id = ? AND user_id = ?", propertyId, userId).Delete(&models.FavoriteProperties{}).Error
 }
 
-func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string) error {
+func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *[]models.Properties, userId string) error {
 	return repo.db.Model(&models.Properties{}).
-		Preload("PropertyImages").
-		Preload("SellingProperty").
-		Preload("RentingProperty").
-		Joins("JOIN favorite_properties ON favorite_properties.property_id = properties.property_id").
-		Where("favorite_properties.user_id = ?", userId).
-		Find(properties).Error
-	/*
-		return repo.db.Model(&models.Properties{}).
 		Raw(`
 		SELECT props.*,
-			CASE
-				WHEN favorite_properties.user_id = @user_id THEN TRUE
-				ELSE FALSE
-			END AS is_favorite
+			TRUE AS is_favorite
 			FROM favorite_properties
 			LEFT JOIN (
 				SELECT properties.*,
@@ -216,7 +205,6 @@ func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyF
 			WHERE favorite_properties.user_id = @user_id
 		`, sql.Named("user_id", userId)).
 		Scan(properties).Error
-	*/
 }
 
 func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties, userId string) error {
