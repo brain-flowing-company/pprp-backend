@@ -11,7 +11,7 @@ type paginator struct {
 	limit  int
 }
 
-func NewPaginator(page int, limit int) *paginator {
+func NewPaginatedQuery(page int, limit int) *paginator {
 	return &paginator{
 		offset: (page - 1) * limit,
 		limit:  limit,
