@@ -108,7 +108,7 @@ func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyProperties
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		err := repo.db.Model(&models.Properties{}).
 			Raw(`
-				SELECT COUNT(*) as total
+				SELECT COUNT(*) AS total
 				FROM (
 					SELECT properties.*
 					FROM properties
