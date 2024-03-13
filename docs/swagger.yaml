@@ -111,6 +111,16 @@ definitions:
       property_id:
         type: string
     type: object
+  models.AllPropertiesResponses:
+    properties:
+      properties:
+        items:
+          $ref: '#/definitions/models.Properties'
+        type: array
+      total:
+        example: 2
+        type: integer
+    type: object
   models.Appointments:
     properties:
       appointment_date:
@@ -276,6 +286,26 @@ definitions:
       sent_at:
         example: "2024-02-22T03:06:53.313735Z"
         type: string
+    type: object
+  models.MyFavoritePropertiesResponses:
+    properties:
+      properties:
+        items:
+          $ref: '#/definitions/models.Properties'
+        type: array
+      total:
+        example: 2
+        type: integer
+    type: object
+  models.MyPropertiesResponses:
+    properties:
+      properties:
+        items:
+          $ref: '#/definitions/models.Properties'
+        type: array
+      total:
+        example: 2
+        type: integer
     type: object
   models.Properties:
     properties:
@@ -878,15 +908,21 @@ paths:
         in: query
         name: query
         type: string
+      - description: Pagination limit per page, max 50, default 20
+        in: query
+        name: limit
+        type: integer
+      - description: Pagination page index as 1-based index, default 1
+        in: query
+        name: page
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Properties'
-            type: array
+            $ref: '#/definitions/models.AllPropertiesResponses'
         "500":
           description: Could not get properties
           schema:
@@ -1255,15 +1291,22 @@ paths:
   /api/v1/user/me/favorites:
     get:
       description: Get all properties that the current user has added to favorites
+      parameters:
+      - description: Pagination limit per page, max 50, default 20
+        in: query
+        name: limit
+        type: integer
+      - description: Pagination page index as 1-based index, default 1
+        in: query
+        name: page
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Properties'
-            type: array
+            $ref: '#/definitions/models.MyFavoritePropertiesResponses'
         "403":
           description: Unauthorized
           schema:
@@ -1375,15 +1418,22 @@ paths:
   /api/v1/user/me/properties:
     get:
       description: Get all properties owned by the current user
+      parameters:
+      - description: Pagination limit per page, max 50, default 20
+        in: query
+        name: limit
+        type: integer
+      - description: Pagination page index as 1-based index, default 1
+        in: query
+        name: page
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Properties'
-            type: array
+            $ref: '#/definitions/models.MyPropertiesResponses'
         "403":
           description: Unauthorized
           schema:

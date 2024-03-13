@@ -61,7 +61,9 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 // @tags        property
 // @produce     json
 // @param       query query string false "Search query"
-// @success     200	{object} []models.Properties
+// @param       limit query int false "Pagination limit per page, max 50, default 20"
+// @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @success     200	{object} models.AllPropertiesResponses
 // @failure     500 {object} models.ErrorResponses "Could not get properties"
 func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	query := c.Query("query")
@@ -92,7 +94,9 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 // @description Get all properties owned by the current user
 // @tags        property
 // @produce     json
-// @success     200	{object} []models.Properties
+// @param       limit query int false "Pagination limit per page, max 50, default 20"
+// @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @success     200	{object} models.MyPropertiesResponses
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
@@ -246,7 +250,9 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 // @description Get all properties that the current user has added to favorites
 // @tags        property
 // @produce     json
-// @success     200	{object} []models.Properties
+// @param       limit query int false "Pagination limit per page, max 50, default 20"
+// @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @success     200	{object} models.MyFavoritePropertiesResponses
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     500 {object} models.ErrorResponses "Could not get favorite properties"
 func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
