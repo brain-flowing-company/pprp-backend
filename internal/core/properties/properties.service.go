@@ -13,13 +13,12 @@ import (
 )
 
 type Service interface {
-	GetAllProperties(*[]models.Properties, string) *apperror.AppError
+	GetAllProperties(*models.AllPropertiesResponses, string, string, *models.PaginatedQuery) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *models.PaginatedQuery) *apperror.AppError
 	CreateProperty(*models.Properties) *apperror.AppError
 	UpdatePropertyById(*models.Properties, string) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
-	SearchProperties(*[]models.Properties, string, string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *models.PaginatedQuery) *apperror.AppError
@@ -38,19 +37,20 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 	}
 }
 
-func (s *serviceImpl) GetAllProperties(properties *[]models.Properties, userId string) *apperror.AppError {
-	if userId != "" && !utils.IsValidUUID(userId) {
+func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *models.PaginatedQuery) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
 			Describe("Invalid user id")
 	}
 
-	err := s.repo.GetAllProperties(properties, userId)
+	query = strings.ToLower(strings.TrimSpace(query))
+	err := s.repo.GetAllProperties(properties, query, userId, paginated)
 	if err != nil {
-		s.logger.Error("Could not get all properties", zap.Error(err))
+		s.logger.Error("Could not search properties", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
-			Describe("Could not get all properties. Please try again later.")
+			Describe("Could not search properties. Please try again later.")
 	}
 
 	return nil
@@ -170,25 +170,6 @@ func (s *serviceImpl) DeletePropertyById(propertyId string) *apperror.AppError {
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not delete property. Please try again later.")
-	}
-
-	return nil
-}
-
-func (s *serviceImpl) SearchProperties(properties *[]models.Properties, query string, userId string) *apperror.AppError {
-	if !utils.IsValidUUID(userId) {
-		return apperror.
-			New(apperror.InvalidUserId).
-			Describe("Invalid user id")
-	}
-
-	query = strings.ToLower(strings.TrimSpace(query))
-	err := s.repo.SearchProperties(properties, query, userId)
-	if err != nil {
-		s.logger.Error("Could not search properties", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not search properties. Please try again later.")
 	}
 
 	return nil

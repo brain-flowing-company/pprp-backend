@@ -87,3 +87,8 @@ type MyPropertiesResponses struct {
 	Total      int64        `json:"total"`
 	Properties []Properties `json:"properties"`
 }
+
+type AllPropertiesResponses struct {
+	Total      int64        `json:"total"`
+	Properties []Properties `json:"properties"`
+}

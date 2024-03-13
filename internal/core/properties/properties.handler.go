@@ -65,7 +65,7 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 // @failure     500 {object} models.ErrorResponses "Could not get properties"
 func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	query := c.Query("query")
-	properties := []models.Properties{}
+	properties := models.AllPropertiesResponses{}
 
 	var userId string
 	if _, ok := c.Locals("session").(models.Sessions); !ok {
@@ -74,16 +74,14 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 		userId = c.Locals("session").(models.Sessions).UserId.String()
 	}
 
-	if query != "" {
-		err := h.service.SearchProperties(&properties, query, userId)
-		if err != nil {
-			return utils.ResponseError(c, err)
-		}
-	} else {
-		err := h.service.GetAllProperties(&properties, userId)
-		if err != nil {
-			return utils.ResponseError(c, err)
-		}
+	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
+	page := utils.Max(c.QueryInt("page", 1), 1)
+
+	paginated := models.NewPaginatedQuery(page, limit)
+
+	err := h.service.GetAllProperties(&properties, query, userId, paginated)
+	if err != nil {
+		return utils.ResponseError(c, err)
 	}
 
 	return c.JSON(properties)
