@@ -15,14 +15,14 @@ import (
 type Service interface {
 	GetAllProperties(*[]models.Properties, string) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
-	GetPropertyByOwnerId(*[]models.Properties, string) *apperror.AppError
+	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *models.PaginatedQuery) *apperror.AppError
 	CreateProperty(*models.Properties) *apperror.AppError
 	UpdatePropertyById(*models.Properties, string) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
 	SearchProperties(*[]models.Properties, string, string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
-	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, models.PaginatedQuery) *apperror.AppError
+	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *models.PaginatedQuery) *apperror.AppError
 	GetTop10Properties(*[]models.Properties, string) *apperror.AppError
 }
 
@@ -91,14 +91,14 @@ func (s *serviceImpl) GetPropertyById(property *models.Properties, propertyId st
 	return nil
 }
 
-func (s *serviceImpl) GetPropertyByOwnerId(properties *[]models.Properties, ownerId string) *apperror.AppError {
+func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *models.PaginatedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(ownerId) {
 		return apperror.
 			New(apperror.InvalidUserId).
 			Describe("Invalid user id")
 	}
 
-	err := s.repo.GetPropertyByOwnerId(properties, ownerId)
+	err := s.repo.GetPropertyByOwnerId(properties, ownerId, paginated)
 	if err != nil {
 		s.logger.Error("Could not get property by owner id", zap.Error(err))
 		return apperror.
@@ -236,7 +236,7 @@ func (s *serviceImpl) RemoveFavoriteProperty(propertyId string, userId uuid.UUID
 	return nil
 }
 
-func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated models.PaginatedQuery) *apperror.AppError {
+func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *models.PaginatedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).

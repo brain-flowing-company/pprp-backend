@@ -11,7 +11,7 @@ import (
 type Repository interface {
 	GetAllProperties(*[]models.Properties, string) error
 	GetPropertyById(*models.Properties, string) error
-	GetPropertyByOwnerId(*[]models.Properties, string) error
+	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *models.PaginatedQuery) error
 	CreateProperty(*models.Properties) error
 	UpdatePropertyById(*models.Properties, string) error
 	DeletePropertyById(string) error
@@ -19,7 +19,7 @@ type Repository interface {
 	SearchProperties(*[]models.Properties, string, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
 	RemoveFavoriteProperty(string, string) error
-	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, models.PaginatedQuery) error
+	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *models.PaginatedQuery) error
 	GetTop10Properties(*[]models.Properties, string) error
 }
 
@@ -75,31 +75,57 @@ func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propert
 		Scan(property).Error
 }
 
-func (repo *repositoryImpl) GetPropertyByOwnerId(properties *[]models.Properties, ownerId string) error {
-	return repo.db.Model(&models.Properties{}).
-		Raw(`
-		SELECT props.*,
-			CASE
-				WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
-				ELSE FALSE
-			END AS is_favorite
-			FROM (
-				SELECT properties.*,
-					selling_properties.price, 
-					selling_properties.is_sold,
-					renting_properties.price_per_month,
-					renting_properties.is_occupied
-				FROM properties
-				LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
-				LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
-				WHERE properties.owner_id = @owner_id
-			) AS props
-			LEFT JOIN favorite_properties ON (
-				favorite_properties.property_id = props.property_id AND
-				favorite_properties.user_id = @owner_id
-			)
-		`, sql.Named("owner_id", ownerId)).
-		Scan(properties).Error
+func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *models.PaginatedQuery) error {
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		err := repo.db.Model(&models.Properties{}).
+			Raw(`
+				SELECT COUNT(*) as total
+				FROM (
+					SELECT properties.*
+					FROM properties
+					WHERE properties.owner_id = @user_id
+				) AS props
+				LEFT JOIN favorite_properties ON (
+					favorite_properties.property_id = props.property_id AND
+					favorite_properties.user_id = @user_id
+				)
+			`, sql.Named("user_id", ownerId)).
+			First(&properties.Total).Error
+		if err != nil {
+			return err
+		}
+
+		err = repo.db.Model(&models.Properties{}).
+			Raw(`
+				SELECT props.*,
+					CASE
+						WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
+						ELSE FALSE
+					END AS is_favorite
+				FROM (
+					SELECT properties.*,
+						selling_properties.price, 
+						selling_properties.is_sold,
+						renting_properties.price_per_month,
+						renting_properties.is_occupied
+					FROM properties
+					LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
+					LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
+					WHERE properties.owner_id = @owner_id
+				) AS props
+				LEFT JOIN favorite_properties ON (
+					favorite_properties.property_id = props.property_id AND
+					favorite_properties.user_id = @owner_id
+				)
+				LIMIT @limit OFFSET @offset
+				`,
+				sql.Named("owner_id", ownerId),
+				sql.Named("limit", paginated.Limit),
+				sql.Named("offset", paginated.Offset)).
+			Scan(&properties.Properties).Error
+
+		return err
+	})
 }
 
 func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
@@ -212,7 +238,7 @@ func (repo *repositoryImpl) RemoveFavoriteProperty(propertyId string, userId str
 	return repo.db.Where("property_id = ? AND user_id = ?", propertyId, userId).Delete(&models.FavoriteProperties{}).Error
 }
 
-func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated models.PaginatedQuery) error {
+func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *models.PaginatedQuery) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		err := repo.db.Model(&models.Properties{}).
 			Raw(`
@@ -258,11 +284,11 @@ func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyF
 func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties, userId string) error {
 	return repo.db.Model(&models.Properties{}).
 		Raw(`
-		SELECT props.*,
-			CASE
-				WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
-				ELSE FALSE
-			END AS is_favorite
+			SELECT props.*,
+				CASE
+					WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
+					ELSE FALSE
+				END AS is_favorite
 			FROM (
 				SELECT properties.*,
 					selling_properties.price, 
