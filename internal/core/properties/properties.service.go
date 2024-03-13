@@ -129,21 +129,12 @@ func (s *serviceImpl) UpdatePropertyById(property *models.Properties, propertyId
 			Describe("Invalid property id")
 	}
 
-	var countProperty int64
-	countErr := s.repo.CountProperty(&countProperty, propertyId)
-	if countErr != nil {
-		s.logger.Error("Could not count property by id", zap.String("id", propertyId), zap.Error(countErr))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not update property. Please try again later.")
-	} else if countProperty == 0 {
+	err := s.repo.UpdatePropertyById(property, propertyId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.PropertyNotFound).
 			Describe("Could not find the specified property")
-	}
-
-	err := s.repo.UpdatePropertyById(property, propertyId)
-	if err != nil {
+	} else if err != nil {
 		s.logger.Error("Could not update property by id", zap.String("id", propertyId), zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).

@@ -59,21 +59,47 @@ func (repo *repositoryImpl) GetAllProperties(properties *[]models.Properties, us
 		Scan(properties).Error
 }
 
-func (repo *repositoryImpl) GetPropertyById(result *models.Properties, id string) error {
+func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propertyId string) error {
 	return repo.db.Model(&models.Properties{}).
-		Preload("PropertyImages").
-		Preload("SellingProperty").
-		Preload("RentingProperty").
-		First(result, "property_id = ?", id).Error
+		Raw(`
+		SELECT properties.*,
+			selling_properties.price, 
+			selling_properties.is_sold,
+			renting_properties.price_per_month,
+			renting_properties.is_occupied
+		FROM properties
+		LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
+		LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
+		WHERE properties.property_id = @property_id
+		`, sql.Named("property_id", propertyId)).
+		Scan(property).Error
 }
 
-func (repo *repositoryImpl) GetPropertyByOwnerId(result *[]models.Properties, ownerId string) error {
+func (repo *repositoryImpl) GetPropertyByOwnerId(properties *[]models.Properties, ownerId string) error {
 	return repo.db.Model(&models.Properties{}).
-		Preload("PropertyImages").
-		Preload("SellingProperty").
-		Preload("RentingProperty").
-		Where("owner_id = ?", ownerId).
-		Find(result).Error
+		Raw(`
+		SELECT props.*,
+			CASE
+				WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
+				ELSE FALSE
+			END AS is_favorite
+			FROM (
+				SELECT properties.*,
+					selling_properties.price, 
+					selling_properties.is_sold,
+					renting_properties.price_per_month,
+					renting_properties.is_occupied
+				FROM properties
+				LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
+				LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
+				WHERE properties.owner_id = @owner_id
+			) AS props
+			LEFT JOIN favorite_properties ON (
+				favorite_properties.property_id = props.property_id AND
+				favorite_properties.user_id = @owner_id
+			)
+		`, sql.Named("owner_id", ownerId)).
+		Scan(properties).Error
 }
 
 func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
