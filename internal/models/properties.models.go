@@ -79,6 +79,16 @@ func (p FavoriteProperties) TableName() string {
 }
 
 type MyFavoritePropertiesResponses struct {
-	Total      int          `json:"total"`
+	Total      int64        `json:"total" example:"2"`
+	Properties []Properties `json:"properties"`
+}
+
+type MyPropertiesResponses struct {
+	Total      int64        `json:"total" example:"2"`
+	Properties []Properties `json:"properties"`
+}
+
+type AllPropertiesResponses struct {
+	Total      int64        `json:"total" example:"2"`
 	Properties []Properties `json:"properties"`
 }

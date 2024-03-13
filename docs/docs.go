@@ -658,16 +658,25 @@ const docTemplate = `{
                         "description": "Search query",
                         "name": "query",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Pagination limit per page, max 50, default 20",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Pagination page index as 1-based index, default 1",
+                        "name": "page",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Properties"
-                            }
+                            "$ref": "#/definitions/models.AllPropertiesResponses"
                         }
                     },
                     "500": {
@@ -1226,14 +1235,25 @@ const docTemplate = `{
                     "property"
                 ],
                 "summary": "Get my favorite properties",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Pagination limit per page, max 50, default 20",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Pagination page index as 1-based index, default 1",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Properties"
-                            }
+                            "$ref": "#/definitions/models.MyFavoritePropertiesResponses"
                         }
                     },
                     "403": {
@@ -1404,14 +1424,25 @@ const docTemplate = `{
                     "property"
                 ],
                 "summary": "Get my properties",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Pagination limit per page, max 50, default 20",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Pagination page index as 1-based index, default 1",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Properties"
-                            }
+                            "$ref": "#/definitions/models.MyPropertiesResponses"
                         }
                     },
                     "403": {
@@ -1655,6 +1686,21 @@ const docTemplate = `{
                 }
             }
         },
+        "models.AllPropertiesResponses": {
+            "type": "object",
+            "properties": {
+                "properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Properties"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
         "models.Appointments": {
             "type": "object",
             "properties": {
@@ -1894,6 +1940,36 @@ const docTemplate = `{
                 "sent_at": {
                     "type": "string",
                     "example": "2024-02-22T03:06:53.313735Z"
+                }
+            }
+        },
+        "models.MyFavoritePropertiesResponses": {
+            "type": "object",
+            "properties": {
+                "properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Properties"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
+        "models.MyPropertiesResponses": {
+            "type": "object",
+            "properties": {
+                "properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Properties"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },

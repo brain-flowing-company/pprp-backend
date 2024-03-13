@@ -13,17 +13,16 @@ import (
 )
 
 type Service interface {
-	GetAllProperties(*[]models.Properties, string) *apperror.AppError
+	GetAllProperties(*models.AllPropertiesResponses, string, string, *models.PaginatedQuery) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
-	GetPropertyByOwnerId(*[]models.Properties, string) *apperror.AppError
+	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *models.PaginatedQuery) *apperror.AppError
 	CreateProperty(*models.Properties) *apperror.AppError
 	UpdatePropertyById(*models.Properties, string) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
-	SearchProperties(*[]models.Properties, string, string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
-	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string) *apperror.AppError
-	GetTop10Properties(*[]models.Properties) *apperror.AppError
+	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *models.PaginatedQuery) *apperror.AppError
+	GetTop10Properties(*[]models.Properties, string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -38,19 +37,20 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 	}
 }
 
-func (s *serviceImpl) GetAllProperties(properties *[]models.Properties, userId string) *apperror.AppError {
-	if userId != "" && !utils.IsValidUUID(userId) {
+func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *models.PaginatedQuery) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
 			Describe("Invalid user id")
 	}
 
-	err := s.repo.GetAllProperties(properties, userId)
+	query = strings.ToLower(strings.TrimSpace(query))
+	err := s.repo.GetAllProperties(properties, query, userId, paginated)
 	if err != nil {
-		s.logger.Error("Could not get all properties", zap.Error(err))
+		s.logger.Error("Could not search properties", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
-			Describe("Could not get all properties. Please try again later.")
+			Describe("Could not search properties. Please try again later.")
 	}
 
 	return nil
@@ -91,14 +91,14 @@ func (s *serviceImpl) GetPropertyById(property *models.Properties, propertyId st
 	return nil
 }
 
-func (s *serviceImpl) GetPropertyByOwnerId(properties *[]models.Properties, ownerId string) *apperror.AppError {
+func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *models.PaginatedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(ownerId) {
 		return apperror.
 			New(apperror.InvalidUserId).
 			Describe("Invalid user id")
 	}
 
-	err := s.repo.GetPropertyByOwnerId(properties, ownerId)
+	err := s.repo.GetPropertyByOwnerId(properties, ownerId, paginated)
 	if err != nil {
 		s.logger.Error("Could not get property by owner id", zap.Error(err))
 		return apperror.
@@ -129,21 +129,12 @@ func (s *serviceImpl) UpdatePropertyById(property *models.Properties, propertyId
 			Describe("Invalid property id")
 	}
 
-	var countProperty int64
-	countErr := s.repo.CountProperty(&countProperty, propertyId)
-	if countErr != nil {
-		s.logger.Error("Could not count property by id", zap.String("id", propertyId), zap.Error(countErr))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not update property. Please try again later.")
-	} else if countProperty == 0 {
+	err := s.repo.UpdatePropertyById(property, propertyId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.PropertyNotFound).
 			Describe("Could not find the specified property")
-	}
-
-	err := s.repo.UpdatePropertyById(property, propertyId)
-	if err != nil {
+	} else if err != nil {
 		s.logger.Error("Could not update property by id", zap.String("id", propertyId), zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -179,25 +170,6 @@ func (s *serviceImpl) DeletePropertyById(propertyId string) *apperror.AppError {
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not delete property. Please try again later.")
-	}
-
-	return nil
-}
-
-func (s *serviceImpl) SearchProperties(properties *[]models.Properties, query string, userId string) *apperror.AppError {
-	if userId != "" && !utils.IsValidUUID(userId) {
-		return apperror.
-			New(apperror.InvalidUserId).
-			Describe("Invalid user id")
-	}
-
-	query = strings.ToLower(strings.TrimSpace(query))
-	err := s.repo.SearchProperties(properties, query, userId)
-	if err != nil {
-		s.logger.Error("Could not search properties", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not search properties. Please try again later.")
 	}
 
 	return nil
@@ -245,14 +217,14 @@ func (s *serviceImpl) RemoveFavoriteProperty(propertyId string, userId uuid.UUID
 	return nil
 }
 
-func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string) *apperror.AppError {
+func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *models.PaginatedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
 			Describe("Invalid user id")
 	}
 
-	err := s.repo.GetFavoritePropertiesByUserId(properties, userId)
+	err := s.repo.GetFavoritePropertiesByUserId(properties, userId, paginated)
 	if err != nil {
 		s.logger.Error("Could not get favorite properties by user id", zap.Error(err))
 		return apperror.
@@ -263,8 +235,14 @@ func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavorit
 	return nil
 }
 
-func (s *serviceImpl) GetTop10Properties(properties *[]models.Properties) *apperror.AppError {
-	err := s.repo.GetTop10Properties(properties)
+func (s *serviceImpl) GetTop10Properties(properties *[]models.Properties, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	err := s.repo.GetTop10Properties(properties, userId)
 	if err != nil {
 		s.logger.Error("Could not get top 10 properties", zap.Error(err))
 		return apperror.

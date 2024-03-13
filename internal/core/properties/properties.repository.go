@@ -9,18 +9,17 @@ import (
 )
 
 type Repository interface {
-	GetAllProperties(*[]models.Properties, string) error
+	GetAllProperties(*models.AllPropertiesResponses, string, string, *models.PaginatedQuery) error
 	GetPropertyById(*models.Properties, string) error
-	GetPropertyByOwnerId(*[]models.Properties, string) error
+	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *models.PaginatedQuery) error
 	CreateProperty(*models.Properties) error
 	UpdatePropertyById(*models.Properties, string) error
 	DeletePropertyById(string) error
 	CountProperty(*int64, string) error
-	SearchProperties(*[]models.Properties, string, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
 	RemoveFavoriteProperty(string, string) error
-	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string) error
-	GetTop10Properties(*[]models.Properties) error
+	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *models.PaginatedQuery) error
+	GetTop10Properties(*[]models.Properties, string) error
 }
 
 type repositoryImpl struct {
@@ -33,47 +32,129 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetAllProperties(results *[]models.Properties, userId string) error {
-	return repo.db.Model(&models.Messages{}).
+func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *models.PaginatedQuery) error {
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		err := repo.db.Model(&models.Properties{}).
+			Raw(`
+				SELECT COUNT(*) AS total
+				FROM (
+					SELECT properties.*
+					FROM properties
+					WHERE LOWER(property_name) LIKE @query OR LOWER(property_description) LIKE @query
+				) AS props
+				LEFT JOIN favorite_properties ON (
+					favorite_properties.property_id = props.property_id AND
+					favorite_properties.user_id = @user_id
+				)
+				`,
+				sql.Named("user_id", userId),
+				sql.Named("query", "%"+query+"%")).
+			First(&properties.Total).Error
+		if err != nil {
+			return err
+		}
+
+		err = repo.db.Model(&models.Properties{}).
+			Raw(`
+					SELECT props.*,
+						CASE
+							WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
+							ELSE FALSE
+						END AS is_favorite
+					FROM (
+						SELECT properties.*,
+							selling_properties.price, 
+							selling_properties.is_sold,
+							renting_properties.price_per_month,
+							renting_properties.is_occupied
+						FROM properties
+						LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
+						LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
+						WHERE LOWER(property_name) LIKE @query OR LOWER(property_description) LIKE @query 
+					) AS props
+					LEFT JOIN favorite_properties ON (
+						favorite_properties.property_id = props.property_id AND
+						favorite_properties.user_id = @user_id
+					)
+					LIMIT @limit OFFSET @offset
+				`,
+				sql.Named("user_id", userId),
+				sql.Named("query", "%"+query+"%"),
+				sql.Named("limit", paginated.Limit),
+				sql.Named("offset", paginated.Offset)).
+			Scan(&properties.Properties).Error
+
+		return err
+	})
+}
+
+func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propertyId string) error {
+	return repo.db.Model(&models.Properties{}).
 		Raw(`
-		SELECT props.*,
-			CASE
-				WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
-				ELSE FALSE
-			END AS is_favorite
-			FROM (
-				SELECT properties.*,
-					selling_properties.price, 
-					selling_properties.is_sold,
-					renting_properties.price_per_month,
-					renting_properties.is_occupied
-				FROM properties
-				LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
-				LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
-			) AS props
-			LEFT JOIN favorite_properties ON (
-				favorite_properties.property_id = props.property_id AND
-				favorite_properties.user_id = @user_id
-			)
-		`, sql.Named("user_id", userId)).
-		Scan(results).Error
+		SELECT properties.*,
+			selling_properties.price, 
+			selling_properties.is_sold,
+			renting_properties.price_per_month,
+			renting_properties.is_occupied
+		FROM properties
+		LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
+		LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
+		WHERE properties.property_id = @property_id
+		`, sql.Named("property_id", propertyId)).
+		Scan(property).Error
 }
 
-func (repo *repositoryImpl) GetPropertyById(result *models.Properties, id string) error {
-	return repo.db.Model(&models.Properties{}).
-		Preload("PropertyImages").
-		Preload("SellingProperty").
-		Preload("RentingProperty").
-		First(result, "property_id = ?", id).Error
-}
+func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *models.PaginatedQuery) error {
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		err := repo.db.Model(&models.Properties{}).
+			Raw(`
+				SELECT COUNT(*) AS total
+				FROM (
+					SELECT properties.*
+					FROM properties
+					WHERE properties.owner_id = @user_id
+				) AS props
+				LEFT JOIN favorite_properties ON (
+					favorite_properties.property_id = props.property_id AND
+					favorite_properties.user_id = @user_id
+				)
+			`, sql.Named("user_id", ownerId)).
+			First(&properties.Total).Error
+		if err != nil {
+			return err
+		}
 
-func (repo *repositoryImpl) GetPropertyByOwnerId(result *[]models.Properties, ownerId string) error {
-	return repo.db.Model(&models.Properties{}).
-		Preload("PropertyImages").
-		Preload("SellingProperty").
-		Preload("RentingProperty").
-		Where("owner_id = ?", ownerId).
-		Find(result).Error
+		err = repo.db.Model(&models.Properties{}).
+			Raw(`
+				SELECT props.*,
+					CASE
+						WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
+						ELSE FALSE
+					END AS is_favorite
+				FROM (
+					SELECT properties.*,
+						selling_properties.price, 
+						selling_properties.is_sold,
+						renting_properties.price_per_month,
+						renting_properties.is_occupied
+					FROM properties
+					LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
+					LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
+					WHERE properties.owner_id = @owner_id
+				) AS props
+				LEFT JOIN favorite_properties ON (
+					favorite_properties.property_id = props.property_id AND
+					favorite_properties.user_id = @owner_id
+				)
+				LIMIT @limit OFFSET @offset
+				`,
+				sql.Named("owner_id", ownerId),
+				sql.Named("limit", paginated.Limit),
+				sql.Named("offset", paginated.Offset)).
+			Scan(&properties.Properties).Error
+
+		return err
+	})
 }
 
 func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
@@ -93,7 +174,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 
 		propertyTemp := models.Properties{}
 		if err := tx.Model(&models.Properties{}).Find(&propertyTemp, "property_name = ? AND owner_id = ?", property.PropertyName, property.OwnerId).Error; err != nil {
-			fmt.Println("Find")
 			return err
 		}
 		property_id := propertyTemp.PropertyId
@@ -102,7 +182,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 			imageQuery := `INSERT INTO property_images (property_id, image_url) VALUES (?, ?);`
 			for _, image := range property.PropertyImages {
 				if err := tx.Exec(imageQuery, property_id, image.ImageUrl).Error; err != nil {
-					fmt.Println("Image")
 					return err
 				}
 			}
@@ -111,7 +190,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 		if property.SellingProperty.Price != 0 {
 			sellingQuery := `INSERT INTO selling_properties (property_id, price, is_sold) VALUES (?, ?, ?);`
 			if err := tx.Exec(sellingQuery, property_id, property.SellingProperty.Price, property.SellingProperty.IsSold).Error; err != nil {
-				fmt.Println("Selling")
 				return err
 			}
 		}
@@ -119,7 +197,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 		if property.RentingProperty.PricePerMonth != 0 {
 			rentingQuery := `INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUES (?, ?, ?);`
 			if err := tx.Exec(rentingQuery, property_id, property.RentingProperty.PricePerMonth, property.RentingProperty.IsOccupied).Error; err != nil {
-				fmt.Println("Renting")
 				return err
 			}
 		}
@@ -150,33 +227,6 @@ func (repo *repositoryImpl) CountProperty(countProperty *int64, propertyId strin
 	return repo.db.Model(&models.Properties{}).Where("property_id = ?", propertyId).Count(countProperty).Error
 }
 
-func (repo *repositoryImpl) SearchProperties(results *[]models.Properties, query string, userId string) error {
-	return repo.db.Model(&models.Messages{}).
-		Raw(`
-		SELECT props.*,
-			CASE
-				WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
-				ELSE FALSE
-			END AS is_favorite
-			FROM (
-				SELECT properties.*,
-					selling_properties.price, 
-					selling_properties.is_sold,
-					renting_properties.price_per_month,
-					renting_properties.is_occupied
-				FROM properties
-				LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
-				LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
-				WHERE LOWER(property_name) LIKE @query OR LOWER(property_description) LIKE @query 
-			) AS props
-			LEFT JOIN favorite_properties ON (
-				favorite_properties.property_id = props.property_id AND
-				favorite_properties.user_id = @user_id
-			)
-		`, sql.Named("user_id", userId), sql.Named("query", "%"+query+"%")).
-		Scan(results).Error
-}
-
 func (repo *repositoryImpl) AddFavoriteProperty(favoriteProperty *models.FavoriteProperties) error {
 	return repo.db.Create(favoriteProperty).Error
 }
@@ -190,30 +240,84 @@ func (repo *repositoryImpl) RemoveFavoriteProperty(propertyId string, userId str
 	return repo.db.Where("property_id = ? AND user_id = ?", propertyId, userId).Delete(&models.FavoriteProperties{}).Error
 }
 
-func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string) error {
-	return repo.db.Model(&models.Properties{}).
-		Preload("PropertyImages").
-		Preload("SellingProperty").
-		Preload("RentingProperty").
-		Joins("JOIN favorite_properties ON favorite_properties.property_id = properties.property_id").
-		Where("favorite_properties.user_id = ?", userId).
-		Find(properties).Error
+func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *models.PaginatedQuery) error {
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		err := repo.db.Model(&models.Properties{}).
+			Raw(`
+				SELECT COUNT(*) AS total
+				FROM favorite_properties
+				LEFT JOIN properties
+				ON favorite_properties.property_id = properties.property_id
+				WHERE favorite_properties.user_id = @user_id
+			`, sql.Named("user_id", userId)).
+			First(&properties.Total).Error
+		if err != nil {
+			return err
+		}
+
+		err = repo.db.Model(&models.Properties{}).
+			Raw(`
+				SELECT
+					props.*,
+					TRUE AS is_favorite
+				FROM favorite_properties
+				LEFT JOIN (
+					SELECT properties.*,
+					selling_properties.price,
+					selling_properties.is_sold,
+					renting_properties.price_per_month,
+					renting_properties.is_occupied
+					FROM properties
+					LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
+					LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
+				) AS props ON favorite_properties.property_id = props.property_id
+				WHERE favorite_properties.user_id = @user_id
+				LIMIT @limit OFFSET @offset
+				`,
+				sql.Named("user_id", userId),
+				sql.Named("limit", paginated.Limit),
+				sql.Named("offset", paginated.Offset)).
+			Scan(&properties.Properties).Error
+
+		return err
+	})
 }
 
-func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties) error {
-	countPropertyFavorite := repo.db.Model(&models.FavoriteProperties{}).
-		Select("property_id, COUNT(property_id) as favorites").
-		Group("property_id")
-
+func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties, userId string) error {
 	return repo.db.Model(&models.Properties{}).
-		Preload("PropertyImages").
-		Preload("SellingProperty").
-		Preload("RentingProperty").
-		Select("properties.*, COALESCE(count_property_favorite.favorites, 0) AS favorite_count").
-		Joins("LEFT JOIN (?) AS count_property_favorite ON count_property_favorite.property_id = properties.property_id", countPropertyFavorite).
-		Order("favorite_count DESC").
-		Order("created_at DESC").
-		Order("property_id DESC").
-		Limit(10).
-		Find(properties).Error
+		Raw(`
+			SELECT props.*,
+				CASE
+					WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
+					ELSE FALSE
+				END AS is_favorite
+			FROM (
+				SELECT properties.*,
+					selling_properties.price, 
+					selling_properties.is_sold,
+					renting_properties.price_per_month,
+					renting_properties.is_occupied
+				FROM (
+					SELECT properties.property_id,
+						COALESCE(count_property_favorite.favorites, 0) AS favorite_count
+					FROM properties
+					LEFT JOIN (
+						SELECT property_id,
+							COUNT(property_id) as favorites
+						FROM favorite_properties
+						GROUP BY property_id
+					) AS count_property_favorite ON count_property_favorite.property_id = properties.property_id
+					ORDER BY favorite_count DESC, created_at DESC, property_id DESC
+					LIMIT 10
+				) AS top10
+				LEFT JOIN properties ON top10.property_id = properties.property_id
+				LEFT JOIN selling_properties ON top10.property_id = selling_properties.property_id
+				LEFT JOIN renting_properties ON top10.property_id = renting_properties.property_id
+			) AS props
+			LEFT JOIN favorite_properties ON (
+				favorite_properties.property_id = props.property_id AND
+				favorite_properties.user_id = @user_id
+			)
+		`, sql.Named("user_id", userId)).
+		Scan(properties).Error
 }

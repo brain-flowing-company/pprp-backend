@@ -61,29 +61,29 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 // @tags        property
 // @produce     json
 // @param       query query string false "Search query"
-// @success     200	{object} []models.Properties
+// @param       limit query int false "Pagination limit per page, max 50, default 20"
+// @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @success     200	{object} models.AllPropertiesResponses
 // @failure     500 {object} models.ErrorResponses "Could not get properties"
 func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	query := c.Query("query")
-	properties := []models.Properties{}
+	properties := models.AllPropertiesResponses{}
 
 	var userId string
 	if _, ok := c.Locals("session").(models.Sessions); !ok {
-		userId = ""
+		userId = "00000000-0000-0000-0000-000000000000"
 	} else {
 		userId = c.Locals("session").(models.Sessions).UserId.String()
 	}
 
-	if query != "" {
-		err := h.service.SearchProperties(&properties, query, userId)
-		if err != nil {
-			return utils.ResponseError(c, err)
-		}
-	} else {
-		err := h.service.GetAllProperties(&properties, userId)
-		if err != nil {
-			return utils.ResponseError(c, err)
-		}
+	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
+	page := utils.Max(c.QueryInt("page", 1), 1)
+
+	paginated := models.NewPaginatedQuery(page, limit)
+
+	err := h.service.GetAllProperties(&properties, query, userId, paginated)
+	if err != nil {
+		return utils.ResponseError(c, err)
 	}
 
 	return c.JSON(properties)
@@ -94,14 +94,21 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 // @description Get all properties owned by the current user
 // @tags        property
 // @produce     json
-// @success     200	{object} []models.Properties
+// @param       limit query int false "Pagination limit per page, max 50, default 20"
+// @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @success     200	{object} models.MyPropertiesResponses
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
-	properties := []models.Properties{}
-	err := h.service.GetPropertyByOwnerId(&properties, userId)
+	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
+	page := utils.Max(c.QueryInt("page", 1), 1)
+
+	paginated := models.NewPaginatedQuery(page, limit)
+
+	properties := models.MyPropertiesResponses{}
+	err := h.service.GetPropertyByOwnerId(&properties, userId, paginated)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
@@ -243,16 +250,21 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 // @description Get all properties that the current user has added to favorites
 // @tags        property
 // @produce     json
-// @success     200	{object} []models.Properties
+// @param       limit query int false "Pagination limit per page, max 50, default 20"
+// @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @success     200	{object} models.MyFavoritePropertiesResponses
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     500 {object} models.ErrorResponses "Could not get favorite properties"
 func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
-	// quries := c.Queries()
+	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
+	page := utils.Max(c.QueryInt("page", 1), 1)
+
+	paginated := models.NewPaginatedQuery(page, limit)
 
 	properties := models.MyFavoritePropertiesResponses{}
-	err := h.service.GetFavoritePropertiesByUserId(&properties, userId)
+	err := h.service.GetFavoritePropertiesByUserId(&properties, userId, paginated)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
@@ -268,8 +280,15 @@ func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 // @success     200	{object} []models.Properties
 // @failure     500 {object} models.ErrorResponses "Could not get top 10 properties"
 func (h *handlerImpl) GetTop10Properties(c *fiber.Ctx) error {
+	var userId string
+	if _, ok := c.Locals("session").(models.Sessions); !ok {
+		userId = "00000000-0000-0000-0000-000000000000"
+	} else {
+		userId = c.Locals("session").(models.Sessions).UserId.String()
+	}
+
 	properties := []models.Properties{}
-	err := h.service.GetTop10Properties(&properties)
+	err := h.service.GetTop10Properties(&properties, userId)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
