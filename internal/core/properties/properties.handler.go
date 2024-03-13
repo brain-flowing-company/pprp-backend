@@ -249,8 +249,13 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
-	properties := []models.Properties{}
-	err := h.service.GetFavoritePropertiesByUserId(&properties, userId)
+	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
+	page := utils.Max(c.QueryInt("page", 1), 1)
+
+	paginated := models.NewPaginatedQuery(page, limit)
+
+	properties := models.MyFavoritePropertiesResponses{}
+	err := h.service.GetFavoritePropertiesByUserId(&properties, userId, *paginated)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}

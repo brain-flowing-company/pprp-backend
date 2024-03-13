@@ -22,7 +22,7 @@ type Service interface {
 	SearchProperties(*[]models.Properties, string, string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
-	GetFavoritePropertiesByUserId(*[]models.Properties, string) *apperror.AppError
+	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, models.PaginatedQuery) *apperror.AppError
 	GetTop10Properties(*[]models.Properties, string) *apperror.AppError
 }
 
@@ -236,14 +236,14 @@ func (s *serviceImpl) RemoveFavoriteProperty(propertyId string, userId uuid.UUID
 	return nil
 }
 
-func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *[]models.Properties, userId string) *apperror.AppError {
+func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated models.PaginatedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
 			Describe("Invalid user id")
 	}
 
-	err := s.repo.GetFavoritePropertiesByUserId(properties, userId)
+	err := s.repo.GetFavoritePropertiesByUserId(properties, userId, paginated)
 	if err != nil {
 		s.logger.Error("Could not get favorite properties by user id", zap.Error(err))
 		return apperror.
