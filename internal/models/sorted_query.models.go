@@ -16,8 +16,9 @@ type SortedQuery struct {
 	mapper    map[string]string
 }
 
-func NewSortedQuery(t reflect.Type) *SortedQuery {
+func NewSortedQuery(model interface{}) *SortedQuery {
 	s := &SortedQuery{mapper: map[string]string{}}
+	t := reflect.TypeOf(model)
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 

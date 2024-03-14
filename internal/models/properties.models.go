@@ -22,7 +22,7 @@ type Properties struct {
 	Bedrooms            int64                `json:"bedrooms"                 example:"3"`
 	Bathrooms           int64                `json:"bathrooms"                example:"2"`
 	Furnishing          enums.Furnishing     `json:"furnishing"               example:"UNFURNISHED"`
-	Floor               int64                `json:"floor"                    example:"5"`
+	Floor               int64                `json:"floor"                    example:"5" sortmapper:"floor"`
 	FloorSize           float64              `json:"floor_size"               example:"123.45"`
 	FloorSizeUnit       enums.FloorSizeUnits `json:"floor_size_unit" gorm:"default:SQM" example:"SQM"`
 	UnitNumber          int64                `json:"unit_number"              example:"123"`

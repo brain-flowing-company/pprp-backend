@@ -13,7 +13,7 @@ import (
 )
 
 type Service interface {
-	GetAllProperties(*models.AllPropertiesResponses, string, string, *models.PaginatedQuery) *apperror.AppError
+	GetAllProperties(*models.AllPropertiesResponses, string, string, *models.PaginatedQuery, *models.SortedQuery) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *models.PaginatedQuery) *apperror.AppError
 	CreateProperty(*models.Properties) *apperror.AppError
@@ -37,7 +37,7 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 	}
 }
 
-func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *models.PaginatedQuery) *apperror.AppError {
+func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *models.PaginatedQuery, sorted *models.SortedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
@@ -45,7 +45,7 @@ func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses
 	}
 
 	query = strings.ToLower(strings.TrimSpace(query))
-	err := s.repo.GetAllProperties(properties, query, userId, paginated)
+	err := s.repo.GetAllProperties(properties, query, userId, paginated, sorted)
 	if err != nil {
 		s.logger.Error("Could not search properties", zap.Error(err))
 		return apperror.

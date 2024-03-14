@@ -9,7 +9,7 @@ import (
 )
 
 type Repository interface {
-	GetAllProperties(*models.AllPropertiesResponses, string, string, *models.PaginatedQuery) error
+	GetAllProperties(*models.AllPropertiesResponses, string, string, *models.PaginatedQuery, *models.SortedQuery) error
 	GetPropertyById(*models.Properties, string) error
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *models.PaginatedQuery) error
 	CreateProperty(*models.Properties) error
@@ -32,7 +32,7 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *models.PaginatedQuery) error {
+func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *models.PaginatedQuery, sorted *models.SortedQuery) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		err := repo.db.Model(&models.Properties{}).
 			Raw(`
@@ -54,8 +54,8 @@ func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesRes
 			return err
 		}
 
-		err = repo.db.Model(&models.Properties{}).
-			Raw(`
+		q := repo.db.Model(&models.Properties{}).
+			Exec(`
 					SELECT props.*,
 						CASE
 							WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
@@ -76,13 +76,14 @@ func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesRes
 						favorite_properties.property_id = props.property_id AND
 						favorite_properties.user_id = @user_id
 					)
-					LIMIT @limit OFFSET @offset
 				`,
 				sql.Named("user_id", userId),
-				sql.Named("query", "%"+query+"%"),
-				sql.Named("limit", paginated.Limit),
-				sql.Named("offset", paginated.Offset)).
-			Scan(&properties.Properties).Error
+				sql.Named("query", "%"+query+"%"))
+
+		q = sorted.SortedQuery(q)
+		q = paginated.PaginatedQuery(q)
+
+		err = q.Scan(&properties.Properties).Error
 
 		return err
 	})

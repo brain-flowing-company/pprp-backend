@@ -69,6 +69,14 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	query := c.Query("query")
 	properties := models.AllPropertiesResponses{}
 
+	sorted := models.NewSortedQuery(models.Properties{})
+	err := sorted.ParseQuery(c.Query("sort"))
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(err.Error()))
+	}
+
 	var userId string
 	if _, ok := c.Locals("session").(models.Sessions); !ok {
 		userId = "00000000-0000-0000-0000-000000000000"
@@ -81,9 +89,9 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 
 	paginated := models.NewPaginatedQuery(page, limit)
 
-	err := h.service.GetAllProperties(&properties, query, userId, paginated)
-	if err != nil {
-		return utils.ResponseError(c, err)
+	apperr := h.service.GetAllProperties(&properties, query, userId, paginated, sorted)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
 	}
 
 	return c.JSON(properties)
