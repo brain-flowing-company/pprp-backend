@@ -10,14 +10,14 @@ import (
 	"gorm.io/gorm"
 )
 
-type sorter struct {
+type SortedQuery struct {
 	Field     string
 	Direction enums.SortDirection
 	mapper    map[string]string
 }
 
-func NewSortedQuery(t reflect.Type) *sorter {
-	s := &sorter{mapper: map[string]string{}}
+func NewSortedQuery(t reflect.Type) *SortedQuery {
+	s := &SortedQuery{mapper: map[string]string{}}
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 
@@ -32,12 +32,20 @@ func NewSortedQuery(t reflect.Type) *sorter {
 	return s
 }
 
-func (s *sorter) Parse(query string) error {
+func (s *SortedQuery) ParseQuery(query string) error {
+	if len(query) == 0 {
+		return nil
+	}
+
 	pairs := strings.Split(query, ":")
+
+	if len(pairs) < 2 {
+		return errors.New("too few sorting arguments")
+	}
 
 	field, ok := s.mapper[pairs[0]]
 	if !ok {
-		return errors.New("invalid sort field")
+		return fmt.Errorf("'%s' is not a valid sort key", pairs[0])
 	}
 
 	direction, ok := enums.ParseSortDirection(pairs[1])
@@ -51,10 +59,10 @@ func (s *sorter) Parse(query string) error {
 	return nil
 }
 
-func (s *sorter) Map(key string, value string) {
+func (s *SortedQuery) Map(key string, value string) {
 	s.mapper[key] = value
 }
 
-func (s *sorter) SortedQuery(db *gorm.DB) *gorm.DB {
+func (s *SortedQuery) SortedQuery(db *gorm.DB) *gorm.DB {
 	return db.Order(fmt.Sprintf("%s %s", s.Field, s.Direction))
 }
