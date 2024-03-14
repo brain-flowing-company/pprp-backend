@@ -54,9 +54,10 @@ func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesRes
 			return err
 		}
 
-		q := repo.db.Model(&models.Properties{}).
-			Exec(`
-					SELECT props.*,
+		err = repo.db.Model(&models.Properties{}).
+			Raw(`
+					SELECT
+						props.*,
 						CASE
 							WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
 							ELSE FALSE
@@ -75,15 +76,10 @@ func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesRes
 					LEFT JOIN favorite_properties ON (
 						favorite_properties.property_id = props.property_id AND
 						favorite_properties.user_id = @user_id
-					)
-				`,
+					)`+sorted.SortedSQL()+" "+paginated.PaginatedSQL(),
 				sql.Named("user_id", userId),
-				sql.Named("query", "%"+query+"%"))
-
-		q = sorted.SortedQuery(q)
-		q = paginated.PaginatedQuery(q)
-
-		err = q.Scan(&properties.Properties).Error
+				sql.Named("query", "%"+query+"%")).
+			Scan(&properties.Properties).Error
 
 		return err
 	})

@@ -41,14 +41,14 @@ type PropertyImages struct {
 
 type SellingProperties struct {
 	PropertyId uuid.UUID `json:"-"`
-	Price      float64   `json:"price"   example:"12345.67"`
+	Price      float64   `json:"price"   example:"12345.67" sortmapper:"price"`
 	IsSold     bool      `json:"is_sold" example:"true"`
 	CommonModels
 }
 
 type RentingProperties struct {
 	PropertyId    uuid.UUID `json:"-"`
-	PricePerMonth float64   `json:"price_per_month" example:"12345.67"`
+	PricePerMonth float64   `json:"price_per_month" example:"12345.67" sortmapper:"price_per_month"`
 	IsOccupied    bool      `json:"is_occupied"     example:"true"`
 	CommonModels
 }
