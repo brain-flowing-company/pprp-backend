@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -18,4 +20,8 @@ func NewPaginatedQuery(page int, limit int) *PaginatedQuery {
 
 func (p *PaginatedQuery) PaginatedQuery(db *gorm.DB) *gorm.DB {
 	return db.Offset(p.Offset).Limit(p.Limit)
+}
+
+func (p *PaginatedQuery) PaginatedSQL() string {
+	return fmt.Sprintf("LIMIT %d OFFSET %d", p.Limit, p.Offset)
 }

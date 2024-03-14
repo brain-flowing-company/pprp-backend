@@ -19,18 +19,30 @@ type SortedQuery struct {
 func NewSortedQuery(model interface{}) *SortedQuery {
 	s := &SortedQuery{mapper: map[string]string{}}
 	t := reflect.TypeOf(model)
+
+	s.assignMapper("", t)
+
+	return s
+}
+
+func (s *SortedQuery) assignMapper(parent string, t reflect.Type) {
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 
 		json := f.Tag.Get("json")
 		sortmap := f.Tag.Get("sortmapper")
 
-		if len(json) > 0 && len(sortmap) > 0 {
-			s.mapper[json] = sortmap
+		if f.Type.Kind() == reflect.Struct {
+			s.assignMapper(parent+json+".", f.Type)
+		} else if len(json) > 0 && len(sortmap) > 0 {
+			key := json
+			if len(parent) > 0 {
+				key = parent + json
+			}
+
+			s.mapper[key] = sortmap
 		}
 	}
-
-	return s
 }
 
 func (s *SortedQuery) ParseQuery(query string) error {
@@ -65,5 +77,15 @@ func (s *SortedQuery) Map(key string, value string) {
 }
 
 func (s *SortedQuery) SortedQuery(db *gorm.DB) *gorm.DB {
-	return db.Order(fmt.Sprintf("%s %s", s.Field, s.Direction))
+	if len(s.Field) > 0 {
+		return db.Order(fmt.Sprintf("%s %s", s.Field, s.Direction))
+	}
+	return db
+}
+
+func (s *SortedQuery) SortedSQL() string {
+	if len(s.Field) > 0 {
+		return fmt.Sprintf("ORDER BY %s %s NULLS LAST", s.Field, s.Direction)
+	}
+	return ""
 }
