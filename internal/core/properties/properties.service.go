@@ -13,15 +13,15 @@ import (
 )
 
 type Service interface {
-	GetAllProperties(*models.AllPropertiesResponses, string, string, *models.PaginatedQuery, *models.SortedQuery) *apperror.AppError
+	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
-	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *models.PaginatedQuery) *apperror.AppError
+	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery) *apperror.AppError
 	CreateProperty(*models.Properties) *apperror.AppError
 	UpdatePropertyById(*models.Properties, string) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
-	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *models.PaginatedQuery) *apperror.AppError
+	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *utils.PaginatedQuery) *apperror.AppError
 	GetTop10Properties(*[]models.Properties, string) *apperror.AppError
 }
 
@@ -37,7 +37,7 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 	}
 }
 
-func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *models.PaginatedQuery, sorted *models.SortedQuery) *apperror.AppError {
+func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
@@ -91,7 +91,7 @@ func (s *serviceImpl) GetPropertyById(property *models.Properties, propertyId st
 	return nil
 }
 
-func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *models.PaginatedQuery) *apperror.AppError {
+func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *utils.PaginatedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(ownerId) {
 		return apperror.
 			New(apperror.InvalidUserId).
@@ -217,7 +217,7 @@ func (s *serviceImpl) RemoveFavoriteProperty(propertyId string, userId uuid.UUID
 	return nil
 }
 
-func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *models.PaginatedQuery) *apperror.AppError {
+func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *utils.PaginatedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).

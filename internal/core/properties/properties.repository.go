@@ -5,20 +5,21 @@ import (
 	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
-	GetAllProperties(*models.AllPropertiesResponses, string, string, *models.PaginatedQuery, *models.SortedQuery) error
+	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery) error
 	GetPropertyById(*models.Properties, string) error
-	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *models.PaginatedQuery) error
+	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery) error
 	CreateProperty(*models.Properties) error
 	UpdatePropertyById(*models.Properties, string) error
 	DeletePropertyById(string) error
 	CountProperty(*int64, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
 	RemoveFavoriteProperty(string, string) error
-	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *models.PaginatedQuery) error
+	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *utils.PaginatedQuery) error
 	GetTop10Properties(*[]models.Properties, string) error
 }
 
@@ -32,7 +33,7 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *models.PaginatedQuery, sorted *models.SortedQuery) error {
+func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		err := repo.db.Model(&models.Properties{}).
 			Raw(`
@@ -101,7 +102,7 @@ func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propert
 		Scan(property).Error
 }
 
-func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *models.PaginatedQuery) error {
+func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *utils.PaginatedQuery) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		err := repo.db.Model(&models.Properties{}).
 			Raw(`
@@ -237,7 +238,7 @@ func (repo *repositoryImpl) RemoveFavoriteProperty(propertyId string, userId str
 	return repo.db.Where("property_id = ? AND user_id = ?", propertyId, userId).Delete(&models.FavoriteProperties{}).Error
 }
 
-func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *models.PaginatedQuery) error {
+func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *utils.PaginatedQuery) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		err := repo.db.Model(&models.Properties{}).
 			Raw(`

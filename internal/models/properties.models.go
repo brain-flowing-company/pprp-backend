@@ -40,17 +40,17 @@ type PropertyImages struct {
 }
 
 type SellingProperties struct {
-	PropertyId uuid.UUID `json:"-"`
-	Price      float64   `json:"price"   example:"12345.67" sortmapper:"price"`
-	IsSold     bool      `json:"is_sold" example:"true"`
-	CommonModels
+	PropertyId   uuid.UUID `json:"-"`
+	Price        float64   `json:"price"   example:"12345.67" sortmapper:"price"`
+	IsSold       bool      `json:"is_sold" example:"true"`
+	CommonModels `sortmapper:"-"`
 }
 
 type RentingProperties struct {
 	PropertyId    uuid.UUID `json:"-"`
 	PricePerMonth float64   `json:"price_per_month" example:"12345.67" sortmapper:"price_per_month"`
 	IsOccupied    bool      `json:"is_occupied"     example:"true"`
-	CommonModels
+	CommonModels  `sortmapper:"-"`
 }
 
 type FavoriteProperties struct {

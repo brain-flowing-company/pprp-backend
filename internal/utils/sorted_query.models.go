@@ -1,4 +1,4 @@
-package models
+package utils
 
 import (
 	"errors"
@@ -20,28 +20,43 @@ func NewSortedQuery(model interface{}) *SortedQuery {
 	s := &SortedQuery{mapper: map[string]string{}}
 	t := reflect.TypeOf(model)
 
-	s.assignMapper("", t)
+	parents := NewStack[string]()
+	s.assignMapper(parents, t)
 
 	return s
 }
 
-func (s *SortedQuery) assignMapper(parent string, t reflect.Type) {
+func (s *SortedQuery) assignMapper(parents *Stack[string], t reflect.Type) {
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 
 		json := f.Tag.Get("json")
 		sortmap := f.Tag.Get("sortmapper")
 
+		if json == "-" || sortmap == "-" {
+			continue
+		}
+
 		if f.Type.Kind() == reflect.Struct {
-			s.assignMapper(parent+json+".", f.Type)
-		} else if len(json) > 0 && len(sortmap) > 0 {
-			key := json
-			if len(parent) > 0 {
-				key = parent + json
+			if len(json) > 0 {
+				parents.Push(json)
 			}
 
-			s.mapper[key] = sortmap
+			s.assignMapper(parents, f.Type)
+
+			if len(json) > 0 {
+				parents.Pop()
+			}
 		}
+
+		if len(json) == 0 || len(sortmap) == 0 {
+			continue
+		}
+
+		parents.Push(json)
+		key := strings.Join(parents.Seek(), ".")
+		s.mapper[key] = sortmap
+		parents.Pop()
 	}
 }
 
