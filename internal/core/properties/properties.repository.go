@@ -204,12 +204,14 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 }
 
 func (repo *repositoryImpl) UpdatePropertyById(property *models.Properties, propertyId string) error {
-	err := repo.db.First(&models.Properties{}, "property_id = ?", propertyId).Error
+	var existingProperty models.Properties
+	err := repo.db.First(&existingProperty, "property_id = ?", propertyId).Error
 	if err != nil {
 		return err
 	}
 
-	return repo.db.Model(&models.Properties{}).Where("property_id = ?", propertyId).Updates(property).Error
+	fmt.Println(property)
+	return repo.db.Where("property_id = ?", propertyId).Updates(property).Error
 }
 
 func (repo *repositoryImpl) DeletePropertyById(propertyId string) error {
@@ -297,7 +299,8 @@ func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties, 
 					renting_properties.is_occupied
 				FROM (
 					SELECT properties.property_id,
-						COALESCE(count_property_favorite.favorites, 0) AS favorite_count
+						COALESCE(count_property_favorite.favorites, 0) AS favorite_count,
+						properties.created_at
 					FROM properties
 					LEFT JOIN (
 						SELECT property_id,
@@ -305,7 +308,7 @@ func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties, 
 						FROM favorite_properties
 						GROUP BY property_id
 					) AS count_property_favorite ON count_property_favorite.property_id = properties.property_id
-					ORDER BY favorite_count DESC, created_at DESC, property_id DESC
+					ORDER BY favorite_count DESC, properties.created_at DESC, properties.property_id DESC
 					LIMIT 10
 				) AS top10
 				LEFT JOIN properties ON top10.property_id = properties.property_id
