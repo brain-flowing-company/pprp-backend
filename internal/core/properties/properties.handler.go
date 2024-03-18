@@ -1,6 +1,7 @@
 package properties
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -149,11 +150,15 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId
 	property.OwnerId = userId
 
-	propertyImages, _ := c.FormFile("property_images")
-	err := h.service.CreateProperty(&property, propertyImages)
-	if err != nil {
-		return utils.ResponseError(c, err)
+	formFiles, _ := c.MultipartForm()
+	for _, file := range formFiles.File["property_images"] {
+		fmt.Println(file.Filename)
 	}
+
+	// err := h.service.CreateProperty(&property, propertyImages)
+	// if err != nil {
+	// 	return utils.ResponseError(c, err)
+	// }
 
 	return utils.ResponseMessage(c, http.StatusOK, "Property created")
 }
