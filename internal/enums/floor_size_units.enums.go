@@ -3,6 +3,6 @@ package enums
 type FloorSizeUnits string
 
 const (
-	SQM  FloorSizeUnits = "sqm"
-	SQFT FloorSizeUnits = "sqft"
+	SQM  FloorSizeUnits = "SQM"
+	SQFT FloorSizeUnits = "SQFT"
 )
