@@ -156,9 +156,9 @@ func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyProperties
 
 func (repo *repositoryImpl) CreateProperty(property *models.PropertyInfos) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
-		propertyQuery := `INSERT INTO properties (owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, floor_size_unit, unit_number)
+		propertyQuery := `INSERT INTO properties (property_id, owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, floor_size_unit, unit_number)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
-		if err := tx.Exec(propertyQuery,
+		if err := tx.Exec(propertyQuery, property.PropertyId,
 			property.OwnerId, property.PropertyName, property.PropertyDescription, property.PropertyType,
 			property.Address, property.Alley, property.Street, property.SubDistrict, property.District,
 			property.Province, property.Country, property.PostalCode, property.Bedrooms, property.Bathrooms,
@@ -167,31 +167,25 @@ func (repo *repositoryImpl) CreateProperty(property *models.PropertyInfos) error
 			return err
 		}
 
-		propertyTemp := models.Properties{}
-		if err := tx.Model(&models.Properties{}).Find(&propertyTemp, "property_name = ? AND owner_id = ?", property.PropertyName, property.OwnerId).Error; err != nil {
-			return err
+		if len(property.PropertyImages) != 0 {
+			imageQuery := `INSERT INTO property_images (property_id, image_url) VALUES (?, ?);`
+			for _, imageUrl := range property.PropertyImages {
+				if err := tx.Exec(imageQuery, property.PropertyId, imageUrl).Error; err != nil {
+					return err
+				}
+			}
 		}
-		property_id := propertyTemp.PropertyId
-
-		// if len(property.PropertyImages) != 0 {
-		// 	imageQuery := `INSERT INTO property_images (property_id, image_url) VALUES (?, ?);`
-		// 	for _, image := range property.PropertyImages {
-		// 		if err := tx.Exec(imageQuery, property_id, image.ImageUrl).Error; err != nil {
-		// 			return err
-		// 		}
-		// 	}
-		// }
 
 		if property.Price != 0 {
 			sellingQuery := `INSERT INTO selling_properties (property_id, price, is_sold) VALUES (?, ?, ?);`
-			if err := tx.Exec(sellingQuery, property_id, property.Price, property.IsSold).Error; err != nil {
+			if err := tx.Exec(sellingQuery, property.PropertyId, property.Price, property.IsSold).Error; err != nil {
 				return err
 			}
 		}
 
 		if property.PricePerMonth != 0 {
 			rentingQuery := `INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUES (?, ?, ?);`
-			if err := tx.Exec(rentingQuery, property_id, property.PricePerMonth, property.IsOccupied).Error; err != nil {
+			if err := tx.Exec(rentingQuery, property.PropertyId, property.PricePerMonth, property.IsOccupied).Error; err != nil {
 				return err
 			}
 		}

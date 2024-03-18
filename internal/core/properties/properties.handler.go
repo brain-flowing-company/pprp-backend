@@ -151,14 +151,15 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 	property.OwnerId = userId
 
 	formFiles, _ := c.MultipartForm()
-	for _, file := range formFiles.File["property_images"] {
+	propertyImages := formFiles.File["property_images"]
+	for _, file := range propertyImages {
 		fmt.Println(file.Filename)
 	}
 
-	// err := h.service.CreateProperty(&property, propertyImages)
-	// if err != nil {
-	// 	return utils.ResponseError(c, err)
-	// }
+	err := h.service.CreateProperty(&property, propertyImages)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
 
 	return utils.ResponseMessage(c, http.StatusOK, "Property created")
 }

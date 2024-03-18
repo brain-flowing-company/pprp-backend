@@ -21,7 +21,7 @@ type Service interface {
 	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery) *apperror.AppError
-	CreateProperty(*models.PropertyInfos, *multipart.FileHeader) *apperror.AppError
+	CreateProperty(*models.PropertyInfos, []*multipart.FileHeader) *apperror.AppError
 	UpdatePropertyById(*models.PropertyInfos, string) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
@@ -116,7 +116,19 @@ func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesRespon
 	return nil
 }
 
-func (s *serviceImpl) CreateProperty(property *models.PropertyInfos, propertyImages *multipart.FileHeader) *apperror.AppError {
+func (s *serviceImpl) CreateProperty(property *models.PropertyInfos, propertyImages []*multipart.FileHeader) *apperror.AppError {
+	if propertyImages == nil || len(propertyImages) == 0 {
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("No property image found")
+	}
+
+	propertyImageUrls, uploadErr := s.uploadPropertyImages(property.PropertyId, propertyImages)
+	if uploadErr != nil {
+		return uploadErr
+	}
+
+	property.PropertyImages = propertyImageUrls
 
 	err := s.repo.CreateProperty(property)
 	if err != nil {
@@ -260,61 +272,69 @@ func (s *serviceImpl) GetTop10Properties(properties *[]models.Properties, userId
 	return nil
 }
 
-func (s *serviceImpl) uploadPropertyImage(propertyId uuid.UUID, propertyImage *multipart.FileHeader) (string, *apperror.AppError) {
-	if propertyImage == nil {
-		return "", apperror.
+func (s *serviceImpl) uploadPropertyImages(propertyId uuid.UUID, propertyImages []*multipart.FileHeader) ([]string, *apperror.AppError) {
+	var urls []string
+
+	if propertyImages == nil || len(propertyImages) == 0 {
+		return nil, apperror.
 			New(apperror.BadRequest).
-			Describe("No citizen card found")
+			Describe("No property image found")
 	}
 
-	file, err := propertyImage.Open()
-	if err != nil {
-		return "", apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not upload profile image")
+	imageCount := 1
+	for _, propertyImage := range propertyImages {
+		file, err := propertyImage.Open()
+		if err != nil {
+			return nil, apperror.
+				New(apperror.InternalServerError).
+				Describe("Could not upload property image")
+		}
+
+		ext := filepath.Ext(propertyImage.Filename)
+		ip := utils.NewImageProcessor()
+
+		switch strings.ToLower(ext) {
+		case ".jpg":
+			fallthrough
+
+		case ".jpeg":
+			err = ip.LoadJPEG(file)
+
+		case ".png":
+			err = ip.LoadPNG(file)
+
+		default:
+			return nil, apperror.
+				New(apperror.InvalidPropertyImageExtension).
+				Describe(fmt.Sprintf("App does not support %v extension", ext))
+		}
+
+		if err != nil {
+			s.logger.Error("Could not load image", zap.Error(err))
+			return nil, apperror.
+				New(apperror.InternalServerError).
+				Describe("Could not process image")
+		}
+
+		processedFile, err := ip.Save()
+		if err != nil {
+			s.logger.Error("Could not create new image", zap.Error(err))
+			return nil, apperror.
+				New(apperror.InternalServerError).
+				Describe("Could not process image")
+		}
+
+		url, err := s.storage.Upload(fmt.Sprintf("properties/%v-%v.jpeg", propertyId.String(), imageCount), processedFile, types.ObjectCannedACLPrivate)
+		if err != nil {
+			return nil, apperror.
+				New(apperror.InternalServerError).
+				Describe("Could not upload profile image")
+		}
+
+		urls = append(urls, url)
+		fmt.Println("image count:", imageCount, "--> url:", url)
+		imageCount++
 	}
 
-	ext := filepath.Ext(propertyImage.Filename)
-	ip := utils.NewImageProcessor()
-
-	switch strings.ToLower(ext) {
-	case ".jpg":
-		fallthrough
-
-	case ".jpeg":
-		err = ip.LoadJPEG(file)
-
-	case ".png":
-		err = ip.LoadPNG(file)
-
-	default:
-		return "", apperror.
-			New(apperror.InvalidPropertyImageExtension).
-			Describe(fmt.Sprintf("App does not support %v extension", ext))
-	}
-
-	if err != nil {
-		s.logger.Error("Could not load image", zap.Error(err))
-		return "", apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not process image")
-	}
-
-	processedFile, err := ip.Save()
-	if err != nil {
-		s.logger.Error("Could not create new image", zap.Error(err))
-		return "", apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not process image")
-	}
-
-	url, err := s.storage.Upload(fmt.Sprintf("verifications/%v.jpeg", propertyId.String()), processedFile, types.ObjectCannedACLPrivate)
-
-	if err != nil {
-		return "", apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not upload profile image")
-	}
-
-	return url, nil
+	return urls, nil
 }

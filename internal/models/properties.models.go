@@ -79,6 +79,7 @@ type PropertyInfos struct {
 	FloorSize           float64              `json:"floor_size" form:"floor_size"               example:"123.45"`
 	FloorSizeUnit       enums.FloorSizeUnits `json:"floor_size_unit" form:"floor_size_unit" gorm:"default:SQM" example:"SQM"`
 	UnitNumber          int64                `json:"unit_number" form:"unit_number"              example:"123"`
+	PropertyImages      []string             `json:"property_images" form:"property_images"`
 	Price               float64              `json:"price" form:"price"   example:"12345.67"`
 	IsSold              bool                 `json:"is_sold" form:"is_sold" example:"true"`
 	PricePerMonth       float64              `json:"price_per_month" form:"price_per_month" example:"12345.67"`
