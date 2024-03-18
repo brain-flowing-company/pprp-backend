@@ -33,7 +33,7 @@ func NewHandler(service Service) Handler {
 	}
 }
 
-// @router      /api/v1/property/:propertyId [get]
+// @router      /api/v1/properties/:propertyId [get]
 // @summary     Get property by propertyId
 // @description Get property by its id
 // @tags        property
@@ -124,7 +124,7 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 	return c.JSON(properties)
 }
 
-// @router      /api/v1/property [post]
+// @router      /api/v1/properties [post]
 // @summary     Create a property
 // @description Create a property with the provided details
 // @tags        property
@@ -154,7 +154,7 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property created")
 }
 
-// @router      /api/v1/property/:propertyId [put]
+// @router      /api/v1/properties/:propertyId [put]
 // @summary     Update a property
 // @description Update a property, owned by the current user, by its id with the provided details
 // @tags        property
@@ -188,7 +188,7 @@ func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property updated")
 }
 
-// @router      /api/v1/property/:propertyId [delete]
+// @router      /api/v1/properties/:propertyId [delete]
 // @summary     Delete a property
 // @description Delete a property, owned by the current user, by its id
 // @tags        property
@@ -210,7 +210,7 @@ func (h *handlerImpl) DeletePropertyById(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property deleted")
 }
 
-// @router      /api/v1/property/favorites/:propertyId [post]
+// @router      /api/v1/properties/favorites/:propertyId [post]
 // @summary     Add property to favorites
 // @description Add property to the current user favorites
 // @tags        property
@@ -232,7 +232,7 @@ func (h *handlerImpl) AddFavoriteProperty(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property added to favorites")
 }
 
-// @router      /api/v1/property/favorites/:propertyId [delete]
+// @router      /api/v1/properties/favorites/:propertyId [delete]
 // @summary     Remove property to favorites
 // @description Remove property to the current user favorites
 // @tags        property

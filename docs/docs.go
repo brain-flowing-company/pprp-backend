@@ -686,38 +686,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/api/v1/properties/top10": {
-            "get": {
-                "description": "Get top 10 properties with the most favorites, sorted by the number of favorites then by the newest properties",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Get top 10 properties",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Properties"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Could not get top 10 properties",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/property": {
+            },
             "post": {
                 "description": "Create a property with the provided details",
                 "produces": [
@@ -943,7 +912,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/property/:propertyId": {
+        "/api/v1/properties/:propertyId": {
             "get": {
                 "description": "Get property by its id",
                 "produces": [
@@ -1272,7 +1241,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/property/favorites/:propertyId": {
+        "/api/v1/properties/favorites/:propertyId": {
             "post": {
                 "description": "Add property to the current user favorites",
                 "produces": [
@@ -1357,6 +1326,35 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Could not remove favorite property",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/properties/top10": {
+            "get": {
+                "description": "Get top 10 properties with the most favorites, sorted by the number of favorites then by the newest properties",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Get top 10 properties",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Properties"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not get top 10 properties",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
