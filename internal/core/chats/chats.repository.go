@@ -11,7 +11,7 @@ import (
 
 type Repository interface {
 	GetAllChats(*[]models.ChatPreviews, uuid.UUID) error
-	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) error
+	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, *models.PaginatedQuery) error
 	SaveMessages(msg *models.Messages) error
 	ReadMessages(sendUserId uuid.UUID, recvUserId uuid.UUID) error
 }
@@ -62,10 +62,10 @@ func (repo *repositoryImpl) GetAllChats(results *[]models.ChatPreviews, userId u
 		Scan(results).Error
 }
 
-func (repo *repositoryImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid.UUID, recvUserId uuid.UUID, offset int, limit int) error {
+func (repo *repositoryImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid.UUID, recvUserId uuid.UUID, paginated *models.PaginatedQuery) error {
 	subQuery := repo.db.Model(&models.Messages{}).
 		Order("sent_at DESC").
-		Offset(offset).Limit(limit).
+		Offset(paginated.Offset).Limit(paginated.Limit).
 		Where("(sender_id = @sender_id AND receiver_id = @receiver_id) OR (sender_id = @receiver_id AND receiver_id = @sender_id)",
 			sql.Named("sender_id", sendUserId),
 			sql.Named("receiver_id", recvUserId))

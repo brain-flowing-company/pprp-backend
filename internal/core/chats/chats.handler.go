@@ -76,11 +76,13 @@ func (h *handlerImpl) GetMessagesInChat(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperror.InvalidUserId)
 	}
 
-	offset := c.QueryInt("offset", 0)
-	limit := c.QueryInt("limit", 50)
+	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
+	page := utils.Max(c.QueryInt("page", 1), 1)
+
+	paginated := models.NewPaginatedQuery(page, limit)
 
 	var msgs []models.Messages
-	apperr := h.service.GetMessagesInChat(&msgs, session.UserId, recvUserId, offset, limit)
+	apperr := h.service.GetMessagesInChat(&msgs, session.UserId, recvUserId, paginated)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}
