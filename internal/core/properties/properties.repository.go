@@ -2,7 +2,6 @@ package properties
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
@@ -156,7 +155,6 @@ func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyProperties
 }
 
 func (repo *repositoryImpl) CreateProperty(property *models.PropertyInfos) error {
-	fmt.Println(property)
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		propertyQuery := `INSERT INTO properties (owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, floor_size_unit, unit_number)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
@@ -203,7 +201,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.PropertyInfos) error
 }
 
 func (repo *repositoryImpl) UpdatePropertyById(property *models.PropertyInfos, propertyId string) error {
-	fmt.Println(property)
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		var existingProperty models.Properties
 		if err := tx.Model(&models.Properties{}).First(&existingProperty, "property_id = ?", propertyId).Error; err != nil {
