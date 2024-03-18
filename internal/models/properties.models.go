@@ -26,16 +26,16 @@ type Properties struct {
 	FloorSize           float64              `json:"floor_size"               example:"123.45"`
 	FloorSizeUnit       enums.FloorSizeUnits `json:"floor_size_unit" gorm:"default:SQM" example:"SQM"`
 	UnitNumber          int64                `json:"unit_number"              example:"123"`
-	PropertyImages      []PropertyImages     `gorm:"foreignKey:PropertyId; references:PropertyId" json:"images"`
-	SellingProperty     SellingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId; embedded" json:"selling"`
-	RentingProperty     RentingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId; embedded" json:"renting"`
+	PropertyImages      []PropertyImages     `gorm:"foreignKey:PropertyId; references:PropertyId" json:"property_images"`
+	SellingProperty     SellingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId; embedded" json:"selling_property"`
+	RentingProperty     RentingProperties    `gorm:"foreignKey:PropertyId; references:PropertyId; embedded" json:"renting_property"`
 	IsFavorite          bool                 `json:"is_favorite" gorm:"default:false" example:"true"`
 	CommonModels
 }
 
 type PropertyImages struct {
 	PropertyId uuid.UUID `json:"-"`
-	ImageUrl   string    `json:"url" example:"https://image_url.com/abcd"`
+	ImageUrl   string    `json:"image_url" example:"https://image_url.com/abcd"`
 	CommonModels
 }
 
@@ -79,7 +79,7 @@ type PropertyInfos struct {
 	FloorSize           float64              `json:"floor_size" form:"floor_size"               example:"123.45"`
 	FloorSizeUnit       enums.FloorSizeUnits `json:"floor_size_unit" form:"floor_size_unit" gorm:"default:SQM" example:"SQM"`
 	UnitNumber          int64                `json:"unit_number" form:"unit_number"              example:"123"`
-	PropertyImages      []string             `json:"property_images" form:"property_images"`
+	ImageUrls           []string             `json:"image_urls" form:"-"`
 	Price               float64              `json:"price" form:"price"   example:"12345.67"`
 	IsSold              bool                 `json:"is_sold" form:"is_sold" example:"true"`
 	PricePerMonth       float64              `json:"price_per_month" form:"price_per_month" example:"12345.67"`

@@ -127,7 +127,7 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 
 // @router      /api/v1/properties [post]
 // @summary     Create a property
-// @description Create a property with the provided details
+// @description Create a property with formData **\***upload property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg
 // @tags        property
 // @produce     json
 // @param       formData formData models.PropertyInfos true "Property details"

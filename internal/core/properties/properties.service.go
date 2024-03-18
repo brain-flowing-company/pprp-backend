@@ -70,19 +70,6 @@ func (s *serviceImpl) GetPropertyById(property *models.Properties, propertyId st
 			Describe("Invalid property id")
 	}
 
-	var countProperty int64
-	countErr := s.repo.CountProperty(&countProperty, propertyId)
-	if countErr != nil {
-		s.logger.Error("Could not count property by id", zap.Error(countErr))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not update property. Please try again later.")
-	} else if countProperty == 0 {
-		return apperror.
-			New(apperror.PropertyNotFound).
-			Describe("Could not find the specified property")
-	}
-
 	err := s.repo.GetPropertyById(property, propertyId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
@@ -128,7 +115,7 @@ func (s *serviceImpl) CreateProperty(property *models.PropertyInfos, propertyIma
 		return uploadErr
 	}
 
-	property.PropertyImages = propertyImageUrls
+	property.ImageUrls = propertyImageUrls
 
 	err := s.repo.CreateProperty(property)
 	if err != nil {
