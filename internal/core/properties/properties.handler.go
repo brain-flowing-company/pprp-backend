@@ -136,7 +136,10 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 // @failure     404 {object} models.ErrorResponses "Property id not found"
 // @failure     500 {object} models.ErrorResponses "Could not create property"
 func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
-	property := models.PropertyInfos{}
+	property := models.PropertyInfos{
+		PropertyId: uuid.New(),
+	}
+
 	if err := c.BodyParser(&property); err != nil {
 		return utils.ResponseError(c, apperror.
 			New(apperror.InvalidBody).
@@ -146,7 +149,8 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId
 	property.OwnerId = userId
 
-	err := h.service.CreateProperty(&property)
+	propertyImages, _ := c.FormFile("property_images")
+	err := h.service.CreateProperty(&property, propertyImages)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}

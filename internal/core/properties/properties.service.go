@@ -2,11 +2,16 @@ package properties
 
 import (
 	"errors"
+	"fmt"
+	"mime/multipart"
+	"path/filepath"
 	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
+	"github.com/brain-flowing-company/pprp-backend/storage"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -16,7 +21,7 @@ type Service interface {
 	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery) *apperror.AppError
-	CreateProperty(*models.PropertyInfos) *apperror.AppError
+	CreateProperty(*models.PropertyInfos, *multipart.FileHeader) *apperror.AppError
 	UpdatePropertyById(*models.PropertyInfos, string) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
@@ -26,14 +31,16 @@ type Service interface {
 }
 
 type serviceImpl struct {
-	repo   Repository
-	logger *zap.Logger
+	repo    Repository
+	logger  *zap.Logger
+	storage storage.Storage
 }
 
-func NewService(logger *zap.Logger, repo Repository) Service {
+func NewService(logger *zap.Logger, repo Repository, storage storage.Storage) Service {
 	return &serviceImpl{
 		repo,
 		logger,
+		storage,
 	}
 }
 
@@ -109,7 +116,7 @@ func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesRespon
 	return nil
 }
 
-func (s *serviceImpl) CreateProperty(property *models.PropertyInfos) *apperror.AppError {
+func (s *serviceImpl) CreateProperty(property *models.PropertyInfos, propertyImages *multipart.FileHeader) *apperror.AppError {
 
 	err := s.repo.CreateProperty(property)
 	if err != nil {
@@ -251,4 +258,63 @@ func (s *serviceImpl) GetTop10Properties(properties *[]models.Properties, userId
 	}
 
 	return nil
+}
+
+func (s *serviceImpl) uploadPropertyImage(propertyId uuid.UUID, propertyImage *multipart.FileHeader) (string, *apperror.AppError) {
+	if propertyImage == nil {
+		return "", apperror.
+			New(apperror.BadRequest).
+			Describe("No citizen card found")
+	}
+
+	file, err := propertyImage.Open()
+	if err != nil {
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not upload profile image")
+	}
+
+	ext := filepath.Ext(propertyImage.Filename)
+	ip := utils.NewImageProcessor()
+
+	switch strings.ToLower(ext) {
+	case ".jpg":
+		fallthrough
+
+	case ".jpeg":
+		err = ip.LoadJPEG(file)
+
+	case ".png":
+		err = ip.LoadPNG(file)
+
+	default:
+		return "", apperror.
+			New(apperror.InvalidPropertyImageExtension).
+			Describe(fmt.Sprintf("App does not support %v extension", ext))
+	}
+
+	if err != nil {
+		s.logger.Error("Could not load image", zap.Error(err))
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not process image")
+	}
+
+	processedFile, err := ip.Save()
+	if err != nil {
+		s.logger.Error("Could not create new image", zap.Error(err))
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not process image")
+	}
+
+	url, err := s.storage.Upload(fmt.Sprintf("verifications/%v.jpeg", propertyId.String()), processedFile, types.ObjectCannedACLPrivate)
+
+	if err != nil {
+		return "", apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not upload profile image")
+	}
+
+	return url, nil
 }

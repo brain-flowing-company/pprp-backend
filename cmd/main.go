@@ -84,7 +84,7 @@ func main() {
 	hwHandler := greetings.NewHandler(hwService)
 
 	propertyRepo := properties.NewRepository(db)
-	propertyService := properties.NewService(logger, propertyRepo)
+	propertyService := properties.NewService(logger, propertyRepo, storage)
 	propertyHandler := properties.NewHandler(propertyService)
 
 	agreementsRepo := agreements.NewRepository(db)
