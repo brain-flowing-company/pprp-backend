@@ -723,20 +723,191 @@
                 "summary": "Create a property",
                 "parameters": [
                     {
-                        "description": "Property details",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Properties"
-                        }
+                        "type": "string",
+                        "example": "123/4",
+                        "name": "address",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Pattaya Nua 78",
+                        "name": "alley",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 2,
+                        "name": "bathrooms",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 3,
+                        "name": "bedrooms",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Thailand",
+                        "name": "country",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Bang Phli",
+                        "name": "district",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 5,
+                        "name": "floor",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "example": 123.45,
+                        "name": "floor_size",
+                        "in": "formData"
+                    },
+                    {
+                        "enum": [
+                            "sqm",
+                            "sqft"
+                        ],
+                        "type": "string",
+                        "example": "SQM",
+                        "x-enum-varnames": [
+                            "SQM",
+                            "SQFT"
+                        ],
+                        "name": "floor_size_unit",
+                        "in": "formData"
+                    },
+                    {
+                        "enum": [
+                            "UNFURNISHED",
+                            "PARTIALLY FURNISHED",
+                            "FULLY FURNISHED",
+                            "READY TO MOVE IN"
+                        ],
+                        "type": "string",
+                        "example": "UNFURNISHED",
+                        "x-enum-varnames": [
+                            "UNFURNISHED",
+                            "PARTIALLY_FURNISHED",
+                            "FULLY_FURNISHED",
+                            "READY_TO_MOVE_IN"
+                        ],
+                        "name": "furnishing",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "example": false,
+                        "name": "is_occupied",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "example": true,
+                        "name": "is_sold",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "123e4567-e89b-12d3-a456-426614174000",
+                        "name": "-",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "69096",
+                        "name": "postal_code",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "example": 12345.67,
+                        "name": "price",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "example": 12345.67,
+                        "name": "price_per_month",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Et sequi dolor praes",
+                        "name": "property_description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "123e4567-e89b-12d3-a456-426614174000",
+                        "name": "-",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Supalai",
+                        "name": "property_name",
+                        "in": "formData"
+                    },
+                    {
+                        "enum": [
+                            "CONDOMINIUM",
+                            "APARTMENT",
+                            "SEMI-DETACHED HOUSE",
+                            "HOUSE",
+                            "SERVICED APARTMENT",
+                            "TOWNHOUSE"
+                        ],
+                        "type": "string",
+                        "example": "CONDOMINIUM",
+                        "x-enum-varnames": [
+                            "CONDOMINIUM",
+                            "APARTMENT",
+                            "SEMI_DETACHED_HOUSE",
+                            "HOUSE",
+                            "SERVICED_APARTMENT",
+                            "TOWNHOUSE"
+                        ],
+                        "name": "property_type",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Pattaya",
+                        "name": "province",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Pattaya",
+                        "name": "street",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Bang Bon",
+                        "name": "sub_district",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 123,
+                        "name": "unit_number",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Property created",
                         "schema": {
-                            "$ref": "#/definitions/models.Properties"
+                            "$ref": "#/definitions/models.MessageResponses"
                         }
                     },
                     "400": {
@@ -830,20 +1001,191 @@
                         "required": true
                     },
                     {
-                        "description": "Property details",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Properties"
-                        }
+                        "type": "string",
+                        "example": "123/4",
+                        "name": "address",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Pattaya Nua 78",
+                        "name": "alley",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 2,
+                        "name": "bathrooms",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 3,
+                        "name": "bedrooms",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Thailand",
+                        "name": "country",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Bang Phli",
+                        "name": "district",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 5,
+                        "name": "floor",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "example": 123.45,
+                        "name": "floor_size",
+                        "in": "formData"
+                    },
+                    {
+                        "enum": [
+                            "sqm",
+                            "sqft"
+                        ],
+                        "type": "string",
+                        "example": "SQM",
+                        "x-enum-varnames": [
+                            "SQM",
+                            "SQFT"
+                        ],
+                        "name": "floor_size_unit",
+                        "in": "formData"
+                    },
+                    {
+                        "enum": [
+                            "UNFURNISHED",
+                            "PARTIALLY FURNISHED",
+                            "FULLY FURNISHED",
+                            "READY TO MOVE IN"
+                        ],
+                        "type": "string",
+                        "example": "UNFURNISHED",
+                        "x-enum-varnames": [
+                            "UNFURNISHED",
+                            "PARTIALLY_FURNISHED",
+                            "FULLY_FURNISHED",
+                            "READY_TO_MOVE_IN"
+                        ],
+                        "name": "furnishing",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "example": false,
+                        "name": "is_occupied",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "example": true,
+                        "name": "is_sold",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "123e4567-e89b-12d3-a456-426614174000",
+                        "name": "-",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "69096",
+                        "name": "postal_code",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "example": 12345.67,
+                        "name": "price",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "example": 12345.67,
+                        "name": "price_per_month",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Et sequi dolor praes",
+                        "name": "property_description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "123e4567-e89b-12d3-a456-426614174000",
+                        "name": "-",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Supalai",
+                        "name": "property_name",
+                        "in": "formData"
+                    },
+                    {
+                        "enum": [
+                            "CONDOMINIUM",
+                            "APARTMENT",
+                            "SEMI-DETACHED HOUSE",
+                            "HOUSE",
+                            "SERVICED APARTMENT",
+                            "TOWNHOUSE"
+                        ],
+                        "type": "string",
+                        "example": "CONDOMINIUM",
+                        "x-enum-varnames": [
+                            "CONDOMINIUM",
+                            "APARTMENT",
+                            "SEMI_DETACHED_HOUSE",
+                            "HOUSE",
+                            "SERVICED_APARTMENT",
+                            "TOWNHOUSE"
+                        ],
+                        "name": "property_type",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Pattaya",
+                        "name": "province",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Pattaya",
+                        "name": "street",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Bang Bon",
+                        "name": "sub_district",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 123,
+                        "name": "unit_number",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Property updated",
                         "schema": {
-                            "$ref": "#/definitions/models.Properties"
+                            "$ref": "#/definitions/models.MessageResponses"
                         }
                     },
                     "400": {
