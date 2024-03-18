@@ -747,8 +747,8 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            "sqm",
-                            "sqft"
+                            "SQM",
+                            "SQFT"
                         ],
                         "type": "string",
                         "example": "SQM",
@@ -762,9 +762,9 @@ const docTemplate = `{
                     {
                         "enum": [
                             "UNFURNISHED",
-                            "PARTIALLY FURNISHED",
-                            "FULLY FURNISHED",
-                            "READY TO MOVE IN"
+                            "PARTIALLY_FURNISHED",
+                            "FULLY_FURNISHED",
+                            "READY_TO_MOVE_IN"
                         ],
                         "type": "string",
                         "example": "UNFURNISHED",
@@ -835,9 +835,9 @@ const docTemplate = `{
                         "enum": [
                             "CONDOMINIUM",
                             "APARTMENT",
-                            "SEMI-DETACHED HOUSE",
+                            "SEMI-DETACHED_HOUSE",
                             "HOUSE",
-                            "SERVICED APARTMENT",
+                            "SERVICED_APARTMENT",
                             "TOWNHOUSE"
                         ],
                         "type": "string",
@@ -1025,8 +1025,8 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            "sqm",
-                            "sqft"
+                            "SQM",
+                            "SQFT"
                         ],
                         "type": "string",
                         "example": "SQM",
@@ -1040,9 +1040,9 @@ const docTemplate = `{
                     {
                         "enum": [
                             "UNFURNISHED",
-                            "PARTIALLY FURNISHED",
-                            "FULLY FURNISHED",
-                            "READY TO MOVE IN"
+                            "PARTIALLY_FURNISHED",
+                            "FULLY_FURNISHED",
+                            "READY_TO_MOVE_IN"
                         ],
                         "type": "string",
                         "example": "UNFURNISHED",
@@ -1113,9 +1113,9 @@ const docTemplate = `{
                         "enum": [
                             "CONDOMINIUM",
                             "APARTMENT",
-                            "SEMI-DETACHED HOUSE",
+                            "SEMI-DETACHED_HOUSE",
                             "HOUSE",
-                            "SERVICED APARTMENT",
+                            "SERVICED_APARTMENT",
                             "TOWNHOUSE"
                         ],
                         "type": "string",
@@ -1924,10 +1924,10 @@ const docTemplate = `{
         "enums.CardColors": {
             "type": "string",
             "enum": [
-                "LIGHT BLUE",
+                "LIGHT_BLUE",
                 "BLUE",
-                "DARK BLUE",
-                "VERY DARK BLUE"
+                "DARK_BLUE",
+                "VERY_DARK_BLUE"
             ],
             "x-enum-varnames": [
                 "LIGHT_BLUE",
@@ -1939,8 +1939,8 @@ const docTemplate = `{
         "enums.FloorSizeUnits": {
             "type": "string",
             "enum": [
-                "sqm",
-                "sqft"
+                "SQM",
+                "SQFT"
             ],
             "x-enum-varnames": [
                 "SQM",
@@ -1951,9 +1951,9 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "UNFURNISHED",
-                "PARTIALLY FURNISHED",
-                "FULLY FURNISHED",
-                "READY TO MOVE IN"
+                "PARTIALLY_FURNISHED",
+                "FULLY_FURNISHED",
+                "READY_TO_MOVE_IN"
             ],
             "x-enum-varnames": [
                 "UNFURNISHED",
@@ -1967,9 +1967,9 @@ const docTemplate = `{
             "enum": [
                 "CONDOMINIUM",
                 "APARTMENT",
-                "SEMI-DETACHED HOUSE",
+                "SEMI-DETACHED_HOUSE",
                 "HOUSE",
-                "SERVICED APARTMENT",
+                "SERVICED_APARTMENT",
                 "TOWNHOUSE"
             ],
             "x-enum-varnames": [

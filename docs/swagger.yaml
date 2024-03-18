@@ -34,10 +34,10 @@ definitions:
     - "NULL"
   enums.CardColors:
     enum:
-    - LIGHT BLUE
+    - LIGHT_BLUE
     - BLUE
-    - DARK BLUE
-    - VERY DARK BLUE
+    - DARK_BLUE
+    - VERY_DARK_BLUE
     type: string
     x-enum-varnames:
     - LIGHT_BLUE
@@ -46,8 +46,8 @@ definitions:
     - VERY_DARK_BLUE
   enums.FloorSizeUnits:
     enum:
-    - sqm
-    - sqft
+    - SQM
+    - SQFT
     type: string
     x-enum-varnames:
     - SQM
@@ -55,9 +55,9 @@ definitions:
   enums.Furnishing:
     enum:
     - UNFURNISHED
-    - PARTIALLY FURNISHED
-    - FULLY FURNISHED
-    - READY TO MOVE IN
+    - PARTIALLY_FURNISHED
+    - FULLY_FURNISHED
+    - READY_TO_MOVE_IN
     type: string
     x-enum-varnames:
     - UNFURNISHED
@@ -68,9 +68,9 @@ definitions:
     enum:
     - CONDOMINIUM
     - APARTMENT
-    - SEMI-DETACHED HOUSE
+    - SEMI-DETACHED_HOUSE
     - HOUSE
-    - SERVICED APARTMENT
+    - SERVICED_APARTMENT
     - TOWNHOUSE
     type: string
     x-enum-varnames:
@@ -966,8 +966,8 @@ paths:
         name: floor_size
         type: number
       - enum:
-        - sqm
-        - sqft
+        - SQM
+        - SQFT
         example: SQM
         in: formData
         name: floor_size_unit
@@ -977,9 +977,9 @@ paths:
         - SQFT
       - enum:
         - UNFURNISHED
-        - PARTIALLY FURNISHED
-        - FULLY FURNISHED
-        - READY TO MOVE IN
+        - PARTIALLY_FURNISHED
+        - FULLY_FURNISHED
+        - READY_TO_MOVE_IN
         example: UNFURNISHED
         in: formData
         name: furnishing
@@ -1028,9 +1028,9 @@ paths:
       - enum:
         - CONDOMINIUM
         - APARTMENT
-        - SEMI-DETACHED HOUSE
+        - SEMI-DETACHED_HOUSE
         - HOUSE
-        - SERVICED APARTMENT
+        - SERVICED_APARTMENT
         - TOWNHOUSE
         example: CONDOMINIUM
         in: formData
@@ -1192,8 +1192,8 @@ paths:
         name: floor_size
         type: number
       - enum:
-        - sqm
-        - sqft
+        - SQM
+        - SQFT
         example: SQM
         in: formData
         name: floor_size_unit
@@ -1203,9 +1203,9 @@ paths:
         - SQFT
       - enum:
         - UNFURNISHED
-        - PARTIALLY FURNISHED
-        - FULLY FURNISHED
-        - READY TO MOVE IN
+        - PARTIALLY_FURNISHED
+        - FULLY_FURNISHED
+        - READY_TO_MOVE_IN
         example: UNFURNISHED
         in: formData
         name: furnishing
@@ -1254,9 +1254,9 @@ paths:
       - enum:
         - CONDOMINIUM
         - APARTMENT
-        - SEMI-DETACHED HOUSE
+        - SEMI-DETACHED_HOUSE
         - HOUSE
-        - SERVICED APARTMENT
+        - SERVICED_APARTMENT
         - TOWNHOUSE
         example: CONDOMINIUM
         in: formData
