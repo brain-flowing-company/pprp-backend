@@ -67,8 +67,8 @@ func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError 
 		ExpiredAt: expiredAt,
 	}
 
-	if s.repo.CreateEmailVerificationCode(&verificationData) != nil {
-		s.logger.Error("Could not create email verification data", zap.Error(findEmailErr))
+	if err := s.repo.CreateEmailVerificationCode(&verificationData); err != nil {
+		s.logger.Error("Could not create email verification data", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not send email. Please try again later")
