@@ -129,14 +129,14 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 // @description Create a property with the provided details
 // @tags        property
 // @produce     json
-// @param       body body models.Properties true "Property details"
-// @success     200	{object} models.Properties
+// @param       formData formData models.PropertyInfos true "Property details"
+// @success     200	{object} models.MessageResponses "Property created"
 // @failure     400 {object} models.ErrorResponses "Invalid request body"
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     404 {object} models.ErrorResponses "Property id not found"
 // @failure     500 {object} models.ErrorResponses "Could not create property"
 func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
-	property := models.Properties{}
+	property := models.PropertyInfos{}
 	if err := c.BodyParser(&property); err != nil {
 		return utils.ResponseError(c, apperror.
 			New(apperror.InvalidBody).
@@ -151,7 +151,7 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(property)
+	return utils.ResponseMessage(c, http.StatusOK, "Property created")
 }
 
 // @router      /api/v1/property/:propertyId [put]
@@ -160,31 +160,32 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 // @tags        property
 // @produce     json
 // @param	    propertyId path string true "Property id"
-// @param       body body models.Properties true "Property details"
-// @success     200	{object} models.Properties
+// @param       formData formData models.PropertyInfos true "Property details"
+// @success     200	{object} models.MessageResponses "Property updated"
 // @failure     400 {object} models.ErrorResponses "Invalid request body"
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     404 {object} models.ErrorResponses "Property id not found"
 // @failure     500 {object} models.ErrorResponses "Could not update property"
 func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
-	propertyId := c.Params("propertyId")
-	property := models.Properties{}
+	propertyIdString := c.Params("propertyId")
+	propertyIdUuid, _ := uuid.Parse(propertyIdString)
+
+	property := models.PropertyInfos{}
+	userId := c.Locals("session").(models.Sessions).UserId
+
+	property.OwnerId = userId
+	property.PropertyId = propertyIdUuid
+
 	if err := c.BodyParser(&property); err != nil {
-		return utils.ResponseError(c, apperror.
-			New(apperror.InvalidBody).
-			Describe("Invalid request body"))
+		return utils.ResponseError(c, apperror.InvalidBody)
 	}
 
-	userId := c.Locals("session").(models.Sessions).UserId
-	property.OwnerId = userId
-	property.PropertyId, _ = uuid.Parse(propertyId)
-
-	err := h.service.UpdatePropertyById(&property, propertyId)
+	err := h.service.UpdatePropertyById(&property, propertyIdString)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(property)
+	return utils.ResponseMessage(c, http.StatusOK, "Property updated")
 }
 
 // @router      /api/v1/property/:propertyId [delete]

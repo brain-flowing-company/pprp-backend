@@ -13,8 +13,8 @@ type Repository interface {
 	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery) error
 	GetPropertyById(*models.Properties, string) error
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery) error
-	CreateProperty(*models.Properties) error
-	UpdatePropertyById(*models.Properties, string) error
+	CreateProperty(*models.PropertyInfos) error
+	UpdatePropertyById(*models.PropertyInfos, string) error
 	DeletePropertyById(string) error
 	CountProperty(*int64, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
@@ -155,7 +155,7 @@ func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyProperties
 	})
 }
 
-func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
+func (repo *repositoryImpl) CreateProperty(property *models.PropertyInfos) error {
 	fmt.Println(property)
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		propertyQuery := `INSERT INTO properties (owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, floor_size_unit, unit_number)
@@ -166,7 +166,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 			property.Province, property.Country, property.PostalCode, property.Bedrooms, property.Bathrooms,
 			property.Furnishing, property.Floor, property.FloorSize, property.FloorSizeUnit, property.UnitNumber,
 		).Error; err != nil {
-			fmt.Println("Property")
 			return err
 		}
 
@@ -176,25 +175,25 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 		}
 		property_id := propertyTemp.PropertyId
 
-		if len(property.PropertyImages) != 0 {
-			imageQuery := `INSERT INTO property_images (property_id, image_url) VALUES (?, ?);`
-			for _, image := range property.PropertyImages {
-				if err := tx.Exec(imageQuery, property_id, image.ImageUrl).Error; err != nil {
-					return err
-				}
-			}
-		}
+		// if len(property.PropertyImages) != 0 {
+		// 	imageQuery := `INSERT INTO property_images (property_id, image_url) VALUES (?, ?);`
+		// 	for _, image := range property.PropertyImages {
+		// 		if err := tx.Exec(imageQuery, property_id, image.ImageUrl).Error; err != nil {
+		// 			return err
+		// 		}
+		// 	}
+		// }
 
-		if property.SellingProperty.Price != 0 {
+		if property.Price != 0 {
 			sellingQuery := `INSERT INTO selling_properties (property_id, price, is_sold) VALUES (?, ?, ?);`
-			if err := tx.Exec(sellingQuery, property_id, property.SellingProperty.Price, property.SellingProperty.IsSold).Error; err != nil {
+			if err := tx.Exec(sellingQuery, property_id, property.Price, property.IsSold).Error; err != nil {
 				return err
 			}
 		}
 
-		if property.RentingProperty.PricePerMonth != 0 {
+		if property.PricePerMonth != 0 {
 			rentingQuery := `INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUES (?, ?, ?);`
-			if err := tx.Exec(rentingQuery, property_id, property.RentingProperty.PricePerMonth, property.RentingProperty.IsOccupied).Error; err != nil {
+			if err := tx.Exec(rentingQuery, property_id, property.PricePerMonth, property.IsOccupied).Error; err != nil {
 				return err
 			}
 		}
@@ -203,15 +202,40 @@ func (repo *repositoryImpl) CreateProperty(property *models.Properties) error {
 	})
 }
 
-func (repo *repositoryImpl) UpdatePropertyById(property *models.Properties, propertyId string) error {
-	var existingProperty models.Properties
-	err := repo.db.First(&existingProperty, "property_id = ?", propertyId).Error
-	if err != nil {
-		return err
-	}
-
+func (repo *repositoryImpl) UpdatePropertyById(property *models.PropertyInfos, propertyId string) error {
 	fmt.Println(property)
-	return repo.db.Where("property_id = ?", propertyId).Updates(property).Error
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		var existingProperty models.Properties
+		if err := tx.Model(&models.Properties{}).First(&existingProperty, "property_id = ?", propertyId).Error; err != nil {
+			return err
+		}
+
+		propertyQuery := `UPDATE properties SET property_name = ?, property_description = ?, property_type = ?, address = ?, alley = ?, street = ?, sub_district = ?, district = ?, province = ?, country = ?, postal_code = ?, bedrooms = ?, bathrooms = ?, furnishing = ?, floor = ?, floor_size = ?, floor_size_unit = ?, unit_number = ?, updated_at = CURRENT_TIMESTAMP WHERE property_id = ?`
+		if err := tx.Exec(propertyQuery,
+			property.PropertyName, property.PropertyDescription, property.PropertyType, property.Address,
+			property.Alley, property.Street, property.SubDistrict, property.District, property.Province,
+			property.Country, property.PostalCode, property.Bedrooms, property.Bathrooms, property.Furnishing,
+			property.Floor, property.FloorSize, property.FloorSizeUnit, property.UnitNumber, propertyId,
+		).Error; err != nil {
+			return err
+		}
+
+		if property.Price != existingProperty.SellingProperty.Price || property.IsSold != existingProperty.SellingProperty.IsSold {
+			sellingQuery := `UPDATE selling_properties SET price = ?, is_sold = ?, updated_at = CURRENT_TIMESTAMP WHERE property_id = ?;`
+			if err := tx.Exec(sellingQuery, property.Price, property.IsSold, propertyId).Error; err != nil {
+				return err
+			}
+		}
+
+		if property.PricePerMonth != existingProperty.RentingProperty.PricePerMonth || property.IsOccupied != existingProperty.RentingProperty.IsOccupied {
+			rentingQuery := `UPDATE renting_properties SET price_per_month = ?, is_occupied = ?, updated_at = CURRENT_TIMESTAMP WHERE property_id = ?;`
+			if err := tx.Exec(rentingQuery, property.PricePerMonth, property.IsOccupied, propertyId).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
 
 func (repo *repositoryImpl) DeletePropertyById(propertyId string) error {

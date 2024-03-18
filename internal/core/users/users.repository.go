@@ -69,13 +69,8 @@ func (repo *repositoryImpl) UpdateUserFinancialInformationById(userFinancialInfo
 	}
 
 	return repo.db.Transaction(func(tx *gorm.DB) error {
-		var countCreditCards int64
-		if err := tx.Model(&models.CreditCards{}).Where("user_id = ?", userId).Count(&countCreditCards).Error; err != nil {
+		if err := tx.Model(&models.CreditCards{}).Where("user_id = ?", userId).Error; err != nil {
 			return err
-		} else if countCreditCards > 0 {
-			if err := tx.Where("user_id = ?", userId).Delete(&models.CreditCards{}).Error; err != nil {
-				return err
-			}
 		}
 
 		if len(userFinancialInformation.CreditCards) != 0 {

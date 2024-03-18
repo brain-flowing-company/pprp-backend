@@ -16,8 +16,8 @@ type Service interface {
 	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery) *apperror.AppError
-	CreateProperty(*models.Properties) *apperror.AppError
-	UpdatePropertyById(*models.Properties, string) *apperror.AppError
+	CreateProperty(*models.PropertyInfos) *apperror.AppError
+	UpdatePropertyById(*models.PropertyInfos, string) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
@@ -109,7 +109,7 @@ func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesRespon
 	return nil
 }
 
-func (s *serviceImpl) CreateProperty(property *models.Properties) *apperror.AppError {
+func (s *serviceImpl) CreateProperty(property *models.PropertyInfos) *apperror.AppError {
 
 	err := s.repo.CreateProperty(property)
 	if err != nil {
@@ -122,7 +122,7 @@ func (s *serviceImpl) CreateProperty(property *models.Properties) *apperror.AppE
 	return nil
 }
 
-func (s *serviceImpl) UpdatePropertyById(property *models.Properties, propertyId string) *apperror.AppError {
+func (s *serviceImpl) UpdatePropertyById(property *models.PropertyInfos, propertyId string) *apperror.AppError {
 	if !utils.IsValidUUID(propertyId) {
 		return apperror.
 			New(apperror.InvalidPropertyId).
