@@ -343,10 +343,6 @@ definitions:
         allOf:
         - $ref: '#/definitions/enums.Furnishing'
         example: UNFURNISHED
-      images:
-        items:
-          $ref: '#/definitions/models.PropertyImages'
-        type: array
       is_favorite:
         example: true
         type: boolean
@@ -362,6 +358,10 @@ definitions:
       property_id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
+      property_images:
+        items:
+          $ref: '#/definitions/models.PropertyImages'
+        type: array
       property_name:
         example: Supalai
         type: string
@@ -372,9 +372,9 @@ definitions:
       province:
         example: Pattaya
         type: string
-      renting:
+      renting_property:
         $ref: '#/definitions/models.RentingProperties'
-      selling:
+      selling_property:
         $ref: '#/definitions/models.SellingProperties'
       street:
         example: Pattaya
@@ -390,7 +390,7 @@ definitions:
     properties:
       created_at:
         type: string
-      url:
+      image_url:
         example: https://image_url.com/abcd
         type: string
     type: object
@@ -931,7 +931,9 @@ paths:
       tags:
       - property
     post:
-      description: Create a property with the provided details
+      description: Create a property with formData **\***upload property images (array
+        of images) in formData with field `property_images`. Available formats are
+        .png / .jpg / .jpeg
       parameters:
       - example: 123/4
         in: formData
@@ -989,6 +991,12 @@ paths:
         - PARTIALLY_FURNISHED
         - FULLY_FURNISHED
         - READY_TO_MOVE_IN
+      - collectionFormat: csv
+        in: formData
+        items:
+          type: string
+        name: '-'
+        type: array
       - example: false
         in: formData
         name: is_occupied
@@ -1215,6 +1223,12 @@ paths:
         - PARTIALLY_FURNISHED
         - FULLY_FURNISHED
         - READY_TO_MOVE_IN
+      - collectionFormat: csv
+        in: formData
+        items:
+          type: string
+        name: '-'
+        type: array
       - example: false
         in: formData
         name: is_occupied
@@ -1372,26 +1386,6 @@ paths:
       summary: Add property to favorites
       tags:
       - property
-  /api/v1/properties/top10:
-    get:
-      description: Get top 10 properties with the most favorites, sorted by the number
-        of favorites then by the newest properties
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Properties'
-            type: array
-        "500":
-          description: Could not get top 10 properties
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-      summary: Get top 10 properties
-      tags:
-      - property
   /api/v1/register:
     post:
       description: Create user with formData **\***upload profile image in formData
@@ -1444,6 +1438,26 @@ paths:
       summary: Register *use cookies*
       tags:
       - users
+  /api/v1/top10properties:
+    get:
+      description: Get top 10 properties with the most favorites, sorted by the number
+        of favorites then by the newest properties
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Properties'
+            type: array
+        "500":
+          description: Could not get top 10 properties
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get top 10 properties
+      tags:
+      - property
   /api/v1/user/:userId:
     delete:
       description: Delete a user by its id
