@@ -291,7 +291,7 @@ func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	return c.JSON(properties)
 }
 
-// @router      /api/v1/properties/top10 [get]
+// @router      /api/v1/top10properties [get]
 // @summary     Get top 10 properties
 // @description Get top 10 properties with the most favorites, sorted by the number of favorites then by the newest properties
 // @tags        property
