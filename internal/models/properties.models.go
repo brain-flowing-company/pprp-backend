@@ -34,8 +34,9 @@ type Properties struct {
 }
 
 type PropertyImages struct {
-	PropertyId uuid.UUID `json:"-"`
-	ImageUrl   string    `json:"image_url" example:"https://image_url.com/abcd"`
+	PropertyId   uuid.UUID `json:"-"`
+	ImageUrl     string    `json:"image_url" example:"https://image_url.com/abcd"`
+	CommonModels `sortmapper:"-"`
 }
 
 type SellingProperties struct {

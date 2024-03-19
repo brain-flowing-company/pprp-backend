@@ -260,9 +260,18 @@ func (repo *repositoryImpl) UpdatePropertyById(property *models.PropertyInfos, p
 		if err := tx.Where("property_id = ?", propertyId).Delete(&models.PropertyImages{}).Error; err != nil {
 			return err
 		} else if len(property.ImageUrls) != 0 {
-			imageQuery := `INSERT INTO property_images (property_id, image_url) VALUES (?, ?);`
+			createImageQuery := `INSERT INTO property_images (property_id, image_url) VALUES (?, ?);`
+			updateImageQuery := `UPDATE property_images SET deleted_at = NULL WHERE property_id = ? AND image_url = ?;`
 			for _, imageUrl := range property.ImageUrls {
-				if err := tx.Exec(imageQuery, propertyId, imageUrl).Error; err != nil {
+				if err := tx.Model(&models.PropertyImages{}).First(&models.PropertyImages{}, "property_id = ? AND image_url = ?", propertyId, imageUrl).Error; err == gorm.ErrRecordNotFound {
+					if err := tx.Exec(createImageQuery, propertyId, imageUrl).Error; err != nil {
+						return err
+					}
+				} else if err == nil {
+					if err := tx.Exec(updateImageQuery, propertyId, imageUrl).Error; err != nil {
+						return err
+					}
+				} else {
 					return err
 				}
 			}

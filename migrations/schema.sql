@@ -105,6 +105,9 @@ CREATE TABLE property_images
 (
     property_id UUID     REFERENCES properties (property_id) ON DELETE CASCADE      NOT NULL,
     image_url            VARCHAR(2000)                                              NOT NULL,
+    created_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
+    deleted_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT NULL,
     PRIMARY KEY (property_id, image_url)
 );
 
@@ -183,6 +186,10 @@ CREATE RULE soft_deletion AS ON DELETE TO user_financial_informations DO INSTEAD
 
 CREATE RULE soft_deletion AS ON DELETE TO properties DO INSTEAD (
     UPDATE properties SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO property_images DO INSTEAD (
+    UPDATE property_images SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
 );
 
 CREATE RULE soft_deletion AS ON DELETE TO selling_properties DO INSTEAD (
@@ -358,6 +365,7 @@ CREATE VIEW appointments AS SELECT *
 CREATE INDEX idx_users_deleted_at                       ON _users (deleted_at);
 CREATE INDEX idx_user_financial_information_deleted_at  ON _user_financial_informations (deleted_at);
 CREATE INDEX idx_properties_deleted_at                  ON _properties (deleted_at);
+CREATE INDEX idx_property_images_deleted_at             ON _property_images (deleted_at);
 CREATE INDEX idx_selling_properties_deleted_at          ON _selling_properties (deleted_at);
 CREATE INDEX idx_renting_properties_deleted_at          ON _renting_properties (deleted_at);
 CREATE INDEX idx_appointments_deleted_at                ON _appointments (deleted_at);
