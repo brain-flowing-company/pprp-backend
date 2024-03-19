@@ -688,7 +688,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a property with formData **\\***upload property images (array of images) in formData with field ` + "`" + `property_images` + "`" + `. Available formats are .png / .jpg / .jpeg",
+                "description": "Create a property with formData *upload property images (array of images) in formData with field ` + "`" + `property_images` + "`" + `. Available formats are .png / .jpg / .jpeg",
                 "produces": [
                     "application/json"
                 ],
@@ -783,7 +783,12 @@ const docTemplate = `{
                             "type": "string"
                         },
                         "collectionFormat": "csv",
-                        "name": "-",
+                        "example": [
+                            "https://image_url.com/abcd",
+                            "https://image_url.com/abcd",
+                            "https://image_url.com/abcd"
+                        ],
+                        "name": "image_urls",
                         "in": "formData"
                     },
                     {
@@ -968,7 +973,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update a property, owned by the current user, by its id with the provided details",
+                "description": "Update a property with formData *upload **NEW** property images (array of images) in formData with field ` + "`" + `property_images` + "`" + `. Available formats are .png / .jpg / .jpeg *If you want to keep the old images, you need to include them in the formData with field ` + "`" + `image_urls` + "`" + ` as an array of strings",
                 "produces": [
                     "application/json"
                 ],
@@ -1070,7 +1075,12 @@ const docTemplate = `{
                             "type": "string"
                         },
                         "collectionFormat": "csv",
-                        "name": "-",
+                        "example": [
+                            "https://image_url.com/abcd",
+                            "https://image_url.com/abcd",
+                            "https://image_url.com/abcd"
+                        ],
+                        "name": "image_urls",
                         "in": "formData"
                     },
                     {

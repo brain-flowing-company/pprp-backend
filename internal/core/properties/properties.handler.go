@@ -126,7 +126,7 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 
 // @router      /api/v1/properties [post]
 // @summary     Create a property
-// @description Create a property with formData **\***upload property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg
+// @description Create a property with formData *upload property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg
 // @tags        property
 // @produce     json
 // @param       formData formData models.PropertyInfos true "Property details"
@@ -162,7 +162,7 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 
 // @router      /api/v1/properties/:propertyId [put]
 // @summary     Update a property
-// @description Update a property, owned by the current user, by its id with the provided details
+// @description Update a property with formData *upload **NEW** property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg *If you want to keep the old images, you need to include them in the formData with field `image_urls` as an array of strings
 // @tags        property
 // @produce     json
 // @param	    propertyId path string true "Property id"

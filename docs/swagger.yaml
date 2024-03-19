@@ -931,7 +931,7 @@ paths:
       tags:
       - property
     post:
-      description: Create a property with formData **\***upload property images (array
+      description: Create a property with formData *upload property images (array
         of images) in formData with field `property_images`. Available formats are
         .png / .jpg / .jpeg
       parameters:
@@ -992,10 +992,14 @@ paths:
         - FULLY_FURNISHED
         - READY_TO_MOVE_IN
       - collectionFormat: csv
+        example:
+        - https://image_url.com/abcd
+        - https://image_url.com/abcd
+        - https://image_url.com/abcd
         in: formData
         items:
           type: string
-        name: '-'
+        name: image_urls
         type: array
       - example: false
         in: formData
@@ -1159,8 +1163,10 @@ paths:
       tags:
       - property
     put:
-      description: Update a property, owned by the current user, by its id with the
-        provided details
+      description: Update a property with formData *upload **NEW** property images
+        (array of images) in formData with field `property_images`. Available formats
+        are .png / .jpg / .jpeg *If you want to keep the old images, you need to include
+        them in the formData with field `image_urls` as an array of strings
       parameters:
       - description: Property id
         in: path
@@ -1224,10 +1230,14 @@ paths:
         - FULLY_FURNISHED
         - READY_TO_MOVE_IN
       - collectionFormat: csv
+        example:
+        - https://image_url.com/abcd
+        - https://image_url.com/abcd
+        - https://image_url.com/abcd
         in: formData
         items:
           type: string
-        name: '-'
+        name: image_urls
         type: array
       - example: false
         in: formData
