@@ -336,7 +336,6 @@ func (s *serviceImpl) uploadPropertyImages(propertyId uuid.UUID, propertyImages 
 		}
 
 		urls = append(urls, url)
-		fmt.Println("image count:", imageCount, "--> url:", url)
 		imageCount++
 	}
 

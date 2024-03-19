@@ -2,7 +2,6 @@ package properties
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
@@ -240,7 +239,6 @@ func (repo *repositoryImpl) CreateProperty(property *models.PropertyInfos) error
 }
 
 func (repo *repositoryImpl) UpdatePropertyById(property *models.PropertyInfos, propertyId string) error {
-	fmt.Println(property)
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		var existingProperty models.Properties
 		if err := tx.Model(&models.Properties{}).First(&existingProperty, "property_id = ?", propertyId).Error; err != nil {

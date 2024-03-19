@@ -1,7 +1,6 @@
 package properties
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -152,9 +151,6 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 
 	formFiles, _ := c.MultipartForm()
 	propertyImages := formFiles.File["property_images"]
-	for _, file := range propertyImages {
-		fmt.Println(file.Filename)
-	}
 
 	err := h.service.CreateProperty(&property, propertyImages)
 	if err != nil {
@@ -193,9 +189,6 @@ func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
 
 	formFiles, _ := c.MultipartForm()
 	propertyImages := formFiles.File["property_images"]
-	for _, file := range propertyImages {
-		fmt.Println(file.Filename)
-	}
 
 	err := h.service.UpdatePropertyById(&property, propertyIdString, propertyImages)
 	if err != nil {
