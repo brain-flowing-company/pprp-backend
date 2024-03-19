@@ -23,7 +23,7 @@ type WebsocketClients struct {
 
 func NewClient(logger *zap.Logger, conn *websocket.Conn, hub *Hub, service Service, userId uuid.UUID) (*WebsocketClients, *apperror.AppError) {
 	chatPreviews := []models.ChatPreviews{}
-	err := service.GetAllChats(&chatPreviews, userId)
+	err := service.GetAllChats(&chatPreviews, userId, "")
 	if err != nil {
 		return nil, err
 	}

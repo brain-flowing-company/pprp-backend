@@ -2,6 +2,7 @@ package chats
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -10,7 +11,7 @@ import (
 )
 
 type Repository interface {
-	GetAllChats(*[]models.ChatPreviews, uuid.UUID) error
+	GetAllChats(*[]models.ChatPreviews, uuid.UUID, string) error
 	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) error
 	SaveMessages(msg *models.Messages) error
 	ReadMessages(sendUserId uuid.UUID, recvUserId uuid.UUID) error
@@ -26,10 +27,10 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetAllChats(results *[]models.ChatPreviews, userId uuid.UUID) error {
+func (repo *repositoryImpl) GetAllChats(results *[]models.ChatPreviews, userId uuid.UUID, query string) error {
 	return repo.db.Model(&models.Messages{}).
 		Raw(`
-		SELECT *
+		SELECT users.user_id, profile_image_url, first_name, last_name, unread_messages, content
 			FROM (
 				SELECT
 					DISTINCT ON (user_id) a.user_id,
@@ -57,8 +58,11 @@ func (repo *repositoryImpl) GetAllChats(results *[]models.ChatPreviews, userId u
 				) AS b
 				ON a.user_id = b.user_id
 			) AS c
+		LEFT JOIN users
+		ON users.user_id = c.user_id
+		WHERE LOWER(first_name || ' ' || last_name) LIKE LOWER(@query)
 		ORDER BY unread_messages DESC, sent_at DESC
-		`, sql.Named("user_id", userId)).
+		`, sql.Named("user_id", userId), sql.Named("query", fmt.Sprintf("%%%v%%", query))).
 		Scan(results).Error
 }
 

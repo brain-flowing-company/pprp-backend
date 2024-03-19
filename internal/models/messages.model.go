@@ -43,9 +43,12 @@ func (e *ReadEvents) ToOutBound() *OutBoundMessages {
 }
 
 type ChatPreviews struct {
-	UnreadMessages int64     `json:"unread_messages" example:"9"`
-	UserId         uuid.UUID `json:"user_id"         example:"123e4567-e89b-12d3-a456-426614174000"`
-	Content        string    `json:"content"         example:"hello, world"`
+	UserId          uuid.UUID `json:"user_id"           example:"123e4567-e89b-12d3-a456-426614174000"`
+	ProfileImageUrl string    `json:"profile_image_url" example:"www.image.com/profile"`
+	FirstName       string    `json:"first_name"        example:"John"`
+	LastName        string    `json:"last_name"         example:"Doe"`
+	UnreadMessages  int64     `json:"unread_messages"   example:"9"`
+	Content         string    `json:"content"           example:"hello, world"`
 }
 
 func (e *ChatPreviews) ToOutBound() *OutBoundMessages {
