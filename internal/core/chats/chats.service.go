@@ -3,13 +3,14 @@ package chats
 import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
 type Service interface {
 	GetAllChats(*[]models.ChatPreviews, uuid.UUID) *apperror.AppError
-	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, *models.PaginatedQuery) *apperror.AppError
+	GetMessagesInChat(*[]models.Messages, uuid.UUID, uuid.UUID, int, int) *apperror.AppError
 	SaveMessages(*models.Messages) *apperror.AppError
 	ReadMessages(uuid.UUID, uuid.UUID) *apperror.AppError
 }
@@ -38,8 +39,10 @@ func (s *serviceImpl) GetAllChats(chats *[]models.ChatPreviews, userId uuid.UUID
 	return nil
 }
 
-func (s *serviceImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid.UUID, recvUserId uuid.UUID, paginated *models.PaginatedQuery) *apperror.AppError {
-	err := s.repo.GetMessagesInChat(msgs, sendUserId, recvUserId, paginated)
+func (s *serviceImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid.UUID, recvUserId uuid.UUID, offset int, limit int) *apperror.AppError {
+	limit = utils.Min(limit, 50)
+
+	err := s.repo.GetMessagesInChat(msgs, sendUserId, recvUserId, offset, limit)
 	if err != nil {
 		s.logger.Error("Could not get messages in chat",
 			zap.Error(err),
