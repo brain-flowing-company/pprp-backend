@@ -103,11 +103,8 @@ CREATE TABLE properties
 
 CREATE TABLE property_images
 (
-    property_id UUID REFERENCES properties (property_id) ON DELETE CASCADE          NOT NULL,
-    image_url       VARCHAR(2000)                                                   NOT NULL,
-    created_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
-    updated_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT CURRENT_TIMESTAMP,
-    deleted_at               TIMESTAMP(0) WITH TIME ZONE                            DEFAULT NULL,
+    property_id UUID     REFERENCES properties (property_id) ON DELETE CASCADE      NOT NULL,
+    image_url            VARCHAR(2000)                                              NOT NULL,
     PRIMARY KEY (property_id, image_url)
 );
 
@@ -188,10 +185,6 @@ CREATE RULE soft_deletion AS ON DELETE TO properties DO INSTEAD (
     UPDATE properties SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
 );
 
-CREATE RULE soft_deletion AS ON DELETE TO property_images DO INSTEAD (
-    UPDATE property_images SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
-);
-
 CREATE RULE soft_deletion AS ON DELETE TO selling_properties DO INSTEAD (
     UPDATE selling_properties SET deleted_at = CURRENT_TIMESTAMP WHERE property_id = old.property_id and deleted_at IS NULL
 );
@@ -217,7 +210,7 @@ CREATE RULE delete_users AS ON UPDATE TO users
 CREATE RULE delete_properties AS ON UPDATE TO properties
     WHERE old.deleted_at IS NULL AND new.deleted_at IS NOT NULL
     DO ALSO (
-        UPDATE property_images SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
+        DELETE FROM property_images WHERE property_id = old.property_id;
         UPDATE selling_properties SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
         UPDATE renting_properties SET deleted_at = new.deleted_at WHERE property_id = old.property_id;
         DELETE FROM favorite_properties WHERE property_id = old.property_id;
@@ -259,27 +252,27 @@ INSERT INTO property_images (property_id, image_url) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 'https://picsum.photos/800/600?random=1'),
 ('f38f80b3-f326-4825-9afc-ebc331626875', 'https://picsum.photos/800/600?random=2'),
 ('f38f80b3-f326-4825-9afc-ebc331626875', 'https://picsum.photos/800/600?random=3'),
-('41a448d4-43ec-411a-a692-2d68e06e0282', 'https://picsum.photos/800/600?random=1'),
-('41a448d4-43ec-411a-a692-2d68e06e0282', 'https://picsum.photos/800/600?random=2'),
-('414854bf-bdee-45a5-929f-073aedaceea0', 'https://picsum.photos/800/600?random=1'),
-('414854bf-bdee-45a5-929f-073aedaceea0', 'https://picsum.photos/800/600?random=2'),
-('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'https://picsum.photos/800/600?random=1'),
-('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'https://picsum.photos/800/600?random=2'),
-('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'https://picsum.photos/800/600?random=3'),
-('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'https://picsum.photos/800/600?random=4'),
-('bc5891ce-6d5e-40d6-8563-f7cebe9667e8', 'https://picsum.photos/800/600?random=1'),
-('bc5891ce-6d5e-40d6-8563-f7cebe9667e8', 'https://picsum.photos/800/600?random=2'),
-('bc5891ce-6d5e-40d6-8563-f7cebe9667e8', 'https://picsum.photos/800/600?random=3'),
-('bc5891ce-6d5e-40d6-8563-f7cebe9667e8', 'https://picsum.photos/800/600?random=4'),
-('3df779f2-1f72-44d1-9a31-51929ed130a2', 'https://picsum.photos/800/600?random=1'),
-('a8329428-6971-42e8-974a-4df030cd27be', 'https://picsum.photos/800/600?random=1'),
-('a8329428-6971-42e8-974a-4df030cd27be', 'https://picsum.photos/800/600?random=2'),
-('a8329428-6971-42e8-974a-4df030cd27be', 'https://picsum.photos/800/600?random=3'),
-('a8329428-6971-42e8-974a-4df030cd27be', 'https://picsum.photos/800/600?random=4'),
-('a8329428-6971-42e8-974a-4df030cd27be', 'https://picsum.photos/800/600?random=5'),
-('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', 'https://picsum.photos/800/600?random=1'),
-('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', 'https://picsum.photos/800/600?random=2'),
-('b7c8ce65-8fa3-4759-bc4e-42a396ef4fc1', 'https://picsum.photos/800/600?random=1');
+('41a448d4-43ec-411a-a692-2d68e06e0282', 'https://picsum.photos/800/600?random=4'),
+('41a448d4-43ec-411a-a692-2d68e06e0282', 'https://picsum.photos/800/600?random=5'),
+('414854bf-bdee-45a5-929f-073aedaceea0', 'https://picsum.photos/800/600?random=6'),
+('414854bf-bdee-45a5-929f-073aedaceea0', 'https://picsum.photos/800/600?random=7'),
+('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'https://picsum.photos/800/600?random=8'),
+('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'https://picsum.photos/800/600?random=9'),
+('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'https://picsum.photos/800/600?random=10'),
+('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'https://picsum.photos/800/600?random=11'),
+('bc5891ce-6d5e-40d6-8563-f7cebe9667e8', 'https://picsum.photos/800/600?random=12'),
+('bc5891ce-6d5e-40d6-8563-f7cebe9667e8', 'https://picsum.photos/800/600?random=13'),
+('bc5891ce-6d5e-40d6-8563-f7cebe9667e8', 'https://picsum.photos/800/600?random=14'),
+('bc5891ce-6d5e-40d6-8563-f7cebe9667e8', 'https://picsum.photos/800/600?random=15'),
+('3df779f2-1f72-44d1-9a31-51929ed130a2', 'https://picsum.photos/800/600?random=16'),
+('a8329428-6971-42e8-974a-4df030cd27be', 'https://picsum.photos/800/600?random=17'),
+('a8329428-6971-42e8-974a-4df030cd27be', 'https://picsum.photos/800/600?random=18'),
+('a8329428-6971-42e8-974a-4df030cd27be', 'https://picsum.photos/800/600?random=19'),
+('a8329428-6971-42e8-974a-4df030cd27be', 'https://picsum.photos/800/600?random=20'),
+('a8329428-6971-42e8-974a-4df030cd27be', 'https://picsum.photos/800/600?random=21'),
+('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', 'https://picsum.photos/800/600?random=22'),
+('f8eaf2fc-d6f2-4a8c-a714-5425cc76bbfa', 'https://picsum.photos/800/600?random=23'),
+('b7c8ce65-8fa3-4759-bc4e-42a396ef4fc1', 'https://picsum.photos/800/600?random=24');
 
 INSERT INTO selling_properties (property_id, price, is_sold) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626875', 258883.7091280503, FALSE),
@@ -365,7 +358,6 @@ CREATE VIEW appointments AS SELECT *
 CREATE INDEX idx_users_deleted_at                       ON _users (deleted_at);
 CREATE INDEX idx_user_financial_information_deleted_at  ON _user_financial_informations (deleted_at);
 CREATE INDEX idx_properties_deleted_at                  ON _properties (deleted_at);
-CREATE INDEX idx_property_images_deleted_at             ON _property_images (deleted_at);
 CREATE INDEX idx_selling_properties_deleted_at          ON _selling_properties (deleted_at);
 CREATE INDEX idx_renting_properties_deleted_at          ON _renting_properties (deleted_at);
 CREATE INDEX idx_appointments_deleted_at                ON _appointments (deleted_at);

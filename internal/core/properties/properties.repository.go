@@ -2,6 +2,7 @@ package properties
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
@@ -16,6 +17,7 @@ type Repository interface {
 	UpdatePropertyById(*models.PropertyInfos, string) error
 	DeletePropertyById(string) error
 	CountProperty(*int64, string) error
+	CountPropertyImages(*int64, string) error
 	AddFavoriteProperty(*models.FavoriteProperties) error
 	RemoveFavoriteProperty(string, string) error
 	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *utils.PaginatedQuery) error
@@ -200,7 +202,7 @@ func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyProperties
 func (repo *repositoryImpl) CreateProperty(property *models.PropertyInfos) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		propertyQuery := `INSERT INTO properties (property_id, owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, floor_size_unit, unit_number)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
 		if err := tx.Exec(propertyQuery, property.PropertyId,
 			property.OwnerId, property.PropertyName, property.PropertyDescription, property.PropertyType,
 			property.Address, property.Alley, property.Street, property.SubDistrict, property.District,
@@ -238,6 +240,7 @@ func (repo *repositoryImpl) CreateProperty(property *models.PropertyInfos) error
 }
 
 func (repo *repositoryImpl) UpdatePropertyById(property *models.PropertyInfos, propertyId string) error {
+	fmt.Println(property)
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		var existingProperty models.Properties
 		if err := tx.Model(&models.Properties{}).First(&existingProperty, "property_id = ?", propertyId).Error; err != nil {
@@ -252,6 +255,17 @@ func (repo *repositoryImpl) UpdatePropertyById(property *models.PropertyInfos, p
 			property.Floor, property.FloorSize, property.FloorSizeUnit, property.UnitNumber, propertyId,
 		).Error; err != nil {
 			return err
+		}
+
+		if err := tx.Where("property_id = ?", propertyId).Delete(&models.PropertyImages{}).Error; err != nil {
+			return err
+		} else if len(property.ImageUrls) != 0 {
+			imageQuery := `INSERT INTO property_images (property_id, image_url) VALUES (?, ?);`
+			for _, imageUrl := range property.ImageUrls {
+				if err := tx.Exec(imageQuery, propertyId, imageUrl).Error; err != nil {
+					return err
+				}
+			}
 		}
 
 		if property.Price != existingProperty.SellingProperty.Price || property.IsSold != existingProperty.SellingProperty.IsSold {
@@ -283,6 +297,10 @@ func (repo *repositoryImpl) DeletePropertyById(propertyId string) error {
 
 func (repo *repositoryImpl) CountProperty(countProperty *int64, propertyId string) error {
 	return repo.db.Model(&models.Properties{}).Where("property_id = ?", propertyId).Count(countProperty).Error
+}
+
+func (repo *repositoryImpl) CountPropertyImages(countPropertyImages *int64, propertyId string) error {
+	return repo.db.Model(&models.PropertyImages{}).Where("property_id = ?", propertyId).Count(countPropertyImages).Error
 }
 
 func (repo *repositoryImpl) AddFavoriteProperty(favoriteProperty *models.FavoriteProperties) error {

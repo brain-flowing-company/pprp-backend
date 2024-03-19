@@ -180,17 +180,24 @@ func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
 	propertyIdString := c.Params("propertyId")
 	propertyIdUuid, _ := uuid.Parse(propertyIdString)
 
-	property := models.PropertyInfos{}
 	userId := c.Locals("session").(models.Sessions).UserId
 
-	property.OwnerId = userId
-	property.PropertyId = propertyIdUuid
+	property := models.PropertyInfos{
+		PropertyId: propertyIdUuid,
+		OwnerId:    userId,
+	}
 
 	if err := c.BodyParser(&property); err != nil {
 		return utils.ResponseError(c, apperror.InvalidBody)
 	}
 
-	err := h.service.UpdatePropertyById(&property, propertyIdString)
+	formFiles, _ := c.MultipartForm()
+	propertyImages := formFiles.File["property_images"]
+	for _, file := range propertyImages {
+		fmt.Println(file.Filename)
+	}
+
+	err := h.service.UpdatePropertyById(&property, propertyIdString, propertyImages)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}

@@ -22,7 +22,7 @@ type Service interface {
 	GetPropertyById(*models.Properties, string) *apperror.AppError
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery) *apperror.AppError
 	CreateProperty(*models.PropertyInfos, []*multipart.FileHeader) *apperror.AppError
-	UpdatePropertyById(*models.PropertyInfos, string) *apperror.AppError
+	UpdatePropertyById(*models.PropertyInfos, string, []*multipart.FileHeader) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
@@ -128,11 +128,20 @@ func (s *serviceImpl) CreateProperty(property *models.PropertyInfos, propertyIma
 	return nil
 }
 
-func (s *serviceImpl) UpdatePropertyById(property *models.PropertyInfos, propertyId string) *apperror.AppError {
+func (s *serviceImpl) UpdatePropertyById(property *models.PropertyInfos, propertyId string, propertyImages []*multipart.FileHeader) *apperror.AppError {
 	if !utils.IsValidUUID(propertyId) {
 		return apperror.
 			New(apperror.InvalidPropertyId).
 			Describe("Invalid property id")
+	}
+
+	if propertyImages != nil && len(propertyImages) != 0 {
+		newPropertyImageUrls, uploadErr := s.uploadPropertyImages(property.PropertyId, propertyImages)
+		if uploadErr != nil {
+			return uploadErr
+		}
+
+		property.ImageUrls = append(property.ImageUrls, newPropertyImageUrls...)
 	}
 
 	err := s.repo.UpdatePropertyById(property, propertyId)
@@ -268,7 +277,15 @@ func (s *serviceImpl) uploadPropertyImages(propertyId uuid.UUID, propertyImages 
 			Describe("No property image found")
 	}
 
-	imageCount := 1
+	var countPropertyImages int64
+	if err := s.repo.CountPropertyImages(&countPropertyImages, propertyId.String()); err != nil {
+		s.logger.Error("Could not count property images", zap.Error(err))
+		return nil, apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not upload property image")
+	}
+
+	imageCount := countPropertyImages + 1
 	for _, propertyImage := range propertyImages {
 		file, err := propertyImage.Open()
 		if err != nil {
@@ -311,7 +328,7 @@ func (s *serviceImpl) uploadPropertyImages(propertyId uuid.UUID, propertyImages 
 				Describe("Could not process image")
 		}
 
-		url, err := s.storage.Upload(fmt.Sprintf("properties/%v-%v.jpeg", propertyId.String(), imageCount), processedFile, types.ObjectCannedACLPrivate)
+		url, err := s.storage.Upload(fmt.Sprintf("properties/%v-%v.jpeg", propertyId.String(), imageCount), processedFile, types.ObjectCannedACLPublicRead)
 		if err != nil {
 			return nil, apperror.
 				New(apperror.InternalServerError).
