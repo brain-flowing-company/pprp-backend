@@ -1,6 +1,7 @@
 package chats
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -29,7 +30,8 @@ func NewClient(logger *zap.Logger, conn *websocket.Conn, hub *Hub, service Servi
 
 	chats := map[uuid.UUID]*models.ChatPreviews{}
 	for _, chat := range chatPreviews {
-		chats[chat.UserId] = &chat
+		chats[chat.UserId] = new(models.ChatPreviews)
+		*chats[chat.UserId] = chat
 	}
 
 	return &WebsocketClients{
@@ -48,6 +50,7 @@ func (client *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
 		// someone send message to me AND im not currently in that chat
 		if payload.ReceiverId == client.UserId &&
 			!client.hub.IsUserInChat(payload.SenderId, payload.ReceiverId) {
+			fmt.Println(payload.SenderId, client.chats[payload.SenderId])
 
 			preview, ok := client.chats[payload.SenderId]
 			if !ok {
@@ -61,6 +64,8 @@ func (client *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
 				preview.Content = payload.Content
 				preview.UnreadMessages++
 			}
+
+			fmt.Println(preview)
 
 			client.router.Send(preview.ToOutBound())
 		} else {
