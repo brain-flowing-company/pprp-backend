@@ -1,8 +1,6 @@
 package emails
 
 import (
-	"fmt"
-
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"gorm.io/gorm"
 )
@@ -30,7 +28,6 @@ func (repo *repositoryImpl) CountEmail(count *int64, email string) error {
 }
 
 func (repo *repositoryImpl) CreateEmailVerificationCode(emailVerificationCodes *models.EmailVerificationCodes) error {
-	fmt.Println(emailVerificationCodes)
 	return repo.db.Create(emailVerificationCodes).Error
 }
 
