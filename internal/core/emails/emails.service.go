@@ -12,7 +12,6 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -56,14 +55,22 @@ func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError 
 			Describe("Email already exists")
 	}
 
-	code := s.cfg.EmailCodePrefix + uuid.NewString()
+	code := utils.RandomIntegerString(6)
+	codeWithPrefix := s.cfg.EmailCodePrefix + code
+	hashedCode, hashErr := utils.HashPassword(codeWithPrefix)
+	if hashErr != nil {
+		s.logger.Error("Could not hash email verification code", zap.Error(hashErr))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not send email. Please try again later")
+	}
 
 	emailVerificationCodeExpire := s.cfg.AuthVerificationExpire
 	expiredAt := time.Now().Add(time.Duration(emailVerificationCodeExpire) * time.Second)
 
 	verificationData := models.EmailVerificationCodes{
 		Email:     userEmail,
-		Code:      code,
+		Code:      hashedCode,
 		ExpiredAt: expiredAt,
 	}
 
@@ -74,12 +81,9 @@ func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError 
 			Describe("Could not send email. Please try again later")
 	}
 
-	link := fmt.Sprintf("%v?email=%v&code=%v", s.cfg.AuthRedirect, userEmail, code)
 	subject := "Email Verification from suechaokhai.com"
 	emailStructure := models.VerificationEmails{
-		// VerificationLink: "https://www.youtube.com/@oreo10baht",
-		// VerificationLink: "http://localhost:8000/email/verify?email=" + userEmail + "&code=" + code,
-		VerificationLink: link,
+		VerificationCode: code,
 	}
 
 	return s.sendEmail(emails, subject, emailStructure)
