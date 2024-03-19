@@ -183,7 +183,7 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.Callbacks, callbackRes
 			Describe("Verification code expired")
 	}
 
-	if userCode != verificationData.Code {
+	if utils.ComparePassword(verificationData.Code, s.cfg.EmailCodePrefix+userCode) {
 		return apperror.
 			New(apperror.InvalidEmailVerificationCode).
 			Describe("Invalid verification code")
