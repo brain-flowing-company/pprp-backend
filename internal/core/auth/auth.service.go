@@ -74,8 +74,8 @@ func (s *serviceImpl) Callback(ctx context.Context, callback *models.Callbacks, 
 
 	if callback.Code == "" {
 		return apperror.
-			New(apperror.EmptyEmailVerificationCode).
-			Describe("Empty email verification code")
+			New(apperror.EmptyVerificationCode).
+			Describe("Empty verification code")
 	}
 
 	prefix := s.cfg.EmailCodePrefix
