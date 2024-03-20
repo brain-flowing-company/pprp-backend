@@ -11,6 +11,19 @@ type OutBoundPayload interface {
 	ToOutBound() *OutBoundMessages
 }
 
+type OutBoundMessages struct {
+	Event   enums.MessageOutboundEvents `json:"event"`
+	Tag     string                      `json:"tag,omitempty"`
+	Payload interface{}                 `json:"payload"`
+}
+
+type InBoundMessages struct {
+	Event   enums.MessageInboundEvents `json:"event"`
+	Content string                     `json:"content"`
+	SentAt  time.Time                  `json:"sent_at"`
+	Tag     string                     `json:"tag"`
+}
+
 type Messages struct {
 	MessageId  uuid.UUID  `json:"message_id"    example:"27b79b15-a56f-464a-90f7-bab515ba4c02"`
 	SenderId   uuid.UUID  `json:"sender_id"     example:"27b79b15-a56f-464a-90f7-bab515ba4c02"`
@@ -58,15 +71,10 @@ func (e *ChatPreviews) ToOutBound() *OutBoundMessages {
 	}
 }
 
-type OutBoundMessages struct {
-	Event   enums.MessageOutboundEvents `json:"event"`
-	Tag     string                      `json:"tag,omitempty"`
-	Payload interface{}                 `json:"payload"`
-}
+type ConnectionEstablished struct{}
 
-type InBoundMessages struct {
-	Event   enums.MessageInboundEvents `json:"event"`
-	Content string                     `json:"content"`
-	SentAt  time.Time                  `json:"sent_at"`
-	Tag     string                     `json:"tag"`
+func (e *ConnectionEstablished) ToOutBound() *OutBoundMessages {
+	return &OutBoundMessages{
+		Event: enums.OUTBOUND_CONN,
+	}
 }

@@ -24,7 +24,7 @@ func NewWebsocketRouter(logger *zap.Logger, conn *websocket.Conn) *WebsocketRout
 	return &WebsocketRouter{
 		conn:             conn,
 		handlers:         make(map[enums.MessageInboundEvents]handlerFunc),
-		outBoundMessages: make(chan *models.OutBoundMessages),
+		outBoundMessages: make(chan *models.OutBoundMessages, 16),
 		logger:           logger,
 	}
 }

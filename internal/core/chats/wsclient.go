@@ -65,8 +65,6 @@ func (client *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
 				preview.UnreadMessages++
 			}
 
-			fmt.Println(preview)
-
 			client.router.Send(preview.ToOutBound())
 		} else {
 			client.router.Send(msg)

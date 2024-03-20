@@ -114,6 +114,10 @@ func (h *handlerImpl) OpenConnection(conn *websocket.Conn) {
 	}
 
 	h.hub.Register(client)
+
+	msg := models.ConnectionEstablished{}
+	client.SendMessage(msg.ToOutBound())
+
 	client.Listen()
 
 	defer func() {
