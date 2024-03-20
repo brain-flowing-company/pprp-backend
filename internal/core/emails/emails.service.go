@@ -58,20 +58,13 @@ func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError 
 
 	code := utils.RandomIntegerString(6)
 	codeWithPrefix := s.cfg.EmailCodePrefix + code
-	hashedCode, hashErr := utils.HashPassword(codeWithPrefix)
-	if hashErr != nil {
-		s.logger.Error("Could not hash email verification code", zap.Error(hashErr))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not send email. Please try again later")
-	}
 
 	emailVerificationCodeExpire := s.cfg.AuthVerificationExpire
 	expiredAt := time.Now().Add(time.Duration(emailVerificationCodeExpire) * time.Second)
 
 	verificationData := models.EmailVerificationCodes{
 		Email:     userEmail,
-		Code:      hashedCode,
+		Code:      codeWithPrefix,
 		ExpiredAt: expiredAt,
 	}
 
@@ -174,7 +167,7 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.Callbacks, callbackRes
 			Describe("Verification code expired")
 	}
 
-	if utils.ComparePassword(verificationData.Code, userCode) {
+	if verificationData.Code != userCode {
 		return apperror.
 			New(apperror.InvalidEmailVerificationCode).
 			Describe("Invalid verification code")
