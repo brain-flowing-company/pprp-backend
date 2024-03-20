@@ -72,6 +72,12 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 func (s *serviceImpl) Callback(ctx context.Context, callback *models.Callbacks, callbackResponse *models.CallbackResponses) *apperror.AppError {
 	var err *apperror.AppError
 
+	if callback.Code == "" {
+		return apperror.
+			New(apperror.EmptyEmailVerificationCode).
+			Describe("Empty email verification code")
+	}
+
 	prefix := s.cfg.EmailCodePrefix
 	if callback.Code[:len(prefix)] == s.cfg.EmailCodePrefix {
 		err = s.emailService.VerifyEmail(callback, callbackResponse)

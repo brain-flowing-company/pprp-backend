@@ -4,7 +4,7 @@ import "github.com/brain-flowing-company/pprp-backend/internal/enums"
 
 type Callbacks struct {
 	Email string `query:"email"`
-	Code  string `query:"code"`
+	Code  string `query:"code" example:"SCK-A1b2C3"`
 	State string `query:"state"`
 }
 

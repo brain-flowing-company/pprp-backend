@@ -13,6 +13,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 type Service interface {
@@ -149,21 +150,12 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.Callbacks, callbackRes
 
 	verificationData := models.EmailVerificationCodes{}
 
-	var countData int64
-	countDataErr := s.repo.CountEmailVerificationCode(&countData, userEmail)
-	if countDataErr != nil {
-		s.logger.Error("Could not count email verification data", zap.Error(countDataErr))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not verify email. Please try again later")
-	} else if countData == 0 {
+	getDataErr := s.repo.GetEmailVerificationCodeByEmail(&verificationData, userEmail)
+	if getDataErr == gorm.ErrRecordNotFound {
 		return apperror.
 			New(apperror.EmailVerificationDataNotFound).
-			Describe("Could not verify email. Please try again later")
-	}
-
-	getDataErr := s.repo.GetEmailVerificationCodeByEmail(&verificationData, userEmail)
-	if getDataErr != nil {
+			Describe("Email verification data not found")
+	} else if getDataErr != nil {
 		s.logger.Error("Could not get email verification data", zap.Error(getDataErr))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -171,8 +163,7 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.Callbacks, callbackRes
 	}
 
 	if verificationData.ExpiredAt.Before(time.Now()) {
-		err := s.repo.DeleteEmailVerificationCode(userEmail)
-		if err != nil {
+		if err := s.repo.DeleteEmailVerificationCode(userEmail); err != nil {
 			s.logger.Error("Could not delete email verification data", zap.Error(err))
 			return apperror.
 				New(apperror.InternalServerError).
@@ -183,15 +174,14 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.Callbacks, callbackRes
 			Describe("Verification code expired")
 	}
 
-	if utils.ComparePassword(verificationData.Code, s.cfg.EmailCodePrefix+userCode) {
+	if utils.ComparePassword(verificationData.Code, userCode) {
 		return apperror.
 			New(apperror.InvalidEmailVerificationCode).
 			Describe("Invalid verification code")
 	}
 
-	deleteErr := s.repo.DeleteEmailVerificationCode(userEmail)
-	if deleteErr != nil {
-		s.logger.Error("Could not delete email verification data", zap.Error(deleteErr))
+	if err := s.repo.DeleteEmailVerificationCode(userEmail); err != nil {
+		s.logger.Error("Could not delete email verification data", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Server Error. Please try again later")
