@@ -144,7 +144,7 @@ CREATE TABLE appointments
     property_id         UUID REFERENCES properties (property_id)   NOT NULL,
     owner_user_id       UUID REFERENCES users (user_id)            NOT NULL,
     dweller_user_id     UUID REFERENCES users (user_id)            NOT NULL,
-    appointments_status appointments_status DEFAULT 'PENDING'      NOT NULL,
+    status appointments_status DEFAULT 'PENDING'      NOT NULL,
     appointment_date    TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
     note                TEXT                                       DEFAULT NULL,
     cancelled_message   TEXT                                       DEFAULT NULL,

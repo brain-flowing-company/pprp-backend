@@ -1,6 +1,7 @@
 package appointments
 
 import (
+	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"gorm.io/gorm"
 )
@@ -12,7 +13,7 @@ type Repository interface {
 	GetAppointmentsByDwellerId(*[]models.Appointments, string) error
 	CreateAppointments(*[]models.Appointments) error
 	DeleteAppointments(*[]string) error
-	UpdateAppointmentStatus(string, models.AppointmentsStatus) error
+	UpdateAppointmentStatus(string, enums.AppointmentStatus) error
 	CheckAppointmentId(*int64, string) error
 }
 
@@ -62,7 +63,7 @@ func (repo *repositoryImpl) CheckAppointmentId(count *int64, appId string) error
 		Count(count).Error
 }
 
-func (repo *repositoryImpl) UpdateAppointmentStatus(appId string, status models.AppointmentsStatus) error {
+func (repo *repositoryImpl) UpdateAppointmentStatus(appId string, status enums.AppointmentStatus) error {
 	return repo.db.Model(&models.Appointments{}).
 		Where("appointment_id = ?", appId).
 		Update("appointments_status", status).Error
