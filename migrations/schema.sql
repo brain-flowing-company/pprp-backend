@@ -298,6 +298,10 @@ INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent
 ('f48c2f66-3450-41f1-8307-db6386187472', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Hi' , NULL, '2024-02-25 19:05:10.519+07'),
 ('8d7a913b-0bd4-4554-8286-bc8ad2b8817e', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '?' , NULL, '2024-02-25 19:05:12.953+07');
 
+INSERT INTO appointments (appointment_id, property_id, owner_user_id, dweller_user_id, status, appointment_date, note) VALUES
+('f38f80b3-f326-4825-9afc-ebc331626875', 'f38f80b3-f326-4825-9afc-ebc331626875', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:50:00.000+07', NULL),
+('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', '62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:51:00.000+07', 'Good morning');
+
 -- mock data for appointments
 
 -- Insert mock data into the users table
@@ -371,3 +375,26 @@ CREATE INDEX idx_property_images_deleted_at             ON _property_images (del
 CREATE INDEX idx_selling_properties_deleted_at          ON _selling_properties (deleted_at);
 CREATE INDEX idx_renting_properties_deleted_at          ON _renting_properties (deleted_at);
 CREATE INDEX idx_appointments_deleted_at                ON _appointments (deleted_at);
+
+-------------------- FUNCTIONS --------------------
+
+CREATE OR REPLACE FUNCTION update_appointment_status()
+    RETURNS TRIGGER AS $$
+        BEGIN
+            UPDATE appointments SET status = 'ARCHIVED'
+            WHERE appointment_date < CURRENT_TIMESTAMP AND status != 'ARCHIVED';
+            RETURN NEW;
+        END;
+    $$ LANGUAGE plpgsql;
+
+------------------- EVENTS --------------------
+
+SELECT cron.schedule('*/1 * * * *', $$
+  DO
+    BEGIN
+      UPDATE appointments
+      SET status = 'ARCHIVED'
+      WHERE appointment_date < CURRENT_TIMESTAMP
+        AND status != 'ARCHIVED';
+    END;
+$$);
