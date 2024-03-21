@@ -9,6 +9,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/emails"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/google"
+	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"go.uber.org/zap"
@@ -72,17 +73,20 @@ func (s *serviceImpl) AuthenticateUser(email, password string) (string, *apperro
 func (s *serviceImpl) Callback(ctx context.Context, callback *models.Callbacks, callbackResponse *models.CallbackResponses) *apperror.AppError {
 	var err *apperror.AppError
 
+	// prefix := s.cfg.EmailCodePrefix
 	if callback.Code == "" {
-		return apperror.
-			New(apperror.EmptyVerificationCode).
-			Describe("Empty verification code")
-	}
-
-	prefix := s.cfg.EmailCodePrefix
-	if callback.Code[:len(prefix)] == s.cfg.EmailCodePrefix {
-		err = s.emailService.VerifyEmail(callback, callbackResponse)
+		if callback.State == "" {
+			*callbackResponse = models.CallbackResponses{
+				Email:          callback.Email,
+				RegisteredType: enums.EMAIL,
+				SessionType:    enums.SessionRegister,
+			}
+			return nil
+		} else {
+			err = s.googleService.ExchangeToken(ctx, callback, callbackResponse)
+		}
 	} else {
-		err = s.googleService.ExchangeToken(ctx, callback, callbackResponse)
+		err = s.emailService.VerifyEmail(callback, callbackResponse)
 	}
 
 	return err
