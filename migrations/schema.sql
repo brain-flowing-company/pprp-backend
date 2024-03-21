@@ -2,7 +2,7 @@ CREATE TYPE bank_names AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB
 
 CREATE TYPE registered_types AS ENUM('EMAIL', 'GOOGLE');
 
-CREATE TYPE appointments_status AS ENUM('PENDING', 'CONFIRMED', 'REJECTED', 'CANCELLED', 'ARCHIVED');
+CREATE TYPE appointment_status AS ENUM('PENDING', 'CONFIRMED', 'REJECTED', 'CANCELLED', 'ARCHIVED');
 
 CREATE TYPE card_colors AS ENUM('LIGHT_BLUE', 'BLUE', 'DARK_BLUE', 'VERY_DARK_BLUE');
 
@@ -144,7 +144,7 @@ CREATE TABLE appointments
     property_id         UUID REFERENCES properties (property_id)   NOT NULL,
     owner_user_id       UUID REFERENCES users (user_id)            NOT NULL,
     dweller_user_id     UUID REFERENCES users (user_id)            NOT NULL,
-    status appointments_status DEFAULT 'PENDING'      NOT NULL,
+    status              appointment_status DEFAULT 'PENDING'       NOT NULL,
     appointment_date    TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
     note                TEXT                                       DEFAULT NULL,
     cancelled_message   TEXT                                       DEFAULT NULL,

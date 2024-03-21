@@ -13,8 +13,8 @@ import (
 type Handler interface {
 	GetAllAppointments(c *fiber.Ctx) error
 	GetAppointmentById(c *fiber.Ctx) error
-	CreateAppointments(c *fiber.Ctx) error
-	DeleteAppointments(c *fiber.Ctx) error
+	CreateAppointment(c *fiber.Ctx) error
+	DeleteAppointment(c *fiber.Ctx) error
 	UpdateAppointmentStatus(c *fiber.Ctx) error
 }
 
@@ -58,7 +58,7 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 	appointmentId := c.Params("appointmentId")
 
 	var apps models.Appointments
-	err := h.service.GetAppointmentsById(&apps, appointmentId)
+	err := h.service.GetAppointmentById(&apps, appointmentId)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
@@ -75,16 +75,16 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 // @success     201	{object} models.Appointments
 // @failure     400 {object} models.ErrorResponses "Empty dates or some of appointments duplicate with existing one"
 // @failure     500 {object} models.ErrorResponses
-func (h *handlerImpl) CreateAppointments(c *fiber.Ctx) error {
-	apps := &models.CreatingAppointments{}
-	err := c.BodyParser(apps)
+func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
+	application := &models.Appointments{}
+	err := c.BodyParser(application)
 	if err != nil {
 		return utils.ResponseError(c, apperror.
 			New(apperror.BadRequest).
 			Describe(fmt.Sprintf("Could not parse body: %v", err.Error())))
 	}
 
-	apperr := h.service.CreateAppointments(apps)
+	apperr := h.service.CreateAppointment(application)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}
@@ -100,16 +100,10 @@ func (h *handlerImpl) CreateAppointments(c *fiber.Ctx) error {
 // @param       body body models.DeletingAppointments true "Appointment id deleting lists"
 // @success     200	{object} []models.Appointments
 // @failure     500 {object} models.ErrorResponses
-func (h *handlerImpl) DeleteAppointments(c *fiber.Ctx) error {
-	appIds := &[]string{}
-	err := c.BodyParser(appIds)
-	if err != nil {
-		return utils.ResponseError(c, apperror.
-			New(apperror.BadRequest).
-			Describe(fmt.Sprintf("Could not parse body: %v", err.Error())))
-	}
+func (h *handlerImpl) DeleteAppointment(c *fiber.Ctx) error {
+	appointmentId := c.Params("appointmentId")
 
-	apperr := h.service.DeleteAppointments(appIds)
+	apperr := h.service.DeleteAppointment(appointmentId)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}

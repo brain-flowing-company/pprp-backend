@@ -8,13 +8,12 @@ import (
 
 type Repository interface {
 	GetAllAppointments(*[]models.Appointments) error
-	GetAppointmentsById(*models.Appointments, string) error
-	GetAppointmentsByOwnerId(*[]models.Appointments, string) error
-	GetAppointmentsByDwellerId(*[]models.Appointments, string) error
-	CreateAppointments(*[]models.Appointments) error
-	DeleteAppointments(*[]string) error
+	GetAppointmentById(*models.Appointments, string) error
+	GetAppointmentByOwnerId(*[]models.Appointments, string) error
+	GetAppointmentByDwellerId(*[]models.Appointments, string) error
+	CreateAppointment(*models.Appointments) error
+	DeleteAppointment(string) error
 	UpdateAppointmentStatus(string, enums.AppointmentStatus) error
-	CheckAppointmentId(*int64, string) error
 }
 
 type repositoryImpl struct {
@@ -27,44 +26,34 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetAllAppointments(results *[]models.Appointments) error {
-	return repo.db.Model(&models.Appointments{}).
-		Find(results).Error
+func (repo *repositoryImpl) GetAllAppointments(appointments *[]models.Appointments) error {
+	return repo.db.Model(&models.Appointments{}).Find(appointments).Error
 }
 
-func (repo *repositoryImpl) GetAppointmentsById(result *models.Appointments, id string) error {
-	return repo.db.Model(&models.Appointments{}).
-		First(result, "appointment_id = ?", id).Error
+func (repo *repositoryImpl) GetAppointmentById(appointment *models.Appointments, appointmentId string) error {
+	return repo.db.Model(&models.Appointments{}).First(appointment, "appointment_id = ?", appointmentId).Error
 }
 
-func (repo *repositoryImpl) GetAppointmentsByOwnerId(result *[]models.Appointments, id string) error {
-	return repo.db.Model(&models.Appointments{}).
-		First(result, "owner_user_id = ?", id).Error
+func (repo *repositoryImpl) GetAppointmentByOwnerId(appointments *[]models.Appointments, ownerUserId string) error {
+	return repo.db.Model(&models.Appointments{}).Find(appointments, "owner_user_id = ?", ownerUserId).Error
 }
 
-func (repo *repositoryImpl) GetAppointmentsByDwellerId(result *[]models.Appointments, id string) error {
-	return repo.db.Model(&models.Appointments{}).
-		First(result, "dweller_user_id = ?", id).Error
+func (repo *repositoryImpl) GetAppointmentByDwellerId(appointments *[]models.Appointments, dwellerUserId string) error {
+	return repo.db.Model(&models.Appointments{}).Find(appointments, "dweller_user_id = ?", dwellerUserId).Error
 }
 
-func (repo *repositoryImpl) CreateAppointments(apps *[]models.Appointments) error {
-	return repo.db.Model(&models.Appointments{}).
-		CreateInBatches(apps, len(*apps)).Error
+func (repo *repositoryImpl) CreateAppointment(appointment *models.Appointments) error {
+	return repo.db.Create(appointment).Error
 }
 
-func (repo *repositoryImpl) DeleteAppointments(appIds *[]string) error {
-	return repo.db.Model(&models.Appointments{}).
-		Delete(&models.Appointments{}, appIds).Error
+func (repo *repositoryImpl) DeleteAppointment(appointmentId string) error {
+	if err := repo.db.Model(&models.Appointments{}).First("appointment_id = ?", appointmentId).Error; err != nil {
+		return err
+	}
+
+	return repo.db.Where("appointment_id = ?", appointmentId).Delete(&models.Appointments{}).Error
 }
 
-func (repo *repositoryImpl) CheckAppointmentId(count *int64, appId string) error {
-	return repo.db.Model(&models.Appointments{}).
-		Where("appointment_id = ?", appId).
-		Count(count).Error
-}
-
-func (repo *repositoryImpl) UpdateAppointmentStatus(appId string, status enums.AppointmentStatus) error {
-	return repo.db.Model(&models.Appointments{}).
-		Where("appointment_id = ?", appId).
-		Update("appointments_status", status).Error
+func (repo *repositoryImpl) UpdateAppointmentStatus(appointmentId string, status enums.AppointmentStatus) error {
+	return repo.db.Model(&models.Appointments{}).Where("appointment_id = ?", appointmentId).Update("appointments_status", status).Error
 }
