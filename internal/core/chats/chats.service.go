@@ -53,6 +53,11 @@ func (s *serviceImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid
 			Describe("Could not get messages in chat")
 	}
 
+	for i := 0; i < len(*msgs); i++ {
+		(*msgs)[i].ChatId = recvUserId
+		(*msgs)[i].Author = (*msgs)[i].SenderId == sendUserId
+	}
+
 	return nil
 }
 

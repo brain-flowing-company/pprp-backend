@@ -1,7 +1,6 @@
 package chats
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -50,7 +49,6 @@ func (client *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
 		// someone send message to me AND im not currently in that chat
 		if payload.ReceiverId == client.UserId &&
 			!client.hub.IsUserInChat(payload.SenderId, payload.ReceiverId) {
-			fmt.Println(payload.SenderId, client.chats[payload.SenderId])
 
 			preview, ok := client.chats[payload.SenderId]
 			if !ok {
@@ -103,6 +101,8 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 		MessageId:  uuid.New(),
 		SenderId:   client.UserId,
 		ReceiverId: *client.RecvUserId,
+		ChatId:     *client.RecvUserId,
+		Author:     true,
 		ReadAt:     readAt,
 		Content:    inbound.Content,
 		SentAt:     inbound.SentAt,
