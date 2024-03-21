@@ -11,8 +11,10 @@ type Appointments struct {
 	PropertyId         uuid.UUID          `json:"property_id"      example:"123e4567-e89b-12d3-a456-426614174000"`
 	OwnerUserId        uuid.UUID          `json:"owner_user_id"    example:"123e4567-e89b-12d3-a456-426614174000"`
 	DwellerUserId      uuid.UUID          `json:"dweller_user_id"  example:"123e4567-e89b-12d3-a456-426614174000"`
-	AppointmentDate    time.Time          `json:"appointment_date" example:"2024-02-18T11:00:00Z"`
 	AppointmentsStatus AppointmentsStatus `json:"status"           example:"PENDING"`
+	AppointmentDate    time.Time          `json:"appointment_date" example:"2024-02-18T11:00:00Z"`
+	Note               string             `json:"note"             example:"This is a note"`
+	CancelledMessage   string             `json:"cancelled_message" example:"This is a cancelled message"`
 	CommonModels
 }
 
@@ -34,21 +36,19 @@ func (a Appointments) TableName() string {
 type AppointmentsStatus string
 
 const (
-	Pending       AppointmentsStatus = "PENDING"
-	Approved      AppointmentsStatus = "APPROVED"
-	Rejected      AppointmentsStatus = "REJECTED"
-	RequestChange AppointmentsStatus = "REQUEST_CHANGE"
-	Cancelled     AppointmentsStatus = "CANCELLED"
-	Completed     AppointmentsStatus = "COMPLETED"
+	Pending   AppointmentsStatus = "PENDING"
+	Confirmed AppointmentsStatus = "CONFIRMED"
+	Rejected  AppointmentsStatus = "REJECTED"
+	Cancelled AppointmentsStatus = "CANCELLED"
+	Archived  AppointmentsStatus = "ARCHIVED"
 )
 
 var AppointmentStatusMap = map[string]AppointmentsStatus{
-	"PENDING":        Pending,
-	"APPROVED":       Approved,
-	"REJECTED":       Rejected,
-	"REQUEST_CHANGE": RequestChange,
-	"CANCELLED":      Cancelled,
-	"COMPLETED":      Completed,
+	"PENDING":   Pending,
+	"CONFIRMED": Confirmed,
+	"REJECTED":  Rejected,
+	"CANCELLED": Cancelled,
+	"ARCHIVED":  Archived,
 }
 
 type UpdatingAppointmentStatus struct {
