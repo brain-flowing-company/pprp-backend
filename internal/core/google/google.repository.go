@@ -40,5 +40,5 @@ func (repo *repositoryImpl) GetState(result *models.GoogleOAuthStates, state str
 }
 
 func (repo *repositoryImpl) DeleteState(state string) error {
-	return repo.db.Where("state = ?", state).Delete(&models.GoogleOAuthStates{}).Error
+	return repo.db.Where("code = ?", state).Delete(&models.GoogleOAuthStates{}).Error
 }
