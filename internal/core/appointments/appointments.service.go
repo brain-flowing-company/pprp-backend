@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/google/uuid"
@@ -16,7 +17,7 @@ type Service interface {
 	GetAppointmentsById(*models.Appointments, string) *apperror.AppError
 	CreateAppointments(*models.CreatingAppointments) *apperror.AppError
 	DeleteAppointments(*[]string) *apperror.AppError
-	UpdateAppointmentStatus(string, models.AppointmentsStatus) *apperror.AppError
+	UpdateAppointmentStatus(string, enums.AppointmentStatus) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -88,12 +89,12 @@ func (s *serviceImpl) CreateAppointments(creatingApp *models.CreatingAppointment
 	apps := make([]models.Appointments, len(creatingApp.AppointmentDates))
 	for i := 0; i < n; i++ {
 		apps[i] = models.Appointments{
-			AppointmentId:      uuid.New(),
-			PropertyId:         creatingApp.PropertyId,
-			OwnerUserId:        creatingApp.OwnerUserId,
-			DwellerUserId:      creatingApp.DwellerUserId,
-			AppointmentDate:    creatingApp.AppointmentDates[i],
-			AppointmentsStatus: models.Pending,
+			AppointmentId:   uuid.New(),
+			PropertyId:      creatingApp.PropertyId,
+			OwnerUserId:     creatingApp.OwnerUserId,
+			DwellerUserId:   creatingApp.DwellerUserId,
+			AppointmentDate: creatingApp.AppointmentDates[i],
+			Status:          enums.Pending,
 		}
 	}
 
@@ -136,7 +137,7 @@ func (s *serviceImpl) DeleteAppointments(appIds *[]string) *apperror.AppError {
 	return nil
 }
 
-func (s *serviceImpl) UpdateAppointmentStatus(appId string, status models.AppointmentsStatus) *apperror.AppError {
+func (s *serviceImpl) UpdateAppointmentStatus(appId string, status enums.AppointmentStatus) *apperror.AppError {
 	if !utils.IsValidUUID(appId) {
 		return apperror.
 			New(apperror.InvalidAppointmentId).
@@ -156,7 +157,7 @@ func (s *serviceImpl) UpdateAppointmentStatus(appId string, status models.Appoin
 			Describe("Could not find the specified appointment")
 	}
 
-	_, ok := models.AppointmentStatusMap[string(status)]
+	_, ok := enums.AppointmentStatusMap[string(status)]
 	if !ok {
 		return apperror.
 			New(apperror.InvalidAppointmentStatus).

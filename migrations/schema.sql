@@ -375,26 +375,3 @@ CREATE INDEX idx_property_images_deleted_at             ON _property_images (del
 CREATE INDEX idx_selling_properties_deleted_at          ON _selling_properties (deleted_at);
 CREATE INDEX idx_renting_properties_deleted_at          ON _renting_properties (deleted_at);
 CREATE INDEX idx_appointments_deleted_at                ON _appointments (deleted_at);
-
--------------------- FUNCTIONS --------------------
-
-CREATE OR REPLACE FUNCTION update_appointment_status()
-    RETURNS TRIGGER AS $$
-        BEGIN
-            UPDATE appointments SET status = 'ARCHIVED'
-            WHERE appointment_date < CURRENT_TIMESTAMP AND status != 'ARCHIVED';
-            RETURN NEW;
-        END;
-    $$ LANGUAGE plpgsql;
-
-------------------- EVENTS --------------------
-
-SELECT cron.schedule('*/1 * * * *', $$
-  DO
-    BEGIN
-      UPDATE appointments
-      SET status = 'ARCHIVED'
-      WHERE appointment_date < CURRENT_TIMESTAMP
-        AND status != 'ARCHIVED';
-    END;
-$$);
