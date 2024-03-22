@@ -36,8 +36,9 @@ func NewHandler(service Service) Handler {
 // @success     200	{object} []models.Appointments
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
-	var appointments []models.Appointments
+	var appointments []models.AppointmentLists
 	err := h.service.GetAllAppointments(&appointments)
+	fmt.Println("This is handlerImpl GetAllAppointments")
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}

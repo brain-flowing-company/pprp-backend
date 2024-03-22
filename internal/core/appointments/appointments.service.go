@@ -2,6 +2,7 @@ package appointments
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
@@ -12,7 +13,7 @@ import (
 )
 
 type Service interface {
-	GetAllAppointments(*[]models.Appointments) *apperror.AppError
+	GetAllAppointments(*[]models.AppointmentLists) *apperror.AppError
 	GetAppointmentById(*models.Appointments, string) *apperror.AppError
 	CreateAppointment(*models.Appointments) *apperror.AppError
 	DeleteAppointment(string) *apperror.AppError
@@ -31,7 +32,8 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 	}
 }
 
-func (s *serviceImpl) GetAllAppointments(appointments *[]models.Appointments) *apperror.AppError {
+func (s *serviceImpl) GetAllAppointments(appointments *[]models.AppointmentLists) *apperror.AppError {
+	fmt.Println("This is serviceImpl GetAllAppointments")
 	err := s.repo.GetAllAppointments(appointments)
 	if err != nil {
 		s.logger.Error("Could not get all appointments", zap.Error(err))
@@ -65,7 +67,7 @@ func (s *serviceImpl) GetAppointmentById(appointment *models.Appointments, appoi
 	return nil
 }
 
-func (s *serviceImpl) GetAppointmentByOwnerId(apps *[]models.Appointments, userId string) *apperror.AppError {
+func (s *serviceImpl) GetAppointmentByOwnerId(apps []*models.Appointments, userId string) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
@@ -83,7 +85,7 @@ func (s *serviceImpl) GetAppointmentByOwnerId(apps *[]models.Appointments, userI
 	return nil
 }
 
-func (s *serviceImpl) GetAppointmentByDwellerId(apps *[]models.Appointments, userId string) *apperror.AppError {
+func (s *serviceImpl) GetAppointmentByDwellerId(apps []*models.Appointments, userId string) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
