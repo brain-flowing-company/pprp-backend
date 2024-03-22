@@ -76,7 +76,7 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 // @failure     400 {object} models.ErrorResponses "Empty dates or some of appointments duplicate with existing one"
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
-	appointment := &models.Appointments{}
+	appointment := &models.CreatingAppointments{}
 	err := c.BodyParser(appointment)
 	if err != nil {
 		return utils.ResponseError(c, apperror.

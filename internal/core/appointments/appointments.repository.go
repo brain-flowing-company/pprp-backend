@@ -12,7 +12,7 @@ type Repository interface {
 	GetAppointmentById(*models.AppointmentDetails, string) error
 	GetAppointmentByOwnerId([]*models.Appointments, string) error
 	GetAppointmentByDwellerId([]*models.Appointments, string) error
-	CreateAppointment(*models.Appointments) error
+	CreateAppointment(*models.CreatingAppointments) error
 	DeleteAppointment(string) error
 	UpdateAppointmentStatus(*models.UpdatingAppointmentStatus, string) error
 }
@@ -148,8 +148,9 @@ func (repo *repositoryImpl) GetAppointmentByDwellerId(appointments []*models.App
 	return repo.db.Model(&models.Appointments{}).Find(appointments, "dweller_user_id = ?", dwellerUserId).Error
 }
 
-func (repo *repositoryImpl) CreateAppointment(appointment *models.Appointments) error {
-	return repo.db.Create(appointment).Error
+func (repo *repositoryImpl) CreateAppointment(appointment *models.CreatingAppointments) error {
+	return repo.db.Exec(`INSERT INTO appointments (property_id, owner_user_id, dweller_user_id, appointment_date, note) VALUES (?, ?, ?, ?, ?)`,
+		appointment.PropertyId, appointment.OwnerUserId, appointment.DwellerUserId, appointment.AppointmentDate, appointment.Note).Error
 }
 
 func (repo *repositoryImpl) DeleteAppointment(appointmentId string) error {

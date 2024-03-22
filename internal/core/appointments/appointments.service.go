@@ -14,7 +14,7 @@ import (
 type Service interface {
 	GetAllAppointments(*[]models.AppointmentLists) *apperror.AppError
 	GetAppointmentById(*models.AppointmentDetails, string) *apperror.AppError
-	CreateAppointment(*models.Appointments) *apperror.AppError
+	CreateAppointment(*models.CreatingAppointments) *apperror.AppError
 	DeleteAppointment(string) *apperror.AppError
 	UpdateAppointmentStatus(*models.UpdatingAppointmentStatus, string) *apperror.AppError
 }
@@ -101,7 +101,7 @@ func (s *serviceImpl) GetAppointmentByDwellerId(apps []*models.Appointments, use
 	return nil
 }
 
-func (s *serviceImpl) CreateAppointment(creatingAppointment *models.Appointments) *apperror.AppError {
+func (s *serviceImpl) CreateAppointment(creatingAppointment *models.CreatingAppointments) *apperror.AppError {
 	err := s.repo.CreateAppointment(creatingAppointment)
 	if err != nil {
 		s.logger.Error("Could not create appointments", zap.Error(err))
