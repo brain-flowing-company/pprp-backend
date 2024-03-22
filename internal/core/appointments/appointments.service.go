@@ -14,6 +14,7 @@ import (
 type Service interface {
 	GetAllAppointments(*[]models.AppointmentLists) *apperror.AppError
 	GetAppointmentById(*models.AppointmentDetails, string) *apperror.AppError
+	GetMyAppointments(*models.MyAppointmentResponse, string) *apperror.AppError
 	CreateAppointment(*models.CreatingAppointments) *apperror.AppError
 	DeleteAppointment(string) *apperror.AppError
 	UpdateAppointmentStatus(*models.UpdatingAppointmentStatus, string) *apperror.AppError
@@ -60,6 +61,24 @@ func (s *serviceImpl) GetAppointmentById(appointment *models.AppointmentDetails,
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get appointment by id")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) GetMyAppointments(appointments *models.MyAppointmentResponse, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	err := s.repo.GetAppointmentByUserId(appointments, userId)
+	if err != nil {
+		s.logger.Error("Could not get my appointments", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get my appointments")
 	}
 
 	return nil

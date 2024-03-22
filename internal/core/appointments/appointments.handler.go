@@ -13,6 +13,7 @@ import (
 type Handler interface {
 	GetAllAppointments(c *fiber.Ctx) error
 	GetAppointmentById(c *fiber.Ctx) error
+	GetMyAppointments(c *fiber.Ctx) error
 	CreateAppointment(c *fiber.Ctx) error
 	DeleteAppointment(c *fiber.Ctx) error
 	UpdateAppointmentStatus(c *fiber.Ctx) error
@@ -64,6 +65,18 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(appointment)
+}
+
+func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
+	userId := c.Locals("session").(models.Sessions).UserId.String()
+
+	var appointments models.MyAppointmentResponse
+	err := h.service.GetMyAppointments(&appointments, userId)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return c.JSON(appointments)
 }
 
 // @router      /api/v1/appointments [post]

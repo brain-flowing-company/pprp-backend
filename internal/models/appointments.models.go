@@ -36,6 +36,12 @@ type UpdatingAppointmentStatus struct {
 	CancelledMessage string                  `json:"cancelled_message" example:"This is a cancelled message"`
 }
 
+// Data Structure for My Appointments
+type MyAppointmentResponse struct {
+	Owner   []AppointmentLists `json:"owner"`
+	Dweller []AppointmentLists `json:"dweller"`
+}
+
 // Data Structure for Apppointment Lists
 type AppointmentLists struct {
 	AppointmentId    uuid.UUID                `json:"appointment_id"   example:"123e4567-e89b-12d3-a456-426614174000"`
