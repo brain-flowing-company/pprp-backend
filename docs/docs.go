@@ -688,7 +688,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a property with the provided details",
+                "description": "Create a property with formData *upload property images (array of images) in formData with field ` + "`" + `property_images` + "`" + `. Available formats are .png / .jpg / .jpeg",
                 "produces": [
                     "application/json"
                 ],
@@ -775,6 +775,20 @@ const docTemplate = `{
                             "READY_TO_MOVE_IN"
                         ],
                         "name": "furnishing",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "example": [
+                            "https://image_url.com/abcd",
+                            "https://image_url.com/abcd",
+                            "https://image_url.com/abcd"
+                        ],
+                        "name": "image_urls",
                         "in": "formData"
                     },
                     {
@@ -959,7 +973,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update a property, owned by the current user, by its id with the provided details",
+                "description": "Update a property with formData *upload **NEW** property images (array of images) in formData with field ` + "`" + `property_images` + "`" + `. Available formats are .png / .jpg / .jpeg *If you want to keep the old images, you need to include them in the formData with field ` + "`" + `image_urls` + "`" + ` as an array of strings",
                 "produces": [
                     "application/json"
                 ],
@@ -1053,6 +1067,20 @@ const docTemplate = `{
                             "READY_TO_MOVE_IN"
                         ],
                         "name": "furnishing",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "example": [
+                            "https://image_url.com/abcd",
+                            "https://image_url.com/abcd",
+                            "https://image_url.com/abcd"
+                        ],
+                        "name": "image_urls",
                         "in": "formData"
                     },
                     {
@@ -1333,35 +1361,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/properties/top10": {
-            "get": {
-                "description": "Get top 10 properties with the most favorites, sorted by the number of favorites then by the newest properties",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Get top 10 properties",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Properties"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Could not get top 10 properties",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/register": {
             "post": {
                 "description": "Create user with formData **\\***upload profile image in formData with field ` + "`" + `profile_image` + "`" + `. Available formats are .png / .jpg / .jpeg",
@@ -1432,6 +1431,35 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Could not create user",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/top10properties": {
+            "get": {
+                "description": "Get top 10 properties with the most favorites, sorted by the number of favorites then by the newest properties",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Get top 10 properties",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Properties"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not get top 10 properties",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -2367,12 +2395,6 @@ const docTemplate = `{
                     ],
                     "example": "UNFURNISHED"
                 },
-                "images": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.PropertyImages"
-                    }
-                },
                 "is_favorite": {
                     "type": "boolean",
                     "example": true
@@ -2393,6 +2415,12 @@ const docTemplate = `{
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
+                "property_images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PropertyImages"
+                    }
+                },
                 "property_name": {
                     "type": "string",
                     "example": "Supalai"
@@ -2409,10 +2437,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Pattaya"
                 },
-                "renting": {
+                "renting_property": {
                     "$ref": "#/definitions/models.RentingProperties"
                 },
-                "selling": {
+                "selling_property": {
                     "$ref": "#/definitions/models.SellingProperties"
                 },
                 "street": {
@@ -2435,7 +2463,7 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "url": {
+                "image_url": {
                     "type": "string",
                     "example": "https://image_url.com/abcd"
                 }

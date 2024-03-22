@@ -49,8 +49,9 @@ var (
 	BadRequest          = &AppErrorType{http.StatusBadRequest, "bad-request"}
 
 	// property errors
-	InvalidPropertyId = &AppErrorType{http.StatusBadRequest, "invalid-property-id"}
-	PropertyNotFound  = &AppErrorType{http.StatusNotFound, "property-not-found"}
+	InvalidPropertyId             = &AppErrorType{http.StatusBadRequest, "invalid-property-id"}
+	PropertyNotFound              = &AppErrorType{http.StatusNotFound, "property-not-found"}
+	InvalidPropertyImageExtension = &AppErrorType{http.StatusBadRequest, "invalid-property-image-extensions"}
 
 	// appointment errors
 	InvalidAppointmentId     = &AppErrorType{http.StatusBadRequest, "invalid-appointment-id"}

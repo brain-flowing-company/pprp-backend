@@ -126,7 +126,7 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 
 // @router      /api/v1/properties [post]
 // @summary     Create a property
-// @description Create a property with the provided details
+// @description Create a property with formData *upload property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg
 // @tags        property
 // @produce     json
 // @param       formData formData models.PropertyInfos true "Property details"
@@ -136,7 +136,10 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 // @failure     404 {object} models.ErrorResponses "Property id not found"
 // @failure     500 {object} models.ErrorResponses "Could not create property"
 func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
-	property := models.PropertyInfos{}
+	property := models.PropertyInfos{
+		PropertyId: uuid.New(),
+	}
+
 	if err := c.BodyParser(&property); err != nil {
 		return utils.ResponseError(c, apperror.
 			New(apperror.InvalidBody).
@@ -146,7 +149,10 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId
 	property.OwnerId = userId
 
-	err := h.service.CreateProperty(&property)
+	formFiles, _ := c.MultipartForm()
+	propertyImages := formFiles.File["property_images"]
+
+	err := h.service.CreateProperty(&property, propertyImages)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
@@ -156,7 +162,7 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 
 // @router      /api/v1/properties/:propertyId [put]
 // @summary     Update a property
-// @description Update a property, owned by the current user, by its id with the provided details
+// @description Update a property with formData *upload **NEW** property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg *If you want to keep the old images, you need to include them in the formData with field `image_urls` as an array of strings
 // @tags        property
 // @produce     json
 // @param	    propertyId path string true "Property id"
@@ -170,17 +176,21 @@ func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
 	propertyIdString := c.Params("propertyId")
 	propertyIdUuid, _ := uuid.Parse(propertyIdString)
 
-	property := models.PropertyInfos{}
 	userId := c.Locals("session").(models.Sessions).UserId
 
-	property.OwnerId = userId
-	property.PropertyId = propertyIdUuid
+	property := models.PropertyInfos{
+		PropertyId: propertyIdUuid,
+		OwnerId:    userId,
+	}
 
 	if err := c.BodyParser(&property); err != nil {
 		return utils.ResponseError(c, apperror.InvalidBody)
 	}
 
-	err := h.service.UpdatePropertyById(&property, propertyIdString)
+	formFiles, _ := c.MultipartForm()
+	propertyImages := formFiles.File["property_images"]
+
+	err := h.service.UpdatePropertyById(&property, propertyIdString, propertyImages)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
@@ -281,7 +291,7 @@ func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	return c.JSON(properties)
 }
 
-// @router      /api/v1/properties/top10 [get]
+// @router      /api/v1/top10properties [get]
 // @summary     Get top 10 properties
 // @description Get top 10 properties with the most favorites, sorted by the number of favorites then by the newest properties
 // @tags        property
