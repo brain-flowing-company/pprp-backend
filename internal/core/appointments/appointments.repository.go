@@ -30,11 +30,13 @@ func NewRepository(db *gorm.DB) Repository {
 
 func (repo *repositoryImpl) GetAllAppointments(appointments *[]models.AppointmentLists) error {
 	propertiesQuery := `SELECT property_id, property_name, property_type FROM properties`
+
 	ownersQuery := `SELECT user_id AS owner_user_id,
 						first_name AS owner_first_name,
 						last_name AS owner_last_name,
 						profile_image_url AS owner_profile_image_url
 					FROM users`
+
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.Appointments{}).
 			Raw(`
@@ -73,11 +75,68 @@ func (repo *repositoryImpl) GetAllAppointments(appointments *[]models.Appointmen
 }
 
 func (repo *repositoryImpl) GetAppointmentById(appointment *models.AppointmentDetails, appointmentId string) error {
+	propertyQuery := `SELECT p.property_id, p.property_name, p.property_type, p.address,
+							p.alley, p.street, p.sub_district, p.district, p.province, p.country,
+							p.postal_code, s.price, r.price_per_month 
+						FROM properties p
+						JOIN selling_properties s ON p.property_id = s.property_id
+						JOIN renting_properties r ON p.property_id = r.property_id
+						WHERE p.property_id = @property_id`
+
+	ownerQuery := `SELECT user_id AS owner_user_id,
+						first_name AS owner_first_name,
+						last_name AS owner_last_name,
+						profile_image_url AS owner_profile_image_url,
+						phone_number AS owner_phone_number
+					FROM users
+					WHERE user_id = @owner_user_id`
+
+	dwellerQuery := `SELECT user_id AS dweller_user_id,
+						first_name AS dweller_first_name,
+						last_name AS dweller_last_name,
+						profile_image_url AS dweller_profile_image_url,
+						phone_number AS dweller_phone_number
+					FROM users
+					WHERE user_id = @dweller_user_id`
+
 	return repo.db.Transaction(func(tx *gorm.DB) error {
-		// if err := tx.Model(&models.Appointments{}).
-		// 	Raw(`
-		// 		SELECT appointments
-		// 	`)
+		var existingAppointment models.Appointments
+		if err := tx.Model(&models.Appointments{}).First(&existingAppointment, "appointment_id = ?", appointmentId).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&models.Appointments{}).
+			Raw(`
+				SELECT a.appointment_id, 
+					   p.*, 
+					   o.*, 
+					   d.*,
+					   a.appointment_date, 
+					   a.status,
+					   a.note,
+					   a.cancelled_message,
+					   a.created_at
+					FROM appointments a
+					JOIN (`+propertyQuery+`) p ON a.property_id = p.property_id
+					JOIN (`+ownerQuery+`) o ON a.owner_user_id = o.owner_user_id
+					JOIN (`+dwellerQuery+`) d ON a.dweller_user_id = d.dweller_user_id
+			`, sql.Named("property_id", existingAppointment.PropertyId),
+				sql.Named("owner_user_id", existingAppointment.OwnerUserId),
+				sql.Named("dweller_user_id", existingAppointment.DwellerUserId)).
+			Scan(appointment).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&models.PropertyImages{}).
+			Raw(`
+				SELECT image_url
+				FROM property_images
+				WHERE property_id = @property_id
+				`, sql.Named("property_id", appointment.Property.PropertyId)).
+			Pluck("image_url", &appointment.Property.PropertyImages).Error; err != nil {
+			return err
+		}
+
 		return nil
 	})
 }

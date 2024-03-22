@@ -33,7 +33,7 @@ func NewHandler(service Service) Handler {
 // @description Get all appointments
 // @tags        appointments
 // @produce     json
-// @success     200	{object} []models.Appointments
+// @success     200	{object} []models.AppointmentLists
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 	var appointments []models.AppointmentLists
@@ -47,23 +47,23 @@ func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 
 // @router      /api/v1/appointments/:appointmentId [get]
 // @summary     Get appointments by id
-// @description Get appointments by id
+// @description Get appointments and other related information by id
 // @tags        appointments
 // @produce     json
-// @success     200	{object} []models.Appointments
+// @success     200	{object} []models.AppointmentDetails
 // @failure     400 {object} models.ErrorResponses "Invalid appointment id"
 // @failure     404 {object} models.ErrorResponses "Appointment id not found"
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 	appointmentId := c.Params("appointmentId")
 
-	var appointments models.AppointmentDetails
-	err := h.service.GetAppointmentById(&appointments, appointmentId)
+	var appointment models.AppointmentDetails
+	err := h.service.GetAppointmentById(&appointment, appointmentId)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(appointments)
+	return c.JSON(appointment)
 }
 
 // @router      /api/v1/appointments [post]

@@ -12,8 +12,8 @@ type Appointments struct {
 	PropertyId       uuid.UUID               `json:"property_id"      example:"123e4567-e89b-12d3-a456-426614174000"`
 	OwnerUserId      uuid.UUID               `json:"owner_user_id"    example:"123e4567-e89b-12d3-a456-426614174000"`
 	DwellerUserId    uuid.UUID               `json:"dweller_user_id"  example:"123e4567-e89b-12d3-a456-426614174000"`
-	Status           enums.AppointmentStatus `json:"status"           example:"PENDING"`
 	AppointmentDate  time.Time               `json:"appointment_date" example:"2024-02-18T11:00:00Z"`
+	Status           enums.AppointmentStatus `json:"status"           example:"PENDING"`
 	Note             string                  `json:"note"             example:"This is a note"`
 	CancelledMessage string                  `json:"cancelled_message" example:"This is a cancelled message"`
 	CommonModels
@@ -41,8 +41,8 @@ type AppointmentLists struct {
 	AppointmentId    uuid.UUID                `json:"appointment_id"   example:"123e4567-e89b-12d3-a456-426614174000"`
 	Property         PropertyAppointmentLists `json:"property" gorm:"foreignKey:AppointmentId; references:AppointmentId; embedded"`
 	Owner            OwnerAppointmentLists    `json:"owner" gorm:"foreignKey:AppointmentId; references:AppointmentId; embedded"`
-	Status           enums.AppointmentStatus  `json:"status"           example:"PENDING"`
 	AppointmentDate  time.Time                `json:"appointment_date" example:"2024-02-18T11:00:00Z"`
+	Status           enums.AppointmentStatus  `json:"status"           example:"PENDING"`
 	Note             string                   `json:"note"             example:"This is a note"`
 	CancelledMessage string                   `json:"cancelled_message" example:"This is a cancelled message"`
 	CommonModels
@@ -76,8 +76,8 @@ type AppointmentDetails struct {
 	Property         PropertyAppointmentDetails `json:"property" gorm:"foreignKey:AppointmentId; references:AppointmentId; embedded"`
 	Owner            OwnerAppointmentDetails    `json:"owner" gorm:"foreignKey:AppointmentId; references:AppointmentId; embedded"`
 	Dweller          DwellerAppointmentDetails  `json:"dweller" gorm:"foreignKey:AppointmentId; references:AppointmentId; embedded"`
-	Status           enums.AppointmentStatus    `json:"status"           example:"PENDING"`
 	AppointmentDate  time.Time                  `json:"appointment_date" example:"2024-02-18T11:00:00Z"`
+	Status           enums.AppointmentStatus    `json:"status"           example:"PENDING"`
 	Note             string                     `json:"note"             example:"This is a note"`
 	CancelledMessage string                     `json:"cancelled_message" example:"This is a cancelled message"`
 	CommonModels
@@ -96,7 +96,7 @@ type PropertyAppointmentDetails struct {
 	Province       string                      `json:"province" example:"Pattaya"`
 	Country        string                      `json:"country" example:"Thailand"`
 	PostalCode     string                      `json:"postal_code" example:"69096"`
-	PropertyImages []PropertyImageAppointments `json:"property_images" gorm:"foreignKey:AppointmentId; references:AppointmentId"`
+	PropertyImages []PropertyImageAppointments `json:"property_images" gorm:"foreignKey:PropertyId; references:PropertyId"`
 	Price          float64                     `json:"price" example:"12345.67"`
 	PricePerMonth  float64                     `json:"price_per_month" example:"12345.67"`
 }
