@@ -66,6 +66,12 @@ func (s *serviceImpl) GetAppointmentById(appointment *models.Appointments, appoi
 }
 
 func (s *serviceImpl) GetAppointmentByOwnerId(apps *[]models.Appointments, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
 	err := s.repo.GetAppointmentByOwnerId(apps, userId)
 	if err != nil {
 		s.logger.Error("Could not get appointments by owner id", zap.Error(err))
@@ -77,13 +83,27 @@ func (s *serviceImpl) GetAppointmentByOwnerId(apps *[]models.Appointments, userI
 	return nil
 }
 
-func (s *serviceImpl) CreateAppointment(creatingApplicatointment *models.Appointments) *apperror.AppError {
-	err := s.repo.CreateAppointment(creatingApplicatointment)
-	if errors.Is(err, gorm.ErrDuplicatedKey) {
+func (s *serviceImpl) GetAppointmentByDwellerId(apps *[]models.Appointments, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
 		return apperror.
-			New(apperror.DuplicateAppointment).
-			Describe("Could not create appointments")
-	} else if err != nil {
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	err := s.repo.GetAppointmentByDwellerId(apps, userId)
+	if err != nil {
+		s.logger.Error("Could not get appointments by dweller id", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get appointments by dweller id")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) CreateAppointment(creatingAppointment *models.Appointments) *apperror.AppError {
+	err := s.repo.CreateAppointment(creatingAppointment)
+	if err != nil {
 		s.logger.Error("Could not create appointments", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -115,8 +135,8 @@ func (s *serviceImpl) DeleteAppointment(appointmentId string) *apperror.AppError
 	return nil
 }
 
-func (s *serviceImpl) UpdateAppointmentStatus(appId string, status enums.AppointmentStatus) *apperror.AppError {
-	if !utils.IsValidUUID(appId) {
+func (s *serviceImpl) UpdateAppointmentStatus(appointmentId string, status enums.AppointmentStatus) *apperror.AppError {
+	if !utils.IsValidUUID(appointmentId) {
 		return apperror.
 			New(apperror.InvalidAppointmentId).
 			Describe("Invalid appointment id")
@@ -129,8 +149,12 @@ func (s *serviceImpl) UpdateAppointmentStatus(appId string, status enums.Appoint
 			Describe("Invalid appointment status")
 	}
 
-	err := s.repo.UpdateAppointmentStatus(appId, status)
-	if err != nil {
+	err := s.repo.UpdateAppointmentStatus(appointmentId, status)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.AppointmentNotFound).
+			Describe("Could not find the specified appointment")
+	} else if err != nil {
 		s.logger.Error("Could not update appointment statue", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).

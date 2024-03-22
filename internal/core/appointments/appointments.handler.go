@@ -36,13 +36,13 @@ func NewHandler(service Service) Handler {
 // @success     200	{object} []models.Appointments
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
-	var apps []models.Appointments
-	err := h.service.GetAllAppointments(&apps)
+	var appointments []models.Appointments
+	err := h.service.GetAllAppointments(&appointments)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(apps)
+	return c.JSON(appointments)
 }
 
 // @router      /api/v1/appointments/:appointmentId [get]
@@ -57,34 +57,34 @@ func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 	appointmentId := c.Params("appointmentId")
 
-	var apps models.Appointments
-	err := h.service.GetAppointmentById(&apps, appointmentId)
+	var appointments models.Appointments
+	err := h.service.GetAppointmentById(&appointments, appointmentId)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(apps)
+	return c.JSON(appointments)
 }
 
 // @router      /api/v1/appointments [post]
 // @summary     Create appointments
-// @description Create appointments
+// @description Create appointments with **property_id**, **owner_user_id**, **dweller_user_id**, **appointment_date** **note**(optional)
 // @tags        appointments
 // @produce     json
-// @param       body body models.CreatingAppointments true "Appointment details"
+// @param       body body models.Appointments true "Appointment details"
 // @success     201	{object} models.Appointments
 // @failure     400 {object} models.ErrorResponses "Empty dates or some of appointments duplicate with existing one"
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
-	application := &models.Appointments{}
-	err := c.BodyParser(application)
+	appointment := &models.Appointments{}
+	err := c.BodyParser(appointment)
 	if err != nil {
 		return utils.ResponseError(c, apperror.
 			New(apperror.BadRequest).
 			Describe(fmt.Sprintf("Could not parse body: %v", err.Error())))
 	}
 
-	apperr := h.service.CreateAppointment(application)
+	apperr := h.service.CreateAppointment(appointment)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}
