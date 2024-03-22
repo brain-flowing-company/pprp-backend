@@ -34,10 +34,10 @@ definitions:
     - "NULL"
   enums.CardColors:
     enum:
-    - LIGHT BLUE
+    - LIGHT_BLUE
     - BLUE
-    - DARK BLUE
-    - VERY DARK BLUE
+    - DARK_BLUE
+    - VERY_DARK_BLUE
     type: string
     x-enum-varnames:
     - LIGHT_BLUE
@@ -46,8 +46,8 @@ definitions:
     - VERY_DARK_BLUE
   enums.FloorSizeUnits:
     enum:
-    - sqm
-    - sqft
+    - SQM
+    - SQFT
     type: string
     x-enum-varnames:
     - SQM
@@ -55,9 +55,9 @@ definitions:
   enums.Furnishing:
     enum:
     - UNFURNISHED
-    - PARTIALLY FURNISHED
-    - FULLY FURNISHED
-    - READY TO MOVE IN
+    - PARTIALLY_FURNISHED
+    - FULLY_FURNISHED
+    - READY_TO_MOVE_IN
     type: string
     x-enum-varnames:
     - UNFURNISHED
@@ -68,9 +68,9 @@ definitions:
     enum:
     - CONDOMINIUM
     - APARTMENT
-    - SEMI-DETACHED HOUSE
+    - SEMI-DETACHED_HOUSE
     - HOUSE
-    - SERVICED APARTMENT
+    - SERVICED_APARTMENT
     - TOWNHOUSE
     type: string
     x-enum-varnames:
@@ -930,43 +930,142 @@ paths:
       summary: Get or search properties
       tags:
       - property
-  /api/v1/properties/top10:
-    get:
-      description: Get top 10 properties with the most favorites, sorted by the number
-        of favorites then by the newest properties
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Properties'
-            type: array
-        "500":
-          description: Could not get top 10 properties
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-      summary: Get top 10 properties
-      tags:
-      - property
-  /api/v1/property:
     post:
       description: Create a property with the provided details
       parameters:
-      - description: Property details
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/models.Properties'
+      - example: 123/4
+        in: formData
+        name: address
+        type: string
+      - example: Pattaya Nua 78
+        in: formData
+        name: alley
+        type: string
+      - example: 2
+        in: formData
+        name: bathrooms
+        type: integer
+      - example: 3
+        in: formData
+        name: bedrooms
+        type: integer
+      - example: Thailand
+        in: formData
+        name: country
+        type: string
+      - example: Bang Phli
+        in: formData
+        name: district
+        type: string
+      - example: 5
+        in: formData
+        name: floor
+        type: integer
+      - example: 123.45
+        in: formData
+        name: floor_size
+        type: number
+      - enum:
+        - SQM
+        - SQFT
+        example: SQM
+        in: formData
+        name: floor_size_unit
+        type: string
+        x-enum-varnames:
+        - SQM
+        - SQFT
+      - enum:
+        - UNFURNISHED
+        - PARTIALLY_FURNISHED
+        - FULLY_FURNISHED
+        - READY_TO_MOVE_IN
+        example: UNFURNISHED
+        in: formData
+        name: furnishing
+        type: string
+        x-enum-varnames:
+        - UNFURNISHED
+        - PARTIALLY_FURNISHED
+        - FULLY_FURNISHED
+        - READY_TO_MOVE_IN
+      - example: false
+        in: formData
+        name: is_occupied
+        type: boolean
+      - example: true
+        in: formData
+        name: is_sold
+        type: boolean
+      - example: 123e4567-e89b-12d3-a456-426614174000
+        in: formData
+        name: '-'
+        type: string
+      - example: "69096"
+        in: formData
+        name: postal_code
+        type: string
+      - example: 12345.67
+        in: formData
+        name: price
+        type: number
+      - example: 12345.67
+        in: formData
+        name: price_per_month
+        type: number
+      - example: Et sequi dolor praes
+        in: formData
+        name: property_description
+        type: string
+      - example: 123e4567-e89b-12d3-a456-426614174000
+        in: formData
+        name: '-'
+        type: string
+      - example: Supalai
+        in: formData
+        name: property_name
+        type: string
+      - enum:
+        - CONDOMINIUM
+        - APARTMENT
+        - SEMI-DETACHED_HOUSE
+        - HOUSE
+        - SERVICED_APARTMENT
+        - TOWNHOUSE
+        example: CONDOMINIUM
+        in: formData
+        name: property_type
+        type: string
+        x-enum-varnames:
+        - CONDOMINIUM
+        - APARTMENT
+        - SEMI_DETACHED_HOUSE
+        - HOUSE
+        - SERVICED_APARTMENT
+        - TOWNHOUSE
+      - example: Pattaya
+        in: formData
+        name: province
+        type: string
+      - example: Pattaya
+        in: formData
+        name: street
+        type: string
+      - example: Bang Bon
+        in: formData
+        name: sub_district
+        type: string
+      - example: 123
+        in: formData
+        name: unit_number
+        type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Property created
           schema:
-            $ref: '#/definitions/models.Properties'
+            $ref: '#/definitions/models.MessageResponses'
         "400":
           description: Invalid request body
           schema:
@@ -986,7 +1085,7 @@ paths:
       summary: Create a property
       tags:
       - property
-  /api/v1/property/:propertyId:
+  /api/v1/properties/:propertyId:
     delete:
       description: Delete a property, owned by the current user, by its id
       parameters:
@@ -1060,19 +1159,139 @@ paths:
         name: propertyId
         required: true
         type: string
-      - description: Property details
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/models.Properties'
+      - example: 123/4
+        in: formData
+        name: address
+        type: string
+      - example: Pattaya Nua 78
+        in: formData
+        name: alley
+        type: string
+      - example: 2
+        in: formData
+        name: bathrooms
+        type: integer
+      - example: 3
+        in: formData
+        name: bedrooms
+        type: integer
+      - example: Thailand
+        in: formData
+        name: country
+        type: string
+      - example: Bang Phli
+        in: formData
+        name: district
+        type: string
+      - example: 5
+        in: formData
+        name: floor
+        type: integer
+      - example: 123.45
+        in: formData
+        name: floor_size
+        type: number
+      - enum:
+        - SQM
+        - SQFT
+        example: SQM
+        in: formData
+        name: floor_size_unit
+        type: string
+        x-enum-varnames:
+        - SQM
+        - SQFT
+      - enum:
+        - UNFURNISHED
+        - PARTIALLY_FURNISHED
+        - FULLY_FURNISHED
+        - READY_TO_MOVE_IN
+        example: UNFURNISHED
+        in: formData
+        name: furnishing
+        type: string
+        x-enum-varnames:
+        - UNFURNISHED
+        - PARTIALLY_FURNISHED
+        - FULLY_FURNISHED
+        - READY_TO_MOVE_IN
+      - example: false
+        in: formData
+        name: is_occupied
+        type: boolean
+      - example: true
+        in: formData
+        name: is_sold
+        type: boolean
+      - example: 123e4567-e89b-12d3-a456-426614174000
+        in: formData
+        name: '-'
+        type: string
+      - example: "69096"
+        in: formData
+        name: postal_code
+        type: string
+      - example: 12345.67
+        in: formData
+        name: price
+        type: number
+      - example: 12345.67
+        in: formData
+        name: price_per_month
+        type: number
+      - example: Et sequi dolor praes
+        in: formData
+        name: property_description
+        type: string
+      - example: 123e4567-e89b-12d3-a456-426614174000
+        in: formData
+        name: '-'
+        type: string
+      - example: Supalai
+        in: formData
+        name: property_name
+        type: string
+      - enum:
+        - CONDOMINIUM
+        - APARTMENT
+        - SEMI-DETACHED_HOUSE
+        - HOUSE
+        - SERVICED_APARTMENT
+        - TOWNHOUSE
+        example: CONDOMINIUM
+        in: formData
+        name: property_type
+        type: string
+        x-enum-varnames:
+        - CONDOMINIUM
+        - APARTMENT
+        - SEMI_DETACHED_HOUSE
+        - HOUSE
+        - SERVICED_APARTMENT
+        - TOWNHOUSE
+      - example: Pattaya
+        in: formData
+        name: province
+        type: string
+      - example: Pattaya
+        in: formData
+        name: street
+        type: string
+      - example: Bang Bon
+        in: formData
+        name: sub_district
+        type: string
+      - example: 123
+        in: formData
+        name: unit_number
+        type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Property updated
           schema:
-            $ref: '#/definitions/models.Properties'
+            $ref: '#/definitions/models.MessageResponses'
         "400":
           description: Invalid request body
           schema:
@@ -1092,7 +1311,7 @@ paths:
       summary: Update a property
       tags:
       - property
-  /api/v1/property/favorites/:propertyId:
+  /api/v1/properties/favorites/:propertyId:
     delete:
       description: Remove property to the current user favorites
       parameters:
@@ -1151,6 +1370,26 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponses'
       summary: Add property to favorites
+      tags:
+      - property
+  /api/v1/properties/top10:
+    get:
+      description: Get top 10 properties with the most favorites, sorted by the number
+        of favorites then by the newest properties
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Properties'
+            type: array
+        "500":
+          description: Could not get top 10 properties
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get top 10 properties
       tags:
       - property
   /api/v1/register:

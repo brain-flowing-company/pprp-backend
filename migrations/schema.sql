@@ -15,11 +15,12 @@ CREATE TYPE floor_size_units AS ENUM('SQM', 'SQFT');
 CREATE TABLE email_verification_codes
 (
     email                     VARCHAR(50) PRIMARY KEY           NOT NULL,
-    code                      VARCHAR(20)                       NOT NULL,
+    code                      VARCHAR(99)                       NOT NULL,
     expired_at                TIMESTAMP(0) WITH TIME ZONE       NOT NULL
 );
 
-CREATE TABLE google_oauth_states (
+CREATE TABLE google_oauth_states
+(
     code       UUID PRIMARY KEY            NOT NULL,
     expired_at TIMESTAMP(0) WITH TIME ZONE NOT NULL
 );
