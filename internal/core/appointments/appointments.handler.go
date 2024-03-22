@@ -38,7 +38,6 @@ func NewHandler(service Service) Handler {
 func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 	var appointments []models.AppointmentLists
 	err := h.service.GetAllAppointments(&appointments)
-	fmt.Println("This is handlerImpl GetAllAppointments")
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
@@ -58,7 +57,7 @@ func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 	appointmentId := c.Params("appointmentId")
 
-	var appointments models.Appointments
+	var appointments models.AppointmentDetails
 	err := h.service.GetAppointmentById(&appointments, appointmentId)
 	if err != nil {
 		return utils.ResponseError(c, err)

@@ -2,7 +2,6 @@ package appointments
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -11,7 +10,7 @@ import (
 
 type Repository interface {
 	GetAllAppointments(*[]models.AppointmentLists) error
-	GetAppointmentById(*models.Appointments, string) error
+	GetAppointmentById(*models.AppointmentDetails, string) error
 	GetAppointmentByOwnerId([]*models.Appointments, string) error
 	GetAppointmentByDwellerId([]*models.Appointments, string) error
 	CreateAppointment(*models.Appointments) error
@@ -37,22 +36,21 @@ func (repo *repositoryImpl) GetAllAppointments(appointments *[]models.Appointmen
 						profile_image_url AS owner_profile_image_url
 					FROM users`
 	return repo.db.Transaction(func(tx *gorm.DB) error {
-		fmt.Println("Transaction begin")
 		if err := tx.Model(&models.Appointments{}).
 			Raw(`
-				SELECT appointments.appointment_id,
+				SELECT a.appointment_id,
 					   p.*,
 					   o.*,
-					   appointments.appointment_date,
-					   appointments.status,
-					   appointments.note,
-					   appointments.cancelled_message,
-					   appointments.created_at
-					FROM appointments
+					   a.appointment_date,
+					   a.status,
+					   a.note,
+					   a.cancelled_message,
+					   a.created_at
+					FROM appointments a
 					JOIN (` + propertiesQuery + `) AS p 
-						ON appointments.property_id = p.property_id
+						ON a.property_id = p.property_id
 					JOIN (` + ownersQuery + `) AS o 
-						ON appointments.owner_user_id = o.owner_user_id
+						ON a.owner_user_id = o.owner_user_id
 					`).
 			Scan(appointments).Error; err != nil {
 			return err
@@ -74,8 +72,14 @@ func (repo *repositoryImpl) GetAllAppointments(appointments *[]models.Appointmen
 	})
 }
 
-func (repo *repositoryImpl) GetAppointmentById(appointment *models.Appointments, appointmentId string) error {
-	return repo.db.Model(&models.Appointments{}).First(appointment, "appointment_id = ?", appointmentId).Error
+func (repo *repositoryImpl) GetAppointmentById(appointment *models.AppointmentDetails, appointmentId string) error {
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		// if err := tx.Model(&models.Appointments{}).
+		// 	Raw(`
+		// 		SELECT appointments
+		// 	`)
+		return nil
+	})
 }
 
 func (repo *repositoryImpl) GetAppointmentByOwnerId(appointments []*models.Appointments, ownerUserId string) error {

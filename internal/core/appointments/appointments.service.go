@@ -2,7 +2,6 @@ package appointments
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
@@ -14,7 +13,7 @@ import (
 
 type Service interface {
 	GetAllAppointments(*[]models.AppointmentLists) *apperror.AppError
-	GetAppointmentById(*models.Appointments, string) *apperror.AppError
+	GetAppointmentById(*models.AppointmentDetails, string) *apperror.AppError
 	CreateAppointment(*models.Appointments) *apperror.AppError
 	DeleteAppointment(string) *apperror.AppError
 	UpdateAppointmentStatus(string, enums.AppointmentStatus) *apperror.AppError
@@ -33,7 +32,6 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 }
 
 func (s *serviceImpl) GetAllAppointments(appointments *[]models.AppointmentLists) *apperror.AppError {
-	fmt.Println("This is serviceImpl GetAllAppointments")
 	err := s.repo.GetAllAppointments(appointments)
 	if err != nil {
 		s.logger.Error("Could not get all appointments", zap.Error(err))
@@ -45,7 +43,7 @@ func (s *serviceImpl) GetAllAppointments(appointments *[]models.AppointmentLists
 	return nil
 }
 
-func (s *serviceImpl) GetAppointmentById(appointment *models.Appointments, appointmentId string) *apperror.AppError {
+func (s *serviceImpl) GetAppointmentById(appointment *models.AppointmentDetails, appointmentId string) *apperror.AppError {
 	if !utils.IsValidUUID(appointmentId) {
 		return apperror.
 			New(apperror.InvalidAppointmentId).
