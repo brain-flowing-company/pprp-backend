@@ -111,27 +111,27 @@ func (h *handlerImpl) DeleteAppointment(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusCreated, "Appointments deleted")
 }
 
-// @router      /api/v1/appointments/:appointmentId [patch]
+// @router      /api/v1/appointments/:appointmentId
 // @summary     Update appointment status
 // @description Update appointment status
 // @tags        appointments
 // @produce     json
-// @param       body body models.DeletingAppointments true "Appointment id deleting lists"
+// @param       body body models.UpdatingAppointmentStatus true
 // @success     200	{object} []models.Appointments
 // @failure     400 {object} models.ErrorResponses
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) UpdateAppointmentStatus(c *fiber.Ctx) error {
-	status := models.UpdatingAppointmentStatus{}
-	err := c.BodyParser(&status)
+	updatingAppointment := models.UpdatingAppointmentStatus{}
+	err := c.BodyParser(&updatingAppointment)
 	if err != nil {
 		return utils.ResponseError(c, apperror.
 			New(apperror.BadRequest).
 			Describe(fmt.Sprintf("Could not parse body: %v", err.Error())))
 	}
 
-	appId := c.Params("appointmentId")
+	appointmentId := c.Params("appointmentId")
 
-	apperr := h.service.UpdateAppointmentStatus(appId, status.Status)
+	apperr := h.service.UpdateAppointmentStatus(&updatingAppointment, appointmentId)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}

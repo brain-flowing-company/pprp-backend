@@ -33,7 +33,8 @@ func (a Appointments) TableName() string {
 }
 
 type UpdatingAppointmentStatus struct {
-	Status enums.AppointmentStatus `json:"status"`
+	Status           enums.AppointmentStatus `json:"status" example:"CANCELLED"`
+	CancelledMessage string                  `json:"cancelled_message" example:"This is a cancelled message"`
 }
 
 // Data Structure for Apppointment Lists

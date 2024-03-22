@@ -16,7 +16,7 @@ type Service interface {
 	GetAppointmentById(*models.AppointmentDetails, string) *apperror.AppError
 	CreateAppointment(*models.Appointments) *apperror.AppError
 	DeleteAppointment(string) *apperror.AppError
-	UpdateAppointmentStatus(string, enums.AppointmentStatus) *apperror.AppError
+	UpdateAppointmentStatus(*models.UpdatingAppointmentStatus, string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -135,21 +135,21 @@ func (s *serviceImpl) DeleteAppointment(appointmentId string) *apperror.AppError
 	return nil
 }
 
-func (s *serviceImpl) UpdateAppointmentStatus(appointmentId string, status enums.AppointmentStatus) *apperror.AppError {
+func (s *serviceImpl) UpdateAppointmentStatus(updatingAppointment *models.UpdatingAppointmentStatus, appointmentId string) *apperror.AppError {
 	if !utils.IsValidUUID(appointmentId) {
 		return apperror.
 			New(apperror.InvalidAppointmentId).
 			Describe("Invalid appointment id")
 	}
 
-	_, ok := enums.AppointmentStatusMap[string(status)]
+	_, ok := enums.AppointmentStatusMap[string(updatingAppointment.Status)]
 	if !ok {
 		return apperror.
 			New(apperror.InvalidAppointmentStatus).
 			Describe("Invalid appointment status")
 	}
 
-	err := s.repo.UpdateAppointmentStatus(appointmentId, status)
+	err := s.repo.UpdateAppointmentStatus(updatingAppointment, appointmentId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.AppointmentNotFound).
