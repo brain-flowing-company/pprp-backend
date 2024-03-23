@@ -70,7 +70,9 @@ func (r *WebsocketRouter) handleWrite() {
 		}
 
 		err := r.conn.WriteJSON(msg)
-		r.logger.Error("Could not write json data", zap.Error(err))
+		if err != nil {
+			r.logger.Error("Could not write json data", zap.Error(err))
+		}
 	}
 }
 

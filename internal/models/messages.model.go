@@ -37,10 +37,11 @@ type Messages struct {
 }
 
 func (e *Messages) ToOutBound() *OutBoundMessages {
+	tmp := *e
 	return &OutBoundMessages{
 		Event:   enums.OUTBOUND_MSG,
 		Tag:     e.Tag,
-		Payload: e,
+		Payload: tmp,
 	}
 }
 
@@ -51,9 +52,10 @@ type ReadEvents struct {
 }
 
 func (e *ReadEvents) ToOutBound() *OutBoundMessages {
+	tmp := *e
 	return &OutBoundMessages{
 		Event:   enums.OUTBOUND_READ,
-		Payload: e,
+		Payload: tmp,
 	}
 }
 
@@ -64,19 +66,4 @@ type ChatPreviews struct {
 	LastName        string    `json:"last_name"         example:"Doe"`
 	UnreadMessages  int64     `json:"unread_messages"   example:"9"`
 	Content         string    `json:"content"           example:"hello, world"`
-}
-
-func (e *ChatPreviews) ToOutBound() *OutBoundMessages {
-	return &OutBoundMessages{
-		Event:   enums.OUTBOUND_CHATS,
-		Payload: e,
-	}
-}
-
-type ConnectionEstablished struct{}
-
-func (e *ConnectionEstablished) ToOutBound() *OutBoundMessages {
-	return &OutBoundMessages{
-		Event: enums.OUTBOUND_CONN,
-	}
 }
