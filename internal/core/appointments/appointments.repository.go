@@ -2,7 +2,6 @@ package appointments
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"gorm.io/gorm"
@@ -164,7 +163,6 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.
 							JOIN (` + ownersQuery + `) AS o ON a.owner_user_id = o.owner_user_id`
 
 	return repo.db.Transaction(func(tx *gorm.DB) error {
-		fmt.Println("Transaction Begin")
 		if err := tx.Model(&models.Appointments{}).
 			Raw(appointmentListsQuery+`
 				WHERE a.owner_user_id = @userId
@@ -172,7 +170,7 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.
 			Scan(&appointmentsResponse.Owner).Error; err != nil {
 			return err
 		}
-		fmt.Println("Owner Query Done")
+
 		if err := tx.Model(&models.Appointments{}).
 			Raw(appointmentListsQuery+`
 				WHERE a.dweller_user_id = @userId
@@ -180,7 +178,7 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.
 			Scan(&appointmentsResponse.Dweller).Error; err != nil {
 			return err
 		}
-		fmt.Println("Dweller Query Done")
+
 		for i, appointment := range appointmentsResponse.Owner {
 			if err := repo.db.Model(&models.PropertyImages{}).
 				Raw(`
@@ -192,7 +190,7 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.
 				return err
 			}
 		}
-		fmt.Println("Owner Image Query Done")
+
 		for i, appointment := range appointmentsResponse.Dweller {
 			if err := repo.db.Model(&models.PropertyImages{}).
 				Raw(`
@@ -204,7 +202,7 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.
 				return err
 			}
 		}
-		fmt.Println("Dweller Image Query Done")
+
 		return nil
 	})
 }
