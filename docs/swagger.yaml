@@ -731,7 +731,8 @@ paths:
       description: Callback from google / register redirect. Basically put all query
         strings to this request.
       parameters:
-      - in: query
+      - example: SCK-A1b2C3
+        in: query
         name: code
         type: string
       - in: query
@@ -1082,7 +1083,7 @@ paths:
           description: Could not create property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Create a property
+      summary: Create a property *use cookies*
       tags:
       - property
   /api/v1/properties/:propertyId:
@@ -1117,7 +1118,7 @@ paths:
           description: Could not delete property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Delete a property
+      summary: Delete a property *use cookies*
       tags:
       - property
     get:
@@ -1308,7 +1309,7 @@ paths:
           description: Could not update property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Update a property
+      summary: Update a property *use cookies*
       tags:
       - property
   /api/v1/properties/favorites/:propertyId:
@@ -1339,7 +1340,7 @@ paths:
           description: Could not remove favorite property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Remove property to favorites
+      summary: Remove property to favorites *use cookies*
       tags:
       - property
     post:
@@ -1369,7 +1370,7 @@ paths:
           description: Could not add favorite property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Add property to favorites
+      summary: Add property to favorites *use cookies*
       tags:
       - property
   /api/v1/properties/top10:
@@ -1554,7 +1555,7 @@ paths:
           description: Could not get favorite properties
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get my favorite properties
+      summary: Get my favorite properties *use cookies*
       tags:
       - property
   /api/v1/user/me/financial-information:
@@ -1681,7 +1682,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get my properties
+      summary: Get my properties *use cookies*
       tags:
       - property
   /api/v1/user/me/registered:
