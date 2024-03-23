@@ -182,14 +182,14 @@ func (repo *repositoryImpl) CreateProperty(property *models.PropertyInfos) error
 		// 	}
 		// }
 
-		if property.Price != 0 {
+		if property.Price > 0 {
 			sellingQuery := `INSERT INTO selling_properties (property_id, price, is_sold) VALUES (?, ?, ?);`
 			if err := tx.Exec(sellingQuery, property_id, property.Price, property.IsSold).Error; err != nil {
 				return err
 			}
 		}
 
-		if property.PricePerMonth != 0 {
+		if property.PricePerMonth > 0 {
 			rentingQuery := `INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUES (?, ?, ?);`
 			if err := tx.Exec(rentingQuery, property_id, property.PricePerMonth, property.IsOccupied).Error; err != nil {
 				return err
