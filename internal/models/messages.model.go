@@ -46,9 +46,8 @@ func (e *Messages) ToOutBound() *OutBoundMessages {
 }
 
 type ReadEvents struct {
-	SenderId   uuid.UUID `json:"sender_id"`
-	ReceiverId uuid.UUID `json:"receiver_id"`
-	ReadAt     time.Time `json:"read_at"`
+	ChatId uuid.UUID `json:"chat_id"`
+	ReadAt time.Time `json:"read_at"`
 }
 
 func (e *ReadEvents) ToOutBound() *OutBoundMessages {

@@ -126,9 +126,8 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 
 	if client.hub.IsUserInChat(client.UserId, uuid) {
 		read := &models.ReadEvents{
-			SenderId:   uuid,
-			ReceiverId: client.UserId,
-			ReadAt:     time.Now(),
+			ChatId: client.UserId,
+			ReadAt: time.Now(),
 		}
 		client.hub.GetUser(uuid).SendMessage(read.ToOutBound())
 	}
