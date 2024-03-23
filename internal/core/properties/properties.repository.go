@@ -101,6 +101,10 @@ func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesRes
 
 func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propertyId string) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
+		if err := repo.db.Model(&models.Properties{}).First(property, "property_id = ?", propertyId).Error; err != nil {
+			return err
+		}
+
 		if err := repo.db.Model(&models.Properties{}).
 			Raw(`
 				SELECT properties.*,
@@ -134,6 +138,10 @@ func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propert
 
 func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *utils.PaginatedQuery) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
+		if err := repo.db.Model(&models.Properties{}).First(&models.Properties{}, "owner_id = ?", ownerId).Error; err != nil {
+			return err
+		}
+
 		if err := repo.db.Model(&models.Properties{}).
 			Raw(`
 				SELECT COUNT(*) AS total
@@ -294,8 +302,7 @@ func (repo *repositoryImpl) UpdatePropertyById(property *models.PropertyInfos, p
 }
 
 func (repo *repositoryImpl) DeletePropertyById(propertyId string) error {
-	err := repo.db.First(&models.Properties{}, "property_id = ?", propertyId).Error
-	if err != nil {
+	if err := repo.db.First(&models.Properties{}, "property_id = ?", propertyId).Error; err != nil {
 		return err
 	}
 
@@ -311,6 +318,10 @@ func (repo *repositoryImpl) CountPropertyImages(countPropertyImages *int64, prop
 }
 
 func (repo *repositoryImpl) AddFavoriteProperty(favoriteProperty *models.FavoriteProperties) error {
+	if err := repo.db.First(&models.Properties{}, "property_id = ?", favoriteProperty.PropertyId).Error; err != nil {
+		return err
+	}
+
 	return repo.db.Create(favoriteProperty).Error
 }
 
@@ -325,6 +336,10 @@ func (repo *repositoryImpl) RemoveFavoriteProperty(propertyId string, userId str
 
 func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *utils.PaginatedQuery) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&models.FavoriteProperties{}).First(&models.FavoriteProperties{}, "user_id = ?", userId).Error; err != nil {
+			return err
+		}
+
 		if err := repo.db.Model(&models.Properties{}).
 			Raw(`
 				SELECT COUNT(*) AS total

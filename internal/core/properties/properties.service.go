@@ -93,7 +93,11 @@ func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesRespon
 	}
 
 	err := s.repo.GetPropertyByOwnerId(properties, ownerId, paginated)
-	if err != nil {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	} else if err != nil {
 		s.logger.Error("Could not get property by owner id", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -166,21 +170,12 @@ func (s *serviceImpl) DeletePropertyById(propertyId string) *apperror.AppError {
 			Describe("Invalid property id")
 	}
 
-	var countProperty int64
-	countErr := s.repo.CountProperty(&countProperty, propertyId)
-	if countErr != nil {
-		s.logger.Error("Could not count property by id", zap.String("id", propertyId), zap.Error(countErr))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not update property. Please try again later.")
-	} else if countProperty == 0 {
+	err := s.repo.DeletePropertyById(propertyId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.PropertyNotFound).
 			Describe("Could not find the specified property")
-	}
-
-	err := s.repo.DeletePropertyById(propertyId)
-	if err != nil {
+	} else if err != nil {
 		s.logger.Error("Could not delete property by id", zap.String("id", propertyId), zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -204,7 +199,11 @@ func (s *serviceImpl) AddFavoriteProperty(propertyId string, userId uuid.UUID) *
 	}
 
 	err := s.repo.AddFavoriteProperty(&favoriteProperty)
-	if err != nil {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	} else if err != nil {
 		s.logger.Error("Could not add favorite property", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -222,7 +221,11 @@ func (s *serviceImpl) RemoveFavoriteProperty(propertyId string, userId uuid.UUID
 	}
 
 	err := s.repo.RemoveFavoriteProperty(propertyId, userId.String())
-	if err != nil {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	} else if err != nil {
 		s.logger.Error("Could not remove favorite property", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -240,7 +243,11 @@ func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavorit
 	}
 
 	err := s.repo.GetFavoritePropertiesByUserId(properties, userId, paginated)
-	if err != nil {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	} else if err != nil {
 		s.logger.Error("Could not get favorite properties by user id", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
