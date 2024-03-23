@@ -2,6 +2,7 @@ package appointments
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"gorm.io/gorm"
@@ -141,7 +142,7 @@ func (repo *repositoryImpl) GetAppointmentById(appointment *models.AppointmentDe
 	})
 }
 
-func (repo *repositoryImpl) GetAppointmentByUserId(appointments *models.MyAppointmentResponse, userId string) error {
+func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.MyAppointmentResponse, userId string) error {
 	propertiesQuery := `SELECT property_id, property_name, property_type FROM properties`
 
 	ownersQuery := `SELECT user_id AS owner_user_id,
@@ -163,46 +164,47 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointments *models.MyAppoin
 							JOIN (` + ownersQuery + `) AS o ON a.owner_user_id = o.owner_user_id`
 
 	return repo.db.Transaction(func(tx *gorm.DB) error {
+		fmt.Println("Transaction Begin")
 		if err := tx.Model(&models.Appointments{}).
 			Raw(appointmentListsQuery+`
 				WHERE a.owner_user_id = @userId
 				`, sql.Named("userId", userId)).
-			Scan(appointments.Owner).Error; err != nil {
+			Scan(&appointmentsResponse.Owner).Error; err != nil {
 			return err
 		}
-
+		fmt.Println("Owner Query Done")
 		if err := tx.Model(&models.Appointments{}).
 			Raw(appointmentListsQuery+`
 				WHERE a.dweller_user_id = @userId
 				`, sql.Named("userId", userId)).
-			Scan(appointments.Dweller).Error; err != nil {
+			Scan(&appointmentsResponse.Dweller).Error; err != nil {
 			return err
 		}
-
-		for i, appointment := range appointments.Owner {
+		fmt.Println("Dweller Query Done")
+		for i, appointment := range appointmentsResponse.Owner {
 			if err := repo.db.Model(&models.PropertyImages{}).
 				Raw(`
 					SELECT image_url
 					FROM property_images
 					WHERE property_id = @property_id
 					`, sql.Named("property_id", appointment.Property.PropertyId)).
-				Pluck("image_url", &appointments.Owner[i].Property.PropertyImages).Error; err != nil {
+				Pluck("image_url", &appointmentsResponse.Owner[i].Property.PropertyImages).Error; err != nil {
 				return err
 			}
 		}
-
-		for i, appointment := range appointments.Dweller {
+		fmt.Println("Owner Image Query Done")
+		for i, appointment := range appointmentsResponse.Dweller {
 			if err := repo.db.Model(&models.PropertyImages{}).
 				Raw(`
 					SELECT image_url
 					FROM property_images
 					WHERE property_id = @property_id
 					`, sql.Named("property_id", appointment.Property.PropertyId)).
-				Pluck("image_url", &appointments.Dweller[i].Property.PropertyImages).Error; err != nil {
+				Pluck("image_url", &appointmentsResponse.Dweller[i].Property.PropertyImages).Error; err != nil {
 				return err
 			}
 		}
-
+		fmt.Println("Dweller Image Query Done")
 		return nil
 	})
 }
