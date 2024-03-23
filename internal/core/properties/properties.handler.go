@@ -98,7 +98,7 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/user/me/properties [get]
-// @summary     Get my properties
+// @summary     Get my properties *use cookies*
 // @description Get all properties owned by the current user
 // @tags        property
 // @produce     json
@@ -125,7 +125,7 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/properties [post]
-// @summary     Create a property
+// @summary     Create a property *user cookies*
 // @description Create a property with formData *upload property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg
 // @tags        property
 // @produce     json
@@ -161,7 +161,7 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/properties/:propertyId [put]
-// @summary     Update a property
+// @summary     Update a property *user cookies*
 // @description Update a property with formData *upload **NEW** property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg *If you want to keep the old images, you need to include them in the formData with field `image_urls` as an array of strings
 // @tags        property
 // @produce     json
@@ -199,7 +199,7 @@ func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/properties/:propertyId [delete]
-// @summary     Delete a property
+// @summary     Delete a property *use cookies*
 // @description Delete a property, owned by the current user, by its id
 // @tags        property
 // @produce     json
@@ -221,7 +221,7 @@ func (h *handlerImpl) DeletePropertyById(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/properties/favorites/:propertyId [post]
-// @summary     Add property to favorites
+// @summary     Add property to favorites *use cookies*
 // @description Add property to the current user favorites
 // @tags        property
 // @produce     json
@@ -243,7 +243,7 @@ func (h *handlerImpl) AddFavoriteProperty(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/properties/favorites/:propertyId [delete]
-// @summary     Remove property to favorites
+// @summary     Remove property to favorites *use cookies*
 // @description Remove property to the current user favorites
 // @tags        property
 // @produce     json
@@ -265,7 +265,7 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/user/me/favorites [get]
-// @summary     Get my favorite properties
+// @summary     Get my favorite properties *use cookies*
 // @description Get all properties that the current user has added to favorites
 // @tags        property
 // @produce     json

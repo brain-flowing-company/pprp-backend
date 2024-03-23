@@ -66,6 +66,7 @@ var (
 	EmailAlreadyExists            = &AppErrorType{http.StatusBadRequest, "email-already-exists"}
 	PhoneNumberAlreadyExists      = &AppErrorType{http.StatusBadRequest, "phone-number-already-exists"}
 	InvalidEmail                  = &AppErrorType{http.StatusBadRequest, "invalid-email"}
+	EmptyVerificationCode         = &AppErrorType{http.StatusBadRequest, "empty-verification-code"}
 	InvalidEmailVerificationCode  = &AppErrorType{http.StatusBadRequest, "invalid-email-verification-code"}
 	EmailVerificationCodeExpired  = &AppErrorType{http.StatusBadRequest, "email-verification-code-expired"}
 	EmailVerificationDataNotFound = &AppErrorType{http.StatusNotFound, "email-verification-data-not-found"}

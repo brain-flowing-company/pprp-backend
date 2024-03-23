@@ -12,8 +12,8 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 type Service interface {
@@ -56,30 +56,28 @@ func (s *serviceImpl) SendVerificationEmail(emails []string) *apperror.AppError 
 			Describe("Email already exists")
 	}
 
-	code := s.cfg.EmailCodePrefix + uuid.NewString()
+	code := utils.RandomIntegerString(6)
+	codeWithPrefix := s.cfg.EmailCodePrefix + code
 
 	emailVerificationCodeExpire := s.cfg.AuthVerificationExpire
 	expiredAt := time.Now().Add(time.Duration(emailVerificationCodeExpire) * time.Second)
 
 	verificationData := models.EmailVerificationCodes{
 		Email:     userEmail,
-		Code:      code,
+		Code:      codeWithPrefix,
 		ExpiredAt: expiredAt,
 	}
 
-	if s.repo.CreateEmailVerificationCode(&verificationData) != nil {
-		s.logger.Error("Could not create email verification data", zap.Error(findEmailErr))
+	if err := s.repo.CreateEmailVerificationCode(&verificationData); err != nil {
+		s.logger.Error("Could not create email verification data", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not send email. Please try again later")
 	}
 
-	link := fmt.Sprintf("%v?email=%v&code=%v", s.cfg.AuthRedirect, userEmail, code)
 	subject := "Email Verification from suechaokhai.com"
 	emailStructure := models.VerificationEmails{
-		// VerificationLink: "https://www.youtube.com/@oreo10baht",
-		// VerificationLink: "http://localhost:8000/email/verify?email=" + userEmail + "&code=" + code,
-		VerificationLink: link,
+		VerificationCode: code,
 	}
 
 	return s.sendEmail(emails, subject, emailStructure)
@@ -145,21 +143,12 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.Callbacks, callbackRes
 
 	verificationData := models.EmailVerificationCodes{}
 
-	var countData int64
-	countDataErr := s.repo.CountEmailVerificationCode(&countData, userEmail)
-	if countDataErr != nil {
-		s.logger.Error("Could not count email verification data", zap.Error(countDataErr))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not verify email. Please try again later")
-	} else if countData == 0 {
+	getDataErr := s.repo.GetEmailVerificationCodeByEmail(&verificationData, userEmail)
+	if getDataErr == gorm.ErrRecordNotFound {
 		return apperror.
 			New(apperror.EmailVerificationDataNotFound).
-			Describe("Could not verify email. Please try again later")
-	}
-
-	getDataErr := s.repo.GetEmailVerificationCodeByEmail(&verificationData, userEmail)
-	if getDataErr != nil {
+			Describe("Email verification data not found")
+	} else if getDataErr != nil {
 		s.logger.Error("Could not get email verification data", zap.Error(getDataErr))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -167,8 +156,7 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.Callbacks, callbackRes
 	}
 
 	if verificationData.ExpiredAt.Before(time.Now()) {
-		err := s.repo.DeleteEmailVerificationCode(userEmail)
-		if err != nil {
+		if err := s.repo.DeleteEmailVerificationCode(userEmail); err != nil {
 			s.logger.Error("Could not delete email verification data", zap.Error(err))
 			return apperror.
 				New(apperror.InternalServerError).
@@ -179,15 +167,14 @@ func (s *serviceImpl) VerifyEmail(verificationReq *models.Callbacks, callbackRes
 			Describe("Verification code expired")
 	}
 
-	if userCode != verificationData.Code {
+	if verificationData.Code != userCode {
 		return apperror.
 			New(apperror.InvalidEmailVerificationCode).
 			Describe("Invalid verification code")
 	}
 
-	deleteErr := s.repo.DeleteEmailVerificationCode(userEmail)
-	if deleteErr != nil {
-		s.logger.Error("Could not delete email verification data", zap.Error(deleteErr))
+	if err := s.repo.DeleteEmailVerificationCode(userEmail); err != nil {
+		s.logger.Error("Could not delete email verification data", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Server Error. Please try again later")

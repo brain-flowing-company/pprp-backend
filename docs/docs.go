@@ -387,6 +387,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "SCK-A1b2C3",
                         "name": "code",
                         "in": "query"
                     },
@@ -695,7 +696,7 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Create a property",
+                "summary": "Create a property *use cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -980,7 +981,7 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Update a property",
+                "summary": "Update a property *use cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -1225,7 +1226,7 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Delete a property",
+                "summary": "Delete a property *use cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -1278,7 +1279,7 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Add property to favorites",
+                "summary": "Add property to favorites *use cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -1323,7 +1324,7 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Remove property to favorites",
+                "summary": "Remove property to favorites *use cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -1602,7 +1603,7 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Get my favorite properties",
+                "summary": "Get my favorite properties *use cookies*",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1791,7 +1792,7 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Get my properties",
+                "summary": "Get my properties *use cookies*",
                 "parameters": [
                     {
                         "type": "integer",

@@ -9,7 +9,7 @@ type EmailType interface {
 }
 
 type VerificationEmails struct {
-	VerificationLink string
+	VerificationCode string
 }
 
 func (v VerificationEmails) Path() string {

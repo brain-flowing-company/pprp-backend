@@ -73,7 +73,11 @@ func (s *serviceImpl) Callback(ctx context.Context, callback *models.Callbacks, 
 	var err *apperror.AppError
 
 	prefix := s.cfg.EmailCodePrefix
-	if callback.Code[:len(prefix)] == s.cfg.EmailCodePrefix {
+	if callback.Code == "" {
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("Code is required")
+	} else if callback.Code[:len(prefix)] == prefix {
 		err = s.emailService.VerifyEmail(callback, callbackResponse)
 	} else {
 		err = s.googleService.ExchangeToken(ctx, callback, callbackResponse)
