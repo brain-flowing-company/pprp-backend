@@ -160,7 +160,7 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property created")
 }
 
-// @router      /api/v1/properties/:propertyId [put]
+// @router      /api/v1/properties/:propertyId [patch]
 // @summary     Update a property *user cookies*
 // @description Update a property with formData *upload **NEW** property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg *If you want to keep the old images, you need to include them in the formData with field `image_urls` as an array of strings
 // @tags        property
