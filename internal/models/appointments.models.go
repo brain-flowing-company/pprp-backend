@@ -38,8 +38,8 @@ type UpdatingAppointmentStatus struct {
 
 // Data Structure for My Appointments
 type MyAppointmentResponse struct {
-	Owner   []AppointmentLists `json:"owner"`
-	Dweller []AppointmentLists `json:"dweller"`
+	OwnerAppointments   []AppointmentLists `json:"owner_appointments"`
+	DwellerAppointments []AppointmentLists `json:"dweller_appointments"`
 }
 
 // Data Structure for Apppointment Lists

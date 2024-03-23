@@ -167,7 +167,7 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.
 			Raw(appointmentListsQuery+`
 				WHERE a.owner_user_id = @userId
 				`, sql.Named("userId", userId)).
-			Scan(&appointmentsResponse.Owner).Error; err != nil {
+			Scan(&appointmentsResponse.OwnerAppointments).Error; err != nil {
 			return err
 		}
 
@@ -175,30 +175,30 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.
 			Raw(appointmentListsQuery+`
 				WHERE a.dweller_user_id = @userId
 				`, sql.Named("userId", userId)).
-			Scan(&appointmentsResponse.Dweller).Error; err != nil {
+			Scan(&appointmentsResponse.DwellerAppointments).Error; err != nil {
 			return err
 		}
 
-		for i, appointment := range appointmentsResponse.Owner {
+		for i, appointment := range appointmentsResponse.OwnerAppointments {
 			if err := repo.db.Model(&models.PropertyImages{}).
 				Raw(`
 					SELECT image_url
 					FROM property_images
 					WHERE property_id = @property_id
 					`, sql.Named("property_id", appointment.Property.PropertyId)).
-				Pluck("image_url", &appointmentsResponse.Owner[i].Property.PropertyImages).Error; err != nil {
+				Pluck("image_url", &appointmentsResponse.OwnerAppointments[i].Property.PropertyImages).Error; err != nil {
 				return err
 			}
 		}
 
-		for i, appointment := range appointmentsResponse.Dweller {
+		for i, appointment := range appointmentsResponse.DwellerAppointments {
 			if err := repo.db.Model(&models.PropertyImages{}).
 				Raw(`
 					SELECT image_url
 					FROM property_images
 					WHERE property_id = @property_id
 					`, sql.Named("property_id", appointment.Property.PropertyId)).
-				Pluck("image_url", &appointmentsResponse.Dweller[i].Property.PropertyImages).Error; err != nil {
+				Pluck("image_url", &appointmentsResponse.DwellerAppointments[i].Property.PropertyImages).Error; err != nil {
 				return err
 			}
 		}
