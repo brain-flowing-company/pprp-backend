@@ -1,5 +1,19 @@
 basePath: /
 definitions:
+  enums.AppointmentStatus:
+    enum:
+    - PENDING
+    - CONFIRMED
+    - REJECTED
+    - CANCELLED
+    - ARCHIVED
+    type: string
+    x-enum-varnames:
+    - Pending
+    - Confirmed
+    - Rejected
+    - Cancelled
+    - Archived
   enums.BankNames:
     enum:
     - KBANK
@@ -121,7 +135,7 @@ definitions:
         example: 2
         type: integer
     type: object
-  models.Appointments:
+  models.AppointmentDetails:
     properties:
       appointment_date:
         example: "2024-02-18T11:00:00Z"
@@ -129,38 +143,50 @@ definitions:
       appointment_id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
+      cancelled_message:
+        example: This is a cancelled message
+        type: string
       created_at:
         type: string
-      dweller_user_id:
-        example: 123e4567-e89b-12d3-a456-426614174000
+      dweller:
+        $ref: '#/definitions/models.DwellerAppointmentDetails'
+      note:
+        example: This is a note
         type: string
-      owner_user_id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      property_id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
+      owner:
+        $ref: '#/definitions/models.OwnerAppointmentDetails'
+      property:
+        $ref: '#/definitions/models.PropertyAppointmentDetails'
       status:
         allOf:
-        - $ref: '#/definitions/models.AppointmentsStatus'
+        - $ref: '#/definitions/enums.AppointmentStatus'
         example: PENDING
     type: object
-  models.AppointmentsStatus:
-    enum:
-    - PENDING
-    - APPROVED
-    - REJECTED
-    - REQUEST_CHANGE
-    - CANCELLED
-    - COMPLETED
-    type: string
-    x-enum-varnames:
-    - Pending
-    - Approved
-    - Rejected
-    - RequestChange
-    - Cancelled
-    - Completed
+  models.AppointmentLists:
+    properties:
+      appointment_date:
+        example: "2024-02-18T11:00:00Z"
+        type: string
+      appointment_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      cancelled_message:
+        example: This is a cancelled message
+        type: string
+      created_at:
+        type: string
+      note:
+        example: This is a note
+        type: string
+      owner:
+        $ref: '#/definitions/models.OwnerAppointmentLists'
+      property:
+        $ref: '#/definitions/models.PropertyAppointmentLists'
+      status:
+        allOf:
+        - $ref: '#/definitions/enums.AppointmentStatus'
+        example: PENDING
+    type: object
   models.CallbackResponses:
     properties:
       email:
@@ -190,13 +216,13 @@ definitions:
   models.CreatingAppointments:
     properties:
       appointment_dates:
-        example:
-        - "2024-02-18T11:00:00Z"
-        items:
-          type: string
-        type: array
+        example: "2024-02-18T11:00:00Z"
+        type: string
       dweller_user_id:
         example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      note:
+        example: This is a note
         type: string
       owner_user_id:
         example: 123e4567-e89b-12d3-a456-426614174000
@@ -233,14 +259,23 @@ definitions:
         example: 1
         type: integer
     type: object
-  models.DeletingAppointments:
+  models.DwellerAppointmentDetails:
     properties:
-      appointmentIds:
-        example:
-        - 123e4567-e89b-12d3-a456-426614174000
-        items:
-          type: string
-        type: array
+      dweller_first_name:
+        example: John
+        type: string
+      dweller_last_name:
+        example: Doe
+        type: string
+      dweller_phone_number:
+        example: "0812345678"
+        type: string
+      dweller_profile_image_url:
+        example: https://image_url.com/abcd
+        type: string
+      dweller_user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
     type: object
   models.ErrorResponses:
     properties:
@@ -287,6 +322,17 @@ definitions:
         example: "2024-02-22T03:06:53.313735Z"
         type: string
     type: object
+  models.MyAppointmentResponse:
+    properties:
+      dweller_appointments:
+        items:
+          $ref: '#/definitions/models.AppointmentLists'
+        type: array
+      owner_appointments:
+        items:
+          $ref: '#/definitions/models.AppointmentLists'
+        type: array
+    type: object
   models.MyFavoritePropertiesResponses:
     properties:
       properties:
@@ -306,6 +352,39 @@ definitions:
       total:
         example: 2
         type: integer
+    type: object
+  models.OwnerAppointmentDetails:
+    properties:
+      owner_first_name:
+        example: John
+        type: string
+      owner_last_name:
+        example: Doe
+        type: string
+      owner_phone_number:
+        example: "0812345678"
+        type: string
+      owner_profile_image_url:
+        example: https://image_url.com/abcd
+        type: string
+      owner_user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    type: object
+  models.OwnerAppointmentLists:
+    properties:
+      owner_first_name:
+        example: John
+        type: string
+      owner_last_name:
+        example: Doe
+        type: string
+      owner_profile_image_url:
+        example: https://image_url.com/abcd
+        type: string
+      owner_user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
     type: object
   models.Properties:
     properties:
@@ -386,6 +465,76 @@ definitions:
         example: 123
         type: integer
     type: object
+  models.PropertyAppointmentDetails:
+    properties:
+      address:
+        example: 123/4
+        type: string
+      alley:
+        example: Pattaya Nua 78
+        type: string
+      country:
+        example: Thailand
+        type: string
+      district:
+        example: Bang Phli
+        type: string
+      postal_code:
+        example: "69096"
+        type: string
+      price:
+        example: 12345.67
+        type: number
+      price_per_month:
+        example: 12345.67
+        type: number
+      property_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      property_images:
+        items:
+          $ref: '#/definitions/models.PropertyImageAppointments'
+        type: array
+      property_name:
+        example: The Base Sukhumvit 77
+        type: string
+      property_type:
+        allOf:
+        - $ref: '#/definitions/enums.PropertyTypes'
+        example: CONDO
+      province:
+        example: Pattaya
+        type: string
+      street:
+        example: Pattaya
+        type: string
+      sub_district:
+        example: Bang Bon
+        type: string
+    type: object
+  models.PropertyAppointmentLists:
+    properties:
+      property_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      property_images:
+        items:
+          $ref: '#/definitions/models.PropertyImageAppointments'
+        type: array
+      property_name:
+        example: The Base Sukhumvit 77
+        type: string
+      property_type:
+        allOf:
+        - $ref: '#/definitions/enums.PropertyTypes'
+        example: CONDO
+    type: object
+  models.PropertyImageAppointments:
+    properties:
+      image_url:
+        example: https://image_url.com/abcd
+        type: string
+    type: object
   models.PropertyImages:
     properties:
       created_at:
@@ -431,6 +580,16 @@ definitions:
       user_id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
+    type: object
+  models.UpdatingAppointmentStatus:
+    properties:
+      cancelled_message:
+        example: This is a cancelled message
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/enums.AppointmentStatus'
+        example: CANCELLED
     type: object
   models.UserFinancialInformations:
     properties:
@@ -607,17 +766,18 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Appointments'
+              $ref: '#/definitions/models.AppointmentLists'
             type: array
         "500":
-          description: Internal Server Error
+          description: Could not get all appointments
           schema:
             $ref: '#/definitions/models.ErrorResponses'
       summary: Get all appointments
       tags:
       - appointments
     post:
-      description: Create appointments
+      description: Create an appointments with **property_id**, **owner_user_id**,
+        **dweller_user_id**, **appointment_date**, **note**(optional)
       parameters:
       - description: Appointment details
         in: body
@@ -629,50 +789,52 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created
+          description: Appointments created
           schema:
-            $ref: '#/definitions/models.Appointments'
+            $ref: '#/definitions/models.MessageResponses'
         "400":
           description: Empty dates or some of appointments duplicate with existing
             one
           schema:
             $ref: '#/definitions/models.ErrorResponses'
         "500":
-          description: Internal Server Error
+          description: Could not create appointments
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Create appointments
-      tags:
-      - appointments
-  /api/v1/appointments/:
-    delete:
-      description: Delete **all appointments** in body.
-      parameters:
-      - description: Appointment id deleting lists
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/models.DeletingAppointments'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Appointments'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-      summary: Delete appointments
+      summary: Create an appointment
       tags:
       - appointments
   /api/v1/appointments/:appointmentId:
+    delete:
+      description: Delete an appointment by id
+      parameters:
+      - description: Appointment ID
+        in: path
+        name: appointmentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Appointments deleted
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "500":
+          description: Could not delete appointments
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Delete an appointment by id
+      tags:
+      - appointments
     get:
-      description: Get appointments by id
+      description: Get the appointment and other related information by id
+      parameters:
+      - description: Appointment ID
+        in: path
+        name: appointmentId
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -680,50 +842,53 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Appointments'
+              $ref: '#/definitions/models.AppointmentDetails'
             type: array
         "400":
           description: Invalid appointment id
           schema:
             $ref: '#/definitions/models.ErrorResponses'
         "404":
-          description: Appointment id not found
+          description: Could not find the specified appointment
           schema:
             $ref: '#/definitions/models.ErrorResponses'
         "500":
-          description: Internal Server Error
+          description: Could not get appointment by id
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get appointments by id
+      summary: Get an appointment by id
       tags:
       - appointments
     patch:
-      description: Update appointment status
+      description: Update an appointment status by id with **status** and **cancelled_message**(optional)
       parameters:
-      - description: Appointment id deleting lists
+      - description: Appointment ID
+        in: path
+        name: appointmentId
+        required: true
+        type: string
+      - description: Appointment status and cancelled message(optional)
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.DeletingAppointments'
+          $ref: '#/definitions/models.UpdatingAppointmentStatus'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Appointment state updated
           schema:
-            items:
-              $ref: '#/definitions/models.Appointments'
-            type: array
+            $ref: '#/definitions/models.MessageResponses'
         "400":
-          description: Bad Request
+          description: Invalid appointment id
           schema:
             $ref: '#/definitions/models.ErrorResponses'
         "500":
-          description: Internal Server Error
+          description: Could not update appointment status
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Update appointment status
+      summary: Update an appointment status by id
       tags:
       - appointments
   /api/v1/auth/callback:
@@ -731,7 +896,8 @@ paths:
       description: Callback from google / register redirect. Basically put all query
         strings to this request.
       parameters:
-      - in: query
+      - example: SCK-A1b2C3
+        in: query
         name: code
         type: string
       - in: query
@@ -1551,6 +1717,23 @@ paths:
       summary: Get current user info *use cookies*
       tags:
       - users
+  /api/v1/user/me/appointments:
+    get:
+      description: Get all appointments related to the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MyAppointmentResponse'
+        "500":
+          description: Could not get my appointments
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get my appointments
+      tags:
+      - appointments
   /api/v1/user/me/favorites:
     get:
       description: Get all properties that the current user has added to favorites

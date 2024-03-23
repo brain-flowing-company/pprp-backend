@@ -35,7 +35,7 @@ func NewHandler(service Service) Handler {
 // @tags        appointments
 // @produce     json
 // @success     200	{object} []models.AppointmentLists
-// @failure     500 {object} models.ErrorResponses
+// @failure     500 {object} models.ErrorResponses "Could not get all appointments"
 func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 	var appointments []models.AppointmentLists
 	err := h.service.GetAllAppointments(&appointments)
@@ -47,14 +47,15 @@ func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/appointments/:appointmentId [get]
-// @summary     Get appointments by id
-// @description Get appointments and other related information by id
+// @summary     Get an appointment by id
+// @description Get the appointment and other related information by id
 // @tags        appointments
 // @produce     json
+// @param       appointmentId path string true "Appointment ID"
 // @success     200	{object} []models.AppointmentDetails
 // @failure     400 {object} models.ErrorResponses "Invalid appointment id"
-// @failure     404 {object} models.ErrorResponses "Appointment id not found"
-// @failure     500 {object} models.ErrorResponses
+// @failure     404 {object} models.ErrorResponses "Could not find the specified appointment"
+// @failure     500 {object} models.ErrorResponses "Could not get appointment by id"
 func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 	appointmentId := c.Params("appointmentId")
 
@@ -67,6 +68,13 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 	return c.JSON(appointment)
 }
 
+// @router      /api/v1/user/me/appointments [get]
+// @summary     Get my appointments
+// @description Get all appointments related to the user
+// @tags        appointments
+// @produce     json
+// @success     200	{object} models.MyAppointmentResponse
+// @failure     500 {object} models.ErrorResponses "Could not get my appointments"
 func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
@@ -80,14 +88,14 @@ func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/appointments [post]
-// @summary     Create appointments
-// @description Create appointments with **property_id**, **owner_user_id**, **dweller_user_id**, **appointment_date** **note**(optional)
+// @summary     Create an appointment
+// @description Create an appointments with **property_id**, **owner_user_id**, **dweller_user_id**, **appointment_date**, **note**(optional)
 // @tags        appointments
 // @produce     json
-// @param       body body models.Appointments true "Appointment details"
-// @success     201	{object} models.Appointments
+// @param       body body models.CreatingAppointments true "Appointment details"
+// @success     201	{object} models.MessageResponses "Appointments created"
 // @failure     400 {object} models.ErrorResponses "Empty dates or some of appointments duplicate with existing one"
-// @failure     500 {object} models.ErrorResponses
+// @failure     500 {object} models.ErrorResponses "Could not create appointments"
 func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
 	appointment := &models.CreatingAppointments{}
 	err := c.BodyParser(appointment)
@@ -105,14 +113,14 @@ func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusCreated, "Appointments created")
 }
 
-// @router      /api/v1/appointments/ [delete]
-// @summary     Delete appointments
-// @description Delete **all appointments** in body.
+// @router      /api/v1/appointments/:appointmentId [delete]
+// @summary     Delete an appointment by id
+// @description Delete an appointment by id
 // @tags        appointments
 // @produce     json
-// @param       body body models.DeletingAppointments true "Appointment id deleting lists"
-// @success     200	{object} []models.Appointments
-// @failure     500 {object} models.ErrorResponses
+// @param       appointmentId path string true "Appointment ID"
+// @success     200	{object} models.MessageResponses "Appointments deleted"
+// @failure     500 {object} models.ErrorResponses "Could not delete appointments"
 func (h *handlerImpl) DeleteAppointment(c *fiber.Ctx) error {
 	appointmentId := c.Params("appointmentId")
 
@@ -124,15 +132,16 @@ func (h *handlerImpl) DeleteAppointment(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusCreated, "Appointments deleted")
 }
 
-// @router      /api/v1/appointments/:appointmentId
-// @summary     Update appointment status
-// @description Update appointment status
+// @router      /api/v1/appointments/:appointmentId [patch]
+// @summary     Update an appointment status by id
+// @description Update an appointment status by id with **status** and **cancelled_message**(optional)
 // @tags        appointments
 // @produce     json
-// @param       body body models.UpdatingAppointmentStatus true
-// @success     200	{object} []models.Appointments
-// @failure     400 {object} models.ErrorResponses
-// @failure     500 {object} models.ErrorResponses
+// @param       appointmentId path string true "Appointment ID"
+// @param       body body models.UpdatingAppointmentStatus true "Appointment status and cancelled message(optional)"
+// @success     200	{object} models.MessageResponses "Appointment state updated"
+// @failure     400 {object} models.ErrorResponses "Invalid appointment id"
+// @failure     500 {object} models.ErrorResponses "Could not update appointment status"
 func (h *handlerImpl) UpdateAppointmentStatus(c *fiber.Ctx) error {
 	updatingAppointment := models.UpdatingAppointmentStatus{}
 	err := c.BodyParser(&updatingAppointment)
