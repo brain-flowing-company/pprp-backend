@@ -33,7 +33,7 @@ func NewHandler(service Service) Handler {
 	}
 }
 
-// @router      /api/v1/property/:propertyId [get]
+// @router      /api/v1/properties/:propertyId [get]
 // @summary     Get property by propertyId
 // @description Get property by its id
 // @tags        property
@@ -69,6 +69,14 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	query := c.Query("query")
 	properties := models.AllPropertiesResponses{}
 
+	sorted := utils.NewSortedQuery(models.Properties{})
+	err := sorted.ParseQuery(c.Query("sort"))
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(err.Error()))
+	}
+
 	var userId string
 	if _, ok := c.Locals("session").(models.Sessions); !ok {
 		userId = "00000000-0000-0000-0000-000000000000"
@@ -79,18 +87,18 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
 	page := utils.Max(c.QueryInt("page", 1), 1)
 
-	paginated := models.NewPaginatedQuery(page, limit)
+	paginated := utils.NewPaginatedQuery(page, limit)
 
-	err := h.service.GetAllProperties(&properties, query, userId, paginated)
-	if err != nil {
-		return utils.ResponseError(c, err)
+	apperr := h.service.GetAllProperties(&properties, query, userId, paginated, sorted)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
 	}
 
 	return c.JSON(properties)
 }
 
 // @router      /api/v1/user/me/properties [get]
-// @summary     Get my properties
+// @summary     Get my properties *use cookies*
 // @description Get all properties owned by the current user
 // @tags        property
 // @produce     json
@@ -105,7 +113,7 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
 	page := utils.Max(c.QueryInt("page", 1), 1)
 
-	paginated := models.NewPaginatedQuery(page, limit)
+	paginated := utils.NewPaginatedQuery(page, limit)
 
 	properties := models.MyPropertiesResponses{}
 	err := h.service.GetPropertyByOwnerId(&properties, userId, paginated)
@@ -116,19 +124,19 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 	return c.JSON(properties)
 }
 
-// @router      /api/v1/property [post]
-// @summary     Create a property
+// @router      /api/v1/properties [post]
+// @summary     Create a property *use cookies*
 // @description Create a property with the provided details
 // @tags        property
 // @produce     json
-// @param       body body models.Properties true "Property details"
-// @success     200	{object} models.Properties
+// @param       formData formData models.PropertyInfos true "Property details"
+// @success     200	{object} models.MessageResponses "Property created"
 // @failure     400 {object} models.ErrorResponses "Invalid request body"
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     404 {object} models.ErrorResponses "Property id not found"
 // @failure     500 {object} models.ErrorResponses "Could not create property"
 func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
-	property := models.Properties{}
+	property := models.PropertyInfos{}
 	if err := c.BodyParser(&property); err != nil {
 		return utils.ResponseError(c, apperror.
 			New(apperror.InvalidBody).
@@ -143,44 +151,45 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(property)
+	return utils.ResponseMessage(c, http.StatusOK, "Property created")
 }
 
-// @router      /api/v1/property/:propertyId [put]
-// @summary     Update a property
+// @router      /api/v1/properties/:propertyId [put]
+// @summary     Update a property *use cookies*
 // @description Update a property, owned by the current user, by its id with the provided details
 // @tags        property
 // @produce     json
 // @param	    propertyId path string true "Property id"
-// @param       body body models.Properties true "Property details"
-// @success     200	{object} models.Properties
+// @param       formData formData models.PropertyInfos true "Property details"
+// @success     200	{object} models.MessageResponses "Property updated"
 // @failure     400 {object} models.ErrorResponses "Invalid request body"
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     404 {object} models.ErrorResponses "Property id not found"
 // @failure     500 {object} models.ErrorResponses "Could not update property"
 func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
-	propertyId := c.Params("propertyId")
-	property := models.Properties{}
+	propertyIdString := c.Params("propertyId")
+	propertyIdUuid, _ := uuid.Parse(propertyIdString)
+
+	property := models.PropertyInfos{}
+	userId := c.Locals("session").(models.Sessions).UserId
+
+	property.OwnerId = userId
+	property.PropertyId = propertyIdUuid
+
 	if err := c.BodyParser(&property); err != nil {
-		return utils.ResponseError(c, apperror.
-			New(apperror.InvalidBody).
-			Describe("Invalid request body"))
+		return utils.ResponseError(c, apperror.InvalidBody)
 	}
 
-	userId := c.Locals("session").(models.Sessions).UserId
-	property.OwnerId = userId
-	property.PropertyId, _ = uuid.Parse(propertyId)
-
-	err := h.service.UpdatePropertyById(&property, propertyId)
+	err := h.service.UpdatePropertyById(&property, propertyIdString)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
 
-	return c.JSON(property)
+	return utils.ResponseMessage(c, http.StatusOK, "Property updated")
 }
 
-// @router      /api/v1/property/:propertyId [delete]
-// @summary     Delete a property
+// @router      /api/v1/properties/:propertyId [delete]
+// @summary     Delete a property *use cookies*
 // @description Delete a property, owned by the current user, by its id
 // @tags        property
 // @produce     json
@@ -201,8 +210,8 @@ func (h *handlerImpl) DeletePropertyById(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property deleted")
 }
 
-// @router      /api/v1/property/favorites/:propertyId [post]
-// @summary     Add property to favorites
+// @router      /api/v1/properties/favorites/:propertyId [post]
+// @summary     Add property to favorites *use cookies*
 // @description Add property to the current user favorites
 // @tags        property
 // @produce     json
@@ -223,8 +232,8 @@ func (h *handlerImpl) AddFavoriteProperty(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property added to favorites")
 }
 
-// @router      /api/v1/property/favorites/:propertyId [delete]
-// @summary     Remove property to favorites
+// @router      /api/v1/properties/favorites/:propertyId [delete]
+// @summary     Remove property to favorites *use cookies*
 // @description Remove property to the current user favorites
 // @tags        property
 // @produce     json
@@ -246,7 +255,7 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/user/me/favorites [get]
-// @summary     Get my favorite properties
+// @summary     Get my favorite properties *use cookies*
 // @description Get all properties that the current user has added to favorites
 // @tags        property
 // @produce     json
@@ -261,7 +270,7 @@ func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
 	page := utils.Max(c.QueryInt("page", 1), 1)
 
-	paginated := models.NewPaginatedQuery(page, limit)
+	paginated := utils.NewPaginatedQuery(page, limit)
 
 	properties := models.MyFavoritePropertiesResponses{}
 	err := h.service.GetFavoritePropertiesByUserId(&properties, userId, paginated)
