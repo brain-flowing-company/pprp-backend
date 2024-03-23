@@ -88,7 +88,7 @@ func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesRes
 				Raw(`
 					SELECT image_url 
 					FROM property_images 
-					WHERE property_id = @property_id`,
+					WHERE property_id = @property_id AND deleted_at IS NULL`,
 					sql.Named("property_id", property.PropertyId)).
 				Pluck("image_url", &properties.Properties[i].PropertyImages).Error; err != nil {
 				return err
@@ -121,7 +121,7 @@ func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propert
 			Raw(`
 				SELECT image_url
 				FROM property_images
-				WHERE property_id = @property_id
+				WHERE property_id = @property_id AND deleted_at IS NULL
 				`, sql.Named("property_id", property.PropertyId)).
 			Pluck("image_url", &property.PropertyImages).Error; err != nil {
 			return err
@@ -187,7 +187,7 @@ func (repo *repositoryImpl) GetPropertyByOwnerId(properties *models.MyProperties
 				Raw(`
 					SELECT image_url 
 					FROM property_images 
-					WHERE property_id = @property_id`,
+					WHERE property_id = @property_id AND deleted_at IS NULL`,
 					sql.Named("property_id", property.PropertyId)).
 				Pluck("image_url", &properties.Properties[i].PropertyImages).Error; err != nil {
 				return err
@@ -368,7 +368,7 @@ func (repo *repositoryImpl) GetFavoritePropertiesByUserId(properties *models.MyF
 				Raw(`
 						SELECT image_url 
 						FROM property_images 
-						WHERE property_id = @property_id`,
+						WHERE property_id = @property_id AND deleted_at IS NULL`,
 					sql.Named("property_id", property.PropertyId)).
 				Pluck("image_url", &properties.Properties[i].PropertyImages).Error; err != nil {
 				return err
@@ -426,7 +426,7 @@ func (repo *repositoryImpl) GetTop10Properties(properties *[]models.Properties, 
 				Raw(`
 					SELECT image_url
 					FROM property_images
-					WHERE property_id = @property_id
+					WHERE property_id = @property_id AND deleted_at IS NULL
 					`, sql.Named("property_id", property.PropertyId)).
 				Pluck("image_url", &(*properties)[i].PropertyImages).Error; err != nil {
 				return err
