@@ -66,3 +66,11 @@ type ChatPreviews struct {
 	UnreadMessages  int64     `json:"unread_messages"   example:"9"`
 	Content         string    `json:"content"           example:"hello, world"`
 }
+
+type OKResponses struct{}
+
+func (e *OKResponses) ToOutBound() *OutBoundMessages {
+	return &OutBoundMessages{
+		Event: enums.OUTBOUND_OK,
+	}
+}
