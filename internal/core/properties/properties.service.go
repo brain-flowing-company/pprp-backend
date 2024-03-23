@@ -104,7 +104,7 @@ func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesRespon
 }
 
 func (s *serviceImpl) CreateProperty(property *models.PropertyInfos, propertyImages []*multipart.FileHeader) *apperror.AppError {
-	if propertyImages == nil || len(propertyImages) == 0 {
+	if len(propertyImages) == 0 {
 		return apperror.
 			New(apperror.BadRequest).
 			Describe("No property image found")
@@ -135,7 +135,7 @@ func (s *serviceImpl) UpdatePropertyById(property *models.PropertyInfos, propert
 			Describe("Invalid property id")
 	}
 
-	if propertyImages != nil && len(propertyImages) != 0 {
+	if len(propertyImages) != 0 {
 		newPropertyImageUrls, uploadErr := s.uploadPropertyImages(property.PropertyId, propertyImages)
 		if uploadErr != nil {
 			return uploadErr
@@ -271,7 +271,7 @@ func (s *serviceImpl) GetTop10Properties(properties *[]models.Properties, userId
 func (s *serviceImpl) uploadPropertyImages(propertyId uuid.UUID, propertyImages []*multipart.FileHeader) ([]string, *apperror.AppError) {
 	var urls []string
 
-	if propertyImages == nil || len(propertyImages) == 0 {
+	if len(propertyImages) == 0 {
 		return nil, apperror.
 			New(apperror.BadRequest).
 			Describe("No property image found")
