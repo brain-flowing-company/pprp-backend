@@ -17,7 +17,6 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/core/properties"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/users"
 	"github.com/brain-flowing-company/pprp-backend/internal/middleware"
-	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/storage"
 	"github.com/gofiber/contrib/fiberzap"
 	"github.com/gofiber/contrib/websocket"
@@ -187,7 +186,11 @@ func main() {
 
 func CreatePayment(c *fiber.Ctx) error {
 	stripe.Key = "sk_test_51OmWT2BayMsgzLXzrhGhYbxvTA6QtQvBwVhU2GYCNX6GFhGgVovQSapIhDKftcwpLOvqyrruOj0Tw7HfAcfJT5sd00YBwEU9aw"
-	var payment models.Payments
+	type PaymentRequest struct {
+		Name  string `json:"name"`
+		Price int64  `json:"price"`
+	}
+	var payment PaymentRequest
 	err := c.BodyParser(&payment)
 	if err != nil {
 		return apperror.New(apperror.InvalidBody).Describe("Invalid payment object")
@@ -200,9 +203,9 @@ func CreatePayment(c *fiber.Ctx) error {
 				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
 					Currency: stripe.String("thb"),
 					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
-						Name: stripe.String("T-shirt"),
+						Name: stripe.String(payment.Name),
 					},
-					UnitAmount: stripe.Int64(4000),
+					UnitAmount: stripe.Int64(payment.Price),
 				},
 				Quantity: stripe.Int64(1),
 			},
