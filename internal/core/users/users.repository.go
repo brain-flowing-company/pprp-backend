@@ -71,9 +71,7 @@ func (repo *repositoryImpl) UpdateUserFinancialInformationById(userFinancialInfo
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("user_id = ?", userId).Delete(&models.CreditCards{}).Error; err != nil {
 			return err
-		}
-
-		if len(userFinancialInformation.CreditCards) != 0 {
+		} else if len(userFinancialInformation.CreditCards) != 0 {
 			if err := tx.Create(&userFinancialInformation.CreditCards).Error; err != nil {
 				return err
 			}
