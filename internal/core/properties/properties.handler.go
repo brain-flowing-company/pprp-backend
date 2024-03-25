@@ -121,15 +121,23 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
+	sorted := utils.NewSortedQuery(models.Properties{})
+	err := sorted.ParseQuery(c.Query("sort"))
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(err.Error()))
+	}
+
 	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
 	page := utils.Max(c.QueryInt("page", 1), 1)
 
 	paginated := utils.NewPaginatedQuery(page, limit)
 
 	properties := models.MyPropertiesResponses{}
-	err := h.service.GetPropertyByOwnerId(&properties, userId, paginated)
-	if err != nil {
-		return utils.ResponseError(c, err)
+	apperr := h.service.GetPropertyByOwnerId(&properties, userId, paginated, sorted)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
 	}
 
 	return c.JSON(properties)
@@ -289,15 +297,23 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
+	sorted := utils.NewSortedQuery(models.Properties{})
+	err := sorted.ParseQuery(c.Query("sort"))
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(err.Error()))
+	}
+
 	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
 	page := utils.Max(c.QueryInt("page", 1), 1)
 
 	paginated := utils.NewPaginatedQuery(page, limit)
 
 	properties := models.MyFavoritePropertiesResponses{}
-	err := h.service.GetFavoritePropertiesByUserId(&properties, userId, paginated)
-	if err != nil {
-		return utils.ResponseError(c, err)
+	apperr := h.service.GetFavoritePropertiesByUserId(&properties, userId, paginated, sorted)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
 	}
 
 	return c.JSON(properties)
