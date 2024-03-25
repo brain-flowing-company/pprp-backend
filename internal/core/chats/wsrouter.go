@@ -24,7 +24,7 @@ func NewWebsocketRouter(logger *zap.Logger, conn *websocket.Conn) *WebsocketRout
 	return &WebsocketRouter{
 		conn:             conn,
 		handlers:         make(map[enums.MessageInboundEvents]handlerFunc),
-		outBoundMessages: make(chan *models.OutBoundMessages),
+		outBoundMessages: make(chan *models.OutBoundMessages, 16),
 		logger:           logger,
 	}
 }
@@ -70,7 +70,9 @@ func (r *WebsocketRouter) handleWrite() {
 		}
 
 		err := r.conn.WriteJSON(msg)
-		r.logger.Error("Could not write json data", zap.Error(err))
+		if err != nil {
+			r.logger.Error("Could not write json data", zap.Error(err))
+		}
 	}
 }
 
