@@ -79,8 +79,8 @@ func (repo *repositoryImpl) GetAppointmentById(appointment *models.AppointmentDe
 							p.alley, p.street, p.sub_district, p.district, p.province, p.country,
 							p.postal_code, s.price, r.price_per_month 
 						FROM properties p
-						JOIN selling_properties s ON p.property_id = s.property_id
-						JOIN renting_properties r ON p.property_id = r.property_id
+						LEFT JOIN selling_properties s ON p.property_id = s.property_id
+						LEFT JOIN renting_properties r ON p.property_id = r.property_id
 						WHERE p.property_id = @property_id`
 
 	ownerQuery := `SELECT user_id AS owner_user_id,
