@@ -1082,6 +1082,17 @@ paths:
         in: query
         name: page
         type: integer
+      - description: Sort in format `<json_field>:<direction>` where direction can
+          only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
+        in: query
+        name: sort
+        type: string
+      - description: Filter in format `<json_field>[<operator>]:<value>` where operator
+          can only be greater than or equal `gte` or less than or equal `lte`. Multiple
+          filters can be done with `,` separating each filters. Ex. `?filter=floor_size[gte]:22,floor_size[lte]:45.5`
+        in: query
+        name: filter
+        type: string
       produces:
       - application/json
       responses:
@@ -1260,7 +1271,7 @@ paths:
           description: Could not create property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Create a property
+      summary: Create a property *user cookies*
       tags:
       - property
   /api/v1/properties/:propertyId:
@@ -1295,7 +1306,7 @@ paths:
           description: Could not delete property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Delete a property
+      summary: Delete a property *use cookies*
       tags:
       - property
     get:
@@ -1328,7 +1339,7 @@ paths:
       summary: Get property by propertyId
       tags:
       - property
-    put:
+    patch:
       description: Update a property with formData *upload **NEW** property images
         (array of images) in formData with field `property_images`. Available formats
         are .png / .jpg / .jpeg *If you want to keep the old images, you need to include
@@ -1498,7 +1509,7 @@ paths:
           description: Could not update property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Update a property
+      summary: Update a property *user cookies*
       tags:
       - property
   /api/v1/properties/favorites/:propertyId:
@@ -1529,7 +1540,7 @@ paths:
           description: Could not remove favorite property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Remove property to favorites
+      summary: Remove property to favorites *use cookies*
       tags:
       - property
     post:
@@ -1559,7 +1570,7 @@ paths:
           description: Could not add favorite property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Add property to favorites
+      summary: Add property to favorites *use cookies*
       tags:
       - property
   /api/v1/register:
@@ -1746,6 +1757,11 @@ paths:
         in: query
         name: page
         type: integer
+      - description: Sort in format `<json_field>:<direction>` where direction can
+          only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
+        in: query
+        name: sort
+        type: string
       produces:
       - application/json
       responses:
@@ -1761,7 +1777,7 @@ paths:
           description: Could not get favorite properties
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get my favorite properties
+      summary: Get my favorite properties *use cookies*
       tags:
       - property
   /api/v1/user/me/financial-information:
@@ -1873,6 +1889,11 @@ paths:
         in: query
         name: page
         type: integer
+      - description: Sort in format `<json_field>:<direction>` where direction can
+          only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
+        in: query
+        name: sort
+        type: string
       produces:
       - application/json
       responses:
@@ -1888,7 +1909,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get my properties
+      summary: Get my properties *use cookies*
       tags:
       - property
   /api/v1/user/me/registered:

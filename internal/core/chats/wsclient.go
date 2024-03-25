@@ -22,14 +22,15 @@ type WebsocketClients struct {
 
 func NewClient(logger *zap.Logger, conn *websocket.Conn, hub *Hub, service Service, userId uuid.UUID) (*WebsocketClients, *apperror.AppError) {
 	chatPreviews := []models.ChatPreviews{}
-	err := service.GetAllChats(&chatPreviews, userId)
+	err := service.GetAllChats(&chatPreviews, userId, "")
 	if err != nil {
 		return nil, err
 	}
 
 	chats := map[uuid.UUID]*models.ChatPreviews{}
 	for _, chat := range chatPreviews {
-		chats[chat.UserId] = &chat
+		chats[chat.UserId] = new(models.ChatPreviews)
+		*chats[chat.UserId] = chat
 	}
 
 	return &WebsocketClients{
@@ -43,33 +44,7 @@ func NewClient(logger *zap.Logger, conn *websocket.Conn, hub *Hub, service Servi
 }
 
 func (client *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
-	switch payload := msg.Payload.(type) {
-	case *models.Messages:
-		// someone send message to me AND im not currently in that chat
-		if payload.ReceiverId == client.UserId &&
-			!client.hub.IsUserInChat(payload.SenderId, payload.ReceiverId) {
-
-			preview, ok := client.chats[payload.SenderId]
-			if !ok {
-				preview = &models.ChatPreviews{
-					Content:        payload.Content,
-					UnreadMessages: 1,
-					UserId:         payload.SenderId,
-				}
-				client.chats[payload.SenderId] = preview
-			} else {
-				preview.Content = payload.Content
-				preview.UnreadMessages++
-			}
-
-			client.router.Send(preview.ToOutBound())
-		} else {
-			client.router.Send(msg)
-		}
-
-	default:
-		client.router.Send(msg)
-	}
+	client.router.Send(msg)
 }
 
 func (client *WebsocketClients) Listen() {
@@ -100,6 +75,8 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 		MessageId:  uuid.New(),
 		SenderId:   client.UserId,
 		ReceiverId: *client.RecvUserId,
+		ChatId:     *client.RecvUserId,
+		Author:     true,
 		ReadAt:     readAt,
 		Content:    inbound.Content,
 		SentAt:     inbound.SentAt,
@@ -112,10 +89,14 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 
 	if client.hub.IsUserOnline(client.UserId) {
 		msg.Tag = inbound.Tag
+		msg.ChatId = *client.RecvUserId
+		msg.Author = true
 		client.SendMessage(msg.ToOutBound())
 	}
 
 	if client.hub.IsUserOnline(*client.RecvUserId) {
+		msg.ChatId = client.UserId
+		msg.Author = false
 		client.hub.GetUser(*client.RecvUserId).SendMessage(msg.ToOutBound())
 	}
 
@@ -145,17 +126,10 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 
 	if client.hub.IsUserInChat(client.UserId, uuid) {
 		read := &models.ReadEvents{
-			SenderId:   uuid,
-			ReceiverId: client.UserId,
-			ReadAt:     time.Now(),
+			ChatId: client.UserId,
+			ReadAt: time.Now(),
 		}
 		client.hub.GetUser(uuid).SendMessage(read.ToOutBound())
-	}
-
-	preview, ok := client.chats[uuid]
-	if ok {
-		preview.UnreadMessages = 0
-		client.SendMessage(preview.ToOutBound())
 	}
 
 	return nil

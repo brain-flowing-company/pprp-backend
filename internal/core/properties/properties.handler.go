@@ -63,6 +63,8 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 // @param       query query string false "Search query"
 // @param       limit query int false "Pagination limit per page, max 50, default 20"
 // @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @param       sort query string false "Sort in format `<json_field>:<direction>` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`"
+// @param       filter query string false "Filter in format `<json_field>[<operator>]:<value>` where operator can only be greater than or equal `gte` or less than or equal `lte`. Multiple filters can be done with `,` separating each filters. Ex. `?filter=floor_size[gte]:22,floor_size[lte]:45.5`"
 // @success     200	{object} models.AllPropertiesResponses
 // @failure     500 {object} models.ErrorResponses "Could not get properties"
 func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
@@ -71,6 +73,14 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 
 	sorted := utils.NewSortedQuery(models.Properties{})
 	err := sorted.ParseQuery(c.Query("sort"))
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(err.Error()))
+	}
+
+	filtered := utils.NewFilteredQuery(models.Properties{})
+	err = filtered.ParseQuery(c.Query("filter"))
 	if err != nil {
 		return utils.ResponseError(c, apperror.
 			New(apperror.BadRequest).
@@ -89,7 +99,7 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 
 	paginated := utils.NewPaginatedQuery(page, limit)
 
-	apperr := h.service.GetAllProperties(&properties, query, userId, paginated, sorted)
+	apperr := h.service.GetAllProperties(&properties, query, userId, paginated, sorted, filtered)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}
@@ -98,17 +108,26 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/user/me/properties [get]
-// @summary     Get my properties
+// @summary     Get my properties *use cookies*
 // @description Get all properties owned by the current user
 // @tags        property
 // @produce     json
 // @param       limit query int false "Pagination limit per page, max 50, default 20"
 // @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @param       sort query string false "Sort in format `<json_field>:<direction>` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`"
 // @success     200	{object} models.MyPropertiesResponses
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     500 {object} models.ErrorResponses
 func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
+
+	sorted := utils.NewSortedQuery(models.Properties{})
+	err := sorted.ParseQuery(c.Query("sort"))
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(err.Error()))
+	}
 
 	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
 	page := utils.Max(c.QueryInt("page", 1), 1)
@@ -116,16 +135,16 @@ func (h *handlerImpl) GetMyProperties(c *fiber.Ctx) error {
 	paginated := utils.NewPaginatedQuery(page, limit)
 
 	properties := models.MyPropertiesResponses{}
-	err := h.service.GetPropertyByOwnerId(&properties, userId, paginated)
-	if err != nil {
-		return utils.ResponseError(c, err)
+	apperr := h.service.GetPropertyByOwnerId(&properties, userId, paginated, sorted)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
 	}
 
 	return c.JSON(properties)
 }
 
 // @router      /api/v1/properties [post]
-// @summary     Create a property
+// @summary     Create a property *user cookies*
 // @description Create a property with formData *upload property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg
 // @tags        property
 // @produce     json
@@ -160,8 +179,8 @@ func (h *handlerImpl) CreateProperty(c *fiber.Ctx) error {
 	return utils.ResponseMessage(c, http.StatusOK, "Property created")
 }
 
-// @router      /api/v1/properties/:propertyId [put]
-// @summary     Update a property
+// @router      /api/v1/properties/:propertyId [patch]
+// @summary     Update a property *user cookies*
 // @description Update a property with formData *upload **NEW** property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg *If you want to keep the old images, you need to include them in the formData with field `image_urls` as an array of strings
 // @tags        property
 // @produce     json
@@ -199,7 +218,7 @@ func (h *handlerImpl) UpdatePropertyById(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/properties/:propertyId [delete]
-// @summary     Delete a property
+// @summary     Delete a property *use cookies*
 // @description Delete a property, owned by the current user, by its id
 // @tags        property
 // @produce     json
@@ -221,7 +240,7 @@ func (h *handlerImpl) DeletePropertyById(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/properties/favorites/:propertyId [post]
-// @summary     Add property to favorites
+// @summary     Add property to favorites *use cookies*
 // @description Add property to the current user favorites
 // @tags        property
 // @produce     json
@@ -243,7 +262,7 @@ func (h *handlerImpl) AddFavoriteProperty(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/properties/favorites/:propertyId [delete]
-// @summary     Remove property to favorites
+// @summary     Remove property to favorites *use cookies*
 // @description Remove property to the current user favorites
 // @tags        property
 // @produce     json
@@ -265,17 +284,26 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/user/me/favorites [get]
-// @summary     Get my favorite properties
+// @summary     Get my favorite properties *use cookies*
 // @description Get all properties that the current user has added to favorites
 // @tags        property
 // @produce     json
 // @param       limit query int false "Pagination limit per page, max 50, default 20"
 // @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @param       sort query string false "Sort in format `<json_field>:<direction>` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`"
 // @success     200	{object} models.MyFavoritePropertiesResponses
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     500 {object} models.ErrorResponses "Could not get favorite properties"
 func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
+
+	sorted := utils.NewSortedQuery(models.Properties{})
+	err := sorted.ParseQuery(c.Query("sort"))
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(err.Error()))
+	}
 
 	limit := utils.Clamp(c.QueryInt("limit", 20), 1, 50)
 	page := utils.Max(c.QueryInt("page", 1), 1)
@@ -283,9 +311,9 @@ func (h *handlerImpl) GetMyFavoriteProperties(c *fiber.Ctx) error {
 	paginated := utils.NewPaginatedQuery(page, limit)
 
 	properties := models.MyFavoritePropertiesResponses{}
-	err := h.service.GetFavoritePropertiesByUserId(&properties, userId, paginated)
-	if err != nil {
-		return utils.ResponseError(c, err)
+	apperr := h.service.GetFavoritePropertiesByUserId(&properties, userId, paginated, sorted)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
 	}
 
 	return c.JSON(properties)

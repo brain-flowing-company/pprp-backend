@@ -46,8 +46,10 @@ func (h *handlerImpl) GetAllChats(c *fiber.Ctx) error {
 		session = models.Sessions{}
 	}
 
+	query := c.Query("query", "")
+
 	var chats []models.ChatPreviews
-	err := h.service.GetAllChats(&chats, session.UserId)
+	err := h.service.GetAllChats(&chats, session.UserId, query)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
@@ -112,6 +114,10 @@ func (h *handlerImpl) OpenConnection(conn *websocket.Conn) {
 	}
 
 	h.hub.Register(client)
+
+	ok := models.OKResponses{}
+	client.SendMessage(ok.ToOutBound())
+
 	client.Listen()
 
 	defer func() {

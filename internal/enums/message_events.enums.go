@@ -11,7 +11,7 @@ const (
 type MessageOutboundEvents string
 
 const (
-	OUTBOUND_MSG   MessageOutboundEvents = "MSG"
-	OUTBOUND_READ  MessageOutboundEvents = "READ"
-	OUTBOUND_CHATS MessageOutboundEvents = "CHATS"
+	OUTBOUND_MSG  MessageOutboundEvents = "MSG"
+	OUTBOUND_READ MessageOutboundEvents = "READ"
+	OUTBOUND_OK   MessageOutboundEvents = "OK"
 )

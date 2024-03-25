@@ -18,15 +18,15 @@ import (
 )
 
 type Service interface {
-	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery) *apperror.AppError
+	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery, *utils.FilteredQuery) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
-	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery) *apperror.AppError
+	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery, *utils.SortedQuery) *apperror.AppError
 	CreateProperty(*models.PropertyInfos, []*multipart.FileHeader) *apperror.AppError
 	UpdatePropertyById(*models.PropertyInfos, string, []*multipart.FileHeader) *apperror.AppError
 	DeletePropertyById(string) *apperror.AppError
 	AddFavoriteProperty(string, uuid.UUID) *apperror.AppError
 	RemoveFavoriteProperty(string, uuid.UUID) *apperror.AppError
-	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *utils.PaginatedQuery) *apperror.AppError
+	GetFavoritePropertiesByUserId(*models.MyFavoritePropertiesResponses, string, *utils.PaginatedQuery, *utils.SortedQuery) *apperror.AppError
 	GetTop10Properties(*[]models.Properties, string) *apperror.AppError
 }
 
@@ -44,7 +44,7 @@ func NewService(logger *zap.Logger, repo Repository, storage storage.Storage) Se
 	}
 }
 
-func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery) *apperror.AppError {
+func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery, filtered *utils.FilteredQuery) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
@@ -52,7 +52,7 @@ func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses
 	}
 
 	query = strings.ToLower(strings.TrimSpace(query))
-	err := s.repo.GetAllProperties(properties, query, userId, paginated, sorted)
+	err := s.repo.GetAllProperties(properties, query, userId, paginated, sorted, filtered)
 	if err != nil {
 		s.logger.Error("Could not search properties", zap.Error(err))
 		return apperror.
@@ -85,15 +85,19 @@ func (s *serviceImpl) GetPropertyById(property *models.Properties, propertyId st
 	return nil
 }
 
-func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *utils.PaginatedQuery) *apperror.AppError {
+func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesResponses, ownerId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(ownerId) {
 		return apperror.
 			New(apperror.InvalidUserId).
 			Describe("Invalid user id")
 	}
 
-	err := s.repo.GetPropertyByOwnerId(properties, ownerId, paginated)
-	if err != nil {
+	err := s.repo.GetPropertyByOwnerId(properties, ownerId, paginated, sorted)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	} else if err != nil {
 		s.logger.Error("Could not get property by owner id", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -166,21 +170,12 @@ func (s *serviceImpl) DeletePropertyById(propertyId string) *apperror.AppError {
 			Describe("Invalid property id")
 	}
 
-	var countProperty int64
-	countErr := s.repo.CountProperty(&countProperty, propertyId)
-	if countErr != nil {
-		s.logger.Error("Could not count property by id", zap.String("id", propertyId), zap.Error(countErr))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not update property. Please try again later.")
-	} else if countProperty == 0 {
+	err := s.repo.DeletePropertyById(propertyId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.PropertyNotFound).
 			Describe("Could not find the specified property")
-	}
-
-	err := s.repo.DeletePropertyById(propertyId)
-	if err != nil {
+	} else if err != nil {
 		s.logger.Error("Could not delete property by id", zap.String("id", propertyId), zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -204,7 +199,11 @@ func (s *serviceImpl) AddFavoriteProperty(propertyId string, userId uuid.UUID) *
 	}
 
 	err := s.repo.AddFavoriteProperty(&favoriteProperty)
-	if err != nil {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	} else if err != nil {
 		s.logger.Error("Could not add favorite property", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -222,7 +221,11 @@ func (s *serviceImpl) RemoveFavoriteProperty(propertyId string, userId uuid.UUID
 	}
 
 	err := s.repo.RemoveFavoriteProperty(propertyId, userId.String())
-	if err != nil {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	} else if err != nil {
 		s.logger.Error("Could not remove favorite property", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -232,15 +235,19 @@ func (s *serviceImpl) RemoveFavoriteProperty(propertyId string, userId uuid.UUID
 	return nil
 }
 
-func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *utils.PaginatedQuery) *apperror.AppError {
+func (s *serviceImpl) GetFavoritePropertiesByUserId(properties *models.MyFavoritePropertiesResponses, userId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
 			Describe("Invalid user id")
 	}
 
-	err := s.repo.GetFavoritePropertiesByUserId(properties, userId, paginated)
-	if err != nil {
+	err := s.repo.GetFavoritePropertiesByUserId(properties, userId, paginated, sorted)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	} else if err != nil {
 		s.logger.Error("Could not get favorite properties by user id", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
