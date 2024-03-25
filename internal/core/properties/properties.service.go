@@ -18,7 +18,7 @@ import (
 )
 
 type Service interface {
-	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery) *apperror.AppError
+	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery, *utils.FilteredQuery) *apperror.AppError
 	GetPropertyById(*models.Properties, string) *apperror.AppError
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery) *apperror.AppError
 	CreateProperty(*models.PropertyInfos, []*multipart.FileHeader) *apperror.AppError
@@ -44,7 +44,7 @@ func NewService(logger *zap.Logger, repo Repository, storage storage.Storage) Se
 	}
 }
 
-func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery) *apperror.AppError {
+func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery, filtered *utils.FilteredQuery) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).
@@ -52,7 +52,7 @@ func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses
 	}
 
 	query = strings.ToLower(strings.TrimSpace(query))
-	err := s.repo.GetAllProperties(properties, query, userId, paginated, sorted)
+	err := s.repo.GetAllProperties(properties, query, userId, paginated, sorted, filtered)
 	if err != nil {
 		s.logger.Error("Could not search properties", zap.Error(err))
 		return apperror.

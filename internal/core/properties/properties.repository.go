@@ -2,6 +2,7 @@ package properties
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
@@ -9,7 +10,7 @@ import (
 )
 
 type Repository interface {
-	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery) error
+	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery, *utils.FilteredQuery) error
 	GetPropertyById(*models.Properties, string) error
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery) error
 	CreateProperty(*models.PropertyInfos) error
@@ -33,29 +34,28 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery) error {
+func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery, filtered *utils.FilteredQuery) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
-		if err := repo.db.Model(&models.Properties{}).
-			Raw(`
+		countQuery := fmt.Sprintf(`
 				SELECT COUNT(*) AS total
 				FROM (
 					SELECT properties.*
 					FROM properties
-					WHERE LOWER(property_name) LIKE @query OR LOWER(property_description) LIKE @query
-				) AS props
-				LEFT JOIN favorite_properties ON (
-					favorite_properties.property_id = props.property_id AND
-					favorite_properties.user_id = @user_id
-				)
-				`,
+					LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
+					LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
+					WHERE (LOWER(property_name) LIKE @query OR LOWER(property_description) LIKE @query)
+					AND (%s)
+				) AS props`, filtered.FilteredSQL(),
+		)
+		if err := repo.db.Model(&models.Properties{}).
+			Raw(countQuery,
 				sql.Named("user_id", userId),
 				sql.Named("query", "%"+query+"%")).
 			First(&properties.Total).Error; err != nil {
 			return err
 		}
 
-		if err := repo.db.Model(&models.Properties{}).
-			Raw(`
+		rawQuery := fmt.Sprintf(`
 				SELECT
 					props.*,
 					CASE
@@ -64,19 +64,26 @@ func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesRes
 					END AS is_favorite
 				FROM (
 					SELECT properties.*,
-						selling_properties.price, 
+						selling_properties.price,
 						selling_properties.is_sold,
 						renting_properties.price_per_month,
 						renting_properties.is_occupied
 					FROM properties
 					LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
 					LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
-					WHERE LOWER(property_name) LIKE @query OR LOWER(property_description) LIKE @query 
+					WHERE (LOWER(property_name) LIKE @query OR LOWER(property_description) LIKE @query)
+					AND (%s)
 				) AS props
 				LEFT JOIN favorite_properties ON (
 					favorite_properties.property_id = props.property_id AND
 					favorite_properties.user_id = @user_id
-				)`+sorted.SortedSQL()+" "+paginated.PaginatedSQL(),
+				) %s %s`,
+			filtered.FilteredSQL(),
+			sorted.SortedSQL(),
+			paginated.PaginatedSQL(),
+		)
+		if err := repo.db.Model(&models.Properties{}).
+			Raw(rawQuery,
 				sql.Named("user_id", userId),
 				sql.Named("query", "%"+query+"%")).
 			Scan(&properties.Properties).Error; err != nil {
@@ -86,9 +93,9 @@ func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesRes
 		for i, property := range properties.Properties {
 			if err := repo.db.Model(&models.PropertyImages{}).
 				Raw(`
-					SELECT image_url 
-					FROM property_images 
-					WHERE property_id = @property_id AND deleted_at IS NULL`,
+						SELECT image_url 
+						FROM property_images 
+						WHERE property_id = @property_id AND deleted_at IS NULL`,
 					sql.Named("property_id", property.PropertyId)).
 				Pluck("image_url", &properties.Properties[i].PropertyImages).Error; err != nil {
 				return err
@@ -98,6 +105,72 @@ func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesRes
 		return nil
 	})
 }
+
+// func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesResponses, query string, userId string, paginated *utils.PaginatedQuery, sorted *utils.SortedQuery, filtered *utils.FilteredQuery) error {
+// 	return repo.db.Transaction(func(tx *gorm.DB) error {
+// 		if err := repo.db.Model(&models.Properties{}).
+// 			Raw(`
+// 				SELECT COUNT(*) AS total
+// 				FROM (
+// 					SELECT properties.*
+// 					FROM properties
+// 					WHERE LOWER(property_name) LIKE @query OR LOWER(property_description) LIKE @query
+// 				) AS props
+// 				LEFT JOIN favorite_properties ON (
+// 					favorite_properties.property_id = props.property_id AND
+// 					favorite_properties.user_id = @user_id
+// 				)
+// 				`,
+// 				sql.Named("user_id", userId),
+// 				sql.Named("query", "%"+query+"%")).
+// 			First(&properties.Total).Error; err != nil {
+// 			return err
+// 		}
+
+// 		if err := repo.db.Model(&models.Properties{}).
+// 			Raw(`
+// 				SELECT
+// 					props.*,
+// 					CASE
+// 						WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
+// 						ELSE FALSE
+// 					END AS is_favorite
+// 				FROM (
+// 					SELECT properties.*,
+// 						selling_properties.price,
+// 						selling_properties.is_sold,
+// 						renting_properties.price_per_month,
+// 						renting_properties.is_occupied
+// 					FROM properties
+// 					LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
+// 					LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
+// 					WHERE LOWER(property_name) LIKE @query OR LOWER(property_description) LIKE @query
+// 				) AS props
+// 				LEFT JOIN favorite_properties ON (
+// 					favorite_properties.property_id = props.property_id AND
+// 					favorite_properties.user_id = @user_id
+// 				)`+sorted.SortedSQL()+" "+paginated.PaginatedSQL(),
+// 				sql.Named("user_id", userId),
+// 				sql.Named("query", "%"+query+"%")).
+// 			Scan(&properties.Properties).Error; err != nil {
+// 			return err
+// 		}
+
+// 		for i, property := range properties.Properties {
+// 			if err := repo.db.Model(&models.PropertyImages{}).
+// 				Raw(`
+// 					SELECT image_url
+// 					FROM property_images
+// 					WHERE property_id = @property_id AND deleted_at IS NULL`,
+// 					sql.Named("property_id", property.PropertyId)).
+// 				Pluck("image_url", &properties.Properties[i].PropertyImages).Error; err != nil {
+// 				return err
+// 			}
+// 		}
+
+// 		return nil
+// 	})
+// }
 
 func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propertyId string) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
