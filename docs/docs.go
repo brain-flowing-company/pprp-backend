@@ -671,6 +671,18 @@ const docTemplate = `{
                         "description": "Pagination page index as 1-based index, default 1",
                         "name": "page",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort in format ` + "`" + `\u003cjson_field\u003e:\u003cdirection\u003e` + "`" + ` where direction can only be ` + "`" + `desc` + "`" + ` or ` + "`" + `asc` + "`" + `. Ex. ` + "`" + `?sort=selling_property.price:desc` + "`" + `",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter in format ` + "`" + `\u003cjson_field\u003e[\u003coperator\u003e]:\u003cvalue\u003e` + "`" + ` where operator can only be greater than or equal ` + "`" + `gte` + "`" + ` or less than or equal ` + "`" + `lte` + "`" + `. Multiple filters can be done with ` + "`" + `,` + "`" + ` separating each filters. Ex. ` + "`" + `?filter=floor_size[gte]:22,floor_size[lte]:45.5` + "`" + `",
+                        "name": "filter",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -696,7 +708,7 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Create a property *use cookies*",
+                "summary": "Create a property *user cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -973,7 +985,58 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
+            "delete": {
+                "description": "Delete a property, owned by the current user, by its id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "property"
+                ],
+                "summary": "Delete a property *use cookies*",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Property id",
+                        "name": "propertyId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property deleted",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "404": {
+                        "description": "Property id not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not delete property",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            },
+            "patch": {
                 "description": "Update a property with formData *upload **NEW** property images (array of images) in formData with field ` + "`" + `property_images` + "`" + `. Available formats are .png / .jpg / .jpeg *If you want to keep the old images, you need to include them in the formData with field ` + "`" + `image_urls` + "`" + ` as an array of strings",
                 "produces": [
                     "application/json"
@@ -981,7 +1044,7 @@ const docTemplate = `{
                 "tags": [
                     "property"
                 ],
-                "summary": "Update a property *use cookies*",
+                "summary": "Update a property *user cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -1212,57 +1275,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Could not update property",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete a property, owned by the current user, by its id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Delete a property *use cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property id",
-                        "name": "propertyId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Property deleted",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Property id not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not delete property",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -1616,6 +1628,12 @@ const docTemplate = `{
                         "description": "Pagination page index as 1-based index, default 1",
                         "name": "page",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort in format ` + "`" + `\u003cjson_field\u003e:\u003cdirection\u003e` + "`" + ` where direction can only be ` + "`" + `desc` + "`" + ` or ` + "`" + `asc` + "`" + `. Ex. ` + "`" + `?sort=selling_property.price:desc` + "`" + `",
+                        "name": "sort",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1804,6 +1822,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Pagination page index as 1-based index, default 1",
                         "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort in format ` + "`" + `\u003cjson_field\u003e:\u003cdirection\u003e` + "`" + ` where direction can only be ` + "`" + `desc` + "`" + ` or ` + "`" + `asc` + "`" + `. Ex. ` + "`" + `?sort=selling_property.price:desc` + "`" + `",
+                        "name": "sort",
                         "in": "query"
                     }
                 ],

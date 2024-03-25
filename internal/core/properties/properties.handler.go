@@ -63,6 +63,8 @@ func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 // @param       query query string false "Search query"
 // @param       limit query int false "Pagination limit per page, max 50, default 20"
 // @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @param       sort query string false "Sort in format `<json_field>:<direction>` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`"
+// @param       filter query string false "Filter in format `<json_field>[<operator>]:<value>` where operator can only be greater than or equal `gte` or less than or equal `lte`. Multiple filters can be done with `,` separating each filters. Ex. `?filter=floor_size[gte]:22,floor_size[lte]:45.5`"
 // @success     200	{object} models.AllPropertiesResponses
 // @failure     500 {object} models.ErrorResponses "Could not get properties"
 func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
@@ -112,6 +114,7 @@ func (h *handlerImpl) GetAllProperties(c *fiber.Ctx) error {
 // @produce     json
 // @param       limit query int false "Pagination limit per page, max 50, default 20"
 // @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @param       sort query string false "Sort in format `<json_field>:<direction>` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`"
 // @success     200	{object} models.MyPropertiesResponses
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     500 {object} models.ErrorResponses
@@ -279,6 +282,7 @@ func (h *handlerImpl) RemoveFavoriteProperty(c *fiber.Ctx) error {
 // @produce     json
 // @param       limit query int false "Pagination limit per page, max 50, default 20"
 // @param       page  query int false "Pagination page index as 1-based index, default 1"
+// @param       sort query string false "Sort in format `<json_field>:<direction>` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`"
 // @success     200	{object} models.MyFavoritePropertiesResponses
 // @failure	    403 {object} models.ErrorResponses "Unauthorized"
 // @failure     500 {object} models.ErrorResponses "Could not get favorite properties"

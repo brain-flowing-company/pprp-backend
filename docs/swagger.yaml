@@ -917,6 +917,17 @@ paths:
         in: query
         name: page
         type: integer
+      - description: Sort in format `<json_field>:<direction>` where direction can
+          only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
+        in: query
+        name: sort
+        type: string
+      - description: Filter in format `<json_field>[<operator>]:<value>` where operator
+          can only be greater than or equal `gte` or less than or equal `lte`. Multiple
+          filters can be done with `,` separating each filters. Ex. `?filter=floor_size[gte]:22,floor_size[lte]:45.5`
+        in: query
+        name: filter
+        type: string
       produces:
       - application/json
       responses:
@@ -1095,7 +1106,7 @@ paths:
           description: Could not create property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Create a property *use cookies*
+      summary: Create a property *user cookies*
       tags:
       - property
   /api/v1/properties/:propertyId:
@@ -1163,7 +1174,7 @@ paths:
       summary: Get property by propertyId
       tags:
       - property
-    put:
+    patch:
       description: Update a property with formData *upload **NEW** property images
         (array of images) in formData with field `property_images`. Available formats
         are .png / .jpg / .jpeg *If you want to keep the old images, you need to include
@@ -1333,7 +1344,7 @@ paths:
           description: Could not update property
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Update a property *use cookies*
+      summary: Update a property *user cookies*
       tags:
       - property
   /api/v1/properties/favorites/:propertyId:
@@ -1564,6 +1575,11 @@ paths:
         in: query
         name: page
         type: integer
+      - description: Sort in format `<json_field>:<direction>` where direction can
+          only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
+        in: query
+        name: sort
+        type: string
       produces:
       - application/json
       responses:
@@ -1691,6 +1707,11 @@ paths:
         in: query
         name: page
         type: integer
+      - description: Sort in format `<json_field>:<direction>` where direction can
+          only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
+        in: query
+        name: sort
+        type: string
       produces:
       - application/json
       responses:
