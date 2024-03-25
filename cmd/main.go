@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/database"
 	_ "github.com/brain-flowing-company/pprp-backend/docs"
@@ -16,6 +17,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/core/properties"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/users"
 	"github.com/brain-flowing-company/pprp-backend/internal/middleware"
+	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/storage"
 	"github.com/gofiber/contrib/fiberzap"
 	"github.com/gofiber/contrib/websocket"
@@ -23,6 +25,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
+	"github.com/stripe/stripe-go/v76"
+	"github.com/stripe/stripe-go/v76/checkout/session"
 	"go.uber.org/zap"
 )
 
@@ -117,6 +121,9 @@ func main() {
 	chatService := chats.NewService(logger, chatRepository)
 	chatHandler := chats.NewHandler(logger, cfg, hub, chatService)
 
+	apiv2 := app.Group("/api/v2")
+	apiv2.Post("/payments", CreatePayment)
+
 	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
@@ -176,4 +183,40 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("Server could not start with error: %v", err.Error()))
 	}
+}
+
+func CreatePayment(c *fiber.Ctx) error {
+	stripe.Key = "sk_test_51OmWT2BayMsgzLXzrhGhYbxvTA6QtQvBwVhU2GYCNX6GFhGgVovQSapIhDKftcwpLOvqyrruOj0Tw7HfAcfJT5sd00YBwEU9aw"
+	var payment models.Payments
+	err := c.BodyParser(&payment)
+	if err != nil {
+		return apperror.New(apperror.InvalidBody).Describe("Invalid payment object")
+	}
+
+	params := &stripe.CheckoutSessionParams{
+		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
+		LineItems: []*stripe.CheckoutSessionLineItemParams{
+			&stripe.CheckoutSessionLineItemParams{
+				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
+					Currency: stripe.String("thb"),
+					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
+						Name: stripe.String("T-shirt"),
+					},
+					UnitAmount: stripe.Int64(4000),
+				},
+				Quantity: stripe.Int64(1),
+			},
+		},
+		SuccessURL: stripe.String("http://localhost:4242/success"),
+		CancelURL:  stripe.String("http://localhost:4242/cancel"),
+	}
+
+	s, _ := session.New(params)
+	fmt.Println(s.URL)
+
+	if err != nil {
+		return err
+	}
+
+	return c.Redirect(s.URL, fiber.StatusSeeOther)
 }

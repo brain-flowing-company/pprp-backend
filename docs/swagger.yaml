@@ -180,6 +180,15 @@ definitions:
       content:
         example: hello, world
         type: string
+      first_name:
+        example: John
+        type: string
+      last_name:
+        example: Doe
+        type: string
+      profile_image_url:
+        example: www.image.com/profile
+        type: string
       unread_messages:
         example: 9
         type: integer
@@ -268,6 +277,12 @@ definitions:
     type: object
   models.Messages:
     properties:
+      author:
+        example: true
+        type: boolean
+      chat_id:
+        example: 27b79b15-a56f-464a-90f7-bab515ba4c02
+        type: string
       content:
         example: hello, world
         type: string
@@ -276,12 +291,6 @@ definitions:
         type: string
       read_at:
         example: "2024-02-22T03:06:53.313735Z"
-        type: string
-      receiver_id:
-        example: 27b79b15-a56f-464a-90f7-bab515ba4c02
-        type: string
-      sender_id:
-        example: 27b79b15-a56f-464a-90f7-bab515ba4c02
         type: string
       sent_at:
         example: "2024-02-22T03:06:53.313735Z"

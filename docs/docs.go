@@ -2181,6 +2181,18 @@ const docTemplate = `{
                     "type": "string",
                     "example": "hello, world"
                 },
+                "first_name": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "Doe"
+                },
+                "profile_image_url": {
+                    "type": "string",
+                    "example": "www.image.com/profile"
+                },
                 "unread_messages": {
                     "type": "integer",
                     "example": 9
@@ -2310,6 +2322,14 @@ const docTemplate = `{
         "models.Messages": {
             "type": "object",
             "properties": {
+                "author": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "chat_id": {
+                    "type": "string",
+                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
+                },
                 "content": {
                     "type": "string",
                     "example": "hello, world"
@@ -2321,14 +2341,6 @@ const docTemplate = `{
                 "read_at": {
                     "type": "string",
                     "example": "2024-02-22T03:06:53.313735Z"
-                },
-                "receiver_id": {
-                    "type": "string",
-                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
-                },
-                "sender_id": {
-                    "type": "string",
-                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
                 },
                 "sent_at": {
                     "type": "string",
