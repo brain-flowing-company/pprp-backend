@@ -2,6 +2,7 @@ package agreements
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
@@ -14,6 +15,7 @@ type Handler interface {
 	GetAgreementById(c *fiber.Ctx) error
 	CreateAgreement(c *fiber.Ctx) error
 	DeleteAgreement(c *fiber.Ctx) error
+	UpdateAgreementStatus(c *fiber.Ctx) error
 }
 type handlerImpl struct {
 	service Service
@@ -108,4 +110,33 @@ func (h *handlerImpl) DeleteAgreement(c *fiber.Ctx) error {
 	}
 	
 	return utils.ResponseMessage(c, fiber.StatusOK, "Agreement deleted")
+}
+
+// @router      /api/v1/agreements/:agreementId [patch]
+// @summary     Update an agreement status by id *use cookies*
+// @description Update an agreement status by id with **status** and **cancelled_message**(optional)
+// @tags        agreements
+// @produce     json
+// @param       agreementId path string true "Agreement ID"
+// @param       body body models.UpdatingAgreementStatus true "Agreement status and cancelled message(optional)"
+// @success     200	{object} models.MessageResponses "Agreement state updated"
+// @failure     400 {object} models.ErrorResponses "Invalid agreement id"
+// @failure     500 {object} models.ErrorResponses "Could not update agreement status"
+func (h *handlerImpl) UpdateAgreementStatus(c *fiber.Ctx) error {
+	updatingAgreement := models.UpdatingAgreementStatus{}
+	err := c.BodyParser(&updatingAgreement)
+	if err != nil {
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(fmt.Sprintf("Could not parse body: %v", err.Error())))
+	}
+
+	agreementId := c.Params("agreementId")
+
+	apperr := h.service.UpdateAgreementStatus(&updatingAgreement, agreementId)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+
+	return utils.ResponseMessage(c, http.StatusOK, "Agreement state updated")
 }

@@ -12,6 +12,7 @@ type Repository interface {
 	GetAgreementById(*models.AgreementDetails, string) error
 	CreateAgreement(*models.CreatingAgreements) error
 	DeleteAgreement(string) error
+	UpdateAgreementStatus(*models.UpdatingAgreementStatus, string) error
 }
 
 type repositoryImpl struct {
@@ -111,6 +112,14 @@ func (repo *repositoryImpl) DeleteAgreement(agreementId string) error {
 	if err := repo.db.Model(&models.Agreements{}).First(&models.Agreements{}, "agreement_id = ?", agreementId).Error; err != nil {
 		return err
 	}
-	
+
 	return repo.db.Where("agreement_id = ?", agreementId).Delete(&models.Agreements{}).Error
+}
+
+func (repo *repositoryImpl) UpdateAgreementStatus(updatingAgreement *models.UpdatingAgreementStatus, agreementId string) error {
+	if err := repo.db.Model(&models.Agreements{}).First(&models.Agreements{}, "agreement_id = ?", agreementId).Error; err != nil {
+		return err
+	}
+	
+	return repo.db.Model(&models.Agreements{}).Where("agreement_id = ?", agreementId).Updates(updatingAgreement).Error
 }

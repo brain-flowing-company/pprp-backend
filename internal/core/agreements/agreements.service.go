@@ -15,6 +15,7 @@ type Service interface {
 	GetAgreementById(*models.AgreementDetails, string) *apperror.AppError
 	CreateAgreement(*models.CreatingAgreements) *apperror.AppError
 	DeleteAgreement(string) *apperror.AppError
+	UpdateAgreementStatus(*models.UpdatingAgreementStatus, string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -90,6 +91,28 @@ func (s *serviceImpl) DeleteAgreement(agreementId string) *apperror.AppError {
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not delete agreement")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) UpdateAgreementStatus(updatingAgreement *models.UpdatingAgreementStatus, agreementId string) *apperror.AppError {
+	if !utils.IsValidUUID(agreementId) {
+		return apperror.
+			New(apperror.InvalidAgreementId).
+			Describe("Invalid agreement id")
+	}
+
+	err := s.repo.UpdateAgreementStatus(updatingAgreement, agreementId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.AgreementNotFound).
+			Describe("Could not find the specified agreement")
+	} else if err != nil {
+		s.logger.Error("Could not update agreement status", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not update agreement status")
 	}
 
 	return nil
