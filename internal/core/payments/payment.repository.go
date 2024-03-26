@@ -20,9 +20,11 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (r *repositoryImpl) CreatePayment(payment *models.Payments) error {
-	result := r.db.Create(payment)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		paymentQuery := `INSERT INTO payments (payment_id , user_id , price ,IsSuccess) VALUES (?,?,?,?)`
+		if err := tx.Exec(paymentQuery, payment.PaymentId, payment.UserId, payment.Price, payment.IsSuccess).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 }

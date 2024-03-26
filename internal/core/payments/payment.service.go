@@ -1,6 +1,8 @@
 package payments
 
 import (
+	"fmt"
+
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"go.uber.org/zap"
 )
@@ -22,6 +24,7 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 }
 
 func (s *serviceImpl) CreatePayment(payment *models.Payments) error {
+	fmt.Println("service payment = ", payment)
 	err := s.repo.CreatePayment(payment)
 	if err != nil {
 		s.logger.Error("Failed to create payment", zap.Error(err))
