@@ -46,8 +46,15 @@ func NewHandler(service Service) Handler {
 func (h *handlerImpl) GetPropertyById(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 
+	var userId string
+	if _, ok := c.Locals("session").(models.Sessions); !ok {
+		userId = "00000000-0000-0000-0000-000000000000"
+	} else {
+		userId = c.Locals("session").(models.Sessions).UserId.String()
+	}
+
 	property := models.Properties{}
-	err := h.service.GetPropertyById(&property, propertyId)
+	err := h.service.GetPropertyById(&property, propertyId, userId)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
