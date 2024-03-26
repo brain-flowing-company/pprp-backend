@@ -211,7 +211,7 @@ func (repo *repositoryImpl) CreateAppointment(appointment *models.CreatingAppoin
 }
 
 func (repo *repositoryImpl) DeleteAppointment(appointmentId string) error {
-	if err := repo.db.Model(&models.Appointments{}).First("appointment_id = ?", appointmentId).Error; err != nil {
+	if err := repo.db.Model(&models.Appointments{}).First(&models.Agreements{}, "appointment_id = ?", appointmentId).Error; err != nil {
 		return err
 	}
 
