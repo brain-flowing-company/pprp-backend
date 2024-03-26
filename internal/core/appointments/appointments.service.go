@@ -120,8 +120,8 @@ func (s *serviceImpl) GetAppointmentByDwellerId(apps []*models.Appointments, use
 	return nil
 }
 
-func (s *serviceImpl) CreateAppointment(creatingAppointment *models.CreatingAppointments) *apperror.AppError {
-	err := s.repo.CreateAppointment(creatingAppointment)
+func (s *serviceImpl) CreateAppointment(appointment *models.CreatingAppointments) *apperror.AppError {
+	err := s.repo.CreateAppointment(appointment)
 	if err != nil {
 		s.logger.Error("Could not create appointments", zap.Error(err))
 		return apperror.
