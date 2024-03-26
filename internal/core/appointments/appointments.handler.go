@@ -30,7 +30,7 @@ func NewHandler(service Service) Handler {
 }
 
 // @router      /api/v1/appointments [get]
-// @summary     Get all appointments
+// @summary     Get all appointments *use cookies*
 // @description Get all appointments
 // @tags        appointments
 // @produce     json
@@ -47,7 +47,7 @@ func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/appointments/:appointmentId [get]
-// @summary     Get an appointment by id
+// @summary     Get an appointment by id *use cookies*
 // @description Get the appointment and other related information by id
 // @tags        appointments
 // @produce     json
@@ -69,7 +69,7 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/user/me/appointments [get]
-// @summary     Get my appointments
+// @summary     Get my appointments *use cookies*
 // @description Get all appointments related to the user
 // @tags        appointments
 // @produce     json
@@ -88,7 +88,7 @@ func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/appointments [post]
-// @summary     Create an appointment
+// @summary     Create an appointment *use cookies*
 // @description Create an appointments with **property_id**, **owner_user_id**, **dweller_user_id**, **appointment_date**, **note**(optional)
 // @tags        appointments
 // @produce     json
@@ -114,7 +114,7 @@ func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/appointments/:appointmentId [delete]
-// @summary     Delete an appointment by id
+// @summary     Delete an appointment by id *use cookies*
 // @description Delete an appointment by id
 // @tags        appointments
 // @produce     json
@@ -133,7 +133,7 @@ func (h *handlerImpl) DeleteAppointment(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/appointments/:appointmentId [patch]
-// @summary     Update an appointment status by id
+// @summary     Update an appointment status by id *use cookies*
 // @description Update an appointment status by id with **status** and **cancelled_message**(optional)
 // @tags        appointments
 // @produce     json
