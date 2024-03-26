@@ -19,7 +19,7 @@ import (
 
 type Service interface {
 	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery, *utils.FilteredQuery) *apperror.AppError
-	GetPropertyById(*models.Properties, string) *apperror.AppError
+	GetPropertyById(*models.Properties, string, string) *apperror.AppError
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery, *utils.SortedQuery) *apperror.AppError
 	CreateProperty(*models.PropertyInfos, []*multipart.FileHeader) *apperror.AppError
 	UpdatePropertyById(*models.PropertyInfos, string, []*multipart.FileHeader) *apperror.AppError
@@ -63,14 +63,20 @@ func (s *serviceImpl) GetAllProperties(properties *models.AllPropertiesResponses
 	return nil
 }
 
-func (s *serviceImpl) GetPropertyById(property *models.Properties, propertyId string) *apperror.AppError {
+func (s *serviceImpl) GetPropertyById(property *models.Properties, propertyId string, userId string) *apperror.AppError {
 	if !utils.IsValidUUID(propertyId) {
 		return apperror.
 			New(apperror.InvalidPropertyId).
 			Describe("Invalid property id")
 	}
 
-	err := s.repo.GetPropertyById(property, propertyId)
+	if !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	err := s.repo.GetPropertyById(property, propertyId, userId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.PropertyNotFound).

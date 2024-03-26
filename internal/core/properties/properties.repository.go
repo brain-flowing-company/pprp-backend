@@ -11,7 +11,7 @@ import (
 
 type Repository interface {
 	GetAllProperties(*models.AllPropertiesResponses, string, string, *utils.PaginatedQuery, *utils.SortedQuery, *utils.FilteredQuery) error
-	GetPropertyById(*models.Properties, string) error
+	GetPropertyById(*models.Properties, string, string) error
 	GetPropertyByOwnerId(*models.MyPropertiesResponses, string, *utils.PaginatedQuery, *utils.SortedQuery) error
 	CreateProperty(*models.PropertyInfos) error
 	UpdatePropertyById(*models.PropertyInfos, string) error
@@ -106,7 +106,7 @@ func (repo *repositoryImpl) GetAllProperties(properties *models.AllPropertiesRes
 	})
 }
 
-func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propertyId string) error {
+func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propertyId string, userId string) error {
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		if err := repo.db.Model(&models.Properties{}).First(property, "property_id = ?", propertyId).Error; err != nil {
 			return err
@@ -118,12 +118,20 @@ func (repo *repositoryImpl) GetPropertyById(property *models.Properties, propert
 					selling_properties.price, 
 					selling_properties.is_sold,
 					renting_properties.price_per_month,
-					renting_properties.is_occupied
+					renting_properties.is_occupied,
+					CASE
+						WHEN favorite_properties.user_id IS NOT NULL THEN TRUE
+						ELSE FALSE
+					END AS is_favorite
 				FROM properties
 				LEFT JOIN selling_properties ON properties.property_id = selling_properties.property_id
 				LEFT JOIN renting_properties ON properties.property_id = renting_properties.property_id
+				LEFT JOIN favorite_properties ON (
+					favorite_properties.property_id = properties.property_id AND
+					favorite_properties.user_id = @user_id
+				)
 				WHERE properties.property_id = @property_id
-				`, sql.Named("property_id", propertyId)).
+				`, sql.Named("property_id", propertyId), sql.Named("user_id", userId)).
 			Scan(property).Error; err != nil {
 			return err
 		}
