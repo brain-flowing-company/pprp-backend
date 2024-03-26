@@ -2,29 +2,29 @@ basePath: /
 definitions:
   enums.AppointmentStatus:
     enum:
-    - PENDING
-    - CONFIRMED
-    - REJECTED
-    - CANCELLED
-    - ARCHIVED
+      - PENDING
+      - CONFIRMED
+      - REJECTED
+      - CANCELLED
+      - ARCHIVED
     type: string
     x-enum-varnames:
-    - Pending
-    - Confirmed
-    - Rejected
-    - Cancelled
-    - Archived
+      - Pending
+      - Confirmed
+      - Rejected
+      - Cancelled
+      - Archived
   enums.BankNames:
     enum:
-    - KBANK
-    - BBL
-    - KTB
-    - BAY
-    - CIMB
-    - TTB
-    - SCB
-    - GSB
-    - ""
+      - KBANK
+      - BBL
+      - KTB
+      - BAY
+      - CIMB
+      - TTB
+      - SCB
+      - GSB
+      - ""
     type: string
     x-enum-comments:
       BAY: '"BANK OF AYUDHYA"'
@@ -37,79 +37,79 @@ definitions:
       SCB: '"SIAM COMMERCIAL BANK"'
       TTB: '"TMBTHANACHART BANK"'
     x-enum-varnames:
-    - KBANK
-    - BBL
-    - KTB
-    - BAY
-    - CIMB
-    - TTB
-    - SCB
-    - GSB
-    - "NULL"
+      - KBANK
+      - BBL
+      - KTB
+      - BAY
+      - CIMB
+      - TTB
+      - SCB
+      - GSB
+      - "NULL"
   enums.CardColors:
     enum:
-    - LIGHT_BLUE
-    - BLUE
-    - DARK_BLUE
-    - VERY_DARK_BLUE
+      - LIGHT_BLUE
+      - BLUE
+      - DARK_BLUE
+      - VERY_DARK_BLUE
     type: string
     x-enum-varnames:
-    - LIGHT_BLUE
-    - BLUE
-    - DARK_BLUE
-    - VERY_DARK_BLUE
+      - LIGHT_BLUE
+      - BLUE
+      - DARK_BLUE
+      - VERY_DARK_BLUE
   enums.FloorSizeUnits:
     enum:
-    - SQM
-    - SQFT
+      - SQM
+      - SQFT
     type: string
     x-enum-varnames:
-    - SQM
-    - SQFT
+      - SQM
+      - SQFT
   enums.Furnishing:
     enum:
-    - UNFURNISHED
-    - PARTIALLY_FURNISHED
-    - FULLY_FURNISHED
-    - READY_TO_MOVE_IN
+      - UNFURNISHED
+      - PARTIALLY_FURNISHED
+      - FULLY_FURNISHED
+      - READY_TO_MOVE_IN
     type: string
     x-enum-varnames:
-    - UNFURNISHED
-    - PARTIALLY_FURNISHED
-    - FULLY_FURNISHED
-    - READY_TO_MOVE_IN
+      - UNFURNISHED
+      - PARTIALLY_FURNISHED
+      - FULLY_FURNISHED
+      - READY_TO_MOVE_IN
   enums.PropertyTypes:
     enum:
-    - CONDOMINIUM
-    - APARTMENT
-    - SEMI-DETACHED_HOUSE
-    - HOUSE
-    - SERVICED_APARTMENT
-    - TOWNHOUSE
+      - CONDOMINIUM
+      - APARTMENT
+      - SEMI-DETACHED_HOUSE
+      - HOUSE
+      - SERVICED_APARTMENT
+      - TOWNHOUSE
     type: string
     x-enum-varnames:
-    - CONDOMINIUM
-    - APARTMENT
-    - SEMI_DETACHED_HOUSE
-    - HOUSE
-    - SERVICED_APARTMENT
-    - TOWNHOUSE
+      - CONDOMINIUM
+      - APARTMENT
+      - SEMI_DETACHED_HOUSE
+      - HOUSE
+      - SERVICED_APARTMENT
+      - TOWNHOUSE
   enums.RegisteredTypes:
     enum:
-    - EMAIL
-    - GOOGLE
+      - EMAIL
+      - GOOGLE
     type: string
     x-enum-varnames:
-    - EMAIL
-    - GOOGLE
+      - EMAIL
+      - GOOGLE
   enums.SessionType:
     enum:
-    - REGISTER
-    - LOGIN
+      - REGISTER
+      - LOGIN
     type: string
     x-enum-varnames:
-    - SessionRegister
-    - SessionLogin
+      - SessionRegister
+      - SessionLogin
   models.Agreements:
     properties:
       agreement_date:
@@ -129,7 +129,7 @@ definitions:
     properties:
       properties:
         items:
-          $ref: '#/definitions/models.Properties'
+          $ref: "#/definitions/models.Properties"
         type: array
       total:
         example: 2
@@ -149,17 +149,17 @@ definitions:
       created_at:
         type: string
       dweller:
-        $ref: '#/definitions/models.DwellerAppointmentDetails'
+        $ref: "#/definitions/models.DwellerAppointmentDetails"
       note:
         example: This is a note
         type: string
       owner:
-        $ref: '#/definitions/models.OwnerAppointmentDetails'
+        $ref: "#/definitions/models.OwnerAppointmentDetails"
       property:
-        $ref: '#/definitions/models.PropertyAppointmentDetails'
+        $ref: "#/definitions/models.PropertyAppointmentDetails"
       status:
         allOf:
-        - $ref: '#/definitions/enums.AppointmentStatus'
+          - $ref: "#/definitions/enums.AppointmentStatus"
         example: PENDING
     type: object
   models.AppointmentLists:
@@ -179,12 +179,12 @@ definitions:
         example: This is a note
         type: string
       owner:
-        $ref: '#/definitions/models.OwnerAppointmentLists'
+        $ref: "#/definitions/models.OwnerAppointmentLists"
       property:
-        $ref: '#/definitions/models.PropertyAppointmentLists'
+        $ref: "#/definitions/models.PropertyAppointmentLists"
       status:
         allOf:
-        - $ref: '#/definitions/enums.AppointmentStatus'
+          - $ref: "#/definitions/enums.AppointmentStatus"
         example: PENDING
     type: object
   models.CallbackResponses:
@@ -194,11 +194,11 @@ definitions:
         type: string
       registered_type:
         allOf:
-        - $ref: '#/definitions/enums.RegisteredTypes'
+          - $ref: "#/definitions/enums.RegisteredTypes"
         example: EMAIL / GOOGLE
       session_type:
         allOf:
-        - $ref: '#/definitions/enums.SessionType'
+          - $ref: "#/definitions/enums.SessionType"
         example: REGISTER / LOGIN
     type: object
   models.ChatPreviews:
@@ -235,7 +235,7 @@ definitions:
     properties:
       card_color:
         allOf:
-        - $ref: '#/definitions/enums.CardColors'
+          - $ref: "#/definitions/enums.CardColors"
         example: BLUE
       card_nickname:
         example: John's Card
@@ -322,22 +322,22 @@ definitions:
         example: "2024-02-22T03:06:53.313735Z"
         type: string
     type: object
-  models.MyAppointmentResponse:
+  models.MyAppointmentResponses:
     properties:
       dweller_appointments:
         items:
-          $ref: '#/definitions/models.AppointmentLists'
+          $ref: "#/definitions/models.AppointmentLists"
         type: array
       owner_appointments:
         items:
-          $ref: '#/definitions/models.AppointmentLists'
+          $ref: "#/definitions/models.AppointmentLists"
         type: array
     type: object
   models.MyFavoritePropertiesResponses:
     properties:
       properties:
         items:
-          $ref: '#/definitions/models.Properties'
+          $ref: "#/definitions/models.Properties"
         type: array
       total:
         example: 2
@@ -347,7 +347,7 @@ definitions:
     properties:
       properties:
         items:
-          $ref: '#/definitions/models.Properties'
+          $ref: "#/definitions/models.Properties"
         type: array
       total:
         example: 2
@@ -416,11 +416,11 @@ definitions:
         type: number
       floor_size_unit:
         allOf:
-        - $ref: '#/definitions/enums.FloorSizeUnits'
+          - $ref: "#/definitions/enums.FloorSizeUnits"
         example: SQM
       furnishing:
         allOf:
-        - $ref: '#/definitions/enums.Furnishing'
+          - $ref: "#/definitions/enums.Furnishing"
         example: UNFURNISHED
       is_favorite:
         example: true
@@ -439,22 +439,22 @@ definitions:
         type: string
       property_images:
         items:
-          $ref: '#/definitions/models.PropertyImages'
+          $ref: "#/definitions/models.PropertyImages"
         type: array
       property_name:
         example: Supalai
         type: string
       property_type:
         allOf:
-        - $ref: '#/definitions/enums.PropertyTypes'
+          - $ref: "#/definitions/enums.PropertyTypes"
         example: CONDOMINIUM
       province:
         example: Pattaya
         type: string
       renting_property:
-        $ref: '#/definitions/models.RentingProperties'
+        $ref: "#/definitions/models.RentingProperties"
       selling_property:
-        $ref: '#/definitions/models.SellingProperties'
+        $ref: "#/definitions/models.SellingProperties"
       street:
         example: Pattaya
         type: string
@@ -493,14 +493,14 @@ definitions:
         type: string
       property_images:
         items:
-          $ref: '#/definitions/models.PropertyImageAppointments'
+          $ref: "#/definitions/models.PropertyImageAppointments"
         type: array
       property_name:
         example: The Base Sukhumvit 77
         type: string
       property_type:
         allOf:
-        - $ref: '#/definitions/enums.PropertyTypes'
+          - $ref: "#/definitions/enums.PropertyTypes"
         example: CONDO
       province:
         example: Pattaya
@@ -519,14 +519,14 @@ definitions:
         type: string
       property_images:
         items:
-          $ref: '#/definitions/models.PropertyImageAppointments'
+          $ref: "#/definitions/models.PropertyImageAppointments"
         type: array
       property_name:
         example: The Base Sukhumvit 77
         type: string
       property_type:
         allOf:
-        - $ref: '#/definitions/enums.PropertyTypes'
+          - $ref: "#/definitions/enums.PropertyTypes"
         example: CONDO
     type: object
   models.PropertyImageAppointments:
@@ -588,7 +588,7 @@ definitions:
         type: string
       status:
         allOf:
-        - $ref: '#/definitions/enums.AppointmentStatus'
+          - $ref: "#/definitions/enums.AppointmentStatus"
         example: CANCELLED
     type: object
   models.UserFinancialInformations:
@@ -598,13 +598,13 @@ definitions:
         type: string
       bank_name:
         allOf:
-        - $ref: '#/definitions/enums.BankNames'
+          - $ref: "#/definitions/enums.BankNames"
         example: KBANK
       created_at:
         type: string
       credit_cards:
         items:
-          $ref: '#/definitions/models.CreditCards'
+          $ref: "#/definitions/models.CreditCards"
         type: array
     type: object
   models.Users:
@@ -634,7 +634,7 @@ definitions:
         type: string
       registered_type:
         allOf:
-        - $ref: '#/definitions/enums.RegisteredTypes'
+          - $ref: "#/definitions/enums.RegisteredTypes"
         example: EMAIL
       user_id:
         type: string
@@ -650,399 +650,402 @@ paths:
     delete:
       description: Delete an agreement by its id
       produces:
-      - application/json
+        - application/json
       responses:
         "204":
           description: No Content
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Delete an agreement
       tags:
-      - agreements
+        - agreements
     get:
       description: Get an agreement by its id
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Agreements'
+            $ref: "#/definitions/models.Agreements"
         "400":
           description: Invalid agreement id
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: Agreement not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get agreement by id
       tags:
-      - agreements
+        - agreements
   /api/v1/agreements:
     get:
       description: Get all agreements
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Agreements'
+              $ref: "#/definitions/models.Agreements"
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get all agreements
       tags:
-      - agreements
+        - agreements
     post:
       description: Create an agreement by parsing the body
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Created
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Create an agreement
       tags:
-      - agreements
+        - agreements
   /api/v1/agreements/dweller/:userId:
     get:
       description: Get all agreements by dweller id
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Agreements'
+              $ref: "#/definitions/models.Agreements"
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get agreements by dweller id
       tags:
-      - agreements
+        - agreements
   /api/v1/agreements/owner/:userId:
     get:
       description: Get all agreements by owner id
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Agreements'
+              $ref: "#/definitions/models.Agreements"
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get agreements by owner id
       tags:
-      - agreements
+        - agreements
   /api/v1/appointments:
     get:
       description: Get all appointments
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.AppointmentLists'
+              $ref: "#/definitions/models.AppointmentLists"
             type: array
         "500":
           description: Could not get all appointments
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get all appointments
       tags:
-      - appointments
+        - appointments
     post:
-      description: Create an appointments with **property_id**, **owner_user_id**,
+      description:
+        Create an appointments with **property_id**, **owner_user_id**,
         **dweller_user_id**, **appointment_date**, **note**(optional)
       parameters:
-      - description: Appointment details
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/models.CreatingAppointments'
+        - description: Appointment details
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/models.CreatingAppointments"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Appointments created
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "400":
-          description: Empty dates or some of appointments duplicate with existing
+          description:
+            Empty dates or some of appointments duplicate with existing
             one
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not create appointments
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Create an appointment
       tags:
-      - appointments
+        - appointments
   /api/v1/appointments/:appointmentId:
     delete:
       description: Delete an appointment by id
       parameters:
-      - description: Appointment ID
-        in: path
-        name: appointmentId
-        required: true
-        type: string
+        - description: Appointment ID
+          in: path
+          name: appointmentId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Appointments deleted
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "500":
           description: Could not delete appointments
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Delete an appointment by id
       tags:
-      - appointments
+        - appointments
     get:
       description: Get the appointment and other related information by id
       parameters:
-      - description: Appointment ID
-        in: path
-        name: appointmentId
-        required: true
-        type: string
+        - description: Appointment ID
+          in: path
+          name: appointmentId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.AppointmentDetails'
+              $ref: "#/definitions/models.AppointmentDetails"
             type: array
         "400":
           description: Invalid appointment id
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: Could not find the specified appointment
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not get appointment by id
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get an appointment by id
       tags:
-      - appointments
+        - appointments
     patch:
       description: Update an appointment status by id with **status** and **cancelled_message**(optional)
       parameters:
-      - description: Appointment ID
-        in: path
-        name: appointmentId
-        required: true
-        type: string
-      - description: Appointment status and cancelled message(optional)
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/models.UpdatingAppointmentStatus'
+        - description: Appointment ID
+          in: path
+          name: appointmentId
+          required: true
+          type: string
+        - description: Appointment status and cancelled message(optional)
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/models.UpdatingAppointmentStatus"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Appointment state updated
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "400":
           description: Invalid appointment id
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not update appointment status
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Update an appointment status by id
       tags:
-      - appointments
+        - appointments
   /api/v1/auth/callback:
     get:
-      description: Callback from google / register redirect. Basically put all query
+      description:
+        Callback from google / register redirect. Basically put all query
         strings to this request.
       parameters:
-      - example: SCK-A1b2C3
-        in: query
-        name: code
-        type: string
-      - in: query
-        name: email
-        type: string
-      - in: query
-        name: state
-        type: string
+        - example: SCK-A1b2C3
+          in: query
+          name: code
+          type: string
+        - in: query
+          name: email
+          type: string
+        - in: query
+          name: state
+          type: string
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CallbackResponses'
+            $ref: "#/definitions/models.CallbackResponses"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Callback
       tags:
-      - auth
+        - auth
   /api/v1/chats:
     get:
       description: Get current users chat
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.ChatPreviews'
+              $ref: "#/definitions/models.ChatPreviews"
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get current users chat *use cookies*
       tags:
-      - chats
+        - chats
   /api/v1/chats/:recvUserId:
     get:
       description: Get messages chatting with recvUserId. Pagination is available.
       parameters:
-      - description: offset
-        in: query
-        name: offset
-        type: integer
-      - description: default 50, max 50
-        in: query
-        name: limit
-        type: integer
+        - description: offset
+          in: query
+          name: offset
+          type: integer
+        - description: default 50, max 50
+          in: query
+          name: limit
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Messages'
+              $ref: "#/definitions/models.Messages"
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get messages in a chat with recvUserId *use cookies*
       tags:
-      - chats
+        - chats
   /api/v1/email:
     post:
       description: Send a verification email to the user
       parameters:
-      - description: User email address
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/models.SendingEmailRequests'
+        - description: User email address
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/models.SendingEmailRequests"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Send verification email
       tags:
-      - emails
+        - emails
   /api/v1/greeting:
     get:
       description: says hello, world
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Greetings'
+            $ref: "#/definitions/models.Greetings"
       summary: Greeting
       tags:
-      - greeting
+        - greeting
   /api/v1/login:
     post:
       description: Login with email and password
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Properties'
+            $ref: "#/definitions/models.Properties"
         "400":
           description: Empty or invalid credentials
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "401":
           description: Password mismatch
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Login with email
       tags:
-      - auth
+        - auth
   /api/v1/logout:
     post:
       description: Logout
@@ -1051,10 +1054,11 @@ paths:
           description: OK
       summary: Logout
       tags:
-      - auth
+        - auth
   /api/v1/oauth/google:
     get:
-      description: Redirect to this endpoint to login with Google OAuth2. When logging
+      description:
+        Redirect to this endpoint to login with Google OAuth2. When logging
         in is completed, the redirection to /register in client will occur.
       responses:
         "307":
@@ -1065,905 +1069,915 @@ paths:
             type: model
       summary: Login with Google
       tags:
-      - auth
+        - auth
   /api/v1/properties:
     get:
       description: Get all properties or search properties by query
       parameters:
-      - description: Search query
-        in: query
-        name: query
-        type: string
-      - description: Pagination limit per page, max 50, default 20
-        in: query
-        name: limit
-        type: integer
-      - description: Pagination page index as 1-based index, default 1
-        in: query
-        name: page
-        type: integer
-      - description: Sort in format `<json_field>:<direction>` where direction can
-          only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
-        in: query
-        name: sort
-        type: string
-      - description: Filter in format `<json_field>[<operator>]:<value>` where operator
-          can only be greater than or equal `gte` or less than or equal `lte`. Multiple
-          filters can be done with `,` separating each filters. Ex. `?filter=floor_size[gte]:22,floor_size[lte]:45.5`
-        in: query
-        name: filter
-        type: string
+        - description: Search query
+          in: query
+          name: query
+          type: string
+        - description: Pagination limit per page, max 50, default 20
+          in: query
+          name: limit
+          type: integer
+        - description: Pagination page index as 1-based index, default 1
+          in: query
+          name: page
+          type: integer
+        - description:
+            Sort in format `<json_field>:<direction>` where direction can
+            only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
+          in: query
+          name: sort
+          type: string
+        - description:
+            Filter in format `<json_field>[<operator>]:<value>` where operator
+            can only be greater than or equal `gte` or less than or equal `lte`. Multiple
+            filters can be done with `,` separating each filters. Ex. `?filter=floor_size[gte]:22,floor_size[lte]:45.5`
+          in: query
+          name: filter
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.AllPropertiesResponses'
+            $ref: "#/definitions/models.AllPropertiesResponses"
         "500":
           description: Could not get properties
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get or search properties
       tags:
-      - property
+        - property
     post:
-      description: Create a property with formData *upload property images (array
+      description:
+        Create a property with formData *upload property images (array
         of images) in formData with field `property_images`. Available formats are
         .png / .jpg / .jpeg
       parameters:
-      - example: 123/4
-        in: formData
-        name: address
-        type: string
-      - example: Pattaya Nua 78
-        in: formData
-        name: alley
-        type: string
-      - example: 2
-        in: formData
-        name: bathrooms
-        type: integer
-      - example: 3
-        in: formData
-        name: bedrooms
-        type: integer
-      - example: Thailand
-        in: formData
-        name: country
-        type: string
-      - example: Bang Phli
-        in: formData
-        name: district
-        type: string
-      - example: 5
-        in: formData
-        name: floor
-        type: integer
-      - example: 123.45
-        in: formData
-        name: floor_size
-        type: number
-      - enum:
-        - SQM
-        - SQFT
-        example: SQM
-        in: formData
-        name: floor_size_unit
-        type: string
-        x-enum-varnames:
-        - SQM
-        - SQFT
-      - enum:
-        - UNFURNISHED
-        - PARTIALLY_FURNISHED
-        - FULLY_FURNISHED
-        - READY_TO_MOVE_IN
-        example: UNFURNISHED
-        in: formData
-        name: furnishing
-        type: string
-        x-enum-varnames:
-        - UNFURNISHED
-        - PARTIALLY_FURNISHED
-        - FULLY_FURNISHED
-        - READY_TO_MOVE_IN
-      - collectionFormat: csv
-        example:
-        - https://image_url.com/abcd
-        - https://image_url.com/abcd
-        - https://image_url.com/abcd
-        in: formData
-        items:
+        - example: 123/4
+          in: formData
+          name: address
           type: string
-        name: image_urls
-        type: array
-      - example: false
-        in: formData
-        name: is_occupied
-        type: boolean
-      - example: true
-        in: formData
-        name: is_sold
-        type: boolean
-      - example: 123e4567-e89b-12d3-a456-426614174000
-        in: formData
-        name: '-'
-        type: string
-      - example: "69096"
-        in: formData
-        name: postal_code
-        type: string
-      - example: 12345.67
-        in: formData
-        name: price
-        type: number
-      - example: 12345.67
-        in: formData
-        name: price_per_month
-        type: number
-      - example: Et sequi dolor praes
-        in: formData
-        name: property_description
-        type: string
-      - example: 123e4567-e89b-12d3-a456-426614174000
-        in: formData
-        name: '-'
-        type: string
-      - example: Supalai
-        in: formData
-        name: property_name
-        type: string
-      - enum:
-        - CONDOMINIUM
-        - APARTMENT
-        - SEMI-DETACHED_HOUSE
-        - HOUSE
-        - SERVICED_APARTMENT
-        - TOWNHOUSE
-        example: CONDOMINIUM
-        in: formData
-        name: property_type
-        type: string
-        x-enum-varnames:
-        - CONDOMINIUM
-        - APARTMENT
-        - SEMI_DETACHED_HOUSE
-        - HOUSE
-        - SERVICED_APARTMENT
-        - TOWNHOUSE
-      - example: Pattaya
-        in: formData
-        name: province
-        type: string
-      - example: Pattaya
-        in: formData
-        name: street
-        type: string
-      - example: Bang Bon
-        in: formData
-        name: sub_district
-        type: string
-      - example: 123
-        in: formData
-        name: unit_number
-        type: integer
+        - example: Pattaya Nua 78
+          in: formData
+          name: alley
+          type: string
+        - example: 2
+          in: formData
+          name: bathrooms
+          type: integer
+        - example: 3
+          in: formData
+          name: bedrooms
+          type: integer
+        - example: Thailand
+          in: formData
+          name: country
+          type: string
+        - example: Bang Phli
+          in: formData
+          name: district
+          type: string
+        - example: 5
+          in: formData
+          name: floor
+          type: integer
+        - example: 123.45
+          in: formData
+          name: floor_size
+          type: number
+        - enum:
+            - SQM
+            - SQFT
+          example: SQM
+          in: formData
+          name: floor_size_unit
+          type: string
+          x-enum-varnames:
+            - SQM
+            - SQFT
+        - enum:
+            - UNFURNISHED
+            - PARTIALLY_FURNISHED
+            - FULLY_FURNISHED
+            - READY_TO_MOVE_IN
+          example: UNFURNISHED
+          in: formData
+          name: furnishing
+          type: string
+          x-enum-varnames:
+            - UNFURNISHED
+            - PARTIALLY_FURNISHED
+            - FULLY_FURNISHED
+            - READY_TO_MOVE_IN
+        - collectionFormat: csv
+          example:
+            - https://image_url.com/abcd
+            - https://image_url.com/abcd
+            - https://image_url.com/abcd
+          in: formData
+          items:
+            type: string
+          name: image_urls
+          type: array
+        - example: false
+          in: formData
+          name: is_occupied
+          type: boolean
+        - example: true
+          in: formData
+          name: is_sold
+          type: boolean
+        - example: 123e4567-e89b-12d3-a456-426614174000
+          in: formData
+          name: "-"
+          type: string
+        - example: "69096"
+          in: formData
+          name: postal_code
+          type: string
+        - example: 12345.67
+          in: formData
+          name: price
+          type: number
+        - example: 12345.67
+          in: formData
+          name: price_per_month
+          type: number
+        - example: Et sequi dolor praes
+          in: formData
+          name: property_description
+          type: string
+        - example: 123e4567-e89b-12d3-a456-426614174000
+          in: formData
+          name: "-"
+          type: string
+        - example: Supalai
+          in: formData
+          name: property_name
+          type: string
+        - enum:
+            - CONDOMINIUM
+            - APARTMENT
+            - SEMI-DETACHED_HOUSE
+            - HOUSE
+            - SERVICED_APARTMENT
+            - TOWNHOUSE
+          example: CONDOMINIUM
+          in: formData
+          name: property_type
+          type: string
+          x-enum-varnames:
+            - CONDOMINIUM
+            - APARTMENT
+            - SEMI_DETACHED_HOUSE
+            - HOUSE
+            - SERVICED_APARTMENT
+            - TOWNHOUSE
+        - example: Pattaya
+          in: formData
+          name: province
+          type: string
+        - example: Pattaya
+          in: formData
+          name: street
+          type: string
+        - example: Bang Bon
+          in: formData
+          name: sub_district
+          type: string
+        - example: 123
+          in: formData
+          name: unit_number
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Property created
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "403":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: Property id not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not create property
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Create a property *user cookies*
       tags:
-      - property
+        - property
   /api/v1/properties/:propertyId:
     delete:
       description: Delete a property, owned by the current user, by its id
       parameters:
-      - description: Property id
-        in: path
-        name: propertyId
-        required: true
-        type: string
+        - description: Property id
+          in: path
+          name: propertyId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Property deleted
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "403":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: Property id not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not delete property
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Delete a property *use cookies*
       tags:
-      - property
+        - property
     get:
       description: Get property by its id
       parameters:
-      - description: Property id
-        in: path
-        name: propertyId
-        required: true
-        type: string
+        - description: Property id
+          in: path
+          name: propertyId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Properties'
+            $ref: "#/definitions/models.Properties"
         "400":
           description: Invalid property id
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: Property id not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get property by propertyId
       tags:
-      - property
+        - property
     patch:
-      description: Update a property with formData *upload **NEW** property images
+      description:
+        Update a property with formData *upload **NEW** property images
         (array of images) in formData with field `property_images`. Available formats
         are .png / .jpg / .jpeg *If you want to keep the old images, you need to include
         them in the formData with field `image_urls` as an array of strings
       parameters:
-      - description: Property id
-        in: path
-        name: propertyId
-        required: true
-        type: string
-      - example: 123/4
-        in: formData
-        name: address
-        type: string
-      - example: Pattaya Nua 78
-        in: formData
-        name: alley
-        type: string
-      - example: 2
-        in: formData
-        name: bathrooms
-        type: integer
-      - example: 3
-        in: formData
-        name: bedrooms
-        type: integer
-      - example: Thailand
-        in: formData
-        name: country
-        type: string
-      - example: Bang Phli
-        in: formData
-        name: district
-        type: string
-      - example: 5
-        in: formData
-        name: floor
-        type: integer
-      - example: 123.45
-        in: formData
-        name: floor_size
-        type: number
-      - enum:
-        - SQM
-        - SQFT
-        example: SQM
-        in: formData
-        name: floor_size_unit
-        type: string
-        x-enum-varnames:
-        - SQM
-        - SQFT
-      - enum:
-        - UNFURNISHED
-        - PARTIALLY_FURNISHED
-        - FULLY_FURNISHED
-        - READY_TO_MOVE_IN
-        example: UNFURNISHED
-        in: formData
-        name: furnishing
-        type: string
-        x-enum-varnames:
-        - UNFURNISHED
-        - PARTIALLY_FURNISHED
-        - FULLY_FURNISHED
-        - READY_TO_MOVE_IN
-      - collectionFormat: csv
-        example:
-        - https://image_url.com/abcd
-        - https://image_url.com/abcd
-        - https://image_url.com/abcd
-        in: formData
-        items:
+        - description: Property id
+          in: path
+          name: propertyId
+          required: true
           type: string
-        name: image_urls
-        type: array
-      - example: false
-        in: formData
-        name: is_occupied
-        type: boolean
-      - example: true
-        in: formData
-        name: is_sold
-        type: boolean
-      - example: 123e4567-e89b-12d3-a456-426614174000
-        in: formData
-        name: '-'
-        type: string
-      - example: "69096"
-        in: formData
-        name: postal_code
-        type: string
-      - example: 12345.67
-        in: formData
-        name: price
-        type: number
-      - example: 12345.67
-        in: formData
-        name: price_per_month
-        type: number
-      - example: Et sequi dolor praes
-        in: formData
-        name: property_description
-        type: string
-      - example: 123e4567-e89b-12d3-a456-426614174000
-        in: formData
-        name: '-'
-        type: string
-      - example: Supalai
-        in: formData
-        name: property_name
-        type: string
-      - enum:
-        - CONDOMINIUM
-        - APARTMENT
-        - SEMI-DETACHED_HOUSE
-        - HOUSE
-        - SERVICED_APARTMENT
-        - TOWNHOUSE
-        example: CONDOMINIUM
-        in: formData
-        name: property_type
-        type: string
-        x-enum-varnames:
-        - CONDOMINIUM
-        - APARTMENT
-        - SEMI_DETACHED_HOUSE
-        - HOUSE
-        - SERVICED_APARTMENT
-        - TOWNHOUSE
-      - example: Pattaya
-        in: formData
-        name: province
-        type: string
-      - example: Pattaya
-        in: formData
-        name: street
-        type: string
-      - example: Bang Bon
-        in: formData
-        name: sub_district
-        type: string
-      - example: 123
-        in: formData
-        name: unit_number
-        type: integer
+        - example: 123/4
+          in: formData
+          name: address
+          type: string
+        - example: Pattaya Nua 78
+          in: formData
+          name: alley
+          type: string
+        - example: 2
+          in: formData
+          name: bathrooms
+          type: integer
+        - example: 3
+          in: formData
+          name: bedrooms
+          type: integer
+        - example: Thailand
+          in: formData
+          name: country
+          type: string
+        - example: Bang Phli
+          in: formData
+          name: district
+          type: string
+        - example: 5
+          in: formData
+          name: floor
+          type: integer
+        - example: 123.45
+          in: formData
+          name: floor_size
+          type: number
+        - enum:
+            - SQM
+            - SQFT
+          example: SQM
+          in: formData
+          name: floor_size_unit
+          type: string
+          x-enum-varnames:
+            - SQM
+            - SQFT
+        - enum:
+            - UNFURNISHED
+            - PARTIALLY_FURNISHED
+            - FULLY_FURNISHED
+            - READY_TO_MOVE_IN
+          example: UNFURNISHED
+          in: formData
+          name: furnishing
+          type: string
+          x-enum-varnames:
+            - UNFURNISHED
+            - PARTIALLY_FURNISHED
+            - FULLY_FURNISHED
+            - READY_TO_MOVE_IN
+        - collectionFormat: csv
+          example:
+            - https://image_url.com/abcd
+            - https://image_url.com/abcd
+            - https://image_url.com/abcd
+          in: formData
+          items:
+            type: string
+          name: image_urls
+          type: array
+        - example: false
+          in: formData
+          name: is_occupied
+          type: boolean
+        - example: true
+          in: formData
+          name: is_sold
+          type: boolean
+        - example: 123e4567-e89b-12d3-a456-426614174000
+          in: formData
+          name: "-"
+          type: string
+        - example: "69096"
+          in: formData
+          name: postal_code
+          type: string
+        - example: 12345.67
+          in: formData
+          name: price
+          type: number
+        - example: 12345.67
+          in: formData
+          name: price_per_month
+          type: number
+        - example: Et sequi dolor praes
+          in: formData
+          name: property_description
+          type: string
+        - example: 123e4567-e89b-12d3-a456-426614174000
+          in: formData
+          name: "-"
+          type: string
+        - example: Supalai
+          in: formData
+          name: property_name
+          type: string
+        - enum:
+            - CONDOMINIUM
+            - APARTMENT
+            - SEMI-DETACHED_HOUSE
+            - HOUSE
+            - SERVICED_APARTMENT
+            - TOWNHOUSE
+          example: CONDOMINIUM
+          in: formData
+          name: property_type
+          type: string
+          x-enum-varnames:
+            - CONDOMINIUM
+            - APARTMENT
+            - SEMI_DETACHED_HOUSE
+            - HOUSE
+            - SERVICED_APARTMENT
+            - TOWNHOUSE
+        - example: Pattaya
+          in: formData
+          name: province
+          type: string
+        - example: Pattaya
+          in: formData
+          name: street
+          type: string
+        - example: Bang Bon
+          in: formData
+          name: sub_district
+          type: string
+        - example: 123
+          in: formData
+          name: unit_number
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Property updated
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "400":
           description: Invalid request body
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "403":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: Property id not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not update property
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Update a property *user cookies*
       tags:
-      - property
+        - property
   /api/v1/properties/favorites/:propertyId:
     delete:
       description: Remove property to the current user favorites
       parameters:
-      - description: Property id
-        in: path
-        name: propertyId
-        required: true
-        type: string
+        - description: Property id
+          in: path
+          name: propertyId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Property removed from favorites
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "403":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: Property id not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not remove favorite property
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Remove property to favorites *use cookies*
       tags:
-      - property
+        - property
     post:
       description: Add property to the current user favorites
       parameters:
-      - description: Property id
-        in: path
-        name: propertyId
-        required: true
-        type: string
+        - description: Property id
+          in: path
+          name: propertyId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Property added to favorites
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "403":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: Property id not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not add favorite property
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Add property to favorites *use cookies*
       tags:
-      - property
+        - property
   /api/v1/register:
     post:
-      description: Create user with formData **\***upload profile image in formData
+      description:
+        Create user with formData **\***upload profile image in formData
         with field `profile_image`. Available formats are .png / .jpg / .jpeg
       parameters:
-      - example: email@email.com
-        in: formData
-        name: email
-        type: string
-      - example: John
-        in: formData
-        name: first_name
-        type: string
-      - example: Doe
-        in: formData
-        name: last_name
-        type: string
-      - example: password1234
-        in: formData
-        name: password
-        type: string
-      - example: "0812345678"
-        in: formData
-        name: phone_number
-        type: string
-      - enum:
-        - EMAIL
-        - GOOGLE
-        in: formData
-        name: registered_type
-        type: string
-        x-enum-varnames:
-        - EMAIL
-        - GOOGLE
+        - example: email@email.com
+          in: formData
+          name: email
+          type: string
+        - example: John
+          in: formData
+          name: first_name
+          type: string
+        - example: Doe
+          in: formData
+          name: last_name
+          type: string
+        - example: password1234
+          in: formData
+          name: password
+          type: string
+        - example: "0812345678"
+          in: formData
+          name: phone_number
+          type: string
+        - enum:
+            - EMAIL
+            - GOOGLE
+          in: formData
+          name: registered_type
+          type: string
+          x-enum-varnames:
+            - EMAIL
+            - GOOGLE
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: User created
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "400":
           description: Invalid user info
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not create user
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Register *use cookies*
       tags:
-      - users
+        - users
   /api/v1/top10properties:
     get:
-      description: Get top 10 properties with the most favorites, sorted by the number
+      description:
+        Get top 10 properties with the most favorites, sorted by the number
         of favorites then by the newest properties
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Properties'
+              $ref: "#/definitions/models.Properties"
             type: array
         "500":
           description: Could not get top 10 properties
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get top 10 properties
       tags:
-      - property
+        - property
   /api/v1/user/:userId:
     delete:
       description: Delete a user by its id
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: User deleted
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "400":
           description: Invalid user id
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Delete user by id  *use cookies*
       tags:
-      - users
+        - users
     get:
       description: Get a user by its id
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Users'
+            $ref: "#/definitions/models.Users"
         "400":
           description: Invalid user id
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get user by id
       tags:
-      - users
+        - users
   /api/v1/user/greeting:
     get:
       description: says hello to current user
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Greetings'
+            $ref: "#/definitions/models.Greetings"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Greeting with auth required *use cookies*
       tags:
-      - greeting
+        - greeting
   /api/v1/user/me:
     get:
       description: Get current user info
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Users'
+            $ref: "#/definitions/models.Users"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get current user info *use cookies*
       tags:
-      - users
+        - users
   /api/v1/user/me/appointments:
     get:
       description: Get all appointments related to the user
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MyAppointmentResponse'
+            $ref: "#/definitions/models.MyAppointmentResponses"
         "500":
           description: Could not get my appointments
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get my appointments
       tags:
-      - appointments
+        - appointments
   /api/v1/user/me/favorites:
     get:
       description: Get all properties that the current user has added to favorites
       parameters:
-      - description: Pagination limit per page, max 50, default 20
-        in: query
-        name: limit
-        type: integer
-      - description: Pagination page index as 1-based index, default 1
-        in: query
-        name: page
-        type: integer
-      - description: Sort in format `<json_field>:<direction>` where direction can
-          only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
-        in: query
-        name: sort
-        type: string
+        - description: Pagination limit per page, max 50, default 20
+          in: query
+          name: limit
+          type: integer
+        - description: Pagination page index as 1-based index, default 1
+          in: query
+          name: page
+          type: integer
+        - description:
+            Sort in format `<json_field>:<direction>` where direction can
+            only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
+          in: query
+          name: sort
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MyFavoritePropertiesResponses'
+            $ref: "#/definitions/models.MyFavoritePropertiesResponses"
         "403":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not get favorite properties
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get my favorite properties *use cookies*
       tags:
-      - property
+        - property
   /api/v1/user/me/financial-information:
     get:
       description: Get current user financial information
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserFinancialInformations'
+            $ref: "#/definitions/models.UserFinancialInformations"
         "400":
           description: Invalid user id
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "403":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get current user financial information *use cookies*
       tags:
-      - users
+        - users
     put:
-      description: Update the current user financial information with data from the
+      description:
+        Update the current user financial information with data from the
         body
       parameters:
-      - description: User financial information
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/models.UserFinancialInformations'
+        - description: User financial information
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/models.UserFinancialInformations"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: User financial information updated
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "400":
           description: Invalid user financial information
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "403":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not update user financial information
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Update the current user financial information *use cookies*
       tags:
-      - users
+        - users
   /api/v1/user/me/personal-information:
     put:
-      description: Update specifying userId with formData **\***upload profile image
+      description:
+        Update specifying userId with formData **\***upload profile image
         in formData with field `profile_image`. Available formats are .png / .jpg
         / .jpeg
       parameters:
-      - example: John
-        in: formData
-        name: first_name
-        type: string
-      - example: Doe
-        in: formData
-        name: last_name
-        type: string
-      - example: "0812345678"
-        in: formData
-        name: phone_number
-        type: string
+        - example: John
+          in: formData
+          name: first_name
+          type: string
+        - example: Doe
+          in: formData
+          name: last_name
+          type: string
+        - example: "0812345678"
+          in: formData
+          name: phone_number
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: User personal information updated
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "400":
           description: Invalid user info
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "404":
           description: User not found
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Could not update user
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Update current user personal information *use cookies*
       tags:
-      - users
+        - users
   /api/v1/user/me/properties:
     get:
       description: Get all properties owned by the current user
       parameters:
-      - description: Pagination limit per page, max 50, default 20
-        in: query
-        name: limit
-        type: integer
-      - description: Pagination page index as 1-based index, default 1
-        in: query
-        name: page
-        type: integer
-      - description: Sort in format `<json_field>:<direction>` where direction can
-          only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
-        in: query
-        name: sort
-        type: string
+        - description: Pagination limit per page, max 50, default 20
+          in: query
+          name: limit
+          type: integer
+        - description: Pagination page index as 1-based index, default 1
+          in: query
+          name: page
+          type: integer
+        - description:
+            Sort in format `<json_field>:<direction>` where direction can
+            only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`
+          in: query
+          name: sort
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MyPropertiesResponses'
+            $ref: "#/definitions/models.MyPropertiesResponses"
         "403":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get my properties *use cookies*
       tags:
-      - property
+        - property
   /api/v1/user/me/registered:
     get:
       description: Get user registered type
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Sessions'
+            $ref: "#/definitions/models.Sessions"
       summary: Get user registered type *use cookies*
       tags:
-      - users
+        - users
   /api/v1/user/me/verify:
     post:
       description: Verify user by citizen id and citizen id image
       parameters:
-      - example: "1100111111111"
-        in: formData
-        name: citizen_id
-        type: string
+        - example: "1100111111111"
+          in: formData
+          name: citizen_id
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Verified
           schema:
-            $ref: '#/definitions/models.MessageResponses'
+            $ref: "#/definitions/models.MessageResponses"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Verify user *use cookies*
       tags:
-      - users
+        - users
   /api/v1/users:
     get:
       description: Get all users
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Users'
+              $ref: "#/definitions/models.Users"
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.ErrorResponses'
+            $ref: "#/definitions/models.ErrorResponses"
       summary: Get all users
       tags:
-      - users
+        - users
 swagger: "2.0"

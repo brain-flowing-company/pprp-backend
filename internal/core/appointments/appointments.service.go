@@ -14,7 +14,7 @@ import (
 type Service interface {
 	GetAllAppointments(*[]models.AppointmentLists) *apperror.AppError
 	GetAppointmentById(*models.AppointmentDetails, string) *apperror.AppError
-	GetMyAppointments(*models.MyAppointmentResponse, string) *apperror.AppError
+	GetMyAppointments(*models.MyAppointmentResponses, string) *apperror.AppError
 	CreateAppointment(*models.CreatingAppointments) *apperror.AppError
 	DeleteAppointment(string) *apperror.AppError
 	UpdateAppointmentStatus(*models.UpdatingAppointmentStatus, string) *apperror.AppError
@@ -66,7 +66,7 @@ func (s *serviceImpl) GetAppointmentById(appointment *models.AppointmentDetails,
 	return nil
 }
 
-func (s *serviceImpl) GetMyAppointments(appointments *models.MyAppointmentResponse, userId string) *apperror.AppError {
+func (s *serviceImpl) GetMyAppointments(appointments *models.MyAppointmentResponses, userId string) *apperror.AppError {
 	if !utils.IsValidUUID(userId) {
 		return apperror.
 			New(apperror.InvalidUserId).

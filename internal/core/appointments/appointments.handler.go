@@ -73,12 +73,12 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 // @description Get all appointments related to the user
 // @tags        appointments
 // @produce     json
-// @success     200	{object} models.MyAppointmentResponse
+// @success     200	{object} models.MyAppointmentResponses
 // @failure     500 {object} models.ErrorResponses "Could not get my appointments"
 func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId.String()
 
-	var appointments models.MyAppointmentResponse
+	var appointments models.MyAppointmentResponses
 	err := h.service.GetMyAppointments(&appointments, userId)
 	if err != nil {
 		return utils.ResponseError(c, err)

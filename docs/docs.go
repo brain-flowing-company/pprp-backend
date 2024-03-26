@@ -1626,7 +1626,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MyAppointmentResponse"
+                            "$ref": "#/definitions/models.MyAppointmentResponses"
                         }
                     },
                     "500": {
@@ -2419,7 +2419,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.MyAppointmentResponse": {
+        "models.MyAppointmentResponses": {
             "type": "object",
             "properties": {
                 "dweller_appointments": {

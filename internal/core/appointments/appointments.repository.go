@@ -10,7 +10,7 @@ import (
 type Repository interface {
 	GetAllAppointments(*[]models.AppointmentLists) error
 	GetAppointmentById(*models.AppointmentDetails, string) error
-	GetAppointmentByUserId(*models.MyAppointmentResponse, string) error
+	GetAppointmentByUserId(*models.MyAppointmentResponses, string) error
 	GetAppointmentByOwnerId([]*models.Appointments, string) error
 	GetAppointmentByDwellerId([]*models.Appointments, string) error
 	CreateAppointment(*models.CreatingAppointments) error
@@ -141,7 +141,7 @@ func (repo *repositoryImpl) GetAppointmentById(appointment *models.AppointmentDe
 	})
 }
 
-func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.MyAppointmentResponse, userId string) error {
+func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.MyAppointmentResponses, userId string) error {
 	propertiesQuery := `SELECT property_id, property_name, property_type FROM properties`
 
 	ownersQuery := `SELECT user_id AS owner_user_id,

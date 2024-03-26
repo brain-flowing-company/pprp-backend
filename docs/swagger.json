@@ -1,2887 +1,2667 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "Bangkok Property Matchmaking Platform API docs",
-        "title": "Bangkok Property Matchmaking Platform",
-        "contact": {},
-        "version": "1.0"
-    },
-    "host": "localhost:8000",
-    "basePath": "/",
-    "paths": {
-        "/api/v1/agreement/:agreementId": {
-            "get": {
-                "description": "Get an agreement by its id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agreements"
-                ],
-                "summary": "Get agreement by id",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Agreements"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid agreement id",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Agreement not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete an agreement by its id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agreements"
-                ],
-                "summary": "Delete an agreement",
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
+  "swagger": "2.0",
+  "info": {
+    "description": "Bangkok Property Matchmaking Platform API docs",
+    "title": "Bangkok Property Matchmaking Platform",
+    "contact": {},
+    "version": "1.0"
+  },
+  "host": "localhost:8000",
+  "basePath": "/",
+  "paths": {
+    "/api/v1/agreement/:agreementId": {
+      "get": {
+        "description": "Get an agreement by its id",
+        "produces": ["application/json"],
+        "tags": ["agreements"],
+        "summary": "Get agreement by id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.Agreements"
             }
-        },
-        "/api/v1/agreements": {
-            "get": {
-                "description": "Get all agreements",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agreements"
-                ],
-                "summary": "Get all agreements",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Agreements"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create an agreement by parsing the body",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agreements"
-                ],
-                "summary": "Create an agreement",
-                "responses": {
-                    "201": {
-                        "description": "Created"
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
+          },
+          "400": {
+            "description": "Invalid agreement id",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
             }
-        },
-        "/api/v1/agreements/dweller/:userId": {
-            "get": {
-                "description": "Get all agreements by dweller id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agreements"
-                ],
-                "summary": "Get agreements by dweller id",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Agreements"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
+          },
+          "404": {
+            "description": "Agreement not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
             }
-        },
-        "/api/v1/agreements/owner/:userId": {
-            "get": {
-                "description": "Get all agreements by owner id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agreements"
-                ],
-                "summary": "Get agreements by owner id",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Agreements"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
             }
-        },
-        "/api/v1/appointments": {
-            "get": {
-                "description": "Get all appointments",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "appointments"
-                ],
-                "summary": "Get all appointments",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.AppointmentLists"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Could not get all appointments",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create an appointments with **property_id**, **owner_user_id**, **dweller_user_id**, **appointment_date**, **note**(optional)",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "appointments"
-                ],
-                "summary": "Create an appointment",
-                "parameters": [
-                    {
-                        "description": "Appointment details",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.CreatingAppointments"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Appointments created",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Empty dates or some of appointments duplicate with existing one",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not create appointments",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/appointments/:appointmentId": {
-            "get": {
-                "description": "Get the appointment and other related information by id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "appointments"
-                ],
-                "summary": "Get an appointment by id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Appointment ID",
-                        "name": "appointmentId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.AppointmentDetails"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid appointment id",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Could not find the specified appointment",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not get appointment by id",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete an appointment by id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "appointments"
-                ],
-                "summary": "Delete an appointment by id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Appointment ID",
-                        "name": "appointmentId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Appointments deleted",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not delete appointments",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Update an appointment status by id with **status** and **cancelled_message**(optional)",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "appointments"
-                ],
-                "summary": "Update an appointment status by id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Appointment ID",
-                        "name": "appointmentId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Appointment status and cancelled message(optional)",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UpdatingAppointmentStatus"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Appointment state updated",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid appointment id",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not update appointment status",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/auth/callback": {
-            "get": {
-                "description": "Callback from google / register redirect. Basically put all query strings to this request.",
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Callback",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "SCK-A1b2C3",
-                        "name": "code",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "email",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "state",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.CallbackResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/chats": {
-            "get": {
-                "description": "Get current users chat",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chats"
-                ],
-                "summary": "Get current users chat *use cookies*",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ChatPreviews"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/chats/:recvUserId": {
-            "get": {
-                "description": "Get messages chatting with recvUserId. Pagination is available.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chats"
-                ],
-                "summary": "Get messages in a chat with recvUserId *use cookies*",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "offset",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "default 50, max 50",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Messages"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/email": {
-            "post": {
-                "description": "Send a verification email to the user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "emails"
-                ],
-                "summary": "Send verification email",
-                "parameters": [
-                    {
-                        "description": "User email address",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.SendingEmailRequests"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/greeting": {
-            "get": {
-                "description": "says hello, world",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "greeting"
-                ],
-                "summary": "Greeting",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Greetings"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/login": {
-            "post": {
-                "description": "Login with email and password",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Login with email",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Properties"
-                        }
-                    },
-                    "400": {
-                        "description": "Empty or invalid credentials",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "401": {
-                        "description": "Password mismatch",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/logout": {
-            "post": {
-                "description": "Logout",
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Logout",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/api/v1/oauth/google": {
-            "get": {
-                "description": "Redirect to this endpoint to login with Google OAuth2. When logging in is completed, the redirection to /register in client will occur.",
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Login with Google",
-                "responses": {
-                    "307": {
-                        "description": "Temporary Redirect"
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "model"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/properties": {
-            "get": {
-                "description": "Get all properties or search properties by query",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Get or search properties",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Search query",
-                        "name": "query",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Pagination limit per page, max 50, default 20",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Pagination page index as 1-based index, default 1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Sort in format `\u003cjson_field\u003e:\u003cdirection\u003e` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`",
-                        "name": "sort",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Filter in format `\u003cjson_field\u003e[\u003coperator\u003e]:\u003cvalue\u003e` where operator can only be greater than or equal `gte` or less than or equal `lte`. Multiple filters can be done with `,` separating each filters. Ex. `?filter=floor_size[gte]:22,floor_size[lte]:45.5`",
-                        "name": "filter",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.AllPropertiesResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not get properties",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a property with formData *upload property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Create a property *user cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "123/4",
-                        "name": "address",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Pattaya Nua 78",
-                        "name": "alley",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 2,
-                        "name": "bathrooms",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 3,
-                        "name": "bedrooms",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Thailand",
-                        "name": "country",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Bang Phli",
-                        "name": "district",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 5,
-                        "name": "floor",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "number",
-                        "example": 123.45,
-                        "name": "floor_size",
-                        "in": "formData"
-                    },
-                    {
-                        "enum": [
-                            "SQM",
-                            "SQFT"
-                        ],
-                        "type": "string",
-                        "example": "SQM",
-                        "x-enum-varnames": [
-                            "SQM",
-                            "SQFT"
-                        ],
-                        "name": "floor_size_unit",
-                        "in": "formData"
-                    },
-                    {
-                        "enum": [
-                            "UNFURNISHED",
-                            "PARTIALLY_FURNISHED",
-                            "FULLY_FURNISHED",
-                            "READY_TO_MOVE_IN"
-                        ],
-                        "type": "string",
-                        "example": "UNFURNISHED",
-                        "x-enum-varnames": [
-                            "UNFURNISHED",
-                            "PARTIALLY_FURNISHED",
-                            "FULLY_FURNISHED",
-                            "READY_TO_MOVE_IN"
-                        ],
-                        "name": "furnishing",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "example": [
-                            "https://image_url.com/abcd",
-                            "https://image_url.com/abcd",
-                            "https://image_url.com/abcd"
-                        ],
-                        "name": "image_urls",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "boolean",
-                        "example": false,
-                        "name": "is_occupied",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "boolean",
-                        "example": true,
-                        "name": "is_sold",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "123e4567-e89b-12d3-a456-426614174000",
-                        "name": "-",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "69096",
-                        "name": "postal_code",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "number",
-                        "example": 12345.67,
-                        "name": "price",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "number",
-                        "example": 12345.67,
-                        "name": "price_per_month",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Et sequi dolor praes",
-                        "name": "property_description",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "123e4567-e89b-12d3-a456-426614174000",
-                        "name": "-",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Supalai",
-                        "name": "property_name",
-                        "in": "formData"
-                    },
-                    {
-                        "enum": [
-                            "CONDOMINIUM",
-                            "APARTMENT",
-                            "SEMI-DETACHED_HOUSE",
-                            "HOUSE",
-                            "SERVICED_APARTMENT",
-                            "TOWNHOUSE"
-                        ],
-                        "type": "string",
-                        "example": "CONDOMINIUM",
-                        "x-enum-varnames": [
-                            "CONDOMINIUM",
-                            "APARTMENT",
-                            "SEMI_DETACHED_HOUSE",
-                            "HOUSE",
-                            "SERVICED_APARTMENT",
-                            "TOWNHOUSE"
-                        ],
-                        "name": "property_type",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Pattaya",
-                        "name": "province",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Pattaya",
-                        "name": "street",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Bang Bon",
-                        "name": "sub_district",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 123,
-                        "name": "unit_number",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Property created",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Property id not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not create property",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/properties/:propertyId": {
-            "get": {
-                "description": "Get property by its id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Get property by propertyId",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property id",
-                        "name": "propertyId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Properties"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid property id",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Property id not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete a property, owned by the current user, by its id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Delete a property *use cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property id",
-                        "name": "propertyId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Property deleted",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Property id not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not delete property",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Update a property with formData *upload **NEW** property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg *If you want to keep the old images, you need to include them in the formData with field `image_urls` as an array of strings",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Update a property *user cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property id",
-                        "name": "propertyId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "example": "123/4",
-                        "name": "address",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Pattaya Nua 78",
-                        "name": "alley",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 2,
-                        "name": "bathrooms",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 3,
-                        "name": "bedrooms",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Thailand",
-                        "name": "country",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Bang Phli",
-                        "name": "district",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 5,
-                        "name": "floor",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "number",
-                        "example": 123.45,
-                        "name": "floor_size",
-                        "in": "formData"
-                    },
-                    {
-                        "enum": [
-                            "SQM",
-                            "SQFT"
-                        ],
-                        "type": "string",
-                        "example": "SQM",
-                        "x-enum-varnames": [
-                            "SQM",
-                            "SQFT"
-                        ],
-                        "name": "floor_size_unit",
-                        "in": "formData"
-                    },
-                    {
-                        "enum": [
-                            "UNFURNISHED",
-                            "PARTIALLY_FURNISHED",
-                            "FULLY_FURNISHED",
-                            "READY_TO_MOVE_IN"
-                        ],
-                        "type": "string",
-                        "example": "UNFURNISHED",
-                        "x-enum-varnames": [
-                            "UNFURNISHED",
-                            "PARTIALLY_FURNISHED",
-                            "FULLY_FURNISHED",
-                            "READY_TO_MOVE_IN"
-                        ],
-                        "name": "furnishing",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "example": [
-                            "https://image_url.com/abcd",
-                            "https://image_url.com/abcd",
-                            "https://image_url.com/abcd"
-                        ],
-                        "name": "image_urls",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "boolean",
-                        "example": false,
-                        "name": "is_occupied",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "boolean",
-                        "example": true,
-                        "name": "is_sold",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "123e4567-e89b-12d3-a456-426614174000",
-                        "name": "-",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "69096",
-                        "name": "postal_code",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "number",
-                        "example": 12345.67,
-                        "name": "price",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "number",
-                        "example": 12345.67,
-                        "name": "price_per_month",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Et sequi dolor praes",
-                        "name": "property_description",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "123e4567-e89b-12d3-a456-426614174000",
-                        "name": "-",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Supalai",
-                        "name": "property_name",
-                        "in": "formData"
-                    },
-                    {
-                        "enum": [
-                            "CONDOMINIUM",
-                            "APARTMENT",
-                            "SEMI-DETACHED_HOUSE",
-                            "HOUSE",
-                            "SERVICED_APARTMENT",
-                            "TOWNHOUSE"
-                        ],
-                        "type": "string",
-                        "example": "CONDOMINIUM",
-                        "x-enum-varnames": [
-                            "CONDOMINIUM",
-                            "APARTMENT",
-                            "SEMI_DETACHED_HOUSE",
-                            "HOUSE",
-                            "SERVICED_APARTMENT",
-                            "TOWNHOUSE"
-                        ],
-                        "name": "property_type",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Pattaya",
-                        "name": "province",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Pattaya",
-                        "name": "street",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Bang Bon",
-                        "name": "sub_district",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "example": 123,
-                        "name": "unit_number",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Property updated",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Property id not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not update property",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/properties/favorites/:propertyId": {
-            "post": {
-                "description": "Add property to the current user favorites",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Add property to favorites *use cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property id",
-                        "name": "propertyId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Property added to favorites",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Property id not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not add favorite property",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove property to the current user favorites",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Remove property to favorites *use cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Property id",
-                        "name": "propertyId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Property removed from favorites",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Property id not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not remove favorite property",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/register": {
-            "post": {
-                "description": "Create user with formData **\\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Register *use cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "email@email.com",
-                        "name": "email",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "John",
-                        "name": "first_name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Doe",
-                        "name": "last_name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "password1234",
-                        "name": "password",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "0812345678",
-                        "name": "phone_number",
-                        "in": "formData"
-                    },
-                    {
-                        "enum": [
-                            "EMAIL",
-                            "GOOGLE"
-                        ],
-                        "type": "string",
-                        "x-enum-varnames": [
-                            "EMAIL",
-                            "GOOGLE"
-                        ],
-                        "name": "registered_type",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User created",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid user info",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not create user",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/top10properties": {
-            "get": {
-                "description": "Get top 10 properties with the most favorites, sorted by the number of favorites then by the newest properties",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Get top 10 properties",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Properties"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Could not get top 10 properties",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/:userId": {
-            "get": {
-                "description": "Get a user by its id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get user by id",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Users"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid user id",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete a user by its id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Delete user by id  *use cookies*",
-                "responses": {
-                    "200": {
-                        "description": "User deleted",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid user id",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/greeting": {
-            "get": {
-                "description": "says hello to current user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "greeting"
-                ],
-                "summary": "Greeting with auth required *use cookies*",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Greetings"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/me": {
-            "get": {
-                "description": "Get current user info",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get current user info *use cookies*",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Users"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/me/appointments": {
-            "get": {
-                "description": "Get all appointments related to the user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "appointments"
-                ],
-                "summary": "Get my appointments",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.MyAppointmentResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not get my appointments",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/me/favorites": {
-            "get": {
-                "description": "Get all properties that the current user has added to favorites",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Get my favorite properties *use cookies*",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Pagination limit per page, max 50, default 20",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Pagination page index as 1-based index, default 1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Sort in format `\u003cjson_field\u003e:\u003cdirection\u003e` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.MyFavoritePropertiesResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not get favorite properties",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/me/financial-information": {
-            "get": {
-                "description": "Get current user financial information",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get current user financial information *use cookies*",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.UserFinancialInformations"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid user id",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update the current user financial information with data from the body",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Update the current user financial information *use cookies*",
-                "parameters": [
-                    {
-                        "description": "User financial information",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UserFinancialInformations"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User financial information updated",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid user financial information",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not update user financial information",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/me/personal-information": {
-            "put": {
-                "description": "Update specifying userId with formData **\\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Update current user personal information *use cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "John",
-                        "name": "first_name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "Doe",
-                        "name": "last_name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "example": "0812345678",
-                        "name": "phone_number",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User personal information updated",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid user info",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Could not update user",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/me/properties": {
-            "get": {
-                "description": "Get all properties owned by the current user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "property"
-                ],
-                "summary": "Get my properties *use cookies*",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Pagination limit per page, max 50, default 20",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Pagination page index as 1-based index, default 1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Sort in format `\u003cjson_field\u003e:\u003cdirection\u003e` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.MyPropertiesResponses"
-                        }
-                    },
-                    "403": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/me/registered": {
-            "get": {
-                "description": "Get user registered type",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get user registered type *use cookies*",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Sessions"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/me/verify": {
-            "post": {
-                "description": "Verify user by citizen id and citizen id image",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Verify user *use cookies*",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "1100111111111",
-                        "name": "citizen_id",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Verified",
-                        "schema": {
-                            "$ref": "#/definitions/models.MessageResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users": {
-            "get": {
-                "description": "Get all users",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get all users",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Users"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
+          }
         }
-    },
-    "definitions": {
-        "enums.AppointmentStatus": {
-            "type": "string",
-            "enum": [
-                "PENDING",
-                "CONFIRMED",
-                "REJECTED",
-                "CANCELLED",
-                "ARCHIVED"
-            ],
-            "x-enum-varnames": [
-                "Pending",
-                "Confirmed",
-                "Rejected",
-                "Cancelled",
-                "Archived"
-            ]
-        },
-        "enums.BankNames": {
-            "type": "string",
-            "enum": [
-                "KBANK",
-                "BBL",
-                "KTB",
-                "BAY",
-                "CIMB",
-                "TTB",
-                "SCB",
-                "GSB",
-                ""
-            ],
-            "x-enum-comments": {
-                "BAY": "\"BANK OF AYUDHYA\"",
-                "BBL": "\"BANGKOK BANK\"",
-                "CIMB": "\"CIMB THAI BANK\"",
-                "GSB": "\"GOVERNMENT SAVINGS BANK\"",
-                "KBANK": "\"KASIKORN BANK\"",
-                "KTB": "\"KRUNG THAI BANK\"",
-                "NULL": "\"BANK NOT SELECTED\"",
-                "SCB": "\"SIAM COMMERCIAL BANK\"",
-                "TTB": "\"TMBTHANACHART BANK\""
-            },
-            "x-enum-varnames": [
-                "KBANK",
-                "BBL",
-                "KTB",
-                "BAY",
-                "CIMB",
-                "TTB",
-                "SCB",
-                "GSB",
-                "NULL"
-            ]
-        },
-        "enums.CardColors": {
-            "type": "string",
-            "enum": [
-                "LIGHT_BLUE",
-                "BLUE",
-                "DARK_BLUE",
-                "VERY_DARK_BLUE"
-            ],
-            "x-enum-varnames": [
-                "LIGHT_BLUE",
-                "BLUE",
-                "DARK_BLUE",
-                "VERY_DARK_BLUE"
-            ]
-        },
-        "enums.FloorSizeUnits": {
-            "type": "string",
-            "enum": [
-                "SQM",
-                "SQFT"
-            ],
-            "x-enum-varnames": [
-                "SQM",
-                "SQFT"
-            ]
-        },
-        "enums.Furnishing": {
-            "type": "string",
-            "enum": [
-                "UNFURNISHED",
-                "PARTIALLY_FURNISHED",
-                "FULLY_FURNISHED",
-                "READY_TO_MOVE_IN"
-            ],
-            "x-enum-varnames": [
-                "UNFURNISHED",
-                "PARTIALLY_FURNISHED",
-                "FULLY_FURNISHED",
-                "READY_TO_MOVE_IN"
-            ]
-        },
-        "enums.PropertyTypes": {
-            "type": "string",
-            "enum": [
-                "CONDOMINIUM",
-                "APARTMENT",
-                "SEMI-DETACHED_HOUSE",
-                "HOUSE",
-                "SERVICED_APARTMENT",
-                "TOWNHOUSE"
-            ],
-            "x-enum-varnames": [
-                "CONDOMINIUM",
-                "APARTMENT",
-                "SEMI_DETACHED_HOUSE",
-                "HOUSE",
-                "SERVICED_APARTMENT",
-                "TOWNHOUSE"
-            ]
-        },
-        "enums.RegisteredTypes": {
-            "type": "string",
-            "enum": [
-                "EMAIL",
-                "GOOGLE"
-            ],
-            "x-enum-varnames": [
-                "EMAIL",
-                "GOOGLE"
-            ]
-        },
-        "enums.SessionType": {
-            "type": "string",
-            "enum": [
-                "REGISTER",
-                "LOGIN"
-            ],
-            "x-enum-varnames": [
-                "SessionRegister",
-                "SessionLogin"
-            ]
-        },
-        "models.Agreements": {
-            "type": "object",
-            "properties": {
-                "agreement_date": {
-                    "type": "string"
-                },
-                "agreement_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "dweller_user_id": {
-                    "type": "string"
-                },
-                "owner_user_id": {
-                    "type": "string"
-                },
-                "property_id": {
-                    "type": "string"
-                }
+      },
+      "delete": {
+        "description": "Delete an agreement by its id",
+        "produces": ["application/json"],
+        "tags": ["agreements"],
+        "summary": "Delete an agreement",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
             }
-        },
-        "models.AllPropertiesResponses": {
-            "type": "object",
-            "properties": {
-                "properties": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Properties"
-                    }
-                },
-                "total": {
-                    "type": "integer",
-                    "example": 2
-                }
-            }
-        },
-        "models.AppointmentDetails": {
-            "type": "object",
-            "properties": {
-                "appointment_date": {
-                    "type": "string",
-                    "example": "2024-02-18T11:00:00Z"
-                },
-                "appointment_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "cancelled_message": {
-                    "type": "string",
-                    "example": "This is a cancelled message"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "dweller": {
-                    "$ref": "#/definitions/models.DwellerAppointmentDetails"
-                },
-                "note": {
-                    "type": "string",
-                    "example": "This is a note"
-                },
-                "owner": {
-                    "$ref": "#/definitions/models.OwnerAppointmentDetails"
-                },
-                "property": {
-                    "$ref": "#/definitions/models.PropertyAppointmentDetails"
-                },
-                "status": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.AppointmentStatus"
-                        }
-                    ],
-                    "example": "PENDING"
-                }
-            }
-        },
-        "models.AppointmentLists": {
-            "type": "object",
-            "properties": {
-                "appointment_date": {
-                    "type": "string",
-                    "example": "2024-02-18T11:00:00Z"
-                },
-                "appointment_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "cancelled_message": {
-                    "type": "string",
-                    "example": "This is a cancelled message"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "note": {
-                    "type": "string",
-                    "example": "This is a note"
-                },
-                "owner": {
-                    "$ref": "#/definitions/models.OwnerAppointmentLists"
-                },
-                "property": {
-                    "$ref": "#/definitions/models.PropertyAppointmentLists"
-                },
-                "status": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.AppointmentStatus"
-                        }
-                    ],
-                    "example": "PENDING"
-                }
-            }
-        },
-        "models.CallbackResponses": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "example": "johnd@email.com"
-                },
-                "registered_type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.RegisteredTypes"
-                        }
-                    ],
-                    "example": "EMAIL / GOOGLE"
-                },
-                "session_type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.SessionType"
-                        }
-                    ],
-                    "example": "REGISTER / LOGIN"
-                }
-            }
-        },
-        "models.ChatPreviews": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "example": "hello, world"
-                },
-                "unread_messages": {
-                    "type": "integer",
-                    "example": 9
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                }
-            }
-        },
-        "models.CreatingAppointments": {
-            "type": "object",
-            "properties": {
-                "appointment_dates": {
-                    "type": "string",
-                    "example": "2024-02-18T11:00:00Z"
-                },
-                "dweller_user_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "note": {
-                    "type": "string",
-                    "example": "This is a note"
-                },
-                "owner_user_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "property_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                }
-            }
-        },
-        "models.CreditCards": {
-            "type": "object",
-            "properties": {
-                "card_color": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.CardColors"
-                        }
-                    ],
-                    "example": "BLUE"
-                },
-                "card_nickname": {
-                    "type": "string",
-                    "example": "John's Card"
-                },
-                "card_number": {
-                    "type": "string",
-                    "example": "1234567890123456"
-                },
-                "cardholder_name": {
-                    "type": "string",
-                    "example": "John Doe"
-                },
-                "cvv": {
-                    "type": "string",
-                    "example": "123"
-                },
-                "expire_month": {
-                    "type": "string",
-                    "example": "12"
-                },
-                "expire_year": {
-                    "type": "string",
-                    "example": "2023"
-                },
-                "tag_number": {
-                    "type": "integer",
-                    "example": 1
-                }
-            }
-        },
-        "models.DwellerAppointmentDetails": {
-            "type": "object",
-            "properties": {
-                "dweller_first_name": {
-                    "type": "string",
-                    "example": "John"
-                },
-                "dweller_last_name": {
-                    "type": "string",
-                    "example": "Doe"
-                },
-                "dweller_phone_number": {
-                    "type": "string",
-                    "example": "0812345678"
-                },
-                "dweller_profile_image_url": {
-                    "type": "string",
-                    "example": "https://image_url.com/abcd"
-                },
-                "dweller_user_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                }
-            }
-        },
-        "models.ErrorResponses": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 500
-                },
-                "message": {
-                    "type": "string",
-                    "example": "internal server error"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "internal-server-error"
-                }
-            }
-        },
-        "models.Greetings": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Hello, World"
-                }
-            }
-        },
-        "models.MessageResponses": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Message sent successfully"
-                }
-            }
-        },
-        "models.Messages": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "example": "hello, world"
-                },
-                "message_id": {
-                    "type": "string",
-                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
-                },
-                "read_at": {
-                    "type": "string",
-                    "example": "2024-02-22T03:06:53.313735Z"
-                },
-                "receiver_id": {
-                    "type": "string",
-                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
-                },
-                "sender_id": {
-                    "type": "string",
-                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
-                },
-                "sent_at": {
-                    "type": "string",
-                    "example": "2024-02-22T03:06:53.313735Z"
-                }
-            }
-        },
-        "models.MyAppointmentResponse": {
-            "type": "object",
-            "properties": {
-                "dweller_appointments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.AppointmentLists"
-                    }
-                },
-                "owner_appointments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.AppointmentLists"
-                    }
-                }
-            }
-        },
-        "models.MyFavoritePropertiesResponses": {
-            "type": "object",
-            "properties": {
-                "properties": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Properties"
-                    }
-                },
-                "total": {
-                    "type": "integer",
-                    "example": 2
-                }
-            }
-        },
-        "models.MyPropertiesResponses": {
-            "type": "object",
-            "properties": {
-                "properties": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Properties"
-                    }
-                },
-                "total": {
-                    "type": "integer",
-                    "example": 2
-                }
-            }
-        },
-        "models.OwnerAppointmentDetails": {
-            "type": "object",
-            "properties": {
-                "owner_first_name": {
-                    "type": "string",
-                    "example": "John"
-                },
-                "owner_last_name": {
-                    "type": "string",
-                    "example": "Doe"
-                },
-                "owner_phone_number": {
-                    "type": "string",
-                    "example": "0812345678"
-                },
-                "owner_profile_image_url": {
-                    "type": "string",
-                    "example": "https://image_url.com/abcd"
-                },
-                "owner_user_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                }
-            }
-        },
-        "models.OwnerAppointmentLists": {
-            "type": "object",
-            "properties": {
-                "owner_first_name": {
-                    "type": "string",
-                    "example": "John"
-                },
-                "owner_last_name": {
-                    "type": "string",
-                    "example": "Doe"
-                },
-                "owner_profile_image_url": {
-                    "type": "string",
-                    "example": "https://image_url.com/abcd"
-                },
-                "owner_user_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                }
-            }
-        },
-        "models.Properties": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string",
-                    "example": "123/4"
-                },
-                "alley": {
-                    "type": "string",
-                    "example": "Pattaya Nua 78"
-                },
-                "bathrooms": {
-                    "type": "integer",
-                    "example": 2
-                },
-                "bedrooms": {
-                    "type": "integer",
-                    "example": 3
-                },
-                "country": {
-                    "type": "string",
-                    "example": "Thailand"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "district": {
-                    "type": "string",
-                    "example": "Bang Phli"
-                },
-                "floor": {
-                    "type": "integer",
-                    "example": 5
-                },
-                "floor_size": {
-                    "type": "number",
-                    "example": 123.45
-                },
-                "floor_size_unit": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.FloorSizeUnits"
-                        }
-                    ],
-                    "example": "SQM"
-                },
-                "furnishing": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.Furnishing"
-                        }
-                    ],
-                    "example": "UNFURNISHED"
-                },
-                "is_favorite": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "owner_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "postal_code": {
-                    "type": "string",
-                    "example": "69096"
-                },
-                "property_description": {
-                    "type": "string",
-                    "example": "Et sequi dolor praes"
-                },
-                "property_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "property_images": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.PropertyImages"
-                    }
-                },
-                "property_name": {
-                    "type": "string",
-                    "example": "Supalai"
-                },
-                "property_type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.PropertyTypes"
-                        }
-                    ],
-                    "example": "CONDOMINIUM"
-                },
-                "province": {
-                    "type": "string",
-                    "example": "Pattaya"
-                },
-                "renting_property": {
-                    "$ref": "#/definitions/models.RentingProperties"
-                },
-                "selling_property": {
-                    "$ref": "#/definitions/models.SellingProperties"
-                },
-                "street": {
-                    "type": "string",
-                    "example": "Pattaya"
-                },
-                "sub_district": {
-                    "type": "string",
-                    "example": "Bang Bon"
-                },
-                "unit_number": {
-                    "type": "integer",
-                    "example": 123
-                }
-            }
-        },
-        "models.PropertyAppointmentDetails": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string",
-                    "example": "123/4"
-                },
-                "alley": {
-                    "type": "string",
-                    "example": "Pattaya Nua 78"
-                },
-                "country": {
-                    "type": "string",
-                    "example": "Thailand"
-                },
-                "district": {
-                    "type": "string",
-                    "example": "Bang Phli"
-                },
-                "postal_code": {
-                    "type": "string",
-                    "example": "69096"
-                },
-                "price": {
-                    "type": "number",
-                    "example": 12345.67
-                },
-                "price_per_month": {
-                    "type": "number",
-                    "example": 12345.67
-                },
-                "property_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "property_images": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.PropertyImageAppointments"
-                    }
-                },
-                "property_name": {
-                    "type": "string",
-                    "example": "The Base Sukhumvit 77"
-                },
-                "property_type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.PropertyTypes"
-                        }
-                    ],
-                    "example": "CONDO"
-                },
-                "province": {
-                    "type": "string",
-                    "example": "Pattaya"
-                },
-                "street": {
-                    "type": "string",
-                    "example": "Pattaya"
-                },
-                "sub_district": {
-                    "type": "string",
-                    "example": "Bang Bon"
-                }
-            }
-        },
-        "models.PropertyAppointmentLists": {
-            "type": "object",
-            "properties": {
-                "property_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "property_images": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.PropertyImageAppointments"
-                    }
-                },
-                "property_name": {
-                    "type": "string",
-                    "example": "The Base Sukhumvit 77"
-                },
-                "property_type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.PropertyTypes"
-                        }
-                    ],
-                    "example": "CONDO"
-                }
-            }
-        },
-        "models.PropertyImageAppointments": {
-            "type": "object",
-            "properties": {
-                "image_url": {
-                    "type": "string",
-                    "example": "https://image_url.com/abcd"
-                }
-            }
-        },
-        "models.PropertyImages": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string",
-                    "example": "https://image_url.com/abcd"
-                }
-            }
-        },
-        "models.RentingProperties": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "is_occupied": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "price_per_month": {
-                    "type": "number",
-                    "example": 12345.67
-                }
-            }
-        },
-        "models.SellingProperties": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "is_sold": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "price": {
-                    "type": "number",
-                    "example": 12345.67
-                }
-            }
-        },
-        "models.SendingEmailRequests": {
-            "type": "object",
-            "properties": {
-                "emails": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "models.Sessions": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "example": "admim@email.com"
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                }
-            }
-        },
-        "models.UpdatingAppointmentStatus": {
-            "type": "object",
-            "properties": {
-                "cancelled_message": {
-                    "type": "string",
-                    "example": "This is a cancelled message"
-                },
-                "status": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.AppointmentStatus"
-                        }
-                    ],
-                    "example": "CANCELLED"
-                }
-            }
-        },
-        "models.UserFinancialInformations": {
-            "type": "object",
-            "properties": {
-                "bank_account_number": {
-                    "type": "string",
-                    "example": "1234567890"
-                },
-                "bank_name": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.BankNames"
-                        }
-                    ],
-                    "example": "KBANK"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "credit_cards": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.CreditCards"
-                    }
-                }
-            }
-        },
-        "models.Users": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string",
-                    "example": "email@email.com"
-                },
-                "first_name": {
-                    "type": "string",
-                    "example": "John"
-                },
-                "is_verified": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "last_name": {
-                    "type": "string",
-                    "example": "Doe"
-                },
-                "password": {
-                    "type": "string",
-                    "example": "password1234"
-                },
-                "phone_number": {
-                    "type": "string",
-                    "example": "0812345678"
-                },
-                "profile_image_url": {
-                    "type": "string",
-                    "example": "https://image_url.com/abcd"
-                },
-                "registered_type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/enums.RegisteredTypes"
-                        }
-                    ],
-                    "example": "EMAIL"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
+          }
         }
+      }
+    },
+    "/api/v1/agreements": {
+      "get": {
+        "description": "Get all agreements",
+        "produces": ["application/json"],
+        "tags": ["agreements"],
+        "summary": "Get all agreements",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/models.Agreements"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create an agreement by parsing the body",
+        "produces": ["application/json"],
+        "tags": ["agreements"],
+        "summary": "Create an agreement",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agreements/dweller/:userId": {
+      "get": {
+        "description": "Get all agreements by dweller id",
+        "produces": ["application/json"],
+        "tags": ["agreements"],
+        "summary": "Get agreements by dweller id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/models.Agreements"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agreements/owner/:userId": {
+      "get": {
+        "description": "Get all agreements by owner id",
+        "produces": ["application/json"],
+        "tags": ["agreements"],
+        "summary": "Get agreements by owner id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/models.Agreements"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/appointments": {
+      "get": {
+        "description": "Get all appointments",
+        "produces": ["application/json"],
+        "tags": ["appointments"],
+        "summary": "Get all appointments",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/models.AppointmentLists"
+              }
+            }
+          },
+          "500": {
+            "description": "Could not get all appointments",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create an appointments with **property_id**, **owner_user_id**, **dweller_user_id**, **appointment_date**, **note**(optional)",
+        "produces": ["application/json"],
+        "tags": ["appointments"],
+        "summary": "Create an appointment",
+        "parameters": [
+          {
+            "description": "Appointment details",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.CreatingAppointments"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Appointments created",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "400": {
+            "description": "Empty dates or some of appointments duplicate with existing one",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not create appointments",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/appointments/:appointmentId": {
+      "get": {
+        "description": "Get the appointment and other related information by id",
+        "produces": ["application/json"],
+        "tags": ["appointments"],
+        "summary": "Get an appointment by id",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Appointment ID",
+            "name": "appointmentId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/models.AppointmentDetails"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid appointment id",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "Could not find the specified appointment",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not get appointment by id",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete an appointment by id",
+        "produces": ["application/json"],
+        "tags": ["appointments"],
+        "summary": "Delete an appointment by id",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Appointment ID",
+            "name": "appointmentId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Appointments deleted",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "500": {
+            "description": "Could not delete appointments",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update an appointment status by id with **status** and **cancelled_message**(optional)",
+        "produces": ["application/json"],
+        "tags": ["appointments"],
+        "summary": "Update an appointment status by id",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Appointment ID",
+            "name": "appointmentId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "Appointment status and cancelled message(optional)",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.UpdatingAppointmentStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Appointment state updated",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "400": {
+            "description": "Invalid appointment id",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not update appointment status",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/callback": {
+      "get": {
+        "description": "Callback from google / register redirect. Basically put all query strings to this request.",
+        "tags": ["auth"],
+        "summary": "Callback",
+        "parameters": [
+          {
+            "type": "string",
+            "example": "SCK-A1b2C3",
+            "name": "code",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "email",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "state",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.CallbackResponses"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chats": {
+      "get": {
+        "description": "Get current users chat",
+        "produces": ["application/json"],
+        "tags": ["chats"],
+        "summary": "Get current users chat *use cookies*",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/models.ChatPreviews"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chats/:recvUserId": {
+      "get": {
+        "description": "Get messages chatting with recvUserId. Pagination is available.",
+        "produces": ["application/json"],
+        "tags": ["chats"],
+        "summary": "Get messages in a chat with recvUserId *use cookies*",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "offset",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "default 50, max 50",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/models.Messages"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/email": {
+      "post": {
+        "description": "Send a verification email to the user",
+        "produces": ["application/json"],
+        "tags": ["emails"],
+        "summary": "Send verification email",
+        "parameters": [
+          {
+            "description": "User email address",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.SendingEmailRequests"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/greeting": {
+      "get": {
+        "description": "says hello, world",
+        "produces": ["application/json"],
+        "tags": ["greeting"],
+        "summary": "Greeting",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.Greetings"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/login": {
+      "post": {
+        "description": "Login with email and password",
+        "produces": ["application/json"],
+        "tags": ["auth"],
+        "summary": "Login with email",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.Properties"
+            }
+          },
+          "400": {
+            "description": "Empty or invalid credentials",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "401": {
+            "description": "Password mismatch",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/logout": {
+      "post": {
+        "description": "Logout",
+        "tags": ["auth"],
+        "summary": "Logout",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/oauth/google": {
+      "get": {
+        "description": "Redirect to this endpoint to login with Google OAuth2. When logging in is completed, the redirection to /register in client will occur.",
+        "tags": ["auth"],
+        "summary": "Login with Google",
+        "responses": {
+          "307": {
+            "description": "Temporary Redirect"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "model"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/properties": {
+      "get": {
+        "description": "Get all properties or search properties by query",
+        "produces": ["application/json"],
+        "tags": ["property"],
+        "summary": "Get or search properties",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Search query",
+            "name": "query",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Pagination limit per page, max 50, default 20",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Pagination page index as 1-based index, default 1",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Sort in format `\u003cjson_field\u003e:\u003cdirection\u003e` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`",
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter in format `\u003cjson_field\u003e[\u003coperator\u003e]:\u003cvalue\u003e` where operator can only be greater than or equal `gte` or less than or equal `lte`. Multiple filters can be done with `,` separating each filters. Ex. `?filter=floor_size[gte]:22,floor_size[lte]:45.5`",
+            "name": "filter",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.AllPropertiesResponses"
+            }
+          },
+          "500": {
+            "description": "Could not get properties",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a property with formData *upload property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg",
+        "produces": ["application/json"],
+        "tags": ["property"],
+        "summary": "Create a property *user cookies*",
+        "parameters": [
+          {
+            "type": "string",
+            "example": "123/4",
+            "name": "address",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Pattaya Nua 78",
+            "name": "alley",
+            "in": "formData"
+          },
+          {
+            "type": "integer",
+            "example": 2,
+            "name": "bathrooms",
+            "in": "formData"
+          },
+          {
+            "type": "integer",
+            "example": 3,
+            "name": "bedrooms",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Thailand",
+            "name": "country",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Bang Phli",
+            "name": "district",
+            "in": "formData"
+          },
+          {
+            "type": "integer",
+            "example": 5,
+            "name": "floor",
+            "in": "formData"
+          },
+          {
+            "type": "number",
+            "example": 123.45,
+            "name": "floor_size",
+            "in": "formData"
+          },
+          {
+            "enum": ["SQM", "SQFT"],
+            "type": "string",
+            "example": "SQM",
+            "x-enum-varnames": ["SQM", "SQFT"],
+            "name": "floor_size_unit",
+            "in": "formData"
+          },
+          {
+            "enum": [
+              "UNFURNISHED",
+              "PARTIALLY_FURNISHED",
+              "FULLY_FURNISHED",
+              "READY_TO_MOVE_IN"
+            ],
+            "type": "string",
+            "example": "UNFURNISHED",
+            "x-enum-varnames": [
+              "UNFURNISHED",
+              "PARTIALLY_FURNISHED",
+              "FULLY_FURNISHED",
+              "READY_TO_MOVE_IN"
+            ],
+            "name": "furnishing",
+            "in": "formData"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "csv",
+            "example": [
+              "https://image_url.com/abcd",
+              "https://image_url.com/abcd",
+              "https://image_url.com/abcd"
+            ],
+            "name": "image_urls",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "example": false,
+            "name": "is_occupied",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "example": true,
+            "name": "is_sold",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "name": "-",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "69096",
+            "name": "postal_code",
+            "in": "formData"
+          },
+          {
+            "type": "number",
+            "example": 12345.67,
+            "name": "price",
+            "in": "formData"
+          },
+          {
+            "type": "number",
+            "example": 12345.67,
+            "name": "price_per_month",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Et sequi dolor praes",
+            "name": "property_description",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "name": "-",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Supalai",
+            "name": "property_name",
+            "in": "formData"
+          },
+          {
+            "enum": [
+              "CONDOMINIUM",
+              "APARTMENT",
+              "SEMI-DETACHED_HOUSE",
+              "HOUSE",
+              "SERVICED_APARTMENT",
+              "TOWNHOUSE"
+            ],
+            "type": "string",
+            "example": "CONDOMINIUM",
+            "x-enum-varnames": [
+              "CONDOMINIUM",
+              "APARTMENT",
+              "SEMI_DETACHED_HOUSE",
+              "HOUSE",
+              "SERVICED_APARTMENT",
+              "TOWNHOUSE"
+            ],
+            "name": "property_type",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Pattaya",
+            "name": "province",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Pattaya",
+            "name": "street",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Bang Bon",
+            "name": "sub_district",
+            "in": "formData"
+          },
+          {
+            "type": "integer",
+            "example": 123,
+            "name": "unit_number",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property created",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "400": {
+            "description": "Invalid request body",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "Property id not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not create property",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/properties/:propertyId": {
+      "get": {
+        "description": "Get property by its id",
+        "produces": ["application/json"],
+        "tags": ["property"],
+        "summary": "Get property by propertyId",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Property id",
+            "name": "propertyId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.Properties"
+            }
+          },
+          "400": {
+            "description": "Invalid property id",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "Property id not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a property, owned by the current user, by its id",
+        "produces": ["application/json"],
+        "tags": ["property"],
+        "summary": "Delete a property *use cookies*",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Property id",
+            "name": "propertyId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property deleted",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "400": {
+            "description": "Invalid request body",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "Property id not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not delete property",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update a property with formData *upload **NEW** property images (array of images) in formData with field `property_images`. Available formats are .png / .jpg / .jpeg *If you want to keep the old images, you need to include them in the formData with field `image_urls` as an array of strings",
+        "produces": ["application/json"],
+        "tags": ["property"],
+        "summary": "Update a property *user cookies*",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Property id",
+            "name": "propertyId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "example": "123/4",
+            "name": "address",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Pattaya Nua 78",
+            "name": "alley",
+            "in": "formData"
+          },
+          {
+            "type": "integer",
+            "example": 2,
+            "name": "bathrooms",
+            "in": "formData"
+          },
+          {
+            "type": "integer",
+            "example": 3,
+            "name": "bedrooms",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Thailand",
+            "name": "country",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Bang Phli",
+            "name": "district",
+            "in": "formData"
+          },
+          {
+            "type": "integer",
+            "example": 5,
+            "name": "floor",
+            "in": "formData"
+          },
+          {
+            "type": "number",
+            "example": 123.45,
+            "name": "floor_size",
+            "in": "formData"
+          },
+          {
+            "enum": ["SQM", "SQFT"],
+            "type": "string",
+            "example": "SQM",
+            "x-enum-varnames": ["SQM", "SQFT"],
+            "name": "floor_size_unit",
+            "in": "formData"
+          },
+          {
+            "enum": [
+              "UNFURNISHED",
+              "PARTIALLY_FURNISHED",
+              "FULLY_FURNISHED",
+              "READY_TO_MOVE_IN"
+            ],
+            "type": "string",
+            "example": "UNFURNISHED",
+            "x-enum-varnames": [
+              "UNFURNISHED",
+              "PARTIALLY_FURNISHED",
+              "FULLY_FURNISHED",
+              "READY_TO_MOVE_IN"
+            ],
+            "name": "furnishing",
+            "in": "formData"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "csv",
+            "example": [
+              "https://image_url.com/abcd",
+              "https://image_url.com/abcd",
+              "https://image_url.com/abcd"
+            ],
+            "name": "image_urls",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "example": false,
+            "name": "is_occupied",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "example": true,
+            "name": "is_sold",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "name": "-",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "69096",
+            "name": "postal_code",
+            "in": "formData"
+          },
+          {
+            "type": "number",
+            "example": 12345.67,
+            "name": "price",
+            "in": "formData"
+          },
+          {
+            "type": "number",
+            "example": 12345.67,
+            "name": "price_per_month",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Et sequi dolor praes",
+            "name": "property_description",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "name": "-",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Supalai",
+            "name": "property_name",
+            "in": "formData"
+          },
+          {
+            "enum": [
+              "CONDOMINIUM",
+              "APARTMENT",
+              "SEMI-DETACHED_HOUSE",
+              "HOUSE",
+              "SERVICED_APARTMENT",
+              "TOWNHOUSE"
+            ],
+            "type": "string",
+            "example": "CONDOMINIUM",
+            "x-enum-varnames": [
+              "CONDOMINIUM",
+              "APARTMENT",
+              "SEMI_DETACHED_HOUSE",
+              "HOUSE",
+              "SERVICED_APARTMENT",
+              "TOWNHOUSE"
+            ],
+            "name": "property_type",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Pattaya",
+            "name": "province",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Pattaya",
+            "name": "street",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Bang Bon",
+            "name": "sub_district",
+            "in": "formData"
+          },
+          {
+            "type": "integer",
+            "example": 123,
+            "name": "unit_number",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property updated",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "400": {
+            "description": "Invalid request body",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "Property id not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not update property",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/properties/favorites/:propertyId": {
+      "post": {
+        "description": "Add property to the current user favorites",
+        "produces": ["application/json"],
+        "tags": ["property"],
+        "summary": "Add property to favorites *use cookies*",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Property id",
+            "name": "propertyId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property added to favorites",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "Property id not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not add favorite property",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Remove property to the current user favorites",
+        "produces": ["application/json"],
+        "tags": ["property"],
+        "summary": "Remove property to favorites *use cookies*",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Property id",
+            "name": "propertyId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property removed from favorites",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "Property id not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not remove favorite property",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/register": {
+      "post": {
+        "description": "Create user with formData **\\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Register *use cookies*",
+        "parameters": [
+          {
+            "type": "string",
+            "example": "email@email.com",
+            "name": "email",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "John",
+            "name": "first_name",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Doe",
+            "name": "last_name",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "password1234",
+            "name": "password",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "0812345678",
+            "name": "phone_number",
+            "in": "formData"
+          },
+          {
+            "enum": ["EMAIL", "GOOGLE"],
+            "type": "string",
+            "x-enum-varnames": ["EMAIL", "GOOGLE"],
+            "name": "registered_type",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User created",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "400": {
+            "description": "Invalid user info",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not create user",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/top10properties": {
+      "get": {
+        "description": "Get top 10 properties with the most favorites, sorted by the number of favorites then by the newest properties",
+        "produces": ["application/json"],
+        "tags": ["property"],
+        "summary": "Get top 10 properties",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/models.Properties"
+              }
+            }
+          },
+          "500": {
+            "description": "Could not get top 10 properties",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/:userId": {
+      "get": {
+        "description": "Get a user by its id",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Get user by id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.Users"
+            }
+          },
+          "400": {
+            "description": "Invalid user id",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a user by its id",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Delete user by id  *use cookies*",
+        "responses": {
+          "200": {
+            "description": "User deleted",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "400": {
+            "description": "Invalid user id",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/greeting": {
+      "get": {
+        "description": "says hello to current user",
+        "produces": ["application/json"],
+        "tags": ["greeting"],
+        "summary": "Greeting with auth required *use cookies*",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.Greetings"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/me": {
+      "get": {
+        "description": "Get current user info",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Get current user info *use cookies*",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.Users"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/me/appointments": {
+      "get": {
+        "description": "Get all appointments related to the user",
+        "produces": ["application/json"],
+        "tags": ["appointments"],
+        "summary": "Get my appointments",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.MyAppointmentResponses"
+            }
+          },
+          "500": {
+            "description": "Could not get my appointments",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/me/favorites": {
+      "get": {
+        "description": "Get all properties that the current user has added to favorites",
+        "produces": ["application/json"],
+        "tags": ["property"],
+        "summary": "Get my favorite properties *use cookies*",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Pagination limit per page, max 50, default 20",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Pagination page index as 1-based index, default 1",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Sort in format `\u003cjson_field\u003e:\u003cdirection\u003e` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`",
+            "name": "sort",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.MyFavoritePropertiesResponses"
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not get favorite properties",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/me/financial-information": {
+      "get": {
+        "description": "Get current user financial information",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Get current user financial information *use cookies*",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.UserFinancialInformations"
+            }
+          },
+          "400": {
+            "description": "Invalid user id",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Update the current user financial information with data from the body",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Update the current user financial information *use cookies*",
+        "parameters": [
+          {
+            "description": "User financial information",
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.UserFinancialInformations"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User financial information updated",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "400": {
+            "description": "Invalid user financial information",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not update user financial information",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/me/personal-information": {
+      "put": {
+        "description": "Update specifying userId with formData **\\***upload profile image in formData with field `profile_image`. Available formats are .png / .jpg / .jpeg",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Update current user personal information *use cookies*",
+        "parameters": [
+          {
+            "type": "string",
+            "example": "John",
+            "name": "first_name",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "Doe",
+            "name": "last_name",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "example": "0812345678",
+            "name": "phone_number",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User personal information updated",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "400": {
+            "description": "Invalid user info",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Could not update user",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/me/properties": {
+      "get": {
+        "description": "Get all properties owned by the current user",
+        "produces": ["application/json"],
+        "tags": ["property"],
+        "summary": "Get my properties *use cookies*",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "Pagination limit per page, max 50, default 20",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Pagination page index as 1-based index, default 1",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Sort in format `\u003cjson_field\u003e:\u003cdirection\u003e` where direction can only be `desc` or `asc`. Ex. `?sort=selling_property.price:desc`",
+            "name": "sort",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.MyPropertiesResponses"
+            }
+          },
+          "403": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/me/registered": {
+      "get": {
+        "description": "Get user registered type",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Get user registered type *use cookies*",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/models.Sessions"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/me/verify": {
+      "post": {
+        "description": "Verify user by citizen id and citizen id image",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Verify user *use cookies*",
+        "parameters": [
+          {
+            "type": "string",
+            "example": "1100111111111",
+            "name": "citizen_id",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verified",
+            "schema": {
+              "$ref": "#/definitions/models.MessageResponses"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "description": "Get all users",
+        "produces": ["application/json"],
+        "tags": ["users"],
+        "summary": "Get all users",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/models.Users"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/models.ErrorResponses"
+            }
+          }
+        }
+      }
     }
+  },
+  "definitions": {
+    "enums.AppointmentStatus": {
+      "type": "string",
+      "enum": ["PENDING", "CONFIRMED", "REJECTED", "CANCELLED", "ARCHIVED"],
+      "x-enum-varnames": [
+        "Pending",
+        "Confirmed",
+        "Rejected",
+        "Cancelled",
+        "Archived"
+      ]
+    },
+    "enums.BankNames": {
+      "type": "string",
+      "enum": ["KBANK", "BBL", "KTB", "BAY", "CIMB", "TTB", "SCB", "GSB", ""],
+      "x-enum-comments": {
+        "BAY": "\"BANK OF AYUDHYA\"",
+        "BBL": "\"BANGKOK BANK\"",
+        "CIMB": "\"CIMB THAI BANK\"",
+        "GSB": "\"GOVERNMENT SAVINGS BANK\"",
+        "KBANK": "\"KASIKORN BANK\"",
+        "KTB": "\"KRUNG THAI BANK\"",
+        "NULL": "\"BANK NOT SELECTED\"",
+        "SCB": "\"SIAM COMMERCIAL BANK\"",
+        "TTB": "\"TMBTHANACHART BANK\""
+      },
+      "x-enum-varnames": [
+        "KBANK",
+        "BBL",
+        "KTB",
+        "BAY",
+        "CIMB",
+        "TTB",
+        "SCB",
+        "GSB",
+        "NULL"
+      ]
+    },
+    "enums.CardColors": {
+      "type": "string",
+      "enum": ["LIGHT_BLUE", "BLUE", "DARK_BLUE", "VERY_DARK_BLUE"],
+      "x-enum-varnames": ["LIGHT_BLUE", "BLUE", "DARK_BLUE", "VERY_DARK_BLUE"]
+    },
+    "enums.FloorSizeUnits": {
+      "type": "string",
+      "enum": ["SQM", "SQFT"],
+      "x-enum-varnames": ["SQM", "SQFT"]
+    },
+    "enums.Furnishing": {
+      "type": "string",
+      "enum": [
+        "UNFURNISHED",
+        "PARTIALLY_FURNISHED",
+        "FULLY_FURNISHED",
+        "READY_TO_MOVE_IN"
+      ],
+      "x-enum-varnames": [
+        "UNFURNISHED",
+        "PARTIALLY_FURNISHED",
+        "FULLY_FURNISHED",
+        "READY_TO_MOVE_IN"
+      ]
+    },
+    "enums.PropertyTypes": {
+      "type": "string",
+      "enum": [
+        "CONDOMINIUM",
+        "APARTMENT",
+        "SEMI-DETACHED_HOUSE",
+        "HOUSE",
+        "SERVICED_APARTMENT",
+        "TOWNHOUSE"
+      ],
+      "x-enum-varnames": [
+        "CONDOMINIUM",
+        "APARTMENT",
+        "SEMI_DETACHED_HOUSE",
+        "HOUSE",
+        "SERVICED_APARTMENT",
+        "TOWNHOUSE"
+      ]
+    },
+    "enums.RegisteredTypes": {
+      "type": "string",
+      "enum": ["EMAIL", "GOOGLE"],
+      "x-enum-varnames": ["EMAIL", "GOOGLE"]
+    },
+    "enums.SessionType": {
+      "type": "string",
+      "enum": ["REGISTER", "LOGIN"],
+      "x-enum-varnames": ["SessionRegister", "SessionLogin"]
+    },
+    "models.Agreements": {
+      "type": "object",
+      "properties": {
+        "agreement_date": {
+          "type": "string"
+        },
+        "agreement_id": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "dweller_user_id": {
+          "type": "string"
+        },
+        "owner_user_id": {
+          "type": "string"
+        },
+        "property_id": {
+          "type": "string"
+        }
+      }
+    },
+    "models.AllPropertiesResponses": {
+      "type": "object",
+      "properties": {
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.Properties"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "example": 2
+        }
+      }
+    },
+    "models.AppointmentDetails": {
+      "type": "object",
+      "properties": {
+        "appointment_date": {
+          "type": "string",
+          "example": "2024-02-18T11:00:00Z"
+        },
+        "appointment_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        },
+        "cancelled_message": {
+          "type": "string",
+          "example": "This is a cancelled message"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "dweller": {
+          "$ref": "#/definitions/models.DwellerAppointmentDetails"
+        },
+        "note": {
+          "type": "string",
+          "example": "This is a note"
+        },
+        "owner": {
+          "$ref": "#/definitions/models.OwnerAppointmentDetails"
+        },
+        "property": {
+          "$ref": "#/definitions/models.PropertyAppointmentDetails"
+        },
+        "status": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.AppointmentStatus"
+            }
+          ],
+          "example": "PENDING"
+        }
+      }
+    },
+    "models.AppointmentLists": {
+      "type": "object",
+      "properties": {
+        "appointment_date": {
+          "type": "string",
+          "example": "2024-02-18T11:00:00Z"
+        },
+        "appointment_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        },
+        "cancelled_message": {
+          "type": "string",
+          "example": "This is a cancelled message"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string",
+          "example": "This is a note"
+        },
+        "owner": {
+          "$ref": "#/definitions/models.OwnerAppointmentLists"
+        },
+        "property": {
+          "$ref": "#/definitions/models.PropertyAppointmentLists"
+        },
+        "status": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.AppointmentStatus"
+            }
+          ],
+          "example": "PENDING"
+        }
+      }
+    },
+    "models.CallbackResponses": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "johnd@email.com"
+        },
+        "registered_type": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.RegisteredTypes"
+            }
+          ],
+          "example": "EMAIL / GOOGLE"
+        },
+        "session_type": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.SessionType"
+            }
+          ],
+          "example": "REGISTER / LOGIN"
+        }
+      }
+    },
+    "models.ChatPreviews": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "example": "hello, world"
+        },
+        "unread_messages": {
+          "type": "integer",
+          "example": 9
+        },
+        "user_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        }
+      }
+    },
+    "models.CreatingAppointments": {
+      "type": "object",
+      "properties": {
+        "appointment_dates": {
+          "type": "string",
+          "example": "2024-02-18T11:00:00Z"
+        },
+        "dweller_user_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        },
+        "note": {
+          "type": "string",
+          "example": "This is a note"
+        },
+        "owner_user_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        },
+        "property_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        }
+      }
+    },
+    "models.CreditCards": {
+      "type": "object",
+      "properties": {
+        "card_color": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.CardColors"
+            }
+          ],
+          "example": "BLUE"
+        },
+        "card_nickname": {
+          "type": "string",
+          "example": "John's Card"
+        },
+        "card_number": {
+          "type": "string",
+          "example": "1234567890123456"
+        },
+        "cardholder_name": {
+          "type": "string",
+          "example": "John Doe"
+        },
+        "cvv": {
+          "type": "string",
+          "example": "123"
+        },
+        "expire_month": {
+          "type": "string",
+          "example": "12"
+        },
+        "expire_year": {
+          "type": "string",
+          "example": "2023"
+        },
+        "tag_number": {
+          "type": "integer",
+          "example": 1
+        }
+      }
+    },
+    "models.DwellerAppointmentDetails": {
+      "type": "object",
+      "properties": {
+        "dweller_first_name": {
+          "type": "string",
+          "example": "John"
+        },
+        "dweller_last_name": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "dweller_phone_number": {
+          "type": "string",
+          "example": "0812345678"
+        },
+        "dweller_profile_image_url": {
+          "type": "string",
+          "example": "https://image_url.com/abcd"
+        },
+        "dweller_user_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        }
+      }
+    },
+    "models.ErrorResponses": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "example": 500
+        },
+        "message": {
+          "type": "string",
+          "example": "internal server error"
+        },
+        "name": {
+          "type": "string",
+          "example": "internal-server-error"
+        }
+      }
+    },
+    "models.Greetings": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Hello, World"
+        }
+      }
+    },
+    "models.MessageResponses": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Message sent successfully"
+        }
+      }
+    },
+    "models.Messages": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "example": "hello, world"
+        },
+        "message_id": {
+          "type": "string",
+          "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
+        },
+        "read_at": {
+          "type": "string",
+          "example": "2024-02-22T03:06:53.313735Z"
+        },
+        "receiver_id": {
+          "type": "string",
+          "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
+        },
+        "sender_id": {
+          "type": "string",
+          "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
+        },
+        "sent_at": {
+          "type": "string",
+          "example": "2024-02-22T03:06:53.313735Z"
+        }
+      }
+    },
+    "models.MyAppointmentResponses": {
+      "type": "object",
+      "properties": {
+        "dweller_appointments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.AppointmentLists"
+          }
+        },
+        "owner_appointments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.AppointmentLists"
+          }
+        }
+      }
+    },
+    "models.MyFavoritePropertiesResponses": {
+      "type": "object",
+      "properties": {
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.Properties"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "example": 2
+        }
+      }
+    },
+    "models.MyPropertiesResponses": {
+      "type": "object",
+      "properties": {
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.Properties"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "example": 2
+        }
+      }
+    },
+    "models.OwnerAppointmentDetails": {
+      "type": "object",
+      "properties": {
+        "owner_first_name": {
+          "type": "string",
+          "example": "John"
+        },
+        "owner_last_name": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "owner_phone_number": {
+          "type": "string",
+          "example": "0812345678"
+        },
+        "owner_profile_image_url": {
+          "type": "string",
+          "example": "https://image_url.com/abcd"
+        },
+        "owner_user_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        }
+      }
+    },
+    "models.OwnerAppointmentLists": {
+      "type": "object",
+      "properties": {
+        "owner_first_name": {
+          "type": "string",
+          "example": "John"
+        },
+        "owner_last_name": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "owner_profile_image_url": {
+          "type": "string",
+          "example": "https://image_url.com/abcd"
+        },
+        "owner_user_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        }
+      }
+    },
+    "models.Properties": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "example": "123/4"
+        },
+        "alley": {
+          "type": "string",
+          "example": "Pattaya Nua 78"
+        },
+        "bathrooms": {
+          "type": "integer",
+          "example": 2
+        },
+        "bedrooms": {
+          "type": "integer",
+          "example": 3
+        },
+        "country": {
+          "type": "string",
+          "example": "Thailand"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string",
+          "example": "Bang Phli"
+        },
+        "floor": {
+          "type": "integer",
+          "example": 5
+        },
+        "floor_size": {
+          "type": "number",
+          "example": 123.45
+        },
+        "floor_size_unit": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.FloorSizeUnits"
+            }
+          ],
+          "example": "SQM"
+        },
+        "furnishing": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.Furnishing"
+            }
+          ],
+          "example": "UNFURNISHED"
+        },
+        "is_favorite": {
+          "type": "boolean",
+          "example": true
+        },
+        "owner_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        },
+        "postal_code": {
+          "type": "string",
+          "example": "69096"
+        },
+        "property_description": {
+          "type": "string",
+          "example": "Et sequi dolor praes"
+        },
+        "property_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        },
+        "property_images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.PropertyImages"
+          }
+        },
+        "property_name": {
+          "type": "string",
+          "example": "Supalai"
+        },
+        "property_type": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.PropertyTypes"
+            }
+          ],
+          "example": "CONDOMINIUM"
+        },
+        "province": {
+          "type": "string",
+          "example": "Pattaya"
+        },
+        "renting_property": {
+          "$ref": "#/definitions/models.RentingProperties"
+        },
+        "selling_property": {
+          "$ref": "#/definitions/models.SellingProperties"
+        },
+        "street": {
+          "type": "string",
+          "example": "Pattaya"
+        },
+        "sub_district": {
+          "type": "string",
+          "example": "Bang Bon"
+        },
+        "unit_number": {
+          "type": "integer",
+          "example": 123
+        }
+      }
+    },
+    "models.PropertyAppointmentDetails": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "example": "123/4"
+        },
+        "alley": {
+          "type": "string",
+          "example": "Pattaya Nua 78"
+        },
+        "country": {
+          "type": "string",
+          "example": "Thailand"
+        },
+        "district": {
+          "type": "string",
+          "example": "Bang Phli"
+        },
+        "postal_code": {
+          "type": "string",
+          "example": "69096"
+        },
+        "price": {
+          "type": "number",
+          "example": 12345.67
+        },
+        "price_per_month": {
+          "type": "number",
+          "example": 12345.67
+        },
+        "property_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        },
+        "property_images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.PropertyImageAppointments"
+          }
+        },
+        "property_name": {
+          "type": "string",
+          "example": "The Base Sukhumvit 77"
+        },
+        "property_type": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.PropertyTypes"
+            }
+          ],
+          "example": "CONDO"
+        },
+        "province": {
+          "type": "string",
+          "example": "Pattaya"
+        },
+        "street": {
+          "type": "string",
+          "example": "Pattaya"
+        },
+        "sub_district": {
+          "type": "string",
+          "example": "Bang Bon"
+        }
+      }
+    },
+    "models.PropertyAppointmentLists": {
+      "type": "object",
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        },
+        "property_images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.PropertyImageAppointments"
+          }
+        },
+        "property_name": {
+          "type": "string",
+          "example": "The Base Sukhumvit 77"
+        },
+        "property_type": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.PropertyTypes"
+            }
+          ],
+          "example": "CONDO"
+        }
+      }
+    },
+    "models.PropertyImageAppointments": {
+      "type": "object",
+      "properties": {
+        "image_url": {
+          "type": "string",
+          "example": "https://image_url.com/abcd"
+        }
+      }
+    },
+    "models.PropertyImages": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string",
+          "example": "https://image_url.com/abcd"
+        }
+      }
+    },
+    "models.RentingProperties": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "is_occupied": {
+          "type": "boolean",
+          "example": true
+        },
+        "price_per_month": {
+          "type": "number",
+          "example": 12345.67
+        }
+      }
+    },
+    "models.SellingProperties": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "is_sold": {
+          "type": "boolean",
+          "example": true
+        },
+        "price": {
+          "type": "number",
+          "example": 12345.67
+        }
+      }
+    },
+    "models.SendingEmailRequests": {
+      "type": "object",
+      "properties": {
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "models.Sessions": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "admim@email.com"
+        },
+        "user_id": {
+          "type": "string",
+          "example": "123e4567-e89b-12d3-a456-426614174000"
+        }
+      }
+    },
+    "models.UpdatingAppointmentStatus": {
+      "type": "object",
+      "properties": {
+        "cancelled_message": {
+          "type": "string",
+          "example": "This is a cancelled message"
+        },
+        "status": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.AppointmentStatus"
+            }
+          ],
+          "example": "CANCELLED"
+        }
+      }
+    },
+    "models.UserFinancialInformations": {
+      "type": "object",
+      "properties": {
+        "bank_account_number": {
+          "type": "string",
+          "example": "1234567890"
+        },
+        "bank_name": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.BankNames"
+            }
+          ],
+          "example": "KBANK"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "credit_cards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.CreditCards"
+          }
+        }
+      }
+    },
+    "models.Users": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "example": "email@email.com"
+        },
+        "first_name": {
+          "type": "string",
+          "example": "John"
+        },
+        "is_verified": {
+          "type": "boolean",
+          "example": false
+        },
+        "last_name": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "password": {
+          "type": "string",
+          "example": "password1234"
+        },
+        "phone_number": {
+          "type": "string",
+          "example": "0812345678"
+        },
+        "profile_image_url": {
+          "type": "string",
+          "example": "https://image_url.com/abcd"
+        },
+        "registered_type": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/enums.RegisteredTypes"
+            }
+          ],
+          "example": "EMAIL"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }
