@@ -26,10 +26,10 @@ func NewHandler(service Service) Handler {
 }
 
 func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
-	// Checkout(c)
 	payment := models.Payments{
 		PaymentId: uuid.New(),
 	}
+
 	if err := c.BodyParser(&payment); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Invalid payment body"))
 	}
@@ -41,6 +41,7 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
 	}
+	Checkout(c)
 
 	return utils.ResponseMessage(c, http.StatusOK, "Payment created successfully")
 

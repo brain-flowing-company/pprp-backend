@@ -3,7 +3,6 @@ package payments
 import (
 	"fmt"
 
-	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stripe/stripe-go/v76"
 	"github.com/stripe/stripe-go/v76/checkout/session"
@@ -16,10 +15,8 @@ func Checkout(c *fiber.Ctx) error {
 		Price int64  `json:"price"`
 	}
 	var payment PaymentRequest
-	err := c.BodyParser(&payment)
-	if err != nil {
-		return apperror.New(apperror.InvalidBody).Describe("Invalid payment object")
-	}
+	payment.Name = "T-shirt"
+	payment.Price = 50000
 
 	params := &stripe.CheckoutSessionParams{
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
