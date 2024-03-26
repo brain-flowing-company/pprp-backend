@@ -219,5 +219,9 @@ func (repo *repositoryImpl) DeleteAppointment(appointmentId string) error {
 }
 
 func (repo *repositoryImpl) UpdateAppointmentStatus(updatingAppointment *models.UpdatingAppointmentStatus, appointmentId string) error {
+	if err := repo.db.Model(&models.Appointments{}).First(&models.Appointments{}, "appointment_id = ?", appointmentId).Error; err != nil {
+		return err
+	}
+	
 	return repo.db.Model(&models.Appointments{}).Where("appointment_id = ?", appointmentId).Updates(updatingAppointment).Error
 }
