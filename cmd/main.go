@@ -159,7 +159,7 @@ func main() {
 	apiv1.Get("/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.GetAllAgreements))
 	apiv1.Get("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.GetAgreementById))
 	apiv1.Post("/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.CreateAgreement))
-	apiv1.Delete("/agreement/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.DeleteAgreement))
+	apiv1.Delete("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.DeleteAgreement))
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Post("/email", emailHandler.SendVerificationEmail)

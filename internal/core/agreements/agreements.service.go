@@ -31,8 +31,10 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 func (s *serviceImpl) GetAllAgreements(results *[]models.Agreements) *apperror.AppError {
 	err := s.repo.GetAllAgreements(results)
 	if err != nil {
-		s.logger.Error("Error getting all agreements", zap.Error(err))
-		return apperror.New(apperror.InternalServerError).Describe("Error getting all agreements")
+		s.logger.Error("Could not get all agreements", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get all agreements")
 	}
 	return nil
 }
@@ -50,7 +52,7 @@ func (s *serviceImpl) GetAgreementById(agreement *models.AgreementDetails, agree
 			New(apperror.AgreementNotFound).
 			Describe("Could not find the specified agreement")
 	} else if err != nil {
-		s.logger.Error("Error getting agreement by id", zap.Error(err))
+		s.logger.Error("Could not get agreement by id", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get agreement by id")
@@ -71,17 +73,24 @@ func (s *serviceImpl) CreateAgreement(creatingAgreement *models.CreatingAgreemen
 	return nil
 }
 
-func (s *serviceImpl) DeleteAgreement(id string) *apperror.AppError {
-	if !utils.IsValidUUID(id) {
-		return apperror.New(apperror.InvalidAgreementId).Describe("Invalid agreement id")
+func (s *serviceImpl) DeleteAgreement(agreementId string) *apperror.AppError {
+	if !utils.IsValidUUID(agreementId) {
+		return apperror.
+			New(apperror.InvalidAgreementId).
+			Describe("Invalid agreement id")
 	}
-	err := s.repo.DeleteAgreement(id)
+
+	err := s.repo.DeleteAgreement(agreementId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return apperror.New(apperror.AgreementNotFound).Describe("Agreement not found")
+		return apperror.
+			New(apperror.AgreementNotFound).
+			Describe("Could not find the specified agreement")
+	} else if err != nil {
+		s.logger.Error("Could not delete agreement", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not delete agreement")
 	}
-	if err != nil {
-		s.logger.Error("Error deleting agreement", zap.Error(err))
-		return apperror.New(apperror.InternalServerError).Describe("Error deleting agreement")
-	}
+
 	return nil
 }

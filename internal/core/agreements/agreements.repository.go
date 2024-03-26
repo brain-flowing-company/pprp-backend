@@ -107,7 +107,10 @@ func (repo *repositoryImpl) CreateAgreement(agreement *models.CreatingAgreements
 		agreement.Status, agreement.DepositAmount, agreement.PaymentPerMonth, agreement.PaymentDuration, agreement.TotalPayment ).Error
 }
 
-func (repo *repositoryImpl) DeleteAgreement(id string) error {
-	return repo.db.Model(&models.Agreements{}).
-		Delete(&models.Agreements{}, "agreement_id = ?", id).Error
+func (repo *repositoryImpl) DeleteAgreement(agreementId string) error {
+	if err := repo.db.Model(&models.Agreements{}).First(&models.Agreements{}, "agreement_id = ?", agreementId).Error; err != nil {
+		return err
+	}
+	
+	return repo.db.Where("agreement_id = ?", agreementId).Delete(&models.Agreements{}).Error
 }
