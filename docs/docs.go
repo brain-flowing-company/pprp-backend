@@ -198,12 +198,12 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Appointments"
+                                "$ref": "#/definitions/models.AppointmentLists"
                             }
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Could not get all appointments",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -211,14 +211,14 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create appointments",
+                "description": "Create an appointments with **property_id**, **owner_user_id**, **dweller_user_id**, **appointment_date**, **note**(optional)",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "appointments"
                 ],
-                "summary": "Create appointments",
+                "summary": "Create an appointment",
                 "parameters": [
                     {
                         "description": "Appointment details",
@@ -232,9 +232,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Appointments created",
                         "schema": {
-                            "$ref": "#/definitions/models.Appointments"
+                            "$ref": "#/definitions/models.MessageResponses"
                         }
                     },
                     "400": {
@@ -244,47 +244,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/appointments/": {
-            "delete": {
-                "description": "Delete **all appointments** in body.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "appointments"
-                ],
-                "summary": "Delete appointments",
-                "parameters": [
-                    {
-                        "description": "Appointment id deleting lists",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.DeletingAppointments"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Appointments"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
+                        "description": "Could not create appointments",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -294,21 +254,30 @@ const docTemplate = `{
         },
         "/api/v1/appointments/:appointmentId": {
             "get": {
-                "description": "Get appointments by id",
+                "description": "Get the appointment and other related information by id",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "appointments"
                 ],
-                "summary": "Get appointments by id",
+                "summary": "Get an appointment by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Appointment ID",
+                        "name": "appointmentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Appointments"
+                                "$ref": "#/definitions/models.AppointmentDetails"
                             }
                         }
                     },
@@ -319,13 +288,46 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Appointment id not found",
+                        "description": "Could not find the specified appointment",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Could not get appointment by id",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an appointment by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Delete an appointment by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Appointment ID",
+                        "name": "appointmentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Appointments deleted",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not delete appointments",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -333,43 +335,47 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "description": "Update appointment status",
+                "description": "Update an appointment status by id with **status** and **cancelled_message**(optional)",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "appointments"
                 ],
-                "summary": "Update appointment status",
+                "summary": "Update an appointment status by id",
                 "parameters": [
                     {
-                        "description": "Appointment id deleting lists",
+                        "type": "string",
+                        "description": "Appointment ID",
+                        "name": "appointmentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Appointment status and cancelled message(optional)",
                         "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DeletingAppointments"
+                            "$ref": "#/definitions/models.UpdatingAppointmentStatus"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Appointment state updated",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Appointments"
-                            }
+                            "$ref": "#/definitions/models.MessageResponses"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid appointment id",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Could not update appointment status",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -1606,6 +1612,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user/me/appointments": {
+            "get": {
+                "description": "Get all appointments related to the user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "appointments"
+                ],
+                "summary": "Get my appointments",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MyAppointmentResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not get my appointments",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/me/favorites": {
             "get": {
                 "description": "Get all properties that the current user has added to favorites",
@@ -1938,6 +1970,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "enums.AppointmentStatus": {
+            "type": "string",
+            "enum": [
+                "PENDING",
+                "CONFIRMED",
+                "REJECTED",
+                "CANCELLED",
+                "ARCHIVED"
+            ],
+            "x-enum-varnames": [
+                "Pending",
+                "Confirmed",
+                "Rejected",
+                "Cancelled",
+                "Archived"
+            ]
+        },
         "enums.BankNames": {
             "type": "string",
             "enum": [
@@ -2094,7 +2143,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Appointments": {
+        "models.AppointmentDetails": {
             "type": "object",
             "properties": {
                 "appointment_date": {
@@ -2105,49 +2154,73 @@ const docTemplate = `{
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
+                "cancelled_message": {
+                    "type": "string",
+                    "example": "This is a cancelled message"
+                },
                 "created_at": {
                     "type": "string"
                 },
-                "dweller_user_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                "dweller": {
+                    "$ref": "#/definitions/models.DwellerAppointmentDetails"
                 },
-                "owner_user_id": {
+                "note": {
                     "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                    "example": "This is a note"
                 },
-                "property_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                "owner": {
+                    "$ref": "#/definitions/models.OwnerAppointmentDetails"
+                },
+                "property": {
+                    "$ref": "#/definitions/models.PropertyAppointmentDetails"
                 },
                 "status": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.AppointmentsStatus"
+                            "$ref": "#/definitions/enums.AppointmentStatus"
                         }
                     ],
                     "example": "PENDING"
                 }
             }
         },
-        "models.AppointmentsStatus": {
-            "type": "string",
-            "enum": [
-                "PENDING",
-                "APPROVED",
-                "REJECTED",
-                "REQUEST_CHANGE",
-                "CANCELLED",
-                "COMPLETED"
-            ],
-            "x-enum-varnames": [
-                "Pending",
-                "Approved",
-                "Rejected",
-                "RequestChange",
-                "Cancelled",
-                "Completed"
-            ]
+        "models.AppointmentLists": {
+            "type": "object",
+            "properties": {
+                "appointment_date": {
+                    "type": "string",
+                    "example": "2024-02-18T11:00:00Z"
+                },
+                "appointment_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "cancelled_message": {
+                    "type": "string",
+                    "example": "This is a cancelled message"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string",
+                    "example": "This is a note"
+                },
+                "owner": {
+                    "$ref": "#/definitions/models.OwnerAppointmentLists"
+                },
+                "property": {
+                    "$ref": "#/definitions/models.PropertyAppointmentLists"
+                },
+                "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.AppointmentStatus"
+                        }
+                    ],
+                    "example": "PENDING"
+                }
+            }
         },
         "models.CallbackResponses": {
             "type": "object",
@@ -2195,17 +2268,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "appointment_dates": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "2024-02-18T11:00:00Z"
-                    ]
+                    "type": "string",
+                    "example": "2024-02-18T11:00:00Z"
                 },
                 "dweller_user_id": {
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "note": {
+                    "type": "string",
+                    "example": "This is a note"
                 },
                 "owner_user_id": {
                     "type": "string",
@@ -2258,17 +2330,28 @@ const docTemplate = `{
                 }
             }
         },
-        "models.DeletingAppointments": {
+        "models.DwellerAppointmentDetails": {
             "type": "object",
             "properties": {
-                "appointmentIds": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "123e4567-e89b-12d3-a456-426614174000"
-                    ]
+                "dweller_first_name": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "dweller_last_name": {
+                    "type": "string",
+                    "example": "Doe"
+                },
+                "dweller_phone_number": {
+                    "type": "string",
+                    "example": "0812345678"
+                },
+                "dweller_profile_image_url": {
+                    "type": "string",
+                    "example": "https://image_url.com/abcd"
+                },
+                "dweller_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 }
             }
         },
@@ -2336,6 +2419,23 @@ const docTemplate = `{
                 }
             }
         },
+        "models.MyAppointmentResponse": {
+            "type": "object",
+            "properties": {
+                "dweller_appointments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AppointmentLists"
+                    }
+                },
+                "owner_appointments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AppointmentLists"
+                    }
+                }
+            }
+        },
         "models.MyFavoritePropertiesResponses": {
             "type": "object",
             "properties": {
@@ -2363,6 +2463,52 @@ const docTemplate = `{
                 "total": {
                     "type": "integer",
                     "example": 2
+                }
+            }
+        },
+        "models.OwnerAppointmentDetails": {
+            "type": "object",
+            "properties": {
+                "owner_first_name": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "owner_last_name": {
+                    "type": "string",
+                    "example": "Doe"
+                },
+                "owner_phone_number": {
+                    "type": "string",
+                    "example": "0812345678"
+                },
+                "owner_profile_image_url": {
+                    "type": "string",
+                    "example": "https://image_url.com/abcd"
+                },
+                "owner_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                }
+            }
+        },
+        "models.OwnerAppointmentLists": {
+            "type": "object",
+            "properties": {
+                "owner_first_name": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "owner_last_name": {
+                    "type": "string",
+                    "example": "Doe"
+                },
+                "owner_profile_image_url": {
+                    "type": "string",
+                    "example": "https://image_url.com/abcd"
+                },
+                "owner_user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 }
             }
         },
@@ -2482,6 +2628,109 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PropertyAppointmentDetails": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "123/4"
+                },
+                "alley": {
+                    "type": "string",
+                    "example": "Pattaya Nua 78"
+                },
+                "country": {
+                    "type": "string",
+                    "example": "Thailand"
+                },
+                "district": {
+                    "type": "string",
+                    "example": "Bang Phli"
+                },
+                "postal_code": {
+                    "type": "string",
+                    "example": "69096"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 12345.67
+                },
+                "price_per_month": {
+                    "type": "number",
+                    "example": 12345.67
+                },
+                "property_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "property_images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PropertyImageAppointments"
+                    }
+                },
+                "property_name": {
+                    "type": "string",
+                    "example": "The Base Sukhumvit 77"
+                },
+                "property_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.PropertyTypes"
+                        }
+                    ],
+                    "example": "CONDO"
+                },
+                "province": {
+                    "type": "string",
+                    "example": "Pattaya"
+                },
+                "street": {
+                    "type": "string",
+                    "example": "Pattaya"
+                },
+                "sub_district": {
+                    "type": "string",
+                    "example": "Bang Bon"
+                }
+            }
+        },
+        "models.PropertyAppointmentLists": {
+            "type": "object",
+            "properties": {
+                "property_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "property_images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PropertyImageAppointments"
+                    }
+                },
+                "property_name": {
+                    "type": "string",
+                    "example": "The Base Sukhumvit 77"
+                },
+                "property_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.PropertyTypes"
+                        }
+                    ],
+                    "example": "CONDO"
+                }
+            }
+        },
+        "models.PropertyImageAppointments": {
+            "type": "object",
+            "properties": {
+                "image_url": {
+                    "type": "string",
+                    "example": "https://image_url.com/abcd"
+                }
+            }
+        },
         "models.PropertyImages": {
             "type": "object",
             "properties": {
@@ -2547,6 +2796,23 @@ const docTemplate = `{
                 "user_id": {
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
+                }
+            }
+        },
+        "models.UpdatingAppointmentStatus": {
+            "type": "object",
+            "properties": {
+                "cancelled_message": {
+                    "type": "string",
+                    "example": "This is a cancelled message"
+                },
+                "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.AppointmentStatus"
+                        }
+                    ],
+                    "example": "CANCELLED"
                 }
             }
         },

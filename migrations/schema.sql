@@ -2,7 +2,7 @@ CREATE TYPE bank_names AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB
 
 CREATE TYPE registered_types AS ENUM('EMAIL', 'GOOGLE');
 
-CREATE TYPE appointments_status AS ENUM('PENDING', 'APPROVED', 'REJECTED', 'REQUEST_CHANGE', 'CANCELLED', 'COMPLETED');
+CREATE TYPE appointment_status AS ENUM('PENDING', 'CONFIRMED', 'REJECTED', 'CANCELLED', 'ARCHIVED');
 
 CREATE TYPE card_colors AS ENUM('LIGHT_BLUE', 'BLUE', 'DARK_BLUE', 'VERY_DARK_BLUE');
 
@@ -145,8 +145,10 @@ CREATE TABLE appointments
     property_id         UUID REFERENCES properties (property_id)   NOT NULL,
     owner_user_id       UUID REFERENCES users (user_id)            NOT NULL,
     dweller_user_id     UUID REFERENCES users (user_id)            NOT NULL,
-    appointments_status appointments_status DEFAULT 'PENDING'      NOT NULL,
     appointment_date    TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
+    status              appointment_status DEFAULT 'PENDING'       NOT NULL,
+    note                TEXT                                       DEFAULT NULL,
+    cancelled_message   TEXT                                       DEFAULT NULL,
     created_at          TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
     updated_at          TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
     deleted_at          TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL,
@@ -297,6 +299,10 @@ INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent
 ('3f25b89f-b183-4ba8-b7b5-98d5f5fd374a', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'what are you up to?' , NULL, '2024-02-25 19:04:36.119+07'),
 ('f48c2f66-3450-41f1-8307-db6386187472', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Hi' , NULL, '2024-02-25 19:05:10.519+07'),
 ('8d7a913b-0bd4-4554-8286-bc8ad2b8817e', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '?' , NULL, '2024-02-25 19:05:12.953+07');
+
+INSERT INTO appointments (property_id, owner_user_id, dweller_user_id, status, appointment_date, note) VALUES
+('f38f80b3-f326-4825-9afc-ebc331626875', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:50:00.000+07', NULL),
+('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:51:00.000+07', 'Good morning');
 
 -- mock data for appointments
 
