@@ -15,5 +15,6 @@ type Payments struct {
 	UserId    uuid.UUID `json:""user_id""    gorm:"type:uuid;not null"`
 	Price     float64   `json:"price"      gorm:"type:double precision;not null"`
 	IsSuccess bool      `json:"is_success" gorm:"type:boolean;not null"`
+	Name      string    `json:"name"       gorm:"type:varchar(50);not null"`
 	CommonModels
 }

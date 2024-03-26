@@ -38,10 +38,11 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	fmt.Println(userId)
 	payment.UserId = userId
 	fmt.Println("payment = ", payment)
+
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
 	}
-	Checkout(c)
+	CheckoutV2(c, payment.Name, payment.Price)
 
 	return utils.ResponseMessage(c, http.StatusOK, "Payment created successfully")
 
