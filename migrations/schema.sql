@@ -4,6 +4,8 @@ CREATE TYPE registered_types AS ENUM('EMAIL', 'GOOGLE');
 
 CREATE TYPE appointment_status AS ENUM('PENDING', 'CONFIRMED', 'REJECTED', 'CANCELLED', 'ARCHIVED');
 
+CREATE TYPE agreement_status AS ENUM('AWAITING_DEPOSIT', 'AWAITING_PAYMENT', 'RENTING', 'CANCELLED', 'OVERDUE', 'ARCHIVED');
+
 CREATE TYPE card_colors AS ENUM('LIGHT_BLUE', 'BLUE', 'DARK_BLUE', 'VERY_DARK_BLUE');
 
 CREATE TYPE property_types AS ENUM('CONDOMINIUM', 'APARTMENT', 'SEMI_DETACHED_HOUSE', 'HOUSE', 'SERVICED_APARTMENT', 'TOWNHOUSE');
@@ -45,7 +47,7 @@ CREATE TABLE users
 
 CREATE TABLE user_financial_informations
 (
-    user_id                             UUID PRIMARY KEY REFERENCES users(user_id)  NOT NULL,
+    user_id                             UUID PRIMARY KEY REFERENCES users(user_id)  ON DELETE CASCADE   NOT NULL,
     bank_name                           bank_names                                  DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                                 DEFAULT NULL,
     created_at                          TIMESTAMP(0) WITH TIME ZONE                 DEFAULT CURRENT_TIMESTAMP,
@@ -69,7 +71,7 @@ CREATE TABLE credit_cards
 
 CREATE TABLE user_verifications 
 (
-    user_id                 UUID PRIMARY KEY NOT NULL REFERENCES users(user_id),
+    user_id                 UUID PRIMARY KEY NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     citizen_id              VARCHAR(13)      NOT NULL,
     citizen_card_image_url  VARCHAR(2000)    NOT NULL,
     verified_at             TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -142,9 +144,9 @@ CREATE TABLE favorite_properties
 CREATE TABLE appointments
 (
     appointment_id      UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-    property_id         UUID REFERENCES properties (property_id)   NOT NULL,
-    owner_user_id       UUID REFERENCES users (user_id)            NOT NULL,
-    dweller_user_id     UUID REFERENCES users (user_id)            NOT NULL,
+    property_id         UUID REFERENCES properties (property_id)   ON DELETE CASCADE    NOT NULL,
+    owner_user_id       UUID REFERENCES users (user_id)            ON DELETE CASCADE    NOT NULL,
+    dweller_user_id     UUID REFERENCES users (user_id)            ON DELETE CASCADE    NOT NULL,
     appointment_date    TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
     status              appointment_status DEFAULT 'PENDING'       NOT NULL,
     note                TEXT                                       DEFAULT NULL,
@@ -157,21 +159,27 @@ CREATE TABLE appointments
 
 CREATE TABLE agreements
 (
-    agreement_id   UUID PRIMARY KEY DEFAULT gen_random_uuid()   NOT NULL,
-    property_id      UUID REFERENCES properties (property_id)   NOT NULL,
-    owner_user_id    UUID REFERENCES users (user_id)            NOT NULL,
-    dweller_user_id  UUID REFERENCES users (user_id)            NOT NULL,
-    agreement_date TIMESTAMP(0) WITH TIME ZONE                  NOT NULL,
-    created_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
-    deleted_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL,
+    agreement_id        UUID PRIMARY KEY DEFAULT gen_random_uuid()          NOT NULL,
+    property_id         UUID REFERENCES properties (property_id)            ON DELETE CASCADE   NOT NULL,
+    owner_user_id       UUID REFERENCES users (user_id)                     ON DELETE CASCADE   NOT NULL,
+    dweller_user_id     UUID REFERENCES users (user_id)                     ON DELETE CASCADE   NOT NULL,
+    agreement_date      TIMESTAMP(0) WITH TIME ZONE                         NOT NULL,
+    status              appointment_status DEFAULT 'AWAITING_DEPOSIT'       NOT NULL,
+    deposit_amount      DOUBLE PRECISION                                    DEFAULT NULL,
+    payment_per_month   DOUBLE PRECISION                                    DEFAULT NULL,
+    total_payment       DOUBLE PRECISION                                    DEFAULT NULL,
+    payment_duration    INTEGER                                             DEFAULT NULL,
+    cancelled_message   TEXT                                                DEFAULT NULL,
+    created_at          TIMESTAMP(0) WITH TIME ZONE                         DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP(0) WITH TIME ZONE                         DEFAULT CURRENT_TIMESTAMP,
+    deleted_at          TIMESTAMP(0) WITH TIME ZONE                         DEFAULT NULL,
     UNIQUE (property_id, agreement_date)
 );
 
 CREATE TABLE messages (
     message_id  UUID PRIMARY KEY         NOT NULL,
-    sender_id   UUID                     NOT NULL REFERENCES users(user_id),
-    receiver_id UUID                     NOT NULL REFERENCES users(user_id),
+    sender_id   UUID                     NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    receiver_id UUID                     NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     content     VARCHAR(4096)            NOT NULL,
     read_at     TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     sent_at     TIMESTAMP WITH TIME ZONE NOT NULL
@@ -205,6 +213,10 @@ CREATE RULE soft_deletion AS ON DELETE TO renting_properties DO INSTEAD (
 
 CREATE RULE soft_deletion AS ON DELETE TO appointments DO INSTEAD (
     UPDATE appointments SET deleted_at = CURRENT_TIMESTAMP WHERE appointment_id = old.appointment_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO agreements DO INSTEAD (
+    UPDATE agreements SET deleted_at = CURRENT_TIMESTAMP WHERE agreement_id = old.agreement_id and deleted_at IS NULL
 );
 
 CREATE RULE delete_users AS ON UPDATE TO users
@@ -301,31 +313,13 @@ INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent
 ('8d7a913b-0bd4-4554-8286-bc8ad2b8817e', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '?' , NULL, '2024-02-25 19:05:12.953+07');
 
 INSERT INTO appointments (property_id, owner_user_id, dweller_user_id, status, appointment_date, note) VALUES
-('f38f80b3-f326-4825-9afc-ebc331626875', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:50:00.000+07', NULL),
-('62dd40da-8238-4d21-b9a7-7f1c24efdd0c', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:51:00.000+07', 'Good morning');
+('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:50:00.000+07', NULL),
+('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:51:00.000+07', 'Good morning');
 
--- mock data for appointments
-
--- Insert mock data into the users table
-INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, is_verified)
-VALUES
-('123e4567-e89b-12d3-a456-426614174001', 'EMAIL', 'user1@email.com', 'password123', 'User', 'One', '1234567890', 'https://example.com/image1.jpg', TRUE),
-('123e4567-e89b-12d3-a456-426614174002', 'EMAIL', 'user2@email.com', 'password456', 'User', 'Two', '9876543210', 'https://example.com/image2.jpg', FALSE),
-('123e4567-e89b-12d3-a456-426614174003', 'GOOGLE', 'user3@gmail.com', NULL, 'User', 'Three', '3333333333', 'https://example.com/image3.jpg', TRUE);
-
--- Insert mock data into the properties table
-INSERT INTO properties (property_id, owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, unit_number) 
-VALUES
-('223e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174001', 'Beautiful House', 'Dream House', 'HOUSE', '123 Main St', NULL, 'Dream Street', 'Dreamville', 'Dream District', 'Dream Province', 'Dream Country', '12345', 1, 1, 'UNFURNISHED', 1, 11.11, 1010),
-('223e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174002', 'Cozy Apartment', 'Sky Towers', 'APARTMENT', '456 Sky Blvd', 'Sky Alley', 'Cloud Street', 'Cloudsville', 'Cloud District', 'Cloud Province', 'Cloud Country', '56789', 2, 2, 'PARTIALLY_FURNISHED', 2, 22.22, 2020),
-('223e4567-e89b-12d3-a456-426614174003', '123e4567-e89b-12d3-a456-426614174003', 'Luxury Condo', 'Golden Heights', 'CONDOMINIUM', '789 Gold Ave', 'Gold Alley', 'Golden Street', 'Goldenville', 'Gold District', 'Gold Province', 'Gold Country', '98765', 3, 3, 'FULLY_FURNISHED', 3, 33.33, 3030);
-
--- Insert mock data into the agreements table
-INSERT INTO agreements (agreement_id, property_id, owner_user_id, dweller_user_id, agreement_date)
-VALUES
-('323e4567-e89b-12d3-a456-426614174001', '223e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174002', CURRENT_TIMESTAMP),
-('323e4567-e89b-12d3-a456-426614174002', '223e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174003', CURRENT_TIMESTAMP),
-('323e4567-e89b-12d3-a456-426614174003', '223e4567-e89b-12d3-a456-426614174003', '123e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174003', CURRENT_TIMESTAMP);
+INSERT INTO agreements (property_id, owner_user_id, dweller_user_id, agreement_date, status, deposit_amount, payment_per_month, payment_duration, total_payment, cancelled_message) VALUES
+('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-21 15:50:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
+('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', '62dd40da-f326-4825-9afc-2d68e06e0282', '2024-02-21 15:51:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
+('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-21 15:51:00.000+07', 'CANCELLED', 10000.00, 1000.00, 10000.00, 10, 'nope');
 
 -------------------- VIEWS --------------------
 
