@@ -49,18 +49,20 @@ func (h *handlerImpl) GetAllAgreements(c *fiber.Ctx) error {
 // @description  Get an agreement by its id
 // @tags agreements
 // @produce json
-// @success 200 {object} models.Agreements
-// @failure 400 {object} models.ErrorResponses "Invalid agreement id"
-// @failure 404 {object} models.ErrorResponses "Agreement not found"
-// @failure 500 {object} models.ErrorResponses
+// @success 200 {object} models.AgreementDetails
+// @failure 400 {object} models.MessageResponses "Invalid agreement id"
+// @failure 404 {object} models.MessageResponses "Agreement not found"
+// @failure 500 {object} models.MessageResponses
 func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
-	id := c.Params("agreementId")
-	var app models.Agreements
-	err := h.service.GetAgreementById(&app, id)
+	agreementId := c.Params("agreementId")
+	agreement := &models.AgreementDetails{}
+
+	err := h.service.GetAgreementById(agreement, agreementId)
 	if err != nil {
-		return apperror.New(apperror.InternalServerError).Describe("Error getting agreement by id")
+		return utils.ResponseError(c, err)
 	}
-	return c.JSON(app)
+	
+	return c.JSON(agreement)
 }
 
 // @router  /api/v1/agreements/owner/:userId [get]

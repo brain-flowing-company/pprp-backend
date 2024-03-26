@@ -157,7 +157,7 @@ func main() {
 	apiv1.Post("/logout", authHandler.Logout)
 
 	apiv1.Get("/agreements", agreementsHandler.GetAllAgreements)
-	apiv1.Get("/agreement/:agreementId", agreementsHandler.GetAgreementById)
+	apiv1.Get("/agreements/:agreementId", agreementsHandler.GetAgreementById)
 	apiv1.Get("/user/:userId/agreements", agreementsHandler.GetAgreementsByOwnerId)
 	apiv1.Get("/user/:userId/dwelling-agreements", agreementsHandler.GetAgreementsByDwellerId)
 	apiv1.Post("/agreements", agreementsHandler.CreateAgreement)

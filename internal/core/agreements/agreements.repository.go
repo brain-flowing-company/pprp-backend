@@ -1,13 +1,15 @@
 package agreements
 
 import (
+	"database/sql"
+
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
 	GetAllAgreements(*[]models.Agreements) error
-	GetAgreementById(*models.Agreements, string) error
+	GetAgreementById(*models.AgreementDetails, string) error
 	GetAgreementsByOwnerId(*[]models.Agreements, string) error
 	GetAgreementsByDwellerId(*[]models.Agreements, string) error
 	CreateAgreement(*models.CreatingAgreements) error
@@ -29,9 +31,75 @@ func (repo *repositoryImpl) GetAllAgreements(results *[]models.Agreements) error
 		Find(results).Error
 }
 
-func (repo *repositoryImpl) GetAgreementById(result *models.Agreements, id string) error {
-	return repo.db.Model(&models.Agreements{}).
-		First(result, "agreement_id = ?", id).Error
+func (repo *repositoryImpl) GetAgreementById(agreement *models.AgreementDetails, agreementId string) error {
+	propertyQuery := `SELECT p.property_id, p.property_name, p.property_type, p.address,
+							p.alley, p.street, p.sub_district, p.district, p.province, 
+							p.country, p.postal_code, s.price, r.price_per_month 
+						FROM properties p
+						LEFT JOIN selling_properties s ON p.property_id = s.property_id
+						LEFT JOIN renting_properties r ON p.property_id = r.property_id
+						WHERE p.property_id = @property_id`
+
+	ownerQuery := `SELECT user_id AS owner_user_id,
+						first_name AS owner_first_name,
+						last_name AS owner_last_name,
+						profile_image_url AS owner_profile_image_url,
+						phone_number AS owner_phone_number
+					FROM users
+					WHERE user_id = @owner_user_id`
+
+	dwellerQuery := `SELECT user_id AS dweller_user_id,
+						first_name AS dweller_first_name,
+						last_name AS dweller_last_name,
+						profile_image_url AS dweller_profile_image_url,
+						phone_number AS dweller_phone_number
+					FROM users
+					WHERE user_id = @dweller_user_id`
+
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		var existingAgreement models.Agreements
+		if err := tx.Model(&models.Agreements{}).First(&existingAgreement, "agreement_id = ?", agreementId).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&models.Agreements{}).
+			Raw(`
+				SELECT a.agreement_id, 
+					   a.agreement_type,
+					   p.*, 
+					   o.*, 
+					   d.*,
+					   a.agreement_date, 
+					   a.status,
+					   a.deposit_amount,
+					   a.payment_per_month,
+					   a.payment_duration,
+					   a.total_payment,
+					   a.cancelled_message,
+					   a.created_at
+					FROM agreements a
+					JOIN (`+propertyQuery+`) p ON a.property_id = p.property_id
+					JOIN (`+ownerQuery+`) o ON a.owner_user_id = o.owner_user_id
+					JOIN (`+dwellerQuery+`) d ON a.dweller_user_id = d.dweller_user_id
+			`, sql.Named("property_id", existingAgreement.PropertyId),
+				sql.Named("owner_user_id", existingAgreement.OwnerUserId),
+				sql.Named("dweller_user_id", existingAgreement.DwellerUserId)).
+			Scan(agreement).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&models.PropertyImages{}).
+			Raw(`
+				SELECT image_url
+				FROM property_images
+				WHERE property_id = @property_id
+				`, sql.Named("property_id", agreement.Property.PropertyId)).
+			Pluck("image_url", &agreement.Property.PropertyImages).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func (repo *repositoryImpl) GetAgreementsByOwnerId(result *[]models.Agreements, id string) error {
