@@ -84,42 +84,6 @@ func (s *serviceImpl) GetMyAppointments(appointments *models.MyAppointmentRespon
 	return nil
 }
 
-func (s *serviceImpl) GetAppointmentByOwnerId(apps []*models.Appointments, userId string) *apperror.AppError {
-	if !utils.IsValidUUID(userId) {
-		return apperror.
-			New(apperror.InvalidUserId).
-			Describe("Invalid user id")
-	}
-
-	err := s.repo.GetAppointmentByOwnerId(apps, userId)
-	if err != nil {
-		s.logger.Error("Could not get appointments by owner id", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not get appointments by owner id")
-	}
-
-	return nil
-}
-
-func (s *serviceImpl) GetAppointmentByDwellerId(apps []*models.Appointments, userId string) *apperror.AppError {
-	if !utils.IsValidUUID(userId) {
-		return apperror.
-			New(apperror.InvalidUserId).
-			Describe("Invalid user id")
-	}
-
-	err := s.repo.GetAppointmentByDwellerId(apps, userId)
-	if err != nil {
-		s.logger.Error("Could not get appointments by dweller id", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not get appointments by dweller id")
-	}
-
-	return nil
-}
-
 func (s *serviceImpl) CreateAppointment(appointment *models.CreatingAppointments) *apperror.AppError {
 	err := s.repo.CreateAppointment(appointment)
 	if err != nil {

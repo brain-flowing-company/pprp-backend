@@ -11,8 +11,6 @@ type Repository interface {
 	GetAllAppointments(*[]models.AppointmentLists) error
 	GetAppointmentById(*models.AppointmentDetails, string) error
 	GetAppointmentByUserId(*models.MyAppointmentResponses, string) error
-	GetAppointmentByOwnerId([]*models.Appointments, string) error
-	GetAppointmentByDwellerId([]*models.Appointments, string) error
 	CreateAppointment(*models.CreatingAppointments) error
 	DeleteAppointment(string) error
 	UpdateAppointmentStatus(*models.UpdatingAppointmentStatus, string) error
@@ -205,14 +203,6 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.
 
 		return nil
 	})
-}
-
-func (repo *repositoryImpl) GetAppointmentByOwnerId(appointments []*models.Appointments, ownerUserId string) error {
-	return repo.db.Model(&models.Appointments{}).Find(appointments, "owner_user_id = ?", ownerUserId).Error
-}
-
-func (repo *repositoryImpl) GetAppointmentByDwellerId(appointments []*models.Appointments, dwellerUserId string) error {
-	return repo.db.Model(&models.Appointments{}).Find(appointments, "dweller_user_id = ?", dwellerUserId).Error
 }
 
 func (repo *repositoryImpl) CreateAppointment(appointment *models.CreatingAppointments) error {

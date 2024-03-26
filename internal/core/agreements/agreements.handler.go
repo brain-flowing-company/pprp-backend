@@ -12,8 +12,6 @@ import (
 type Handler interface {
 	GetAllAgreements(c *fiber.Ctx) error
 	GetAgreementById(c *fiber.Ctx) error
-	GetAgreementsByOwnerId(c *fiber.Ctx) error
-	GetAgreementsByDwellerId(c *fiber.Ctx) error
 	CreateAgreement(c *fiber.Ctx) error
 	DeleteAgreement(c *fiber.Ctx) error
 }
@@ -63,40 +61,6 @@ func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 	}
 	
 	return c.JSON(agreement)
-}
-
-// @router  /api/v1/agreements/owner/:userId [get]
-// @summary  Get agreements by owner id
-// @description  Get all agreements by owner id
-// @tags agreements
-// @produce json
-// @success 200 {object} []models.Agreements
-// @failure 500 {object} models.ErrorResponses
-func (h *handlerImpl) GetAgreementsByOwnerId(c *fiber.Ctx) error {
-	id := c.Params("userId")
-	var apps []models.Agreements
-	err := h.service.GetAgreementsByOwnerId(&apps, id)
-	if err != nil {
-		return apperror.New(apperror.InternalServerError).Describe("Error getting agreements by owner id")
-	}
-	return c.JSON(apps)
-}
-
-// @router  /api/v1/agreements/dweller/:userId [get]
-// @summary  Get agreements by dweller id
-// @description  Get all agreements by dweller id
-// @tags agreements
-// @produce json
-// @success 200 {object} []models.Agreements
-// @failure 500 {object} models.ErrorResponses
-func (h *handlerImpl) GetAgreementsByDwellerId(c *fiber.Ctx) error {
-	id := c.Params("userId")
-	var apps []models.Agreements
-	err := h.service.GetAgreementsByDwellerId(&apps, id)
-	if err != nil {
-		return apperror.New(apperror.InternalServerError).Describe("Error getting agreements by dweller id")
-	}
-	return c.JSON(apps)
 }
 
 // @router  /api/v1/agreements [post]

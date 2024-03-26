@@ -10,8 +10,6 @@ import (
 type Repository interface {
 	GetAllAgreements(*[]models.Agreements) error
 	GetAgreementById(*models.AgreementDetails, string) error
-	GetAgreementsByOwnerId(*[]models.Agreements, string) error
-	GetAgreementsByDwellerId(*[]models.Agreements, string) error
 	CreateAgreement(*models.CreatingAgreements) error
 	DeleteAgreement(string) error
 }
@@ -100,16 +98,6 @@ func (repo *repositoryImpl) GetAgreementById(agreement *models.AgreementDetails,
 
 		return nil
 	})
-}
-
-func (repo *repositoryImpl) GetAgreementsByOwnerId(result *[]models.Agreements, id string) error {
-	return repo.db.Model(&models.Agreements{}).
-		Where("owner_user_id = ?", id).Find(result).Error
-}
-
-func (repo *repositoryImpl) GetAgreementsByDwellerId(result *[]models.Agreements, id string) error {
-	return repo.db.Model(&models.Agreements{}).
-		Where("dweller_user_id = ?", id).Find(result).Error
 }
 
 func (repo *repositoryImpl) CreateAgreement(agreement *models.CreatingAgreements) error {

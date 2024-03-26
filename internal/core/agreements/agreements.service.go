@@ -13,8 +13,6 @@ import (
 type Service interface {
 	GetAllAgreements(*[]models.Agreements) *apperror.AppError
 	GetAgreementById(*models.AgreementDetails, string) *apperror.AppError
-	GetAgreementsByOwnerId(*[]models.Agreements, string) *apperror.AppError
-	GetAgreementsByDwellerId(*[]models.Agreements, string) *apperror.AppError
 	CreateAgreement(*models.CreatingAgreements) *apperror.AppError
 	DeleteAgreement(string) *apperror.AppError
 }
@@ -61,18 +59,6 @@ func (s *serviceImpl) GetAgreementById(agreement *models.AgreementDetails, agree
 	return nil
 }
 
-func (s *serviceImpl) GetAgreementsByOwnerId(agreements *[]models.Agreements, userId string) *apperror.AppError {
-	err := s.repo.GetAgreementsByOwnerId(agreements, userId)
-	if err != nil {
-		s.logger.Error("Could not get agreements by owner id", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not get agreements by owner id")
-	}
-
-	return nil
-}
-
 func (s *serviceImpl) CreateAgreement(creatingAgreement *models.CreatingAgreements) *apperror.AppError {
 	err := s.repo.CreateAgreement(creatingAgreement)
 	if err != nil {
@@ -97,17 +83,5 @@ func (s *serviceImpl) DeleteAgreement(id string) *apperror.AppError {
 		s.logger.Error("Error deleting agreement", zap.Error(err))
 		return apperror.New(apperror.InternalServerError).Describe("Error deleting agreement")
 	}
-	return nil
-}
-
-func (s *serviceImpl) GetAgreementsByDwellerId(agreements *[]models.Agreements, userId string) *apperror.AppError {
-	err := s.repo.GetAgreementsByDwellerId(agreements, userId)
-	if err != nil {
-		s.logger.Error("Could not get agreements by dweller id", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not get agreements by dweller id")
-	}
-
 	return nil
 }
