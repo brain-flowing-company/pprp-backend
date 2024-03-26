@@ -167,7 +167,7 @@ CREATE TABLE agreements
     owner_user_id       UUID REFERENCES users (user_id)                     ON DELETE CASCADE   NOT NULL,
     dweller_user_id     UUID REFERENCES users (user_id)                     ON DELETE CASCADE   NOT NULL,
     agreement_date      TIMESTAMP(0) WITH TIME ZONE                         NOT NULL,
-    status              appointment_status DEFAULT 'AWAITING_DEPOSIT'       NOT NULL,
+    status              agreement_status DEFAULT 'AWAITING_DEPOSIT'       NOT NULL,
     deposit_amount      DOUBLE PRECISION                                    DEFAULT NULL,
     payment_per_month   DOUBLE PRECISION                                    DEFAULT NULL,
     payment_duration    INTEGER                                             DEFAULT NULL,
@@ -321,8 +321,8 @@ INSERT INTO appointments (property_id, owner_user_id, dweller_user_id, status, a
 
 INSERT INTO agreements (agreement_type, property_id, owner_user_id, dweller_user_id, agreement_date, status, deposit_amount, payment_per_month, payment_duration, total_payment, cancelled_message) VALUES
 ('RENTING', '0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-21 15:50:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
-('SELLING', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', '62dd40da-f326-4825-9afc-2d68e06e0282', '2024-02-21 15:51:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
-('RENTING', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-21 15:51:00.000+07', 'CANCELLED', 10000.00, 1000.00, 10000.00, 10, 'nope');
+('SELLING', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', '62dd40da-f326-4825-9afc-2d68e06e0282', '2024-02-22 15:51:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
+('RENTING', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-23 15:52:00.000+07', 'CANCELLED', 10000.00, 1000.00, 10000.00, 10, 'nope');
 
 -------------------- VIEWS --------------------
 
@@ -360,6 +360,16 @@ CREATE VIEW appointments AS SELECT *
     FROM _appointments
     WHERE (
      	deleted_at IS NULL AND
+        property_id IN (SELECT property_id FROM properties WHERE deleted_at IS NULL) AND
+        dweller_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL) AND
+        owner_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL)
+    );
+
+ALTER TABLE agreements RENAME TO _agreements;
+CREATE VIEW agreements AS SELECT *
+    FROM _agreements
+    WHERE (
+        deleted_at IS NULL AND
         property_id IN (SELECT property_id FROM properties WHERE deleted_at IS NULL) AND
         dweller_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL) AND
         owner_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL)
