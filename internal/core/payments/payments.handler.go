@@ -29,15 +29,14 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	// Checkout(c)
 	payment := models.Payments{
 		PaymentId: uuid.New(),
-		UserId:    uuid.MustParse("123e4567-e89b-12d3-a456-426614174001"),
 	}
 	if err := c.BodyParser(&payment); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Invalid payment body"))
 	}
 
-	// userId := c.Locals("session").(models.Sessions).UserId
-	// fmt.Println(userId)
-	// payment.UserId = userId
+	userId := c.Locals("session").(models.Sessions).UserId
+	fmt.Println(userId)
+	payment.UserId = userId
 	fmt.Println("payment = ", payment)
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
