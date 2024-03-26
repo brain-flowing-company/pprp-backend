@@ -10,7 +10,7 @@ type Repository interface {
 	GetAgreementById(*models.Agreements, string) error
 	GetAgreementsByOwnerId(*[]models.Agreements, string) error
 	GetAgreementsByDwellerId(*[]models.Agreements, string) error
-	CreateAgreement(*models.Agreements) error
+	CreateAgreement(*models.CreatingAgreements) error
 	DeleteAgreement(string) error
 }
 
@@ -44,9 +44,11 @@ func (repo *repositoryImpl) GetAgreementsByDwellerId(result *[]models.Agreements
 		Where("dweller_user_id = ?", id).Find(result).Error
 }
 
-func (repo *repositoryImpl) CreateAgreement(agreement *models.Agreements) error {
-	return repo.db.Model(&models.Agreements{}).
-		Create(agreement).Error
+func (repo *repositoryImpl) CreateAgreement(agreement *models.CreatingAgreements) error {
+	return repo.db.Exec(`INSERT INTO agreements (agreement_type, property_id, owner_user_id, dweller_user_id, agreement_date, 
+		status, deposit_amount, payment_per_month, payment_duration, total_payment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		agreement.AgreementType, agreement.PropertyId, agreement.OwnerUserId, agreement.DwellerUserId, agreement.AgreementDate, 
+		agreement.Status, agreement.DepositAmount, agreement.PaymentPerMonth, agreement.PaymentDuration, agreement.TotalPayment ).Error
 }
 
 func (repo *repositoryImpl) DeleteAgreement(id string) error {

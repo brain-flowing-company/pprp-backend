@@ -160,7 +160,7 @@ func main() {
 	apiv1.Get("/agreement/:agreementId", agreementsHandler.GetAgreementById)
 	apiv1.Get("/user/:userId/agreements", agreementsHandler.GetAgreementsByOwnerId)
 	apiv1.Get("/user/:userId/dwelling-agreements", agreementsHandler.GetAgreementsByDwellerId)
-	apiv1.Post("/agreement", agreementsHandler.CreateAgreement)
+	apiv1.Post("/agreements", agreementsHandler.CreateAgreement)
 	apiv1.Delete("/agreement/:agreementId", agreementsHandler.DeleteAgreement)
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)

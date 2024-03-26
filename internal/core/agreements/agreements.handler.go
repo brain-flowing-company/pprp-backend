@@ -1,8 +1,11 @@
 package agreements
 
 import (
+	"fmt"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -99,18 +102,23 @@ func (h *handlerImpl) GetAgreementsByDwellerId(c *fiber.Ctx) error {
 // @description  Create an agreement by parsing the body
 // @tags agreements
 // @produce json
-// @success 201
+// @success 201 {object} models.MessageResponses "Agreement created successfully"
 // @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) CreateAgreement(c *fiber.Ctx) error {
-	var creatingAgreement models.CreatingAgreements
-	if err := c.BodyParser(&creatingAgreement); err != nil {
-		return apperror.New(apperror.InvalidBody).Describe("Invalid body")
-	}
-	err := h.service.CreateAgreement(&creatingAgreement)
+	agreement := &models.CreatingAgreements{}
+	err := c.BodyParser(agreement)
 	if err != nil {
-		return apperror.New(apperror.InternalServerError).Describe("Error creating agreement")
+		return utils.ResponseError(c, apperror.
+			New(apperror.BadRequest).
+			Describe(fmt.Sprintf("Could not parse body: %v", err.Error())))
 	}
-	return c.SendStatus(fiber.StatusCreated)
+
+	apperr := h.service.CreateAgreement(agreement)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+
+	return utils.ResponseMessage(c, fiber.StatusCreated, "Agreement created successfully")
 }
 
 // @router  /api/v1/agreement/:agreementId [delete]

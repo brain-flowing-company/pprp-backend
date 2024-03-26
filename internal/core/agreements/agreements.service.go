@@ -6,7 +6,6 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -68,20 +67,8 @@ func (s *serviceImpl) GetAgreementsByOwnerId(agreements *[]models.Agreements, us
 }
 
 func (s *serviceImpl) CreateAgreement(creatingAgreement *models.CreatingAgreements) *apperror.AppError {
-	agreement := models.Agreements{
-		AgreementID:   uuid.New(),
-		PropertyID:    creatingAgreement.PropertyID,
-		OwnerUserID:   creatingAgreement.OwnerUserID,
-		DwellerUserID: creatingAgreement.DwellerUserID,
-		AgreementDate: creatingAgreement.AgreementDate,
-	}
-
-	err := s.repo.CreateAgreement(&agreement)
-	if errors.Is(err, gorm.ErrDuplicatedKey) {
-		return apperror.
-			New(apperror.DuplicateAgreement).
-			Describe("Could not create agreement")
-	} else if err != nil {
+	err := s.repo.CreateAgreement(creatingAgreement)
+	if err != nil {
 		s.logger.Error("Could not create agreement", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
