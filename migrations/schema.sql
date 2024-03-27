@@ -279,35 +279,49 @@ INSERT INTO property_images (property_id, image_url) VALUES
 ('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/0bd03187-91ac-457d-957c-3ba2f6c0d24b-2.jpeg'),
 ('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/21b492b6-8d4f-45a6-af25-2fa9c1eb2042-1.jpeg'),
 ('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/21b492b6-8d4f-45a6-af25-2fa9c1eb2042-2.jpeg'),
-('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/21b492b6-8d4f-45a6-af25-2fa9c1eb2042-3jpeg'),
-('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/2dd819db-6b5f-4c29-b173-0f0bf04769fb-1jpeg'),
-('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/2dd819db-6b5f-4c29-b173-0f0bf04769fb-2jpeg'),
+('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/21b492b6-8d4f-45a6-af25-2fa9c1eb2042-3.jpeg'),
+('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/2dd819db-6b5f-4c29-b173-0f0bf04769fb-1.jpeg'),
+('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/2dd819db-6b5f-4c29-b173-0f0bf04769fb-2.jpeg'),
 ('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-1.jpeg'),
 ('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-2.jpeg'),
-('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-3jpeg'),
-('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-4jpeg'),
+('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-3.jpeg'),
+('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-4.jpeg'),
 ('7faf0793-3937-47f3-aa97-76ed81134c70', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/7faf0793-3937-47f3-aa97-76ed81134c70-1.jpeg'),
 ('7faf0793-3937-47f3-aa97-76ed81134c70', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/7faf0793-3937-47f3-aa97-76ed81134c70-2.jpeg'),
 ('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-1.jpeg'),
 ('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-2.jpeg'),
-('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-3jpeg'),
-('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-4jpeg'),
-('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-5jpeg'),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-3.jpeg'),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-4.jpeg'),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-5.jpeg'),
 ('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-1.jpeg'),
 ('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-2.jpeg'),
-('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-5jpeg'),
-('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-7jpeg'),
+('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-5.jpeg'),
+('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-7.jpeg'),
 ('b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9-1.jpeg'),
 ('e3f29fb7-f830-43de-91ab-c67fd0c170a3', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/e3f29fb7-f830-43de-91ab-c67fd0c170a3-1.jpeg'),
 ('e3f29fb7-f830-43de-91ab-c67fd0c170a3', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/e3f29fb7-f830-43de-91ab-c67fd0c170a3-2.jpeg');
 
 INSERT INTO selling_properties (property_id, price, is_sold) VALUES
-('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 258883.7091280503, FALSE),
-('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 128734.8123476912, FALSE);
+('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 2588830.71, FALSE),
+('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 2588840.72, FALSE),
+('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 2588850.73, FALSE),
+('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 2588860.74, FALSE),
+('7faf0793-3937-47f3-aa97-76ed81134c70', 2588870.75, FALSE),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 2588880.76, FALSE),
+('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 2588890.77, FALSE),
+('b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9', 2588900.78, FALSE),
+('e3f29fb7-f830-43de-91ab-c67fd0c170a3', 2588910.79, FALSE);
 
 INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUES
-('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 123423.2931847312, FALSE),
-('b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9', 112302.9182347433, TRUE);
+('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 15500.50, FALSE),
+('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 15500.51, FALSE),
+('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 15500.52, FALSE),
+('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 15500.53, FALSE),
+('7faf0793-3937-47f3-aa97-76ed81134c70', 15500.54, FALSE),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 15500.55, FALSE),
+('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 15500.56, FALSE),
+('b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9', 15500.57, FALSE),
+('e3f29fb7-f830-43de-91ab-c67fd0c170a3', 15500.58, FALSE);
 
 INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent_at) VALUES
 ('541dfc60-2f5b-473a-ac09-76a2aa3e5276', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Good morning' , NULL, '2024-02-25 19:04:18.818+07'),
