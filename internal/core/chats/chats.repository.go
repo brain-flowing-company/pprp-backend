@@ -44,7 +44,7 @@ func (repo *repositoryImpl) GetAllChats(results *[]models.ChatPreviews, userId u
 						END AS user_id, message_id, content, read_at, sent_at
 					FROM messages
 					WHERE sender_id = @user_id OR receiver_id = @user_id
-					ORDER BY sent_at DESC
+					ORDER BY user_id, sent_at DESC
 				) AS a
 				LEFT JOIN (
 					SELECT
