@@ -12,7 +12,7 @@ import "github.com/google/uuid"
 
 type Payments struct {
 	PaymentId uuid.UUID `json:"payment_id" gorm:"type:uuid;primaryKey;default:gen_random_uuid();not null"`
-	UserId    uuid.UUID `json:""user_id""    gorm:"type:uuid;not null"`
+	UserId    uuid.UUID `json: "user_id"    gorm:"type:uuid;not null"`
 	Price     float64   `json:"price"      gorm:"type:double precision;not null"`
 	IsSuccess bool      `json:"is_success" gorm:"type:boolean;not null"`
 	Name      string    `json:"name"       gorm:"type:varchar(50);not null"`
