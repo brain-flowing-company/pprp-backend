@@ -11,11 +11,11 @@ import "github.com/google/uuid"
 // deleted_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL
 
 type Payments struct {
-	PaymentId uuid.UUID `json:"payment_id" gorm:"type:uuid;primaryKey;default:gen_random_uuid();"`
-	UserId    uuid.UUID `json: "user_id"    gorm:"type:uuid;"`
-	Price     float64   `json:"price"      gorm:"type:double precision;not null"`
-	IsSuccess bool      `json:"is_success" gorm:"type:boolean;not null"`
-	Name      string    `json:"name"       gorm:"type:varchar(50);not null"`
+	PaymentId uuid.UUID `json:"payment_id" `
+	UserId    uuid.UUID `json: "user_id" `
+	Price     float64   `json:"price" `
+	IsSuccess bool      `json:"is_success"`
+	Name      string    `json:"name"`
 	CommonModels
 }
 
