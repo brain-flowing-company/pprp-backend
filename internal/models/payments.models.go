@@ -18,3 +18,7 @@ type Payments struct {
 	Name      string    `json:"name"       gorm:"type:varchar(50);not null"`
 	CommonModels
 }
+
+type MyPaymentsResponse struct {
+	Payments []Payments `json:"payments"`
+}

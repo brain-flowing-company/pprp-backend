@@ -13,6 +13,7 @@ import (
 
 type Handler interface {
 	CreatePayment(c *fiber.Ctx) error
+	GetPaymentByUserId(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -46,4 +47,13 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 
 	return utils.ResponseMessage(c, http.StatusOK, "Payment created successfully")
 
+}
+
+func (h *handlerImpl) GetPaymentByUserId(c *fiber.Ctx) error {
+	userId := c.Locals("session").(models.Sessions).UserId
+	payments := models.MyPaymentsResponse{}
+	if err := h.service.GetPaymentByUserId(&payments, userId); err != nil {
+		return utils.ResponseError(c, err)
+	}
+	return c.JSON(payments)
 }
