@@ -12,7 +12,7 @@ import "github.com/google/uuid"
 
 type Payments struct {
 	PaymentId uuid.UUID `json:"payment_id" `
-	UserId    uuid.UUID `json: "user_id" `
+	UserId    uuid.UUID `json:"user_id" `
 	Price     float64   `json:"price" `
 	IsSuccess bool      `json:"is_success"`
 	Name      string    `json:"name"`
