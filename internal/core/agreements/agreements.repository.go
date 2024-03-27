@@ -8,7 +8,7 @@ import (
 )
 
 type Repository interface {
-	GetAllAgreements(*[]models.Agreements) error
+	GetAllAgreements(*[]models.AgreementLists) error
 	GetAgreementById(*models.AgreementDetails, string) error
 	GetAgreementByUserId(*models.MyAgreementResponses, string) error
 	CreateAgreement(*models.CreatingAgreements) error
@@ -26,9 +26,51 @@ func NewRepository(db *gorm.DB) Repository {
 	}
 }
 
-func (repo *repositoryImpl) GetAllAgreements(results *[]models.Agreements) error {
-	return repo.db.Model(&models.Agreements{}).
-		Find(results).Error
+func (repo *repositoryImpl) GetAllAgreements(agreements *[]models.AgreementLists) error {
+	propertiesQuery := `SELECT property_id, property_name, property_type FROM properties`
+
+	ownersQuery := `SELECT user_id AS owner_user_id,
+						first_name AS owner_first_name,
+						last_name AS owner_last_name,
+						profile_image_url AS owner_profile_image_url
+					FROM users`
+
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&models.Agreements{}).
+			Raw(`
+				SELECT a.agreement_id,
+					   p.*,
+					   o.*,
+					   a.agreement_date, 
+					   a.status, 
+					   a.deposit_amount,
+					   a.payment_per_month,
+					   a.payment_duration,
+					   a.total_payment,
+					   a.cancelled_message,
+					   a.created_at
+					FROM agreements a
+					JOIN (` + propertiesQuery + `) AS p ON a.property_id = p.property_id
+					JOIN (` + ownersQuery + `) AS o ON a.owner_user_id = o.owner_user_id
+					`).
+			Scan(agreements).Error; err != nil {
+			return err
+		}
+
+		for i, agreement := range *agreements {
+			if err := repo.db.Model(&models.PropertyImages{}).
+				Raw(`
+					SELECT image_url
+					FROM property_images
+					WHERE property_id = @property_id
+					`, sql.Named("property_id", agreement.Property.PropertyId)).
+				Pluck("image_url", &(*agreements)[i].Property.PropertyImages).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
 
 func (repo *repositoryImpl) GetAgreementById(agreement *models.AgreementDetails, agreementId string) error {

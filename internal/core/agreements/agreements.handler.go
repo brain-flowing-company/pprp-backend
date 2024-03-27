@@ -36,14 +36,13 @@ func NewHandler(service Service) Handler {
 // @success 200 {object} []models.Agreements
 // @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAllAgreements(c *fiber.Ctx) error {
-	var apps []models.Agreements
-
-	err := h.service.GetAllAgreements(&apps)
+	var agreements []models.AgreementLists
+	err := h.service.GetAllAgreements(&agreements)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
 	
-	return c.JSON(apps)
+	return c.JSON(agreements)
 
 }
 

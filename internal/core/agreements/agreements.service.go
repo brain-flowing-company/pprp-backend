@@ -11,7 +11,7 @@ import (
 )
 
 type Service interface {
-	GetAllAgreements(*[]models.Agreements) *apperror.AppError
+	GetAllAgreements(*[]models.AgreementLists) *apperror.AppError
 	GetAgreementById(*models.AgreementDetails, string) *apperror.AppError
 	GetAgreementByUserId(*models.MyAgreementResponses, string) *apperror.AppError
 	CreateAgreement(*models.CreatingAgreements) *apperror.AppError
@@ -30,8 +30,8 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 		logger,
 	}
 }
-func (s *serviceImpl) GetAllAgreements(results *[]models.Agreements) *apperror.AppError {
-	err := s.repo.GetAllAgreements(results)
+func (s *serviceImpl) GetAllAgreements(agreements *[]models.AgreementLists) *apperror.AppError {
+	err := s.repo.GetAllAgreements(agreements)
 	if err != nil {
 		s.logger.Error("Could not get all agreements", zap.Error(err))
 		return apperror.
