@@ -89,7 +89,7 @@ func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 
 // @router      /api/v1/appointments [post]
 // @summary     Create an appointment *use cookies*
-// @description Create an appointments with **property_id**, **owner_user_id**, **appointment_date**, **note**(optional)
+// @description Create an appointment by parsing the body (note is optional)
 // @tags        appointments
 // @produce     json
 // @param       body body models.CreatingAppointments true "Appointment details"
@@ -100,7 +100,7 @@ func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
 	appointment := &models.CreatingAppointments{
 		DwellerUserId: c.Locals("session").(models.Sessions).UserId,
 	}
-	
+
 	err := c.BodyParser(appointment)
 	if err != nil {
 		return utils.ResponseError(c, apperror.

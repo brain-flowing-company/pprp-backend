@@ -24,16 +24,16 @@ type Agreements struct {
 }
 
 type CreatingAgreements struct {
-	AgreementType enums.AgreementTypes `json:"agreement_type"`
-	PropertyId    uuid.UUID `json:"property_id"`
-	OwnerUserId   uuid.UUID `json:"owner_user_id"`
-	DwellerUserId uuid.UUID `json:"dweller_user_id"`
-	AgreementDate time.Time `json:"agreement_date"`
-	Status enums.AgreementStatus `json:"status"`
-	DepositAmount float64 `json:"deposit_amount"`
-	PaymentPerMonth float64 `json:"payment_per_month"`
-	PaymentDuration int `json:"payment_duration"`
-	TotalPayment float64 `json:"total_payment"`
+	AgreementType enums.AgreementTypes `json:"agreement_type" example:"SELLING"`
+	PropertyId    uuid.UUID `json:"property_id" example:"00000000-0000-0000-0000-000000000000"`
+	OwnerUserId   uuid.UUID `json:"-"`
+	DwellerUserId uuid.UUID `json:"dweller_user_id" example:"00000000-0000-0000-0000-000000000000"`
+	AgreementDate time.Time `json:"agreement_date" example:"2021-01-01T00:00:00Z"`
+	Status enums.AgreementStatus `json:"status" example:"AWAITING_DEPOSIT"`
+	DepositAmount float64 `json:"deposit_amount" example:"1000000"`
+	PaymentPerMonth float64 `json:"payment_per_month" example:"1000000"`
+	PaymentDuration int `json:"payment_duration" example:"12"`
+	TotalPayment float64 `json:"total_payment" example:"12000000"`
 }
 
 func (a Agreements) TableName() string {

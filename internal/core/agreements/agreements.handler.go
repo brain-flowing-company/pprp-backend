@@ -97,7 +97,10 @@ func (h *handlerImpl) GetMyAgreements(c *fiber.Ctx) error {
 // @success 201 {object} models.MessageResponses "Agreement created successfully"
 // @failure 500 {object} models.ErrorResponses "Could not create agreement"
 func (h *handlerImpl) CreateAgreement(c *fiber.Ctx) error {
-	agreement := &models.CreatingAgreements{}
+	agreement := &models.CreatingAgreements{
+		OwnerUserId: c.Locals("session").(models.Sessions).UserId,
+	}
+	
 	err := c.BodyParser(agreement)
 	if err != nil {
 		return utils.ResponseError(c, apperror.
