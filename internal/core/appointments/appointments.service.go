@@ -74,11 +74,15 @@ func (s *serviceImpl) GetMyAppointments(appointments *models.MyAppointmentRespon
 	}
 
 	err := s.repo.GetAppointmentByUserId(appointments, userId)
-	if err != nil {
-		s.logger.Error("Could not get my appointments", zap.Error(err))
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.AppointmentNotFound).
+			Describe("Could not find the specified appointment")
+	} else if err != nil {
+		s.logger.Error("Could not get appointment by user id", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
-			Describe("Could not get my appointments")
+			Describe("Could not get appointment by user id")
 	}
 
 	return nil

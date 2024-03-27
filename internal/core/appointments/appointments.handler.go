@@ -89,7 +89,7 @@ func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 
 // @router      /api/v1/appointments [post]
 // @summary     Create an appointment *use cookies*
-// @description Create an appointments with **property_id**, **owner_user_id**, **dweller_user_id**, **appointment_date**, **note**(optional)
+// @description Create an appointments with **property_id**, **owner_user_id**, **appointment_date**, **note**(optional)
 // @tags        appointments
 // @produce     json
 // @param       body body models.CreatingAppointments true "Appointment details"
@@ -97,7 +97,10 @@ func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 // @failure     400 {object} models.ErrorResponses "Empty dates or some of appointments duplicate with existing one"
 // @failure     500 {object} models.ErrorResponses "Could not create appointments"
 func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
-	appointment := &models.CreatingAppointments{}
+	appointment := &models.CreatingAppointments{
+		DwellerUserId: c.Locals("session").(models.Sessions).UserId,
+	}
+	
 	err := c.BodyParser(appointment)
 	if err != nil {
 		return utils.ResponseError(c, apperror.
