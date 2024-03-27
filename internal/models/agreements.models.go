@@ -45,8 +45,9 @@ type UpdatingAgreementStatus struct {
 	CancelledMessage string `json:"cancelled_message"`
 }
 
+// Data Structure for My Agreements
 type MyAgreementRequests struct {
-	UserId string `json:"-"`
+	UserId uuid.UUID `json:"-"`
 	Order string `json:"-"`
 }
 
