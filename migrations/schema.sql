@@ -263,35 +263,49 @@ INSERT INTO property_images (property_id, image_url) VALUES
 ('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/0bd03187-91ac-457d-957c-3ba2f6c0d24b-2.jpeg'),
 ('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/21b492b6-8d4f-45a6-af25-2fa9c1eb2042-1.jpeg'),
 ('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/21b492b6-8d4f-45a6-af25-2fa9c1eb2042-2.jpeg'),
-('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/21b492b6-8d4f-45a6-af25-2fa9c1eb2042-3jpeg'),
-('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/2dd819db-6b5f-4c29-b173-0f0bf04769fb-1jpeg'),
-('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/2dd819db-6b5f-4c29-b173-0f0bf04769fb-2jpeg'),
+('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/21b492b6-8d4f-45a6-af25-2fa9c1eb2042-3.jpeg'),
+('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/2dd819db-6b5f-4c29-b173-0f0bf04769fb-1.jpeg'),
+('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/2dd819db-6b5f-4c29-b173-0f0bf04769fb-2.jpeg'),
 ('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-1.jpeg'),
 ('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-2.jpeg'),
-('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-3jpeg'),
-('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-4jpeg'),
+('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-3.jpeg'),
+('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/4ed284f5-1c61-4605-ae8e-44edc9ce0e91-4.jpeg'),
 ('7faf0793-3937-47f3-aa97-76ed81134c70', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/7faf0793-3937-47f3-aa97-76ed81134c70-1.jpeg'),
 ('7faf0793-3937-47f3-aa97-76ed81134c70', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/7faf0793-3937-47f3-aa97-76ed81134c70-2.jpeg'),
 ('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-1.jpeg'),
 ('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-2.jpeg'),
-('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-3jpeg'),
-('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-4jpeg'),
-('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-5jpeg'),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-3.jpeg'),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-4.jpeg'),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/8c32a8b1-c096-4f28-abd7-771ec5b02b1e-5.jpeg'),
 ('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-1.jpeg'),
 ('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-2.jpeg'),
-('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-5jpeg'),
-('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-7jpeg'),
+('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-5.jpeg'),
+('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b1f3bbfd-e5da-4fe1-9add-eac66357d790-7.jpeg'),
 ('b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9-1.jpeg'),
 ('e3f29fb7-f830-43de-91ab-c67fd0c170a3', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/e3f29fb7-f830-43de-91ab-c67fd0c170a3-1.jpeg'),
 ('e3f29fb7-f830-43de-91ab-c67fd0c170a3', 'https://suechaokhai.s3.ap-southeast-1.amazonaws.com/properties/e3f29fb7-f830-43de-91ab-c67fd0c170a3-2.jpeg');
 
 INSERT INTO selling_properties (property_id, price, is_sold) VALUES
-('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 258883.7091280503, FALSE),
-('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 128734.8123476912, FALSE);
+('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 2588830.71, FALSE),
+('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 2588840.72, FALSE),
+('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 2588850.73, FALSE),
+('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 2588860.74, FALSE),
+('7faf0793-3937-47f3-aa97-76ed81134c70', 2588870.75, FALSE),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 2588880.76, FALSE),
+('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 2588890.77, FALSE),
+('b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9', 2588900.78, FALSE),
+('e3f29fb7-f830-43de-91ab-c67fd0c170a3', 2588910.79, FALSE);
 
 INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUES
-('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 123423.2931847312, FALSE),
-('b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9', 112302.9182347433, TRUE);
+('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 15500.50, FALSE),
+('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 15500.51, FALSE),
+('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 15500.52, FALSE),
+('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 15500.53, FALSE),
+('7faf0793-3937-47f3-aa97-76ed81134c70', 15500.54, FALSE),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 15500.55, FALSE),
+('b1f3bbfd-e5da-4fe1-9add-eac66357d790', 15500.56, FALSE),
+('b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9', 15500.57, FALSE),
+('e3f29fb7-f830-43de-91ab-c67fd0c170a3', 15500.58, FALSE);
 
 INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent_at) VALUES
 ('541dfc60-2f5b-473a-ac09-76a2aa3e5276', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Good morning' , NULL, '2024-02-25 19:04:18.818+07'),
@@ -303,29 +317,6 @@ INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent
 INSERT INTO appointments (property_id, owner_user_id, dweller_user_id, status, appointment_date, note) VALUES
 ('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:50:00.000+07', NULL),
 ('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:51:00.000+07', 'Good morning');
-
--- mock data for appointments
-
--- Insert mock data into the users table
-INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, is_verified)
-VALUES
-('123e4567-e89b-12d3-a456-426614174001', 'EMAIL', 'user1@email.com', 'password123', 'User', 'One', '1234567890', 'https://example.com/image1.jpg', TRUE),
-('123e4567-e89b-12d3-a456-426614174002', 'EMAIL', 'user2@email.com', 'password456', 'User', 'Two', '9876543210', 'https://example.com/image2.jpg', FALSE),
-('123e4567-e89b-12d3-a456-426614174003', 'GOOGLE', 'user3@gmail.com', NULL, 'User', 'Three', '3333333333', 'https://example.com/image3.jpg', TRUE);
-
--- Insert mock data into the properties table
-INSERT INTO properties (property_id, owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, unit_number) 
-VALUES
-('223e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174001', 'Beautiful House', 'Dream House', 'HOUSE', '123 Main St', NULL, 'Dream Street', 'Dreamville', 'Dream District', 'Dream Province', 'Dream Country', '12345', 1, 1, 'UNFURNISHED', 1, 11.11, 1010),
-('223e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174002', 'Cozy Apartment', 'Sky Towers', 'APARTMENT', '456 Sky Blvd', 'Sky Alley', 'Cloud Street', 'Cloudsville', 'Cloud District', 'Cloud Province', 'Cloud Country', '56789', 2, 2, 'PARTIALLY_FURNISHED', 2, 22.22, 2020),
-('223e4567-e89b-12d3-a456-426614174003', '123e4567-e89b-12d3-a456-426614174003', 'Luxury Condo', 'Golden Heights', 'CONDOMINIUM', '789 Gold Ave', 'Gold Alley', 'Golden Street', 'Goldenville', 'Gold District', 'Gold Province', 'Gold Country', '98765', 3, 3, 'FULLY_FURNISHED', 3, 33.33, 3030);
-
--- Insert mock data into the agreements table
-INSERT INTO agreements (agreement_id, property_id, owner_user_id, dweller_user_id, agreement_date)
-VALUES
-('323e4567-e89b-12d3-a456-426614174001', '223e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174002', CURRENT_TIMESTAMP),
-('323e4567-e89b-12d3-a456-426614174002', '223e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174002', '123e4567-e89b-12d3-a456-426614174003', CURRENT_TIMESTAMP),
-('323e4567-e89b-12d3-a456-426614174003', '223e4567-e89b-12d3-a456-426614174003', '123e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174003', CURRENT_TIMESTAMP);
 
 -------------------- VIEWS --------------------
 
