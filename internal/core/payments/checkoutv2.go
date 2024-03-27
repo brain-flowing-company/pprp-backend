@@ -20,6 +20,10 @@ func CheckoutV2(c *fiber.Ctx, name string, price float64) error {
 
 	params := &stripe.CheckoutSessionParams{
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
+		PaymentMethodTypes: []*string{
+			stripe.String(string(stripe.PaymentMethodTypeCard)),
+			stripe.String(string(stripe.PaymentMethodTypePromptPay)),
+		},
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			&stripe.CheckoutSessionLineItemParams{
 				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
