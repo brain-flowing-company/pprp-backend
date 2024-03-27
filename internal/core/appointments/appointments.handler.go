@@ -76,10 +76,13 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 // @success     200	{object} models.MyAppointmentResponses
 // @failure     500 {object} models.ErrorResponses "Could not get my appointments"
 func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
-	userId := c.Locals("session").(models.Sessions).UserId.String()
+	appointmentRequest := models.MyAppointmentRequests{
+		UserId: c.Locals("session").(models.Sessions).UserId,
+		Order: c.Query("order"),
+	}
 
 	var appointments models.MyAppointmentResponses
-	err := h.service.GetMyAppointments(&appointments, userId)
+	err := h.service.GetMyAppointments(&appointments, &appointmentRequest)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}

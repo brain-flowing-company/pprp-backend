@@ -37,6 +37,12 @@ type UpdatingAppointmentStatus struct {
 }
 
 // Data Structure for My Appointments
+
+type MyAppointmentRequests struct {
+	UserId uuid.UUID `json:"-"`
+	Order string `json:"-"`
+}
+
 type MyAppointmentResponses struct {
 	OwnerAppointments   []AppointmentLists `json:"owner_appointments"`
 	DwellerAppointments []AppointmentLists `json:"dweller_appointments"`
