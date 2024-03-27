@@ -259,8 +259,8 @@ CREATE RULE update_user_verified AS ON INSERT TO user_verifications DO ALSO (
 
 INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, is_verified) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', TRUE),
-('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, FALSE),
-('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', TRUE);
+('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'Sam', 'Smith', '0987654321', NULL, FALSE),
+('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'cc@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', TRUE);
 
 INSERT INTO properties (property_id, owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, floor_size_unit, unit_number) VALUES
 ('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Et sequi dolor praes', 'sdfasdfdsalflvasdldk', 'HOUSE', 'Quas iusto expedita ', 'Delisa', 'Grace', 'Michael', 'Christine', 'Anthony', 'Andrew', '53086', 3, 2, 'UNFURNISHED', 20, 45.78, 'SQM', 1123),
