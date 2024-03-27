@@ -45,6 +45,11 @@ type UpdatingAgreementStatus struct {
 	CancelledMessage string `json:"cancelled_message"`
 }
 
+type MyAgreementRequests struct {
+	UserId string `json:"-"`
+	Order string `json:"-"`
+}
+
 type MyAgreementResponses struct {
 	OwnerAgreements   []AgreementLists `json:"owner_agreements"`
 	DwellerAgreements []AgreementLists `json:"dweller_agreements"`

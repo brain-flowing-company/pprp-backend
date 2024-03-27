@@ -13,7 +13,7 @@ import (
 type Service interface {
 	GetAllAgreements(*[]models.AgreementLists) *apperror.AppError
 	GetAgreementById(*models.AgreementDetails, string) *apperror.AppError
-	GetAgreementByUserId(*models.MyAgreementResponses, string) *apperror.AppError
+	GetAgreementByUserId(*models.MyAgreementResponses, *models.MyAgreementRequests) *apperror.AppError
 	CreateAgreement(*models.CreatingAgreements) *apperror.AppError
 	DeleteAgreement(string) *apperror.AppError
 	UpdateAgreementStatus(*models.UpdatingAgreementStatus, string) *apperror.AppError
@@ -63,14 +63,18 @@ func (s *serviceImpl) GetAgreementById(agreement *models.AgreementDetails, agree
 	return nil
 }
 
-func (s *serviceImpl) GetAgreementByUserId(agreements *models.MyAgreementResponses, userId string) *apperror.AppError {
-	if !utils.IsValidUUID(userId) {
+func (s *serviceImpl) GetAgreementByUserId(agreements *models.MyAgreementResponses, agreementRequest *models.MyAgreementRequests) *apperror.AppError {
+	if !utils.IsValidUUID(agreementRequest.UserId) {
 		return apperror.
 			New(apperror.InvalidUserId).
 			Describe("Invalid user id")
 	}
 
-	err := s.repo.GetAgreementByUserId(agreements, userId)
+	if agreementRequest.Order != "ASC" && agreementRequest.Order != "DESC" {
+		agreementRequest.Order = "ASC"
+	}
+
+	err := s.repo.GetAgreementByUserId(agreements, agreementRequest)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return apperror.
 			New(apperror.AppointmentNotFound).

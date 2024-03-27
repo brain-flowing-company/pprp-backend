@@ -76,10 +76,13 @@ func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 // @success     200	{object} models.MyAgreementResponses
 // @failure     500 {object} models.ErrorResponses "Could not get my agreements"
 func (h *handlerImpl) GetMyAgreements(c *fiber.Ctx) error {
-	userId := c.Locals("session").(models.Sessions).UserId.String()
+	agreementRequest := models.MyAgreementRequests{
+		UserId: c.Locals("session").(models.Sessions).UserId.String(),
+		Order: c.Query("order"),
+	}
 
 	var agreements models.MyAgreementResponses
-	err := h.service.GetAgreementByUserId(&agreements, userId)
+	err := h.service.GetAgreementByUserId(&agreements, &agreementRequest)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}

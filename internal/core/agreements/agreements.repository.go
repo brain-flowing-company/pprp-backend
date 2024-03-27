@@ -10,7 +10,7 @@ import (
 type Repository interface {
 	GetAllAgreements(*[]models.AgreementLists) error
 	GetAgreementById(*models.AgreementDetails, string) error
-	GetAgreementByUserId(*models.MyAgreementResponses, string) error
+	GetAgreementByUserId(*models.MyAgreementResponses, *models.MyAgreementRequests) error
 	CreateAgreement(*models.CreatingAgreements) error
 	DeleteAgreement(string) error
 	UpdateAgreementStatus(*models.UpdatingAgreementStatus, string) error
@@ -144,7 +144,7 @@ func (repo *repositoryImpl) GetAgreementById(agreement *models.AgreementDetails,
 	})
 }
 
-func (repo *repositoryImpl) GetAgreementByUserId(agreementResponse *models.MyAgreementResponses, userId string) error {
+func (repo *repositoryImpl) GetAgreementByUserId(agreementResponse *models.MyAgreementResponses, agreementRequest *models.MyAgreementRequests) error {
 	propertiesQuery := `SELECT property_id, property_name, property_type FROM properties`
 
 	ownersQuery := `SELECT user_id AS owner_user_id,
@@ -173,7 +173,8 @@ func (repo *repositoryImpl) GetAgreementByUserId(agreementResponse *models.MyAgr
 		if err := tx.Model(&models.Agreements{}).
 			Raw(agreementListsQuery+`
 				WHERE a.owner_user_id = @user_id
-				`, sql.Named("user_id", userId)).
+				ORDER BY a.created_at `+agreementRequest.Order+`
+				`, sql.Named("user_id", agreementRequest.UserId)).
 			Scan(&agreementResponse.OwnerAgreements).Error; err != nil {
 			return err
 		}
@@ -181,7 +182,8 @@ func (repo *repositoryImpl) GetAgreementByUserId(agreementResponse *models.MyAgr
 		if err := tx.Model(&models.Agreements{}).
 			Raw(agreementListsQuery+`
 				WHERE a.dweller_user_id = @user_id
-				`, sql.Named("user_id", userId)).
+				ORDER BY a.created_at `+agreementRequest.Order+`
+				`, sql.Named("user_id", agreementRequest.UserId)).
 			Scan(&agreementResponse.DwellerAgreements).Error; err != nil {
 			return err
 		}
