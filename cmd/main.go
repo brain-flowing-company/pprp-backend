@@ -156,12 +156,12 @@ func main() {
 	apiv1.Post("/login", authHandler.Login)
 	apiv1.Post("/logout", authHandler.Logout)
 
-	apiv1.Get("/agreements", agreementsHandler.GetAllAgreements)
-	apiv1.Get("/agreement/:agreementId", agreementsHandler.GetAgreementById)
-	apiv1.Get("/user/:userId/agreements", agreementsHandler.GetAgreementsByOwnerId)
-	apiv1.Get("/user/:userId/dwelling-agreements", agreementsHandler.GetAgreementsByDwellerId)
-	apiv1.Post("/agreement", agreementsHandler.CreateAgreement)
-	apiv1.Delete("/agreement/:agreementId", agreementsHandler.DeleteAgreement)
+	apiv1.Get("/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.GetAllAgreements))
+	apiv1.Get("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.GetAgreementById))
+	apiv1.Get("/user/me/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.GetMyAgreements))
+	apiv1.Post("/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.CreateAgreement))
+	apiv1.Delete("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.DeleteAgreement))
+	apiv1.Patch("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.UpdateAgreementStatus))
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Post("/email", emailHandler.SendVerificationEmail)

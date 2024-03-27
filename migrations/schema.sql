@@ -2,7 +2,11 @@ CREATE TYPE bank_names AS ENUM('KBANK', 'BBL', 'KTB', 'BAY', 'CIMB', 'TTB', 'SCB
 
 CREATE TYPE registered_types AS ENUM('EMAIL', 'GOOGLE');
 
+CREATE TYPE agreement_types AS ENUM('SELLING', 'RENTING');
+
 CREATE TYPE appointment_status AS ENUM('PENDING', 'CONFIRMED', 'REJECTED', 'CANCELLED', 'ARCHIVED');
+
+CREATE TYPE agreement_status AS ENUM('AWAITING_DEPOSIT', 'AWAITING_PAYMENT', 'RENTING', 'CANCELLED', 'OVERDUE', 'ARCHIVED');
 
 CREATE TYPE card_colors AS ENUM('LIGHT_BLUE', 'BLUE', 'DARK_BLUE', 'VERY_DARK_BLUE');
 
@@ -45,7 +49,7 @@ CREATE TABLE users
 
 CREATE TABLE user_financial_informations
 (
-    user_id                             UUID PRIMARY KEY REFERENCES users(user_id)  NOT NULL,
+    user_id                             UUID PRIMARY KEY REFERENCES users(user_id)  ON DELETE CASCADE   NOT NULL,
     bank_name                           bank_names                                  DEFAULT NULL,
     bank_account_number                 VARCHAR(10)                                 DEFAULT NULL,
     created_at                          TIMESTAMP(0) WITH TIME ZONE                 DEFAULT CURRENT_TIMESTAMP,
@@ -69,7 +73,7 @@ CREATE TABLE credit_cards
 
 CREATE TABLE user_verifications 
 (
-    user_id                 UUID PRIMARY KEY NOT NULL REFERENCES users(user_id),
+    user_id                 UUID PRIMARY KEY NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     citizen_id              VARCHAR(13)      NOT NULL,
     citizen_card_image_url  VARCHAR(2000)    NOT NULL,
     verified_at             TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -142,9 +146,9 @@ CREATE TABLE favorite_properties
 CREATE TABLE appointments
 (
     appointment_id      UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-    property_id         UUID REFERENCES properties (property_id)   NOT NULL,
-    owner_user_id       UUID REFERENCES users (user_id)            NOT NULL,
-    dweller_user_id     UUID REFERENCES users (user_id)            NOT NULL,
+    property_id         UUID REFERENCES properties (property_id)   ON DELETE CASCADE    NOT NULL,
+    owner_user_id       UUID REFERENCES users (user_id)            ON DELETE CASCADE    NOT NULL,
+    dweller_user_id     UUID REFERENCES users (user_id)            ON DELETE CASCADE    NOT NULL,
     appointment_date    TIMESTAMP(0) WITH TIME ZONE                NOT NULL,
     status              appointment_status DEFAULT 'PENDING'       NOT NULL,
     note                TEXT                                       DEFAULT NULL,
@@ -157,21 +161,28 @@ CREATE TABLE appointments
 
 CREATE TABLE agreements
 (
-    agreement_id   UUID PRIMARY KEY DEFAULT gen_random_uuid()   NOT NULL,
-    property_id      UUID REFERENCES properties (property_id)   NOT NULL,
-    owner_user_id    UUID REFERENCES users (user_id)            NOT NULL,
-    dweller_user_id  UUID REFERENCES users (user_id)            NOT NULL,
-    agreement_date TIMESTAMP(0) WITH TIME ZONE                  NOT NULL,
-    created_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP,
-    deleted_at       TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL,
+    agreement_id        UUID PRIMARY KEY DEFAULT gen_random_uuid()          NOT NULL,
+    agreement_type      agreement_types                                     NOT NULL,
+    property_id         UUID REFERENCES properties (property_id)            ON DELETE CASCADE   NOT NULL,
+    owner_user_id       UUID REFERENCES users (user_id)                     ON DELETE CASCADE   NOT NULL,
+    dweller_user_id     UUID REFERENCES users (user_id)                     ON DELETE CASCADE   NOT NULL,
+    agreement_date      TIMESTAMP(0) WITH TIME ZONE                         NOT NULL,
+    status              agreement_status DEFAULT 'AWAITING_DEPOSIT'       NOT NULL,
+    deposit_amount      DOUBLE PRECISION                                    DEFAULT NULL,
+    payment_per_month   DOUBLE PRECISION                                    DEFAULT NULL,
+    payment_duration    INTEGER                                             DEFAULT NULL,
+    total_payment       DOUBLE PRECISION                                    DEFAULT NULL,
+    cancelled_message   TEXT                                                DEFAULT NULL,
+    created_at          TIMESTAMP(0) WITH TIME ZONE                         DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP(0) WITH TIME ZONE                         DEFAULT CURRENT_TIMESTAMP,
+    deleted_at          TIMESTAMP(0) WITH TIME ZONE                         DEFAULT NULL,
     UNIQUE (property_id, agreement_date)
 );
 
 CREATE TABLE messages (
     message_id  UUID PRIMARY KEY         NOT NULL,
-    sender_id   UUID                     NOT NULL REFERENCES users(user_id),
-    receiver_id UUID                     NOT NULL REFERENCES users(user_id),
+    sender_id   UUID                     NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    receiver_id UUID                     NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     content     VARCHAR(4096)            NOT NULL,
     read_at     TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     sent_at     TIMESTAMP WITH TIME ZONE NOT NULL
@@ -205,6 +216,10 @@ CREATE RULE soft_deletion AS ON DELETE TO renting_properties DO INSTEAD (
 
 CREATE RULE soft_deletion AS ON DELETE TO appointments DO INSTEAD (
     UPDATE appointments SET deleted_at = CURRENT_TIMESTAMP WHERE appointment_id = old.appointment_id and deleted_at IS NULL
+);
+
+CREATE RULE soft_deletion AS ON DELETE TO agreements DO INSTEAD (
+    UPDATE agreements SET deleted_at = CURRENT_TIMESTAMP WHERE agreement_id = old.agreement_id and deleted_at IS NULL
 );
 
 CREATE RULE delete_users AS ON UPDATE TO users
@@ -244,16 +259,17 @@ CREATE RULE update_user_verified AS ON INSERT TO user_verifications DO ALSO (
 
 INSERT INTO users (user_id, registered_type, email, password, first_name, last_name, phone_number, profile_image_url, is_verified) VALUES
 ('f38f80b3-f326-4825-9afc-ebc331626555', 'EMAIL', 'johnd@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'John', 'Doe', '1234567890', 'https://picsum.photos/200/300?random=1', TRUE),
-('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9Zvuhfkdle9405.ya', 'Sam', 'Smith', '0987654321', NULL, FALSE),
-('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'gmail@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', TRUE);
+('bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'EMAIL', 'sams@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'Sam', 'Smith', '0987654321', NULL, FALSE),
+('a4ec4cd6-03f5-4f1c-b13d-7123d9b03617', 'EMAIL', 'markl@email.com', '$2a$10$eEkTbe/JskFiociJ8U/bGOwwiea9dZ6sN7ac9ZvuiUgtrekZ7b.ya', 'Mark', 'Lee', '0000000000', NULL, TRUE),
+('62dd40da-f326-4825-9afc-2d68e06e0282', 'GOOGLE', 'cc@gmail.com', NULL, 'C', 'C', '3333333333', 'https://picsum.photos/200/300?random=1', TRUE);
 
 INSERT INTO properties (property_id, owner_id, property_name, property_description, property_type, address, alley, street, sub_district, district, province, country, postal_code, bedrooms, bathrooms, furnishing, floor, floor_size, floor_size_unit, unit_number) VALUES
 ('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Et sequi dolor praes', 'sdfasdfdsalflvasdldk', 'HOUSE', 'Quas iusto expedita ', 'Delisa', 'Grace', 'Michael', 'Christine', 'Anthony', 'Andrew', '53086', 3, 2, 'UNFURNISHED', 20, 45.78, 'SQM', 1123),
 ('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Impedit quae itaque ', 'asludfowyegfubhsalas', 'APARTMENT', 'Sunt fuga quo perspi', 'Raquel', 'Brandy', 'Jacob', 'Lino', 'Edward', 'Reginald', '12894', 2, 1, 'FULLY_FURNISHED',18, 22.13, 'SQM', 1233),
 ('2dd819db-6b5f-4c29-b173-0f0bf04769fb', 'f38f80b3-f326-4825-9afc-ebc331626555', 'Architecto iure labo', 'asdasfhsfjdkaasdfjks', 'CONDOMINIUM', 'Pariatur temporibus ', 'Robert', 'Nancy', 'Barbara', 'David', 'Henry', 'David', '24264', 3, 2, 'READY_TO_MOVE_IN', 1, 200.00, 'SQFT', 555),
-('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Optio in asperiores ', 'ioquwerewqpurwpqeruu', 'SEMI_DETACHED_HOUSE', 'Ea nobis mollitia ea', 'Tina', 'Linda', 'Ronald', 'Julia', 'Russell', 'William', '10287', 9, 9, 'FULLY_FURNISHED', 9, 90.99, 'SQM', 9909),
-('7faf0793-3937-47f3-aa97-76ed81134c70', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Sunt at totam animi ', 'iuwuerhihdfsiladfjas', 'TOWNHOUSE', 'Unde natus nesciunt ', 'Norma', 'Gregory', 'Donovan', 'Charles', 'Kevin', 'Tyrone', '10055', 1, 1, 'PARTIALLY_FURNISHED', 30, 90.99, 'SQFT', 1234),
-('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Animi vero ipsa nihi', 'hubgqewhbflasdhbfahs', 'HOUSE', 'Totam nam minus veni', 'Allen', 'Linda', 'Bobby', 'Nora', 'James', 'Lucinda', '01229', 7, 2, 'UNFURNISHED', 12, 127.27, 'SQFT', 1207),
+('4ed284f5-1c61-4605-ae8e-44edc9ce0e91', 'a4ec4cd6-03f5-4f1c-b13d-7123d9b03617', 'Optio in asperiores ', 'ioquwerewqpurwpqeruu', 'SEMI_DETACHED_HOUSE', 'Ea nobis mollitia ea', 'Tina', 'Linda', 'Ronald', 'Julia', 'Russell', 'William', '10287', 9, 9, 'FULLY_FURNISHED', 9, 90.99, 'SQM', 9909),
+('7faf0793-3937-47f3-aa97-76ed81134c70', 'a4ec4cd6-03f5-4f1c-b13d-7123d9b03617', 'Sunt at totam animi ', 'iuwuerhihdfsiladfjas', 'TOWNHOUSE', 'Unde natus nesciunt ', 'Norma', 'Gregory', 'Donovan', 'Charles', 'Kevin', 'Tyrone', '10055', 1, 1, 'PARTIALLY_FURNISHED', 30, 90.99, 'SQFT', 1234),
+('8c32a8b1-c096-4f28-abd7-771ec5b02b1e', 'a4ec4cd6-03f5-4f1c-b13d-7123d9b03617', 'Animi vero ipsa nihi', 'hubgqewhbflasdhbfahs', 'HOUSE', 'Totam nam minus veni', 'Allen', 'Linda', 'Bobby', 'Nora', 'James', 'Lucinda', '01229', 7, 2, 'UNFURNISHED', 12, 127.27, 'SQFT', 1207),
 ('b1f3bbfd-e5da-4fe1-9add-eac66357d790', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Numquam sit dicta be', 'euyqrbdfhaivbhdbewjf', 'SERVICED_APARTMENT', 'Consequatur incidunt', 'Cecil', 'David', 'Nancy', 'Brandon', 'John', 'Lillian', '48668', 3, 2, 'FULLY_FURNISHED', 6, 66.00, 'SQFT', 6666),
 ('b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Iure nostrum ab reru', 'ewurblhdsfhladlhfdas', 'SEMI_DETACHED_HOUSE', 'Nisi officia nemo au', 'Keith', 'Joseph', 'Joseph', 'Goldie', 'Danika', 'Bernice', '47550', 1, 1, 'READY_TO_MOVE_IN', 4, 44.44, 'SQM', 4444),
 ('e3f29fb7-f830-43de-91ab-c67fd0c170a3', '62dd40da-f326-4825-9afc-2d68e06e0282', 'Aut nemo incidunt ul', 'sldlfghewrvjdsbppppp', 'CONDOMINIUM', 'Porro molestias rati', 'Brian', 'Gregory', 'Geraldine', 'Edward', 'Charles', 'James', '97186', 3, 1, 'UNFURNISHED', 13, 1313.13, 'SQFT', 1313);
@@ -318,6 +334,11 @@ INSERT INTO appointments (property_id, owner_user_id, dweller_user_id, status, a
 ('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:50:00.000+07', NULL),
 ('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:51:00.000+07', 'Good morning');
 
+INSERT INTO agreements (agreement_type, property_id, owner_user_id, dweller_user_id, agreement_date, status, deposit_amount, payment_per_month, payment_duration, total_payment, cancelled_message) VALUES
+('RENTING', '0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-21 15:50:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
+('SELLING', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', '62dd40da-f326-4825-9afc-2d68e06e0282', '2024-02-22 15:51:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
+('RENTING', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-23 15:52:00.000+07', 'CANCELLED', 10000.00, 1000.00, 10000.00, 10, 'nope');
+
 -------------------- VIEWS --------------------
 
 ALTER TABLE users RENAME TO _users;
@@ -354,6 +375,16 @@ CREATE VIEW appointments AS SELECT *
     FROM _appointments
     WHERE (
      	deleted_at IS NULL AND
+        property_id IN (SELECT property_id FROM properties WHERE deleted_at IS NULL) AND
+        dweller_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL) AND
+        owner_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL)
+    );
+
+ALTER TABLE agreements RENAME TO _agreements;
+CREATE VIEW agreements AS SELECT *
+    FROM _agreements
+    WHERE (
+        deleted_at IS NULL AND
         property_id IN (SELECT property_id FROM properties WHERE deleted_at IS NULL) AND
         dweller_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL) AND
         owner_user_id IN (SELECT user_id FROM _users WHERE deleted_at IS NULL)

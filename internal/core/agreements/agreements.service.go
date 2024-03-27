@@ -6,18 +6,17 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 type Service interface {
-	GetAllAgreements(*[]models.Agreements) *apperror.AppError
-	GetAgreementById(*models.Agreements, string) *apperror.AppError
-	GetAgreementsByOwnerId(*[]models.Agreements, string) *apperror.AppError
-	GetAgreementsByDwellerId(*[]models.Agreements, string) *apperror.AppError
+	GetAllAgreements(*[]models.AgreementLists) *apperror.AppError
+	GetAgreementById(*models.AgreementDetails, string) *apperror.AppError
+	GetMyAgreements(*models.MyAgreementResponses, *models.MyAgreementRequests) *apperror.AppError
 	CreateAgreement(*models.CreatingAgreements) *apperror.AppError
 	DeleteAgreement(string) *apperror.AppError
+	UpdateAgreementStatus(*models.UpdatingAgreementStatus, string) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -31,57 +30,62 @@ func NewService(logger *zap.Logger, repo Repository) Service {
 		logger,
 	}
 }
-func (s *serviceImpl) GetAllAgreements(results *[]models.Agreements) *apperror.AppError {
-	err := s.repo.GetAllAgreements(results)
+func (s *serviceImpl) GetAllAgreements(agreements *[]models.AgreementLists) *apperror.AppError {
+	err := s.repo.GetAllAgreements(agreements)
 	if err != nil {
-		s.logger.Error("Error getting all agreements", zap.Error(err))
-		return apperror.New(apperror.InternalServerError).Describe("Error getting all agreements")
-	}
-	return nil
-}
-
-func (s *serviceImpl) GetAgreementById(result *models.Agreements, id string) *apperror.AppError {
-	if !utils.IsValidUUID(id) {
-		return apperror.New(apperror.InvalidAgreementId).Describe("Invalid agreement id")
-	}
-	err := s.repo.GetAgreementById(result, id)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return apperror.New(apperror.AgreementNotFound).Describe("Agreement not found")
-	}
-	if err != nil {
-		s.logger.Error("Error getting agreement by id", zap.Error(err))
-		return apperror.New(apperror.InternalServerError).Describe("Error getting agreement by id")
-	}
-	return nil
-}
-
-func (s *serviceImpl) GetAgreementsByOwnerId(agreements *[]models.Agreements, userId string) *apperror.AppError {
-	err := s.repo.GetAgreementsByOwnerId(agreements, userId)
-	if err != nil {
-		s.logger.Error("Could not get agreements by owner id", zap.Error(err))
+		s.logger.Error("Could not get all agreements", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
-			Describe("Could not get agreements by owner id")
+			Describe("Could not get all agreements")
+	}
+	return nil
+}
+
+func (s *serviceImpl) GetAgreementById(agreement *models.AgreementDetails, agreementId string) *apperror.AppError {
+	if !utils.IsValidUUID(agreementId) {
+		return apperror.
+			New(apperror.InvalidAgreementId).
+			Describe("Invalid agreement id")
+	}
+
+	err := s.repo.GetAgreementById(agreement, agreementId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.AgreementNotFound).
+			Describe("Could not find the specified agreement")
+	} else if err != nil {
+		s.logger.Error("Could not get agreement by id", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get agreement by id")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) GetMyAgreements(agreements *models.MyAgreementResponses, agreementRequest *models.MyAgreementRequests) *apperror.AppError {
+	if agreementRequest.Order != "ASC" && agreementRequest.Order != "DESC" {
+		agreementRequest.Order = "ASC"
+	}
+
+	err := s.repo.GetAgreementByUserId(agreements, agreementRequest)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.AppointmentNotFound).
+			Describe("Could not find the specified agreement")
+	} else if err != nil {
+		s.logger.Error("Could not get agreement by user id", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get agreement by user id")
 	}
 
 	return nil
 }
 
 func (s *serviceImpl) CreateAgreement(creatingAgreement *models.CreatingAgreements) *apperror.AppError {
-	agreement := models.Agreements{
-		AgreementID:   uuid.New(),
-		PropertyID:    creatingAgreement.PropertyID,
-		OwnerUserID:   creatingAgreement.OwnerUserID,
-		DwellerUserID: creatingAgreement.DwellerUserID,
-		AgreementDate: creatingAgreement.AgreementDate,
-	}
-
-	err := s.repo.CreateAgreement(&agreement)
-	if errors.Is(err, gorm.ErrDuplicatedKey) {
-		return apperror.
-			New(apperror.DuplicateAgreement).
-			Describe("Could not create agreement")
-	} else if err != nil {
+	err := s.repo.CreateAgreement(creatingAgreement)
+	if err != nil {
 		s.logger.Error("Could not create agreement", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
@@ -91,28 +95,45 @@ func (s *serviceImpl) CreateAgreement(creatingAgreement *models.CreatingAgreemen
 	return nil
 }
 
-func (s *serviceImpl) DeleteAgreement(id string) *apperror.AppError {
-	if !utils.IsValidUUID(id) {
-		return apperror.New(apperror.InvalidAgreementId).Describe("Invalid agreement id")
+func (s *serviceImpl) DeleteAgreement(agreementId string) *apperror.AppError {
+	if !utils.IsValidUUID(agreementId) {
+		return apperror.
+			New(apperror.InvalidAgreementId).
+			Describe("Invalid agreement id")
 	}
-	err := s.repo.DeleteAgreement(id)
+
+	err := s.repo.DeleteAgreement(agreementId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return apperror.New(apperror.AgreementNotFound).Describe("Agreement not found")
+		return apperror.
+			New(apperror.AgreementNotFound).
+			Describe("Could not find the specified agreement")
+	} else if err != nil {
+		s.logger.Error("Could not delete agreement", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not delete agreement")
 	}
-	if err != nil {
-		s.logger.Error("Error deleting agreement", zap.Error(err))
-		return apperror.New(apperror.InternalServerError).Describe("Error deleting agreement")
-	}
+
 	return nil
 }
 
-func (s *serviceImpl) GetAgreementsByDwellerId(agreements *[]models.Agreements, userId string) *apperror.AppError {
-	err := s.repo.GetAgreementsByDwellerId(agreements, userId)
-	if err != nil {
-		s.logger.Error("Could not get agreements by dweller id", zap.Error(err))
+func (s *serviceImpl) UpdateAgreementStatus(updatingAgreement *models.UpdatingAgreementStatus, agreementId string) *apperror.AppError {
+	if !utils.IsValidUUID(agreementId) {
+		return apperror.
+			New(apperror.InvalidAgreementId).
+			Describe("Invalid agreement id")
+	}
+
+	err := s.repo.UpdateAgreementStatus(updatingAgreement, agreementId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.AgreementNotFound).
+			Describe("Could not find the specified agreement")
+	} else if err != nil {
+		s.logger.Error("Could not update agreement status", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
-			Describe("Could not get agreements by dweller id")
+			Describe("Could not update agreement status")
 	}
 
 	return nil

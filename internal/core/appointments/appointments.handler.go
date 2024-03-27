@@ -30,7 +30,7 @@ func NewHandler(service Service) Handler {
 }
 
 // @router      /api/v1/appointments [get]
-// @summary     Get all appointments
+// @summary     Get all appointments *use cookies*
 // @description Get all appointments
 // @tags        appointments
 // @produce     json
@@ -47,7 +47,7 @@ func (h *handlerImpl) GetAllAppointments(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/appointments/:appointmentId [get]
-// @summary     Get an appointment by id
+// @summary     Get an appointment by id *use cookies*
 // @description Get the appointment and other related information by id
 // @tags        appointments
 // @produce     json
@@ -69,17 +69,21 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/user/me/appointments [get]
-// @summary     Get my appointments
+// @summary     Get my appointments *use cookies*
 // @description Get all appointments related to the user
 // @tags        appointments
 // @produce     json
-// @success     200	{object} models.MyAppointmentResponse
+// @param       order query string false "Order by ASC or DESC"
+// @success     200	{object} models.MyAppointmentResponses
 // @failure     500 {object} models.ErrorResponses "Could not get my appointments"
 func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
-	userId := c.Locals("session").(models.Sessions).UserId.String()
+	appointmentRequest := models.MyAppointmentRequests{
+		UserId: c.Locals("session").(models.Sessions).UserId,
+		Order: c.Query("order"),
+	}
 
-	var appointments models.MyAppointmentResponse
-	err := h.service.GetMyAppointments(&appointments, userId)
+	var appointments models.MyAppointmentResponses
+	err := h.service.GetMyAppointments(&appointments, &appointmentRequest)
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
@@ -88,8 +92,8 @@ func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/appointments [post]
-// @summary     Create an appointment
-// @description Create an appointments with **property_id**, **owner_user_id**, **dweller_user_id**, **appointment_date**, **note**(optional)
+// @summary     Create an appointment *use cookies*
+// @description Create an appointment by parsing the body (note is optional)
 // @tags        appointments
 // @produce     json
 // @param       body body models.CreatingAppointments true "Appointment details"
@@ -97,7 +101,10 @@ func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 // @failure     400 {object} models.ErrorResponses "Empty dates or some of appointments duplicate with existing one"
 // @failure     500 {object} models.ErrorResponses "Could not create appointments"
 func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
-	appointment := &models.CreatingAppointments{}
+	appointment := &models.CreatingAppointments{
+		DwellerUserId: c.Locals("session").(models.Sessions).UserId,
+	}
+
 	err := c.BodyParser(appointment)
 	if err != nil {
 		return utils.ResponseError(c, apperror.
@@ -114,7 +121,7 @@ func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/appointments/:appointmentId [delete]
-// @summary     Delete an appointment by id
+// @summary     Delete an appointment by id *use cookies*
 // @description Delete an appointment by id
 // @tags        appointments
 // @produce     json
@@ -133,7 +140,7 @@ func (h *handlerImpl) DeleteAppointment(c *fiber.Ctx) error {
 }
 
 // @router      /api/v1/appointments/:appointmentId [patch]
-// @summary     Update an appointment status by id
+// @summary     Update an appointment status by id *use cookies*
 // @description Update an appointment status by id with **status** and **cancelled_message**(optional)
 // @tags        appointments
 // @produce     json

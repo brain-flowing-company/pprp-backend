@@ -1,5 +1,29 @@
 basePath: /
 definitions:
+  enums.AgreementStatus:
+    enum:
+    - AWAITING_DEPOSIT
+    - AWAITING_PAYMENT
+    - RENTING
+    - CANCELLED
+    - OVERDUE
+    - ARCHIVED
+    type: string
+    x-enum-varnames:
+    - AwaitingDepositAgreement
+    - AwaitingPaymentAgreement
+    - RentingAgreement
+    - CancelledAgreement
+    - OverdueAgreement
+    - ArchivedAgreement
+  enums.AgreementTypes:
+    enum:
+    - SELLING
+    - RENTING
+    type: string
+    x-enum-varnames:
+    - AgreementForSell
+    - AgreementForRent
   enums.AppointmentStatus:
     enum:
     - PENDING
@@ -9,11 +33,11 @@ definitions:
     - ARCHIVED
     type: string
     x-enum-varnames:
-    - Pending
-    - Confirmed
-    - Rejected
-    - Cancelled
-    - Archived
+    - PendingAppointment
+    - ConfirmedAppointment
+    - RejectedAppointment
+    - CancelledAppointment
+    - ArchivedAppointment
   enums.BankNames:
     enum:
     - KBANK
@@ -110,20 +134,113 @@ definitions:
     x-enum-varnames:
     - SessionRegister
     - SessionLogin
-  models.Agreements:
+  models.AgreementDetails:
     properties:
       agreement_date:
+        example: "2021-01-01T00:00:00Z"
         type: string
       agreement_id:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
+      agreement_type:
+        allOf:
+        - $ref: '#/definitions/enums.AgreementTypes'
+        example: SELLING
+      cancelled_message:
+        example: This is cancelled message.
         type: string
       created_at:
         type: string
+      deposit_amount:
+        example: 1000000
+        type: number
+      dweller:
+        $ref: '#/definitions/models.DwellerAgreementDetails'
+      owner:
+        $ref: '#/definitions/models.OwnerAgreementDetails'
+      payment_duration:
+        example: 12
+        type: integer
+      payment_per_month:
+        example: 1000000
+        type: number
+      property:
+        $ref: '#/definitions/models.PropertyAgreementDetails'
+      status:
+        allOf:
+        - $ref: '#/definitions/enums.AgreementStatus'
+        example: AWAITING_DEPOSIT
+      total_payment:
+        example: 12000000
+        type: number
+    type: object
+  models.AgreementLists:
+    properties:
+      agreement_date:
+        example: "2021-01-01T00:00:00Z"
+        type: string
+      agreement_id:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
+      agreement_type:
+        allOf:
+        - $ref: '#/definitions/enums.AgreementTypes'
+        example: SELLING
+      cancelled_message:
+        example: This is cancelled message.
+        type: string
+      created_at:
+        type: string
+      owner:
+        $ref: '#/definitions/models.OwnerAgreementLists'
+      property:
+        $ref: '#/definitions/models.PropertyAgreementLists'
+      status:
+        allOf:
+        - $ref: '#/definitions/enums.AgreementStatus'
+        example: AWAITING_DEPOSIT
+    type: object
+  models.Agreements:
+    properties:
+      agreement_date:
+        example: "2021-01-01T00:00:00Z"
+        type: string
+      agreement_id:
+        type: string
+      agreement_type:
+        allOf:
+        - $ref: '#/definitions/enums.AgreementTypes'
+        example: SELLING
+      cancelled_message:
+        example: This is cancelled message.
+        type: string
+      created_at:
+        type: string
+      deposit_amount:
+        example: 1000000
+        type: number
       dweller_user_id:
+        example: 00000000-0000-0000-0000-000000000000
         type: string
       owner_user_id:
+        example: 00000000-0000-0000-0000-000000000000
         type: string
+      payment_duration:
+        example: 12
+        type: integer
+      payment_per_month:
+        example: 1000000
+        type: number
       property_id:
+        example: 00000000-0000-0000-0000-000000000000
         type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/enums.AgreementStatus'
+        example: AWAITING_DEPOSIT
+      total_payment:
+        example: 12000000
+        type: number
     type: object
   models.AllPropertiesResponses:
     properties:
@@ -206,6 +323,15 @@ definitions:
       content:
         example: hello, world
         type: string
+      first_name:
+        example: John
+        type: string
+      last_name:
+        example: Doe
+        type: string
+      profile_image_url:
+        example: www.image.com/profile
+        type: string
       unread_messages:
         example: 9
         type: integer
@@ -213,13 +339,42 @@ definitions:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
     type: object
+  models.CreatingAgreements:
+    properties:
+      agreement_date:
+        example: "2021-01-01T00:00:00Z"
+        type: string
+      agreement_type:
+        allOf:
+        - $ref: '#/definitions/enums.AgreementTypes'
+        example: SELLING
+      deposit_amount:
+        example: 1000000
+        type: number
+      dweller_user_id:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
+      payment_duration:
+        example: 12
+        type: integer
+      payment_per_month:
+        example: 1000000
+        type: number
+      property_id:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/enums.AgreementStatus'
+        example: AWAITING_DEPOSIT
+      total_payment:
+        example: 12000000
+        type: number
+    type: object
   models.CreatingAppointments:
     properties:
       appointment_dates:
         example: "2024-02-18T11:00:00Z"
-        type: string
-      dweller_user_id:
-        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       note:
         example: This is a note
@@ -258,6 +413,24 @@ definitions:
       tag_number:
         example: 1
         type: integer
+    type: object
+  models.DwellerAgreementDetails:
+    properties:
+      dweller_first_name:
+        example: John
+        type: string
+      dweller_last_name:
+        example: Doe
+        type: string
+      dweller_phone_number:
+        example: "0812345678"
+        type: string
+      dweller_profile_image_url:
+        example: https://www.example.com/image.jpg
+        type: string
+      dweller_user_id:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
     type: object
   models.DwellerAppointmentDetails:
     properties:
@@ -303,6 +476,12 @@ definitions:
     type: object
   models.Messages:
     properties:
+      author:
+        example: true
+        type: boolean
+      chat_id:
+        example: 27b79b15-a56f-464a-90f7-bab515ba4c02
+        type: string
       content:
         example: hello, world
         type: string
@@ -312,17 +491,22 @@ definitions:
       read_at:
         example: "2024-02-22T03:06:53.313735Z"
         type: string
-      receiver_id:
-        example: 27b79b15-a56f-464a-90f7-bab515ba4c02
-        type: string
-      sender_id:
-        example: 27b79b15-a56f-464a-90f7-bab515ba4c02
-        type: string
       sent_at:
         example: "2024-02-22T03:06:53.313735Z"
         type: string
     type: object
-  models.MyAppointmentResponse:
+  models.MyAgreementResponses:
+    properties:
+      dweller_agreements:
+        items:
+          $ref: '#/definitions/models.AgreementLists'
+        type: array
+      owner_agreements:
+        items:
+          $ref: '#/definitions/models.AgreementLists'
+        type: array
+    type: object
+  models.MyAppointmentResponses:
     properties:
       dweller_appointments:
         items:
@@ -352,6 +536,39 @@ definitions:
       total:
         example: 2
         type: integer
+    type: object
+  models.OwnerAgreementDetails:
+    properties:
+      owner_first_name:
+        example: John
+        type: string
+      owner_last_name:
+        example: Doe
+        type: string
+      owner_phone_number:
+        example: "0812345678"
+        type: string
+      owner_profile_image_url:
+        example: https://www.example.com/image.jpg
+        type: string
+      owner_user_id:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
+    type: object
+  models.OwnerAgreementLists:
+    properties:
+      owner_first_name:
+        example: John
+        type: string
+      owner_last_name:
+        example: Doe
+        type: string
+      owner_profile_image_url:
+        example: https://www.example.com/image.jpg
+        type: string
+      owner_user_id:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
     type: object
   models.OwnerAppointmentDetails:
     properties:
@@ -465,6 +682,70 @@ definitions:
         example: 123
         type: integer
     type: object
+  models.PropertyAgreementDetails:
+    properties:
+      address:
+        example: 123/456 The Base Sukhumvit 77
+        type: string
+      alley:
+        example: "77"
+        type: string
+      country:
+        example: Thailand
+        type: string
+      district:
+        example: Bangkok
+        type: string
+      postal_code:
+        example: "10110"
+        type: string
+      price:
+        example: 1000000
+        type: number
+      price_per_month:
+        example: 1000000
+        type: number
+      property_id:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
+      property_images:
+        items:
+          $ref: '#/definitions/models.PropertyImageAgreements'
+        type: array
+      property_name:
+        example: The Base Sukhumvit 77
+        type: string
+      property_type:
+        allOf:
+        - $ref: '#/definitions/enums.PropertyTypes'
+        example: CONDO
+      province:
+        example: Bangkok
+        type: string
+      street:
+        example: Sukhumvit
+        type: string
+      sub_district:
+        example: Phra Khanong
+        type: string
+    type: object
+  models.PropertyAgreementLists:
+    properties:
+      property_id:
+        example: 00000000-0000-0000-0000-000000000000
+        type: string
+      property_images:
+        items:
+          $ref: '#/definitions/models.PropertyImageAgreements'
+        type: array
+      property_name:
+        example: The Base Sukhumvit 77
+        type: string
+      property_type:
+        allOf:
+        - $ref: '#/definitions/enums.PropertyTypes'
+        example: CONDO
+    type: object
   models.PropertyAppointmentDetails:
     properties:
       address:
@@ -529,6 +810,12 @@ definitions:
         - $ref: '#/definitions/enums.PropertyTypes'
         example: CONDO
     type: object
+  models.PropertyImageAgreements:
+    properties:
+      image_url:
+        example: https://www.example.com/image.jpg
+        type: string
+    type: object
   models.PropertyImageAppointments:
     properties:
       image_url:
@@ -580,6 +867,13 @@ definitions:
       user_id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
+    type: object
+  models.UpdatingAgreementStatus:
+    properties:
+      cancelled_message:
+        type: string
+      status:
+        $ref: '#/definitions/enums.AgreementStatus'
     type: object
   models.UpdatingAppointmentStatus:
     properties:
@@ -646,45 +940,6 @@ info:
   title: Bangkok Property Matchmaking Platform
   version: "1.0"
 paths:
-  /api/v1/agreement/:agreementId:
-    delete:
-      description: Delete an agreement by its id
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-      summary: Delete an agreement
-      tags:
-      - agreements
-    get:
-      description: Get an agreement by its id
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Agreements'
-        "400":
-          description: Invalid agreement id
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-        "404":
-          description: Agreement not found
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponses'
-      summary: Get agreement by id
-      tags:
-      - agreements
   /api/v1/agreements:
     get:
       description: Get all agreements
@@ -701,59 +956,115 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get all agreements
+      summary: Get all agreements  *use cookies*
       tags:
       - agreements
     post:
       description: Create an agreement by parsing the body
+      parameters:
+      - description: Agreement to create
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreatingAgreements'
       produces:
       - application/json
       responses:
         "201":
-          description: Created
+          description: Agreement created successfully
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
         "500":
-          description: Internal Server Error
+          description: Could not create agreement
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Create an agreement
+      summary: Create an agreement *use cookies*
       tags:
       - agreements
-  /api/v1/agreements/dweller/:userId:
+  /api/v1/agreements/:agreementId:
+    delete:
+      description: Delete an agreement by its id
+      parameters:
+      - description: Agreement ID
+        in: path
+        name: agreementId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Agreement deleted
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "500":
+          description: Could not delete agreement
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Delete an agreement by id *use cookies*
+      tags:
+      - agreements
     get:
-      description: Get all agreements by dweller id
+      description: Get an agreement by its id
+      parameters:
+      - description: Agreement ID
+        in: path
+        name: agreementId
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Agreements'
-            type: array
-        "500":
-          description: Internal Server Error
+            $ref: '#/definitions/models.AgreementDetails'
+        "400":
+          description: Invalid agreement id
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get agreements by dweller id
+        "404":
+          description: Could not find the specified agreement
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Could not get agreement by id
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get agreement by id *use cookies*
       tags:
       - agreements
-  /api/v1/agreements/owner/:userId:
-    get:
-      description: Get all agreements by owner id
+    patch:
+      description: Update an agreement status by id with **status** and **cancelled_message**(optional)
+      parameters:
+      - description: Agreement ID
+        in: path
+        name: agreementId
+        required: true
+        type: string
+      - description: Agreement status and cancelled message(optional)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdatingAgreementStatus'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Agreement state updated
           schema:
-            items:
-              $ref: '#/definitions/models.Agreements'
-            type: array
-        "500":
-          description: Internal Server Error
+            $ref: '#/definitions/models.MessageResponses'
+        "400":
+          description: Invalid agreement id
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get agreements by owner id
+        "500":
+          description: Could not update agreement status
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Update an agreement status by id *use cookies*
       tags:
       - agreements
   /api/v1/appointments:
@@ -772,12 +1083,11 @@ paths:
           description: Could not get all appointments
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get all appointments
+      summary: Get all appointments *use cookies*
       tags:
       - appointments
     post:
-      description: Create an appointments with **property_id**, **owner_user_id**,
-        **dweller_user_id**, **appointment_date**, **note**(optional)
+      description: Create an appointment by parsing the body (note is optional)
       parameters:
       - description: Appointment details
         in: body
@@ -801,7 +1111,7 @@ paths:
           description: Could not create appointments
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Create an appointment
+      summary: Create an appointment *use cookies*
       tags:
       - appointments
   /api/v1/appointments/:appointmentId:
@@ -824,7 +1134,7 @@ paths:
           description: Could not delete appointments
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Delete an appointment by id
+      summary: Delete an appointment by id *use cookies*
       tags:
       - appointments
     get:
@@ -856,7 +1166,7 @@ paths:
           description: Could not get appointment by id
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get an appointment by id
+      summary: Get an appointment by id *use cookies*
       tags:
       - appointments
     patch:
@@ -888,7 +1198,7 @@ paths:
           description: Could not update appointment status
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Update an appointment status by id
+      summary: Update an appointment status by id *use cookies*
       tags:
       - appointments
   /api/v1/auth/callback:
@@ -1728,21 +2038,48 @@ paths:
       summary: Get current user info *use cookies*
       tags:
       - users
-  /api/v1/user/me/appointments:
+  /api/v1/user/me/agreements:
     get:
-      description: Get all appointments related to the user
+      description: Get all agreements related to the user
+      parameters:
+      - description: Order by ASC or DESC
+        in: query
+        name: order
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MyAppointmentResponse'
+            $ref: '#/definitions/models.MyAgreementResponses'
+        "500":
+          description: Could not get my agreements
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get my agreements *use cookies*
+      tags:
+      - agreements
+  /api/v1/user/me/appointments:
+    get:
+      description: Get all appointments related to the user
+      parameters:
+      - description: Order by ASC or DESC
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MyAppointmentResponses'
         "500":
           description: Could not get my appointments
           schema:
             $ref: '#/definitions/models.ErrorResponses'
-      summary: Get my appointments
+      summary: Get my appointments *use cookies*
       tags:
       - appointments
   /api/v1/user/me/favorites:

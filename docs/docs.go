@@ -15,65 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/agreement/:agreementId": {
-            "get": {
-                "description": "Get an agreement by its id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agreements"
-                ],
-                "summary": "Get agreement by id",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Agreements"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid agreement id",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "404": {
-                        "description": "Agreement not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete an agreement by its id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agreements"
-                ],
-                "summary": "Delete an agreement",
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponses"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/agreements": {
             "get": {
                 "description": "Get all agreements",
@@ -83,7 +24,7 @@ const docTemplate = `{
                 "tags": [
                     "agreements"
                 ],
-                "summary": "Get all agreements",
+                "summary": "Get all agreements  *use cookies*",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -110,13 +51,27 @@ const docTemplate = `{
                 "tags": [
                     "agreements"
                 ],
-                "summary": "Create an agreement",
+                "summary": "Create an agreement *use cookies*",
+                "parameters": [
+                    {
+                        "description": "Agreement to create",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreatingAgreements"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
-                        "description": "Created"
+                        "description": "Agreement created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Could not create agreement",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -124,57 +79,127 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/agreements/dweller/:userId": {
+        "/api/v1/agreements/:agreementId": {
             "get": {
-                "description": "Get all agreements by dweller id",
+                "description": "Get an agreement by its id",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "agreements"
                 ],
-                "summary": "Get agreements by dweller id",
+                "summary": "Get agreement by id *use cookies*",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agreement ID",
+                        "name": "agreementId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Agreements"
-                            }
+                            "$ref": "#/definitions/models.AgreementDetails"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid agreement id",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "404": {
+                        "description": "Could not find the specified agreement",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Could not get agreement by id",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
                     }
                 }
-            }
-        },
-        "/api/v1/agreements/owner/:userId": {
-            "get": {
-                "description": "Get all agreements by owner id",
+            },
+            "delete": {
+                "description": "Delete an agreement by its id",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "agreements"
                 ],
-                "summary": "Get agreements by owner id",
+                "summary": "Delete an agreement by id *use cookies*",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agreement ID",
+                        "name": "agreementId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Agreement deleted",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Agreements"
-                            }
+                            "$ref": "#/definitions/models.MessageResponses"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Could not delete agreement",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update an agreement status by id with **status** and **cancelled_message**(optional)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Update an agreement status by id *use cookies*",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Agreement ID",
+                        "name": "agreementId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Agreement status and cancelled message(optional)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdatingAgreementStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agreement state updated",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid agreement id",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not update agreement status",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponses"
                         }
@@ -191,7 +216,7 @@ const docTemplate = `{
                 "tags": [
                     "appointments"
                 ],
-                "summary": "Get all appointments",
+                "summary": "Get all appointments *use cookies*",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -211,14 +236,14 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create an appointments with **property_id**, **owner_user_id**, **dweller_user_id**, **appointment_date**, **note**(optional)",
+                "description": "Create an appointment by parsing the body (note is optional)",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "appointments"
                 ],
-                "summary": "Create an appointment",
+                "summary": "Create an appointment *use cookies*",
                 "parameters": [
                     {
                         "description": "Appointment details",
@@ -261,7 +286,7 @@ const docTemplate = `{
                 "tags": [
                     "appointments"
                 ],
-                "summary": "Get an appointment by id",
+                "summary": "Get an appointment by id *use cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -309,7 +334,7 @@ const docTemplate = `{
                 "tags": [
                     "appointments"
                 ],
-                "summary": "Delete an appointment by id",
+                "summary": "Delete an appointment by id *use cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -342,7 +367,7 @@ const docTemplate = `{
                 "tags": [
                     "appointments"
                 ],
-                "summary": "Update an appointment status by id",
+                "summary": "Update an appointment status by id *use cookies*",
                 "parameters": [
                     {
                         "type": "string",
@@ -1612,6 +1637,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user/me/agreements": {
+            "get": {
+                "description": "Get all agreements related to the user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agreements"
+                ],
+                "summary": "Get my agreements *use cookies*",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Order by ASC or DESC",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MyAgreementResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Could not get my agreements",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/me/appointments": {
             "get": {
                 "description": "Get all appointments related to the user",
@@ -1621,12 +1680,20 @@ const docTemplate = `{
                 "tags": [
                     "appointments"
                 ],
-                "summary": "Get my appointments",
+                "summary": "Get my appointments *use cookies*",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Order by ASC or DESC",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MyAppointmentResponse"
+                            "$ref": "#/definitions/models.MyAppointmentResponses"
                         }
                     },
                     "500": {
@@ -1970,6 +2037,36 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "enums.AgreementStatus": {
+            "type": "string",
+            "enum": [
+                "AWAITING_DEPOSIT",
+                "AWAITING_PAYMENT",
+                "RENTING",
+                "CANCELLED",
+                "OVERDUE",
+                "ARCHIVED"
+            ],
+            "x-enum-varnames": [
+                "AwaitingDepositAgreement",
+                "AwaitingPaymentAgreement",
+                "RentingAgreement",
+                "CancelledAgreement",
+                "OverdueAgreement",
+                "ArchivedAgreement"
+            ]
+        },
+        "enums.AgreementTypes": {
+            "type": "string",
+            "enum": [
+                "SELLING",
+                "RENTING"
+            ],
+            "x-enum-varnames": [
+                "AgreementForSell",
+                "AgreementForRent"
+            ]
+        },
         "enums.AppointmentStatus": {
             "type": "string",
             "enum": [
@@ -1980,11 +2077,11 @@ const docTemplate = `{
                 "ARCHIVED"
             ],
             "x-enum-varnames": [
-                "Pending",
-                "Confirmed",
-                "Rejected",
-                "Cancelled",
-                "Archived"
+                "PendingAppointment",
+                "ConfirmedAppointment",
+                "RejectedAppointment",
+                "CancelledAppointment",
+                "ArchivedAppointment"
             ]
         },
         "enums.BankNames": {
@@ -2105,26 +2202,169 @@ const docTemplate = `{
                 "SessionLogin"
             ]
         },
-        "models.Agreements": {
+        "models.AgreementDetails": {
             "type": "object",
             "properties": {
                 "agreement_date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "agreement_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                },
+                "agreement_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.AgreementTypes"
+                        }
+                    ],
+                    "example": "SELLING"
+                },
+                "cancelled_message": {
+                    "type": "string",
+                    "example": "This is cancelled message."
                 },
                 "created_at": {
                     "type": "string"
                 },
-                "dweller_user_id": {
+                "deposit_amount": {
+                    "type": "number",
+                    "example": 1000000
+                },
+                "dweller": {
+                    "$ref": "#/definitions/models.DwellerAgreementDetails"
+                },
+                "owner": {
+                    "$ref": "#/definitions/models.OwnerAgreementDetails"
+                },
+                "payment_duration": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "payment_per_month": {
+                    "type": "number",
+                    "example": 1000000
+                },
+                "property": {
+                    "$ref": "#/definitions/models.PropertyAgreementDetails"
+                },
+                "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.AgreementStatus"
+                        }
+                    ],
+                    "example": "AWAITING_DEPOSIT"
+                },
+                "total_payment": {
+                    "type": "number",
+                    "example": 12000000
+                }
+            }
+        },
+        "models.AgreementLists": {
+            "type": "object",
+            "properties": {
+                "agreement_date": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "agreement_id": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                },
+                "agreement_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.AgreementTypes"
+                        }
+                    ],
+                    "example": "SELLING"
+                },
+                "cancelled_message": {
+                    "type": "string",
+                    "example": "This is cancelled message."
+                },
+                "created_at": {
                     "type": "string"
+                },
+                "owner": {
+                    "$ref": "#/definitions/models.OwnerAgreementLists"
+                },
+                "property": {
+                    "$ref": "#/definitions/models.PropertyAgreementLists"
+                },
+                "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.AgreementStatus"
+                        }
+                    ],
+                    "example": "AWAITING_DEPOSIT"
+                }
+            }
+        },
+        "models.Agreements": {
+            "type": "object",
+            "properties": {
+                "agreement_date": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "agreement_id": {
+                    "type": "string"
+                },
+                "agreement_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.AgreementTypes"
+                        }
+                    ],
+                    "example": "SELLING"
+                },
+                "cancelled_message": {
+                    "type": "string",
+                    "example": "This is cancelled message."
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deposit_amount": {
+                    "type": "number",
+                    "example": 1000000
+                },
+                "dweller_user_id": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
                 },
                 "owner_user_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                },
+                "payment_duration": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "payment_per_month": {
+                    "type": "number",
+                    "example": 1000000
                 },
                 "property_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                },
+                "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.AgreementStatus"
+                        }
+                    ],
+                    "example": "AWAITING_DEPOSIT"
+                },
+                "total_payment": {
+                    "type": "number",
+                    "example": 12000000
                 }
             }
         },
@@ -2254,6 +2494,18 @@ const docTemplate = `{
                     "type": "string",
                     "example": "hello, world"
                 },
+                "first_name": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "Doe"
+                },
+                "profile_image_url": {
+                    "type": "string",
+                    "example": "www.image.com/profile"
+                },
                 "unread_messages": {
                     "type": "integer",
                     "example": 9
@@ -2264,16 +2516,61 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreatingAgreements": {
+            "type": "object",
+            "properties": {
+                "agreement_date": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "agreement_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.AgreementTypes"
+                        }
+                    ],
+                    "example": "SELLING"
+                },
+                "deposit_amount": {
+                    "type": "number",
+                    "example": 1000000
+                },
+                "dweller_user_id": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                },
+                "payment_duration": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "payment_per_month": {
+                    "type": "number",
+                    "example": 1000000
+                },
+                "property_id": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                },
+                "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.AgreementStatus"
+                        }
+                    ],
+                    "example": "AWAITING_DEPOSIT"
+                },
+                "total_payment": {
+                    "type": "number",
+                    "example": 12000000
+                }
+            }
+        },
         "models.CreatingAppointments": {
             "type": "object",
             "properties": {
                 "appointment_dates": {
                     "type": "string",
                     "example": "2024-02-18T11:00:00Z"
-                },
-                "dweller_user_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "note": {
                     "type": "string",
@@ -2327,6 +2624,31 @@ const docTemplate = `{
                 "tag_number": {
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "models.DwellerAgreementDetails": {
+            "type": "object",
+            "properties": {
+                "dweller_first_name": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "dweller_last_name": {
+                    "type": "string",
+                    "example": "Doe"
+                },
+                "dweller_phone_number": {
+                    "type": "string",
+                    "example": "0812345678"
+                },
+                "dweller_profile_image_url": {
+                    "type": "string",
+                    "example": "https://www.example.com/image.jpg"
+                },
+                "dweller_user_id": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
                 }
             }
         },
@@ -2393,6 +2715,14 @@ const docTemplate = `{
         "models.Messages": {
             "type": "object",
             "properties": {
+                "author": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "chat_id": {
+                    "type": "string",
+                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
+                },
                 "content": {
                     "type": "string",
                     "example": "hello, world"
@@ -2405,21 +2735,30 @@ const docTemplate = `{
                     "type": "string",
                     "example": "2024-02-22T03:06:53.313735Z"
                 },
-                "receiver_id": {
-                    "type": "string",
-                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
-                },
-                "sender_id": {
-                    "type": "string",
-                    "example": "27b79b15-a56f-464a-90f7-bab515ba4c02"
-                },
                 "sent_at": {
                     "type": "string",
                     "example": "2024-02-22T03:06:53.313735Z"
                 }
             }
         },
-        "models.MyAppointmentResponse": {
+        "models.MyAgreementResponses": {
+            "type": "object",
+            "properties": {
+                "dweller_agreements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AgreementLists"
+                    }
+                },
+                "owner_agreements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AgreementLists"
+                    }
+                }
+            }
+        },
+        "models.MyAppointmentResponses": {
             "type": "object",
             "properties": {
                 "dweller_appointments": {
@@ -2463,6 +2802,52 @@ const docTemplate = `{
                 "total": {
                     "type": "integer",
                     "example": 2
+                }
+            }
+        },
+        "models.OwnerAgreementDetails": {
+            "type": "object",
+            "properties": {
+                "owner_first_name": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "owner_last_name": {
+                    "type": "string",
+                    "example": "Doe"
+                },
+                "owner_phone_number": {
+                    "type": "string",
+                    "example": "0812345678"
+                },
+                "owner_profile_image_url": {
+                    "type": "string",
+                    "example": "https://www.example.com/image.jpg"
+                },
+                "owner_user_id": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                }
+            }
+        },
+        "models.OwnerAgreementLists": {
+            "type": "object",
+            "properties": {
+                "owner_first_name": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "owner_last_name": {
+                    "type": "string",
+                    "example": "Doe"
+                },
+                "owner_profile_image_url": {
+                    "type": "string",
+                    "example": "https://www.example.com/image.jpg"
+                },
+                "owner_user_id": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
                 }
             }
         },
@@ -2628,6 +3013,100 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PropertyAgreementDetails": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "123/456 The Base Sukhumvit 77"
+                },
+                "alley": {
+                    "type": "string",
+                    "example": "77"
+                },
+                "country": {
+                    "type": "string",
+                    "example": "Thailand"
+                },
+                "district": {
+                    "type": "string",
+                    "example": "Bangkok"
+                },
+                "postal_code": {
+                    "type": "string",
+                    "example": "10110"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 1000000
+                },
+                "price_per_month": {
+                    "type": "number",
+                    "example": 1000000
+                },
+                "property_id": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                },
+                "property_images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PropertyImageAgreements"
+                    }
+                },
+                "property_name": {
+                    "type": "string",
+                    "example": "The Base Sukhumvit 77"
+                },
+                "property_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.PropertyTypes"
+                        }
+                    ],
+                    "example": "CONDO"
+                },
+                "province": {
+                    "type": "string",
+                    "example": "Bangkok"
+                },
+                "street": {
+                    "type": "string",
+                    "example": "Sukhumvit"
+                },
+                "sub_district": {
+                    "type": "string",
+                    "example": "Phra Khanong"
+                }
+            }
+        },
+        "models.PropertyAgreementLists": {
+            "type": "object",
+            "properties": {
+                "property_id": {
+                    "type": "string",
+                    "example": "00000000-0000-0000-0000-000000000000"
+                },
+                "property_images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PropertyImageAgreements"
+                    }
+                },
+                "property_name": {
+                    "type": "string",
+                    "example": "The Base Sukhumvit 77"
+                },
+                "property_type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.PropertyTypes"
+                        }
+                    ],
+                    "example": "CONDO"
+                }
+            }
+        },
         "models.PropertyAppointmentDetails": {
             "type": "object",
             "properties": {
@@ -2722,6 +3201,15 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PropertyImageAgreements": {
+            "type": "object",
+            "properties": {
+                "image_url": {
+                    "type": "string",
+                    "example": "https://www.example.com/image.jpg"
+                }
+            }
+        },
         "models.PropertyImageAppointments": {
             "type": "object",
             "properties": {
@@ -2796,6 +3284,17 @@ const docTemplate = `{
                 "user_id": {
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
+                }
+            }
+        },
+        "models.UpdatingAgreementStatus": {
+            "type": "object",
+            "properties": {
+                "cancelled_message": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/enums.AgreementStatus"
                 }
             }
         },

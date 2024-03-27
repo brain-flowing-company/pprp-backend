@@ -10,9 +10,7 @@ import (
 type Repository interface {
 	GetAllAppointments(*[]models.AppointmentLists) error
 	GetAppointmentById(*models.AppointmentDetails, string) error
-	GetAppointmentByUserId(*models.MyAppointmentResponse, string) error
-	GetAppointmentByOwnerId([]*models.Appointments, string) error
-	GetAppointmentByDwellerId([]*models.Appointments, string) error
+	GetAppointmentByUserId(*models.MyAppointmentResponses, *models.MyAppointmentRequests) error
 	CreateAppointment(*models.CreatingAppointments) error
 	DeleteAppointment(string) error
 	UpdateAppointmentStatus(*models.UpdatingAppointmentStatus, string) error
@@ -141,7 +139,7 @@ func (repo *repositoryImpl) GetAppointmentById(appointment *models.AppointmentDe
 	})
 }
 
-func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.MyAppointmentResponse, userId string) error {
+func (repo *repositoryImpl) GetAppointmentByUserId(appointmentResponse *models.MyAppointmentResponses, appointmentRequest *models.MyAppointmentRequests) error {
 	propertiesQuery := `SELECT property_id, property_name, property_type FROM properties`
 
 	ownersQuery := `SELECT user_id AS owner_user_id,
@@ -166,39 +164,41 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.
 		if err := tx.Model(&models.Appointments{}).
 			Raw(appointmentListsQuery+`
 				WHERE a.owner_user_id = @userId
-				`, sql.Named("userId", userId)).
-			Scan(&appointmentsResponse.OwnerAppointments).Error; err != nil {
+				ORDER BY a.created_at `+appointmentRequest.Order+`
+				`, sql.Named("userId", appointmentRequest.UserId)).
+			Scan(&appointmentResponse.OwnerAppointments).Error; err != nil {
 			return err
 		}
 
 		if err := tx.Model(&models.Appointments{}).
 			Raw(appointmentListsQuery+`
 				WHERE a.dweller_user_id = @userId
-				`, sql.Named("userId", userId)).
-			Scan(&appointmentsResponse.DwellerAppointments).Error; err != nil {
+				ORDER BY a.created_at `+appointmentRequest.Order+`
+				`, sql.Named("userId", appointmentRequest.UserId)).
+			Scan(&appointmentResponse.DwellerAppointments).Error; err != nil {
 			return err
 		}
 
-		for i, appointment := range appointmentsResponse.OwnerAppointments {
+		for i, appointment := range appointmentResponse.OwnerAppointments {
 			if err := repo.db.Model(&models.PropertyImages{}).
 				Raw(`
 					SELECT image_url
 					FROM property_images
 					WHERE property_id = @property_id
 					`, sql.Named("property_id", appointment.Property.PropertyId)).
-				Pluck("image_url", &appointmentsResponse.OwnerAppointments[i].Property.PropertyImages).Error; err != nil {
+				Pluck("image_url", &appointmentResponse.OwnerAppointments[i].Property.PropertyImages).Error; err != nil {
 				return err
 			}
 		}
 
-		for i, appointment := range appointmentsResponse.DwellerAppointments {
+		for i, appointment := range appointmentResponse.DwellerAppointments {
 			if err := repo.db.Model(&models.PropertyImages{}).
 				Raw(`
 					SELECT image_url
 					FROM property_images
 					WHERE property_id = @property_id
 					`, sql.Named("property_id", appointment.Property.PropertyId)).
-				Pluck("image_url", &appointmentsResponse.DwellerAppointments[i].Property.PropertyImages).Error; err != nil {
+				Pluck("image_url", &appointmentResponse.DwellerAppointments[i].Property.PropertyImages).Error; err != nil {
 				return err
 			}
 		}
@@ -207,21 +207,13 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentsResponse *models.
 	})
 }
 
-func (repo *repositoryImpl) GetAppointmentByOwnerId(appointments []*models.Appointments, ownerUserId string) error {
-	return repo.db.Model(&models.Appointments{}).Find(appointments, "owner_user_id = ?", ownerUserId).Error
-}
-
-func (repo *repositoryImpl) GetAppointmentByDwellerId(appointments []*models.Appointments, dwellerUserId string) error {
-	return repo.db.Model(&models.Appointments{}).Find(appointments, "dweller_user_id = ?", dwellerUserId).Error
-}
-
 func (repo *repositoryImpl) CreateAppointment(appointment *models.CreatingAppointments) error {
 	return repo.db.Exec(`INSERT INTO appointments (property_id, owner_user_id, dweller_user_id, appointment_date, note) VALUES (?, ?, ?, ?, ?)`,
 		appointment.PropertyId, appointment.OwnerUserId, appointment.DwellerUserId, appointment.AppointmentDate, appointment.Note).Error
 }
 
 func (repo *repositoryImpl) DeleteAppointment(appointmentId string) error {
-	if err := repo.db.Model(&models.Appointments{}).First("appointment_id = ?", appointmentId).Error; err != nil {
+	if err := repo.db.Model(&models.Appointments{}).First(&models.Agreements{}, "appointment_id = ?", appointmentId).Error; err != nil {
 		return err
 	}
 
@@ -229,5 +221,9 @@ func (repo *repositoryImpl) DeleteAppointment(appointmentId string) error {
 }
 
 func (repo *repositoryImpl) UpdateAppointmentStatus(updatingAppointment *models.UpdatingAppointmentStatus, appointmentId string) error {
+	if err := repo.db.Model(&models.Appointments{}).First(&models.Appointments{}, "appointment_id = ?", appointmentId).Error; err != nil {
+		return err
+	}
+	
 	return repo.db.Model(&models.Appointments{}).Where("appointment_id = ?", appointmentId).Updates(updatingAppointment).Error
 }

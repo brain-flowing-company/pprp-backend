@@ -14,7 +14,7 @@ import (
 type Service interface {
 	GetAllAppointments(*[]models.AppointmentLists) *apperror.AppError
 	GetAppointmentById(*models.AppointmentDetails, string) *apperror.AppError
-	GetMyAppointments(*models.MyAppointmentResponse, string) *apperror.AppError
+	GetMyAppointments(*models.MyAppointmentResponses, *models.MyAppointmentRequests) *apperror.AppError
 	CreateAppointment(*models.CreatingAppointments) *apperror.AppError
 	DeleteAppointment(string) *apperror.AppError
 	UpdateAppointmentStatus(*models.UpdatingAppointmentStatus, string) *apperror.AppError
@@ -66,62 +66,28 @@ func (s *serviceImpl) GetAppointmentById(appointment *models.AppointmentDetails,
 	return nil
 }
 
-func (s *serviceImpl) GetMyAppointments(appointments *models.MyAppointmentResponse, userId string) *apperror.AppError {
-	if !utils.IsValidUUID(userId) {
-		return apperror.
-			New(apperror.InvalidUserId).
-			Describe("Invalid user id")
+func (s *serviceImpl) GetMyAppointments(appointments *models.MyAppointmentResponses, appointmentRequest *models.MyAppointmentRequests) *apperror.AppError {
+	if appointmentRequest.Order != "ASC" && appointmentRequest.Order != "DESC" {
+		appointmentRequest.Order = "ASC"
 	}
 
-	err := s.repo.GetAppointmentByUserId(appointments, userId)
-	if err != nil {
-		s.logger.Error("Could not get my appointments", zap.Error(err))
+	err := s.repo.GetAppointmentByUserId(appointments, appointmentRequest)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.AppointmentNotFound).
+			Describe("Could not find the specified appointment")
+	} else if err != nil {
+		s.logger.Error("Could not get appointment by user id", zap.Error(err))
 		return apperror.
 			New(apperror.InternalServerError).
-			Describe("Could not get my appointments")
+			Describe("Could not get appointment by user id")
 	}
 
 	return nil
 }
 
-func (s *serviceImpl) GetAppointmentByOwnerId(apps []*models.Appointments, userId string) *apperror.AppError {
-	if !utils.IsValidUUID(userId) {
-		return apperror.
-			New(apperror.InvalidUserId).
-			Describe("Invalid user id")
-	}
-
-	err := s.repo.GetAppointmentByOwnerId(apps, userId)
-	if err != nil {
-		s.logger.Error("Could not get appointments by owner id", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not get appointments by owner id")
-	}
-
-	return nil
-}
-
-func (s *serviceImpl) GetAppointmentByDwellerId(apps []*models.Appointments, userId string) *apperror.AppError {
-	if !utils.IsValidUUID(userId) {
-		return apperror.
-			New(apperror.InvalidUserId).
-			Describe("Invalid user id")
-	}
-
-	err := s.repo.GetAppointmentByDwellerId(apps, userId)
-	if err != nil {
-		s.logger.Error("Could not get appointments by dweller id", zap.Error(err))
-		return apperror.
-			New(apperror.InternalServerError).
-			Describe("Could not get appointments by dweller id")
-	}
-
-	return nil
-}
-
-func (s *serviceImpl) CreateAppointment(creatingAppointment *models.CreatingAppointments) *apperror.AppError {
-	err := s.repo.CreateAppointment(creatingAppointment)
+func (s *serviceImpl) CreateAppointment(appointment *models.CreatingAppointments) *apperror.AppError {
+	err := s.repo.CreateAppointment(appointment)
 	if err != nil {
 		s.logger.Error("Could not create appointments", zap.Error(err))
 		return apperror.
