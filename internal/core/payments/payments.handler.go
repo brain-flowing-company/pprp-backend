@@ -55,5 +55,9 @@ func (h *handlerImpl) GetPaymentByUserId(c *fiber.Ctx) error {
 	if err := h.service.GetPaymentByUserId(&payments, userId); err != nil {
 		return utils.ResponseError(c, err)
 	}
-	return c.JSON(payments)
+	err := c.JSON(payments)
+	if err != nil {
+		return utils.ResponseError(c, apperror.New(apperror.InternalServerError).Describe("Failed to get payment by user id"))
+	}
+	return nil
 }
