@@ -158,6 +158,7 @@ func main() {
 
 	apiv1.Get("/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.GetAllAgreements))
 	apiv1.Get("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.GetAgreementById))
+	apiv1.Get("/user/me/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.GetMyAgreements))
 	apiv1.Post("/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.CreateAgreement))
 	apiv1.Delete("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.DeleteAgreement))
 	apiv1.Patch("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.UpdateAgreementStatus))

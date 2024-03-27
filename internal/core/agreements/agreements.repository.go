@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	GetAllAgreements(*[]models.Agreements) error
 	GetAgreementById(*models.AgreementDetails, string) error
+	GetAgreementByUserId(*models.MyAgreementResponses, string) error
 	CreateAgreement(*models.CreatingAgreements) error
 	DeleteAgreement(string) error
 	UpdateAgreementStatus(*models.UpdatingAgreementStatus, string) error
@@ -95,6 +96,76 @@ func (repo *repositoryImpl) GetAgreementById(agreement *models.AgreementDetails,
 				`, sql.Named("property_id", agreement.Property.PropertyId)).
 			Pluck("image_url", &agreement.Property.PropertyImages).Error; err != nil {
 			return err
+		}
+
+		return nil
+	})
+}
+
+func (repo *repositoryImpl) GetAgreementByUserId(agreementResponse *models.MyAgreementResponses, userId string) error {
+	propertiesQuery := `SELECT property_id, property_name, property_type FROM properties`
+
+	ownersQuery := `SELECT user_id AS owner_user_id,
+						first_name AS owner_first_name,
+						last_name AS owner_last_name,
+						profile_image_url AS owner_profile_image_url
+					FROM users`
+
+	agreementListsQuery := `SELECT a.agreement_id, 
+								a.agreement_type, 
+								p.*, 
+								o.*, 
+								a.agreement_date, 
+								a.status, 
+								a.deposit_amount,
+								a.payment_per_month,
+								a.payment_duration,
+								a.total_payment,
+								a.cancelled_message,
+								a.created_at
+							FROM agreements a
+							JOIN (` + propertiesQuery + `) AS p ON a.property_id = p.property_id
+							JOIN (` + ownersQuery + `) AS o ON a.owner_user_id = o.owner_user_id`
+	
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&models.Agreements{}).
+			Raw(agreementListsQuery+`
+				WHERE a.owner_user_id = @user_id
+				`, sql.Named("user_id", userId)).
+			Scan(&agreementResponse.OwnerAgreements).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&models.Agreements{}).
+			Raw(agreementListsQuery+`
+				WHERE a.dweller_user_id = @user_id
+				`, sql.Named("user_id", userId)).
+			Scan(&agreementResponse.DwellerAgreements).Error; err != nil {
+			return err
+		}
+
+		for i, agreement := range agreementResponse.OwnerAgreements {
+			if err := tx.Model(&models.PropertyImages{}).
+				Raw(`
+					SELECT image_url
+					FROM property_images
+					WHERE property_id = @property_id
+					`, sql.Named("property_id", agreement.Property.PropertyId)).
+				Pluck("image_url", &agreementResponse.OwnerAgreements[i].Property.PropertyImages).Error; err != nil {
+				return err
+			}
+		}
+
+		for i, agreement := range agreementResponse.DwellerAgreements {
+			if err := tx.Model(&models.PropertyImages{}).
+				Raw(`
+					SELECT image_url
+					FROM property_images
+					WHERE property_id = @property_id
+					`, sql.Named("property_id", agreement.Property.PropertyId)).
+				Pluck("image_url", &agreementResponse.DwellerAgreements[i].Property.PropertyImages).Error; err != nil {
+				return err
+			}
 		}
 
 		return nil

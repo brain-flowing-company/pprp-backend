@@ -13,6 +13,7 @@ import (
 type Service interface {
 	GetAllAgreements(*[]models.Agreements) *apperror.AppError
 	GetAgreementById(*models.AgreementDetails, string) *apperror.AppError
+	GetAgreementByUserId(*models.MyAgreementResponses, string) *apperror.AppError
 	CreateAgreement(*models.CreatingAgreements) *apperror.AppError
 	DeleteAgreement(string) *apperror.AppError
 	UpdateAgreementStatus(*models.UpdatingAgreementStatus, string) *apperror.AppError
@@ -57,6 +58,28 @@ func (s *serviceImpl) GetAgreementById(agreement *models.AgreementDetails, agree
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get agreement by id")
+	}
+
+	return nil
+}
+
+func (s *serviceImpl) GetAgreementByUserId(agreements *models.MyAgreementResponses, userId string) *apperror.AppError {
+	if !utils.IsValidUUID(userId) {
+		return apperror.
+			New(apperror.InvalidUserId).
+			Describe("Invalid user id")
+	}
+
+	err := s.repo.GetAgreementByUserId(agreements, userId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.
+			New(apperror.AppointmentNotFound).
+			Describe("Could not find the specified agreement")
+	} else if err != nil {
+		s.logger.Error("Could not get agreement by user id", zap.Error(err))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not get agreement by user id")
 	}
 
 	return nil

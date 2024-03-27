@@ -13,6 +13,7 @@ import (
 type Handler interface {
 	GetAllAgreements(c *fiber.Ctx) error
 	GetAgreementById(c *fiber.Ctx) error
+	GetMyAgreements(c *fiber.Ctx) error
 	CreateAgreement(c *fiber.Ctx) error
 	DeleteAgreement(c *fiber.Ctx) error
 	UpdateAgreementStatus(c *fiber.Ctx) error
@@ -66,6 +67,25 @@ func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 	}
 	
 	return c.JSON(agreement)
+}
+
+// @router      /api/v1/user/me/agreements [get]
+// @summary     Get my agreements *use cookies*
+// @description Get all agreements related to the user
+// @tags        agreements
+// @produce     json
+// @success     200	{object} models.MyAgreementResponses
+// @failure     500 {object} models.ErrorResponses "Could not get my agreements"
+func (h *handlerImpl) GetMyAgreements(c *fiber.Ctx) error {
+	userId := c.Locals("session").(models.Sessions).UserId.String()
+
+	var agreements models.MyAgreementResponses
+	err := h.service.GetAgreementByUserId(&agreements, userId)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+
+	return c.JSON(agreements)
 }
 
 // @router  /api/v1/agreements [post]
