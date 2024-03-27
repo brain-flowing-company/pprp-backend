@@ -73,6 +73,7 @@ func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 // @description Get all agreements related to the user
 // @tags        agreements
 // @produce     json
+// @param       order query string false "Order by ASC or DESC"
 // @success     200	{object} models.MyAgreementResponses
 // @failure     500 {object} models.ErrorResponses "Could not get my agreements"
 func (h *handlerImpl) GetMyAgreements(c *fiber.Ctx) error {

@@ -73,6 +73,7 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 // @description Get all appointments related to the user
 // @tags        appointments
 // @produce     json
+// @param       order query string false "Order by ASC or DESC"
 // @success     200	{object} models.MyAppointmentResponses
 // @failure     500 {object} models.ErrorResponses "Could not get my appointments"
 func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
