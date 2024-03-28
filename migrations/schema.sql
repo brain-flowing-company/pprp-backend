@@ -188,6 +188,17 @@ CREATE TABLE messages (
     sent_at     TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
+CREATE TABLE payments(
+    payment_id UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+    user_id    UUID REFERENCES users(user_id)              NOT NULL, 
+    price     DOUBLE PRECISION                           NOT NULL,
+    IsSuccess BOOLEAN                                    NOT NULL, 
+    Name       VARCHAR(50)                               NOT NULL,
+    created_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP, 
+    updated_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP, 
+    deleted_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL
+);
+
 -------------------- RULES --------------------
 
 CREATE RULE soft_deletion AS ON DELETE TO users DO INSTEAD (

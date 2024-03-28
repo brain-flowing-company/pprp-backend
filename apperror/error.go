@@ -47,6 +47,7 @@ var (
 	InternalServerError = &AppErrorType{http.StatusInternalServerError, "internal-server-error"}
 	InvalidBody         = &AppErrorType{http.StatusBadRequest, "invalid-body"}
 	BadRequest          = &AppErrorType{http.StatusBadRequest, "bad-request"}
+	DataBase            = &AppErrorType{http.StatusInternalServerError, "database-error"}
 
 	// property errors
 	InvalidPropertyId             = &AppErrorType{http.StatusBadRequest, "invalid-property-id"}

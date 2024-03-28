@@ -13,6 +13,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/core/emails"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/google"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/greetings"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/payments"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/properties"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/users"
 	"github.com/brain-flowing-company/pprp-backend/internal/middleware"
@@ -117,9 +118,19 @@ func main() {
 	chatService := chats.NewService(logger, chatRepository)
 	chatHandler := chats.NewHandler(logger, cfg, hub, chatService)
 
+	paymentsRepository := payments.NewRepository(db)
+	paymentsService := payments.NewService(logger, paymentsRepository)
+	paymentsHandler := payments.NewHandler(paymentsService)
+
 	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
+
+	apiv2 := app.Group("/api/v2", mw.SessionMiddleware)
+	apiv2.Post("/payments", payments.Checkout)
+
+	apiv1.Post("/payments", paymentsHandler.CreatePayment)
+	apiv1.Get("/payments", paymentsHandler.GetPaymentByUserId)
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/user/greeting", mw.AuthMiddlewareWrapper(hwHandler.UserGreeting))
