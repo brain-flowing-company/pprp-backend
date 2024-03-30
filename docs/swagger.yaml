@@ -64,6 +64,14 @@ definitions:
     - PARTIALLY_FURNISHED
     - FULLY_FURNISHED
     - READY_TO_MOVE_IN
+  enums.PaymentMethod:
+    enum:
+    - CREDIT_CARD
+    - PromptPay
+    type: string
+    x-enum-varnames:
+    - CARD
+    - PROMPT_PAY
   enums.PropertyTypes:
     enum:
     - CONDOMINIUM
@@ -306,6 +314,13 @@ definitions:
         example: 2
         type: integer
     type: object
+  models.MyPaymentsResponse:
+    properties:
+      payments:
+        items:
+          $ref: '#/definitions/models.Payments'
+        type: array
+    type: object
   models.MyPropertiesResponses:
     properties:
       properties:
@@ -315,6 +330,25 @@ definitions:
       total:
         example: 2
         type: integer
+    type: object
+  models.Payments:
+    properties:
+      agreement_id:
+        type: string
+      created_at:
+        type: string
+      is_success:
+        type: boolean
+      name:
+        type: string
+      payment_id:
+        type: string
+      payment_method:
+        $ref: '#/definitions/enums.PaymentMethod'
+      price:
+        type: number
+      user_id:
+        type: string
     type: object
   models.Properties:
     properties:
@@ -910,6 +944,54 @@ paths:
       summary: Login with Google
       tags:
       - auth
+  /api/v1/payments:
+    get:
+      description: Get payments associated with the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Payments retrieved successfully
+          schema:
+            $ref: '#/definitions/models.MyPaymentsResponse'
+        "400":
+          description: Invalid user session
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Failed to get payments by user ID
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get Payments by User ID
+      tags:
+      - payments
+    post:
+      description: Create a new payment
+      parameters:
+      - description: Payment object
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.Payments'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Payment created successfully
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "400":
+          description: Invalid payment body
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Failed to create payment
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Create Payment
+      tags:
+      - payments
   /api/v1/properties:
     get:
       description: Get all properties or search properties by query

@@ -2,6 +2,7 @@ package payments
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stripe/stripe-go/v76"
@@ -9,7 +10,7 @@ import (
 )
 
 func CheckoutV2(c *fiber.Ctx, name string, price float64) error {
-	stripe.Key = "sk_test_51OmWT2BayMsgzLXzrhGhYbxvTA6QtQvBwVhU2GYCNX6GFhGgVovQSapIhDKftcwpLOvqyrruOj0Tw7HfAcfJT5sd00YBwEU9aw"
+	stripe.Key = os.Getenv("PAYMENT_SECRET_KEY")
 	type PaymentRequest struct {
 		Name  string `json:"name"`
 		Price int64  `json:"price"`
@@ -36,8 +37,8 @@ func CheckoutV2(c *fiber.Ctx, name string, price float64) error {
 				Quantity: stripe.Int64(1),
 			},
 		},
-		SuccessURL: stripe.String("http://localhost:3000"),
-		CancelURL:  stripe.String("http://localhost:3000"),
+		SuccessURL: stripe.String(os.Getenv("SUCCESS_URL")),
+		CancelURL:  stripe.String(os.Getenv("CANCEL_URL")),
 	}
 
 	s, _ := session.New(params)

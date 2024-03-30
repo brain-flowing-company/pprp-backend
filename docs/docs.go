@@ -643,6 +643,79 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/payments": {
+            "get": {
+                "description": "Get payments associated with the current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "Get Payments by User ID",
+                "responses": {
+                    "200": {
+                        "description": "Payments retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.MyPaymentsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user session",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get payments by user ID",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new payment",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payments"
+                ],
+                "summary": "Create Payment",
+                "parameters": [
+                    {
+                        "description": "Payment object",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Payments"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.MessageResponses"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid payment body",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to create payment",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponses"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/properties": {
             "get": {
                 "description": "Get all properties or search properties by query",
@@ -2015,6 +2088,17 @@ const docTemplate = `{
                 "READY_TO_MOVE_IN"
             ]
         },
+        "enums.PaymentMethod": {
+            "type": "string",
+            "enum": [
+                "CREDIT_CARD",
+                "PromptPay"
+            ],
+            "x-enum-varnames": [
+                "CARD",
+                "PROMPT_PAY"
+            ]
+        },
         "enums.PropertyTypes": {
             "type": "string",
             "enum": [
@@ -2363,6 +2447,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.MyPaymentsResponse": {
+            "type": "object",
+            "properties": {
+                "payments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Payments"
+                    }
+                }
+            }
+        },
         "models.MyPropertiesResponses": {
             "type": "object",
             "properties": {
@@ -2375,6 +2470,35 @@ const docTemplate = `{
                 "total": {
                     "type": "integer",
                     "example": 2
+                }
+            }
+        },
+        "models.Payments": {
+            "type": "object",
+            "properties": {
+                "agreement_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "is_success": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "payment_id": {
+                    "type": "string"
+                },
+                "payment_method": {
+                    "$ref": "#/definitions/enums.PaymentMethod"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },

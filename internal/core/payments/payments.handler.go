@@ -26,20 +26,25 @@ func NewHandler(service Service) Handler {
 	}
 }
 
+// @router      /api/v1/payments [post]
+// @summary     Create Payment
+// @description Create a new payment
+// @tags        payments
+// @produce     json
+// @param       body body models.Payments true "Payment object"
+// @success     200 {object} models.MessageResponses "Payment created successfully"
+// @failure     400 {object} models.ErrorResponses "Invalid payment body"
+// @failure     500 {object} models.ErrorResponses "Failed to create payment"
 func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	payment := models.Payments{
 		PaymentId: uuid.New(),
+		UserId:    c.Locals("session").(models.Sessions).UserId,
 	}
 
 	if err := c.BodyParser(&payment); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Invalid payment body"))
 	}
-
-	userId := c.Locals("session").(models.Sessions).UserId
-	fmt.Println(userId)
-	payment.UserId = userId
-	fmt.Println("update_payment = ", payment.AgreementId)
-
+	fmt.Println("paymentkuay = ", payment.UserId)
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
 	}
@@ -52,6 +57,14 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 
 }
 
+// @router      /api/v1/payments [get]
+// @summary     Get Payments by User ID
+// @description Get payments associated with the current user
+// @tags        payments
+// @produce     json
+// @success     200 {object} models.MyPaymentsResponse "Payments retrieved successfully"
+// @failure     400 {object} models.ErrorResponses "Invalid user session"
+// @failure     500 {object} models.ErrorResponses "Failed to get payments by user ID"
 func (h *handlerImpl) GetPaymentByUserId(c *fiber.Ctx) error {
 	userId := c.Locals("session").(models.Sessions).UserId
 	payments := models.MyPaymentsResponse{}
