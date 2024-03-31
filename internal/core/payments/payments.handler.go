@@ -1,7 +1,6 @@
 package payments
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -29,16 +28,12 @@ func NewHandler(service Service) Handler {
 func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	payment := models.Payments{
 		PaymentId: uuid.New(),
+		UserId:    c.Locals("session").(models.Sessions).UserId,
 	}
 
 	if err := c.BodyParser(&payment); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Invalid payment body"))
 	}
-
-	userId := c.Locals("session").(models.Sessions).UserId
-	fmt.Println(userId)
-	payment.UserId = userId
-	fmt.Println("payment = ", payment)
 
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
