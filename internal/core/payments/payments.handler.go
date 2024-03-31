@@ -51,7 +51,7 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
 	}
-	err := CheckoutV2(c, payment.Name, payment.Price)
+	err := CheckoutV2(c, payment.Name, payment.Price, string(payment.PaymentMethod))
 	if err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InternalServerError).Describe("Failed to create payment"))
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/stripe/stripe-go/v76/checkout/session"
 )
 
-func CheckoutV2(c *fiber.Ctx, name string, price float64) error {
+func CheckoutV2(c *fiber.Ctx, name string, price float64, paymentMethod string) error {
 	stripe.Key = "sk_test_51OmWT2BayMsgzLXzrhGhYbxvTA6QtQvBwVhU2GYCNX6GFhGgVovQSapIhDKftcwpLOvqyrruOj0Tw7HfAcfJT5sd00YBwEU9aw"
 	type PaymentRequest struct {
 		Name  string `json:"name"`
@@ -17,12 +17,18 @@ func CheckoutV2(c *fiber.Ctx, name string, price float64) error {
 	var payment PaymentRequest
 	payment.Name = name
 	payment.Price = int64(price) * 100
+	var method string
+	if paymentMethod == "PROMPTPAY" {
+		method = string(stripe.PaymentMethodTypePromptPay)
+	}
+	if paymentMethod == "CREDIT_CARD" {
+		method = string(stripe.PaymentMethodTypeCard)
+	}
 
 	params := &stripe.CheckoutSessionParams{
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
 		PaymentMethodTypes: []*string{
-			stripe.String(string(stripe.PaymentMethodTypeCard)),
-			stripe.String(string(stripe.PaymentMethodTypePromptPay)),
+			stripe.String(method),
 		},
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			&stripe.CheckoutSessionLineItemParams{
