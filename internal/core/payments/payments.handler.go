@@ -29,12 +29,23 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	payment := models.Payments{
 		PaymentId: uuid.New(),
 		UserId:    c.Locals("session").(models.Sessions).UserId,
+		IsSuccess: false,
 	}
-
 	if err := c.BodyParser(&payment); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Invalid payment body"))
 	}
-
+	if payment.Price == 0 {
+		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Price is required"))
+	}
+	if payment.Name == "" {
+		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Name is required"))
+	}
+	if payment.AgreementId == uuid.Nil {
+		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Agreement id is required"))
+	}
+	if payment.PaymentMethod == "" {
+		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Payment method is required"))
+	}
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
 	}
