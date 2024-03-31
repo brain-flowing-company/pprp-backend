@@ -34,7 +34,7 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	if err := c.BodyParser(&payment); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Invalid payment body"))
 	}
-	if payment.Price == 0 {
+	if payment.Price <= 0 {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Price is required"))
 	}
 	if payment.Name == "" {
