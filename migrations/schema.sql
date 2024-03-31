@@ -16,7 +16,7 @@ CREATE TYPE furnishing AS ENUM('UNFURNISHED', 'PARTIALLY_FURNISHED', 'FULLY_FURN
 
 CREATE TYPE floor_size_units AS ENUM('SQM', 'SQFT');
 
-CREATE TYPE payment_methods AS ENUM('CREDIT_CARD', 'PromptPay');
+CREATE TYPE payment_methods AS ENUM('CREDIT_CARD', 'PROMPTPAY');
  
 CREATE TABLE email_verification_codes
 (
