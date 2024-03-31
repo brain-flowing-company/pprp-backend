@@ -26,9 +26,13 @@ func NewHandler(service Service) Handler {
 }
 
 func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Sessions)
+	if !ok {
+		return utils.ResponseError(c, apperror.New(apperror.Unauthorized).Describe("Unauthorized"))
+	}
 	payment := models.Payments{
 		PaymentId: uuid.New(),
-		UserId:    c.Locals("session").(models.Sessions).UserId,
+		UserId:    session.UserId,
 		IsSuccess: false,
 	}
 	if err := c.BodyParser(&payment); err != nil {
