@@ -3,6 +3,7 @@ package payments
 import (
 	"fmt"
 
+	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -16,12 +17,14 @@ type Service interface {
 type serviceImpl struct {
 	repo   Repository
 	logger *zap.Logger
+	cfg    *config.Config
 }
 
-func NewService(logger *zap.Logger, repo Repository) Service {
+func NewService(logger *zap.Logger, repo Repository, cfg *config.Config) Service {
 	return &serviceImpl{
 		repo,
 		logger,
+		cfg,
 	}
 }
 

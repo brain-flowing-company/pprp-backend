@@ -1,10 +1,10 @@
 package payments
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
@@ -18,32 +18,47 @@ type Handler interface {
 
 type handlerImpl struct {
 	service Service
+	cfg     *config.Config
 }
 
-func NewHandler(service Service) Handler {
+func NewHandler(cfg *config.Config, service Service) Handler {
 	return &handlerImpl{
 		service,
+		cfg,
 	}
 }
 
 func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Sessions)
+	if !ok {
+		return utils.ResponseError(c, apperror.New(apperror.Unauthorized).Describe("Unauthorized"))
+	}
 	payment := models.Payments{
 		PaymentId: uuid.New(),
+		UserId:    session.UserId,
+		IsSuccess: false,
 	}
-
 	if err := c.BodyParser(&payment); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Invalid payment body"))
 	}
-
-	userId := c.Locals("session").(models.Sessions).UserId
-	fmt.Println(userId)
-	payment.UserId = userId
-	fmt.Println("payment = ", payment)
+	// Check if the required fields are empty
+	if payment.Price <= 0 {
+		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Price is required and must be greater than 0"))
+	}
+	if payment.Name == "" {
+		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Name is required"))
+	}
+	if payment.AgreementId == uuid.Nil {
+		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Agreement id is required"))
+	}
+	if payment.PaymentMethod == "" {
+		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Payment method is required"))
+	}
 
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
 	}
-	err := CheckoutV2(c, payment.Name, payment.Price)
+	err := CheckoutV2(c, payment.Name, payment.Price, string(payment.PaymentMethod), h.cfg)
 	if err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InternalServerError).Describe("Failed to create payment"))
 	}

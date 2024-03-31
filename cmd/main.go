@@ -119,8 +119,8 @@ func main() {
 	chatHandler := chats.NewHandler(logger, cfg, hub, chatService)
 
 	paymentsRepository := payments.NewRepository(db)
-	paymentsService := payments.NewService(logger, paymentsRepository)
-	paymentsHandler := payments.NewHandler(paymentsService)
+	paymentsService := payments.NewService(logger, paymentsRepository, cfg)
+	paymentsHandler := payments.NewHandler(cfg, paymentsService)
 
 	mw := middleware.NewMiddleware(cfg)
 
