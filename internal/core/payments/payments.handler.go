@@ -34,6 +34,7 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	if err := c.BodyParser(&payment); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Invalid payment body"))
 	}
+	// Check if the required fields are empty
 	if payment.Price <= 0 {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Price is required"))
 	}
@@ -46,6 +47,7 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	if payment.PaymentMethod == "" {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Payment method is required"))
 	}
+
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
 	}
