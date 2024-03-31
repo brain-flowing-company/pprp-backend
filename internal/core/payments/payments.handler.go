@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
@@ -17,11 +18,13 @@ type Handler interface {
 
 type handlerImpl struct {
 	service Service
+	cfg     *config.Config
 }
 
-func NewHandler(service Service) Handler {
+func NewHandler(cfg *config.Config, service Service) Handler {
 	return &handlerImpl{
 		service,
+		cfg,
 	}
 }
 
@@ -40,7 +43,7 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	}
 	// Check if the required fields are empty
 	if payment.Price <= 0 {
-		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Price is required"))
+		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Price is required and must be greater than 0"))
 	}
 	if payment.Name == "" {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Name is required"))
@@ -55,7 +58,7 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
 	}
-	err := CheckoutV2(c, payment.Name, payment.Price, string(payment.PaymentMethod))
+	err := CheckoutV2(c, payment.Name, payment.Price, string(payment.PaymentMethod), h.cfg)
 	if err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InternalServerError).Describe("Failed to create payment"))
 	}

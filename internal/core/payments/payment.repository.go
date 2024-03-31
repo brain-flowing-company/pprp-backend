@@ -33,7 +33,7 @@ func (r *repositoryImpl) CreatePayment(payment *models.Payments) error {
 		if userCount == 0 {
 			return apperror.
 				New(apperror.UserNotFound).
-				Describe("FK user")
+				Describe("FK constraint in user table")
 		}
 
 		// Check if agreement_id exists in agreements table
@@ -44,7 +44,7 @@ func (r *repositoryImpl) CreatePayment(payment *models.Payments) error {
 		if agreementCount == 0 {
 			return apperror.
 				New(apperror.AgreementNotFound).
-				Describe("FK agreement")
+				Describe("FK constraint in agreement table")
 		}
 
 		paymentQuery := `INSERT INTO payments (payment_id , user_id , price ,IsSuccess ,name,agreement_id,payment_method) VALUES (?,?,?,?,?,?,?)`

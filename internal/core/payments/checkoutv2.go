@@ -3,13 +3,14 @@ package payments
 import (
 	"fmt"
 
+	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stripe/stripe-go/v76"
 	"github.com/stripe/stripe-go/v76/checkout/session"
 )
 
-func CheckoutV2(c *fiber.Ctx, name string, price float64, paymentMethod string) error {
-	stripe.Key = "sk_test_51OmWT2BayMsgzLXzrhGhYbxvTA6QtQvBwVhU2GYCNX6GFhGgVovQSapIhDKftcwpLOvqyrruOj0Tw7HfAcfJT5sd00YBwEU9aw"
+func CheckoutV2(c *fiber.Ctx, name string, price float64, paymentMethod string, cfg *config.Config) error {
+	stripe.Key = cfg.STRIPE_SECRET_KEY
 	type PaymentRequest struct {
 		Name  string `json:"name"`
 		Price int64  `json:"price"`
@@ -42,8 +43,8 @@ func CheckoutV2(c *fiber.Ctx, name string, price float64, paymentMethod string) 
 				Quantity: stripe.Int64(1),
 			},
 		},
-		SuccessURL: stripe.String("http://localhost:4242/success"),
-		CancelURL:  stripe.String("http://localhost:4242/cancel"),
+		SuccessURL: stripe.String(cfg.FRONTEND_URL + "/success"),
+		CancelURL:  stripe.String(cfg.FRONTEND_URL + "/cancel"),
 	}
 
 	s, _ := session.New(params)

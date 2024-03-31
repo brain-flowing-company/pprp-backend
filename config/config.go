@@ -22,6 +22,8 @@ type Config struct {
 	SmtpPort               string   `mapstructure:"SMTP_PORT"`
 	AuthRedirect           string   `mapstructure:"AUTH_REDIRECT"`
 	AuthVerificationExpire int      `mapstructure:"AUTH_VERIFICATION_EXPIRE"`
+	STRIPE_SECRET_KEY      string   `mapstructure:"STRIPE_SECRET_KEY"`
+	FRONTEND_URL           string   `mapstructure:"FRONTEND_URL"`
 }
 
 func (cfg *Config) IsDevelopment() bool {
@@ -48,6 +50,8 @@ func Load(config *Config) error {
 	_ = viper.BindEnv("AUTH_VERIFICATION_EXPIRE")
 	_ = viper.BindEnv("SMTP_HOST")
 	_ = viper.BindEnv("SMTP_PORT")
+	_ = viper.BindEnv("STRIPE_SECRET_KEY")
+	_ = viper.BindEnv("FRONTEND_URL")
 
 	viper.AutomaticEnv()
 	viper.AllowEmptyEnv(false)
