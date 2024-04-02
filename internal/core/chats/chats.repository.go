@@ -67,20 +67,22 @@ func (repo *repositoryImpl) GetAllChats(results *[]models.ChatPreviews, userId u
 }
 
 func (repo *repositoryImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid.UUID, recvUserId uuid.UUID, offset int, limit int) error {
-	return repo.db.Model(&models.Messages{}).
-		Raw(`
+	query := fmt.Sprintf(`
+		SELECT *
+		FROM (
 			SELECT *
-			FROM (
-				SELECT *
-				FROM messages
-				WHERE (sender_id = @sender_id AND receiver_id = @receiver_id)
-					OR (sender_id = @receiver_id AND receiver_id = @sender_id)
-				ORDER BY sent_at DESC
-			) AS a
-			LEFT JOIN message_attatchments
-			ON a.message_id = message_attatchments.message_id
-			ORDER BY sent_at ASC
-		`,
+			FROM messages
+			WHERE (sender_id = @sender_id AND receiver_id = @receiver_id)
+				OR (sender_id = @receiver_id AND receiver_id = @sender_id)
+			ORDER BY sent_at DESC
+			LIMIT %d OFFSET %d
+		) AS a
+		LEFT JOIN message_attatchments
+		ON a.message_id = message_attatchments.message_id
+		ORDER BY sent_at ASC
+	`, limit, offset)
+	return repo.db.Model(&models.Messages{}).
+		Raw(query,
 			sql.Named("sender_id", sendUserId),
 			sql.Named("receiver_id", recvUserId),
 		).Scan(msgs).Error
