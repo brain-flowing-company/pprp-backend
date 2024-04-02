@@ -89,7 +89,30 @@ func (repo *repositoryImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserI
 }
 
 func (repo *repositoryImpl) SaveMessages(msg *models.Messages) error {
-	return repo.db.Model(&models.Messages{}).Create(msg).Error
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		fmt.Println(msg.MessageId, msg.SenderId, msg.ReceiverId, msg.Content, msg.ReadAt, msg.SentAt)
+		err := tx.Exec(`
+			INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent_at)
+			VALUES (?, ?, ?, ?, ?, ?)
+		`, msg.MessageId, msg.SenderId, msg.ReceiverId, msg.Content, msg.ReadAt, msg.SentAt).Error
+		if err != nil {
+			return err
+		}
+
+		if (models.MessageAttatchments{}) != msg.Attatchment {
+			fmt.Println(msg.MessageId, msg.Attatchment.PropertyId, msg.Attatchment.AppointmentId, msg.Attatchment.AgreementId)
+			err = tx.Exec(`
+				INSERT INTO message_attatchments (message_id, property_id, appointment_id, agreement_id)
+				VALUES (?, ?, ?, ?)
+			`, msg.MessageId, msg.Attatchment.PropertyId, msg.Attatchment.AppointmentId, msg.Attatchment.AgreementId).Error
+			fmt.Println(err)
+			if err != nil {
+				return nil
+			}
+		}
+
+		return nil
+	})
 }
 
 func (repo *repositoryImpl) ReadMessages(sendUserId uuid.UUID, recvUserId uuid.UUID) error {

@@ -14,7 +14,7 @@ import (
 type WebsocketClients struct {
 	router     *WebsocketRouter
 	hub        *Hub
-	Service    Service
+	service    Service
 	UserId     uuid.UUID
 	RecvUserId *uuid.UUID
 	chats      map[uuid.UUID]*models.ChatPreviews
@@ -36,7 +36,7 @@ func NewClient(logger *zap.Logger, conn *websocket.Conn, hub *Hub, service Servi
 	return &WebsocketClients{
 		router:     NewWebsocketRouter(logger, conn),
 		hub:        hub,
-		Service:    service,
+		service:    service,
 		UserId:     userId,
 		RecvUserId: nil,
 		chats:      chats,
@@ -72,17 +72,18 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 	}
 
 	msg := &models.Messages{
-		MessageId:  uuid.New(),
-		SenderId:   client.UserId,
-		ReceiverId: *client.RecvUserId,
-		ChatId:     *client.RecvUserId,
-		Author:     true,
-		ReadAt:     readAt,
-		Content:    inbound.Content,
-		SentAt:     inbound.SentAt,
+		MessageId:   uuid.New(),
+		SenderId:    client.UserId,
+		ReceiverId:  *client.RecvUserId,
+		ChatId:      *client.RecvUserId,
+		Author:      true,
+		ReadAt:      readAt,
+		Content:     inbound.Content,
+		SentAt:      inbound.SentAt,
+		Attatchment: models.MessageAttatchments{},
 	}
 
-	err := client.Service.SaveMessages(msg)
+	err := client.service.SaveMessages(msg)
 	if err != nil {
 		return err
 	}
@@ -119,7 +120,7 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 
 	client.RecvUserId = &uuid
 
-	apperr := client.Service.ReadMessages(uuid, client.UserId)
+	apperr := client.service.ReadMessages(uuid, client.UserId)
 	if apperr != nil {
 		return apperr
 	}

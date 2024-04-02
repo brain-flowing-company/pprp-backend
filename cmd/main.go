@@ -109,14 +109,14 @@ func main() {
 	authService := auth.NewService(logger, cfg, authRepository, googleService, emailService)
 	authHandler := auth.NewHandler(cfg, authService)
 
-	appointmentRepository := appointments.NewRepository(db)
-	appointmentService := appointments.NewService(logger, appointmentRepository)
-	appointmentHandler := appointments.NewHandler(appointmentService)
-
-	hub := chats.NewHub()
 	chatRepository := chats.NewRepository(db)
 	chatService := chats.NewService(logger, chatRepository)
+	hub := chats.NewHub(chatService)
 	chatHandler := chats.NewHandler(logger, cfg, hub, chatService)
+
+	appointmentRepository := appointments.NewRepository(db)
+	appointmentService := appointments.NewService(logger, appointmentRepository)
+	appointmentHandler := appointments.NewHandler(hub, appointmentService)
 
 	paymentsRepository := payments.NewRepository(db)
 	paymentsService := payments.NewService(logger, paymentsRepository, cfg)
