@@ -1,9 +1,6 @@
 package payments
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/enums"
@@ -67,14 +64,6 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 			return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Invalid payment_method"))
 		}
 	}
-
-	fmt.Println("Payment: name ", payment.Name)
-	fmt.Println("Payment: price ", payment.Price)
-	fmt.Println("Payment: agreement id ", payment.AgreementId)
-	fmt.Println("Payment: payment method ", payment.PaymentMethod)
-
-	// convert payment.agreement string to uuid
-
 	// Check if the required fields are empty
 	if payment.Price <= 0 {
 		return utils.ResponseError(c, apperror.New(apperror.InvalidBody).Describe("Price is required and must be greater than 0"))
@@ -92,12 +81,16 @@ func (h *handlerImpl) CreatePayment(c *fiber.Ctx) error {
 	if err := h.service.CreatePayment(&payment); err != nil {
 		return utils.ResponseError(c, err)
 	}
-	err2 := CheckoutV2(c, payment.Name, payment.Price, string(payment.PaymentMethod), h.cfg)
+	surl, err2 := CheckoutV2(c, payment.Name, payment.Price, string(payment.PaymentMethod), h.cfg)
 	if err2 != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InternalServerError).Describe("Failed to create payment"))
 	}
-
-	return utils.ResponseMessage(c, http.StatusOK, "Payment created successfully")
+	return c.JSON(fiber.Map{
+		"payment_id": payment.PaymentId,
+		"success":    true,
+		"message":    "Payment created successfully",
+		"url":        surl,
+	})
 
 }
 
