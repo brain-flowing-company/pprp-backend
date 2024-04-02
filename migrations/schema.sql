@@ -191,10 +191,10 @@ CREATE TABLE messages (
 );
 
 CREATE TABLE message_attatchments (
-    message_id     UUID REFERENCES messages     (message_id) PRIMARY KEY NOT NULL,
-    property_id    UUID REFERENCES properties   (property_id),
-    appointment_id UUID REFERENCES appointments (appointment_id),
-    agreement_id   UUID REFERENCES agreements   (agreement_id)
+    message_id     UUID REFERENCES messages     (message_id)     PRIMARY KEY NOT NULL,
+    property_id    UUID REFERENCES properties   (property_id)    DEFAULT NULL,
+    appointment_id UUID REFERENCES appointments (appointment_id) DEFAULT NULL,
+    agreement_id   UUID REFERENCES agreements   (agreement_id)   DEFAULT NULL
 );
 
 CREATE TABLE payments(
