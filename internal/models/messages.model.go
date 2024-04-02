@@ -39,9 +39,9 @@ type Messages struct {
 
 type MessageAttatchments struct {
 	MessageId     uuid.UUID  `json:"-"`
-	PropertyId    *uuid.UUID `json:"property_id,omitempty"`
-	AppointmentId *uuid.UUID `json:"appointment_id,omitempty"`
-	AgreementId   *uuid.UUID `json:"agreement_id,omitempty"`
+	PropertyId    *uuid.UUID `json:"property_id,omitempty"    gorm:"->"`
+	AppointmentId *uuid.UUID `json:"appointment_id,omitempty" gorm:"->"`
+	AgreementId   *uuid.UUID `json:"agreement_id,omitempty"   gorm:"->"`
 }
 
 func (e *Messages) ToOutBound() *OutBoundMessages {
