@@ -359,7 +359,9 @@ INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent
 ('e74361f2-00de-40d8-b3fc-dc1f85547700', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Hello mate' , NULL, '2024-02-25 19:04:27.436+07'),
 ('3f25b89f-b183-4ba8-b7b5-98d5f5fd374a', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'what are you up to?' , NULL, '2024-02-25 19:04:36.119+07'),
 ('f48c2f66-3450-41f1-8307-db6386187472', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Hi' , NULL, '2024-02-25 19:05:10.519+07'),
-('8d7a913b-0bd4-4554-8286-bc8ad2b8817e', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '?' , NULL, '2024-02-25 19:05:12.953+07');
+('8d7a913b-0bd4-4554-8286-bc8ad2b8817e', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '?' , NULL, '2024-02-25 19:05:12.953+07'),
+('5d7ad256-0e0b-45e5-a985-7c0a4e439047', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'hi', NULL, '2024-04-02 13:23:26.943+07'),
+('ae45bf81-8214-46ec-9032-fa683d6b90a5', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'just hi', NULL, '2024-04-02 13:23:28.689+07');
 
 INSERT INTO message_attatchments (message_id, property_id, appointment_id, agreement_id) VALUES
 ('541dfc60-2f5b-473a-ac09-76a2aa3e5276', '2dd819db-6b5f-4c29-b173-0f0bf04769fb', NULL, NULL),
