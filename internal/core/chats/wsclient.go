@@ -43,7 +43,7 @@ func NewClient(logger *zap.Logger, conn *websocket.Conn, hub *Hub, service Servi
 	}, nil
 }
 
-func (client *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
+func (client *WebsocketClients) SendOutBoundMessage(msg *models.OutBoundMessages) {
 	client.router.Send(msg)
 }
 
@@ -91,13 +91,13 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 		msg.Tag = inbound.Tag
 		msg.ChatId = *client.RecvUserId
 		msg.Author = true
-		client.SendMessage(msg.ToOutBound())
+		client.SendOutBoundMessage(msg.ToOutBound())
 	}
 
 	if client.hub.IsUserOnline(*client.RecvUserId) {
 		msg.ChatId = client.UserId
 		msg.Author = false
-		client.hub.GetUser(*client.RecvUserId).SendMessage(msg.ToOutBound())
+		client.hub.GetUser(*client.RecvUserId).SendOutBoundMessage(msg.ToOutBound())
 	}
 
 	return nil
@@ -129,7 +129,7 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 			ChatId: client.UserId,
 			ReadAt: time.Now(),
 		}
-		client.hub.GetUser(uuid).SendMessage(read.ToOutBound())
+		client.hub.GetUser(uuid).SendOutBoundMessage(read.ToOutBound())
 	}
 
 	return nil
