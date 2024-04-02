@@ -164,7 +164,7 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentResponse *models.M
 		if err := tx.Model(&models.Appointments{}).
 			Raw(appointmentListsQuery+`
 				WHERE a.owner_user_id = @userId
-				ORDER BY a.created_at `+appointmentRequest.Order+`
+				ORDER BY a.appointment_date `+appointmentRequest.Order+`
 				`, sql.Named("userId", appointmentRequest.UserId)).
 			Scan(&appointmentResponse.OwnerAppointments).Error; err != nil {
 			return err
@@ -173,7 +173,7 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentResponse *models.M
 		if err := tx.Model(&models.Appointments{}).
 			Raw(appointmentListsQuery+`
 				WHERE a.dweller_user_id = @userId
-				ORDER BY a.created_at `+appointmentRequest.Order+`
+				ORDER BY a.appointment_date `+appointmentRequest.Order+`
 				`, sql.Named("userId", appointmentRequest.UserId)).
 			Scan(&appointmentResponse.DwellerAppointments).Error; err != nil {
 			return err
