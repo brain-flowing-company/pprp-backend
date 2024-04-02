@@ -25,15 +25,23 @@ type InBoundMessages struct {
 }
 
 type Messages struct {
-	MessageId  uuid.UUID  `json:"message_id"    example:"27b79b15-a56f-464a-90f7-bab515ba4c02"`
-	ChatId     uuid.UUID  `json:"chat_id"       example:"27b79b15-a56f-464a-90f7-bab515ba4c02" gorm:"-"`
-	SenderId   uuid.UUID  `json:"-"             example:"27b79b15-a56f-464a-90f7-bab515ba4c02"`
-	ReceiverId uuid.UUID  `json:"-"             example:"27b79b15-a56f-464a-90f7-bab515ba4c02"`
-	Content    string     `json:"content"       example:"hello, world"`
-	ReadAt     *time.Time `json:"read_at"       example:"2024-02-22T03:06:53.313735Z"`
-	SentAt     time.Time  `json:"sent_at"       example:"2024-02-22T03:06:53.313735Z"`
-	Author     bool       `json:"author"        example:"true"                                 gorm:"-"`
-	Tag        string     `json:"-"             gorm:"-"`
+	MessageId   uuid.UUID           `json:"message_id"    example:"27b79b15-a56f-464a-90f7-bab515ba4c02"`
+	ChatId      uuid.UUID           `json:"chat_id"       example:"27b79b15-a56f-464a-90f7-bab515ba4c02" gorm:"-"`
+	SenderId    uuid.UUID           `json:"-"             example:"27b79b15-a56f-464a-90f7-bab515ba4c02"`
+	ReceiverId  uuid.UUID           `json:"-"             example:"27b79b15-a56f-464a-90f7-bab515ba4c02"`
+	Content     string              `json:"content"       example:"hello, world"`
+	ReadAt      *time.Time          `json:"read_at"       example:"2024-02-22T03:06:53.313735Z"`
+	SentAt      time.Time           `json:"sent_at"       example:"2024-02-22T03:06:53.313735Z"`
+	Author      bool                `json:"author"        example:"true"                                 gorm:"-"`
+	Tag         string              `json:"-"             gorm:"-"`
+	Attatchment MessageAttatchments `json:"attatchment"   gorm:"embedded"`
+}
+
+type MessageAttatchments struct {
+	MessageId     uuid.UUID  `json:"-"`
+	PropertyId    *uuid.UUID `json:"property_id,omitempty"`
+	AppointmentId *uuid.UUID `json:"appointment_id,omitempty"`
+	AgreementId   *uuid.UUID `json:"agreement_id,omitempty"`
 }
 
 func (e *Messages) ToOutBound() *OutBoundMessages {

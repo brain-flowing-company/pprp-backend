@@ -190,6 +190,13 @@ CREATE TABLE messages (
     sent_at     TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
+CREATE TABLE message_attatchments (
+    message_id     UUID REFERENCES messages     (message_id) PRIMARY KEY NOT NULL,
+    property_id    UUID REFERENCES properties   (property_id),
+    appointment_id UUID REFERENCES appointments (appointment_id),
+    agreement_id   UUID REFERENCES agreements   (agreement_id)
+);
+
 CREATE TABLE payments(
     payment_id UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
     user_id    UUID REFERENCES users(user_id)              NOT NULL, 
@@ -344,6 +351,9 @@ INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent
 ('3f25b89f-b183-4ba8-b7b5-98d5f5fd374a', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'what are you up to?' , NULL, '2024-02-25 19:04:36.119+07'),
 ('f48c2f66-3450-41f1-8307-db6386187472', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Hi' , NULL, '2024-02-25 19:05:10.519+07'),
 ('8d7a913b-0bd4-4554-8286-bc8ad2b8817e', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '?' , NULL, '2024-02-25 19:05:12.953+07');
+
+INSERT INTO message_attatchments (message_id, property_id, appointment_id, agreement_id) VALUES
+('541dfc60-2f5b-473a-ac09-76a2aa3e5276', '2dd819db-6b5f-4c29-b173-0f0bf04769fb', NULL, NULL);
 
 INSERT INTO appointments (property_id, owner_user_id, dweller_user_id, status, appointment_date, note) VALUES
 ('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:50:00.000+07', NULL),
