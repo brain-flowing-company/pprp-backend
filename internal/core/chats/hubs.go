@@ -50,9 +50,7 @@ func (h *Hub) SendNotificationMessage(attatchment interface{}, content string, s
 	switch attch := attatchment.(type) {
 	case *models.CreatingAppointments:
 		msg.Attatchment.AppointmentId = &attch.AppointmentId
-	case *models.Appointments:
-		msg.Attatchment.AppointmentId = &attch.AppointmentId
-	case *models.Agreements:
+	case *models.CreatingAgreements:
 		msg.Attatchment.AgreementId = &attch.AgreementId
 	default:
 		return apperror.New(apperror.BadRequest).Describe(fmt.Sprintf("notification message does not support %v", reflect.TypeOf(attatchment)))

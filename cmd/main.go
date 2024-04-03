@@ -88,10 +88,6 @@ func main() {
 	propertyService := properties.NewService(logger, propertyRepo, storage)
 	propertyHandler := properties.NewHandler(propertyService)
 
-	agreementsRepo := agreements.NewRepository(db)
-	agreementsService := agreements.NewService(logger, agreementsRepo)
-	agreementsHandler := agreements.NewHandler(agreementsService)
-
 	usersRepo := users.NewRepository(db)
 	usersService := users.NewService(logger, cfg, usersRepo, storage)
 	usersHandler := users.NewHandler(usersService)
@@ -117,6 +113,10 @@ func main() {
 	appointmentRepository := appointments.NewRepository(db)
 	appointmentService := appointments.NewService(logger, appointmentRepository)
 	appointmentHandler := appointments.NewHandler(hub, appointmentService)
+
+	agreementsRepo := agreements.NewRepository(db)
+	agreementsService := agreements.NewService(logger, agreementsRepo)
+	agreementsHandler := agreements.NewHandler(hub, agreementsService)
 
 	paymentsRepository := payments.NewRepository(db)
 	paymentsService := payments.NewService(logger, paymentsRepository, cfg)
