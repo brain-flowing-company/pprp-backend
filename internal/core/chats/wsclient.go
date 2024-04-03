@@ -67,7 +67,7 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 
 	var readAt *time.Time
 	now := time.Now()
-	if client.hub.IsUserInChat(client.UserId, *client.RecvUserId) {
+	if client.hub.IsUserBothInChat(client.UserId, *client.RecvUserId) {
 		readAt = &now
 	}
 
@@ -125,7 +125,7 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 		return apperr
 	}
 
-	if client.hub.IsUserInChat(client.UserId, uuid) {
+	if client.hub.IsUserBothInChat(client.UserId, uuid) {
 		read := &models.ReadEvents{
 			ChatId: client.UserId,
 			ReadAt: time.Now(),

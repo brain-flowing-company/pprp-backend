@@ -31,7 +31,7 @@ func (h *Hub) GetUser(userId uuid.UUID) *WebsocketClients {
 func (h *Hub) SendNotificationMessage(attatchment interface{}, content string, senderId uuid.UUID, receiverId uuid.UUID) *apperror.AppError {
 	var readAt *time.Time
 	now := time.Now()
-	if h.IsUserInChat(senderId, receiverId) {
+	if h.IsReceiverInChat(senderId, receiverId) {
 		readAt = &now
 	}
 
@@ -81,16 +81,19 @@ func (h *Hub) IsUserOnline(userId uuid.UUID) bool {
 	return online
 }
 
-func (h *Hub) IsUserInChat(sendUserId uuid.UUID, recvUserId uuid.UUID) bool {
-	sendUser, sendOnline := h.clients[sendUserId]
+func (h *Hub) IsReceiverInChat(sendUserId uuid.UUID, recvUserId uuid.UUID) bool {
 	recvUser, recvOnline := h.clients[recvUserId]
 
-	if !sendOnline || !recvOnline {
+	if !recvOnline {
 		return false
 	}
 
-	return sendUser.RecvUserId != nil && recvUser.RecvUserId != nil &&
-		*sendUser.RecvUserId == recvUserId && *recvUser.RecvUserId == sendUserId
+	return recvUser.RecvUserId != nil && *recvUser.RecvUserId == sendUserId
+}
+
+func (h *Hub) IsUserBothInChat(sendUserId uuid.UUID, recvUserId uuid.UUID) bool {
+	return h.IsReceiverInChat(sendUserId, recvUserId) &&
+		h.IsReceiverInChat(recvUserId, sendUserId)
 }
 
 func (h *Hub) Register(client *WebsocketClients) {
