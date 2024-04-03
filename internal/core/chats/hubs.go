@@ -64,10 +64,14 @@ func (h *Hub) SendNotificationMessage(attatchment interface{}, content string, s
 	}
 
 	if h.IsUserOnline(senderId) {
+		msg.ChatId = receiverId
+		msg.Author = true
 		h.GetUser(senderId).SendOutBoundMessage(msg.ToOutBound())
 	}
 
 	if h.IsUserOnline(receiverId) {
+		msg.ChatId = senderId
+		msg.Author = false
 		h.GetUser(receiverId).SendOutBoundMessage(msg.ToOutBound())
 	}
 
