@@ -123,7 +123,7 @@ func (h *handlerImpl) CreateAgreement(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperr)
 	}
 
-	apperr = h.hub.SendNotificationMessage(agreement, "", agreement.OwnerUserId, agreement.DwellerUserId)
+	apperr = h.hub.SendNotificationMessage(agreement, false, "Embedded agreement", agreement.OwnerUserId, agreement.DwellerUserId)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}

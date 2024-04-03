@@ -18,10 +18,11 @@ type OutBoundMessages struct {
 }
 
 type InBoundMessages struct {
-	Event   enums.MessageInboundEvents `json:"event"`
-	Content string                     `json:"content"`
-	SentAt  time.Time                  `json:"sent_at"`
-	Tag     string                     `json:"tag"`
+	Event       enums.MessageInboundEvents `json:"event"`
+	Content     string                     `json:"content"`
+	SentAt      time.Time                  `json:"sent_at"`
+	Attatchment MessageAttatchments        `json:"attatchment"`
+	Tag         string                     `json:"tag"`
 }
 
 type Messages struct {
@@ -38,7 +39,6 @@ type Messages struct {
 }
 
 type MessageAttatchments struct {
-	MessageId     uuid.UUID  `json:"-"`
 	PropertyId    *uuid.UUID `json:"property_id,omitempty"    gorm:"->"`
 	AppointmentId *uuid.UUID `json:"appointment_id,omitempty" gorm:"->"`
 	AgreementId   *uuid.UUID `json:"agreement_id,omitempty"   gorm:"->"`

@@ -28,7 +28,7 @@ func (h *Hub) GetUser(userId uuid.UUID) *WebsocketClients {
 	return h.clients[userId]
 }
 
-func (h *Hub) SendNotificationMessage(attatchment interface{}, content string, senderId uuid.UUID, receiverId uuid.UUID) *apperror.AppError {
+func (h *Hub) SendNotificationMessage(attatchment interface{}, saveOnly bool, content string, senderId uuid.UUID, receiverId uuid.UUID) *apperror.AppError {
 	var readAt *time.Time
 	now := time.Now()
 	if h.IsReceiverInChat(senderId, receiverId) {
@@ -52,6 +52,8 @@ func (h *Hub) SendNotificationMessage(attatchment interface{}, content string, s
 		msg.Attatchment.AppointmentId = &attch.AppointmentId
 	case *models.CreatingAgreements:
 		msg.Attatchment.AgreementId = &attch.AgreementId
+	case *models.Properties:
+		msg.Attatchment.PropertyId = &attch.PropertyId
 	default:
 		return apperror.New(apperror.BadRequest).Describe(fmt.Sprintf("notification message does not support %v", reflect.TypeOf(attatchment)))
 	}
@@ -61,7 +63,7 @@ func (h *Hub) SendNotificationMessage(attatchment interface{}, content string, s
 		return err
 	}
 
-	if h.IsUserOnline(senderId) {
+	if h.IsUserOnline(senderId) && !saveOnly {
 		msg.ChatId = receiverId
 		msg.Author = true
 		h.GetUser(senderId).SendOutBoundMessage(msg.ToOutBound())

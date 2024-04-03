@@ -99,8 +99,10 @@ func (repo *repositoryImpl) SaveMessages(msg *models.Messages) error {
 			return err
 		}
 
+		fmt.Println(msg.Attatchment)
+
 		if (models.MessageAttatchments{}) != msg.Attatchment {
-			fmt.Println(msg.MessageId, msg.Attatchment.PropertyId, msg.Attatchment.AppointmentId, msg.Attatchment.AgreementId)
+			fmt.Println("attatchment", msg.MessageId, msg.Attatchment.PropertyId, msg.Attatchment.AppointmentId, msg.Attatchment.AgreementId)
 			err = tx.Exec(`
 				INSERT INTO message_attatchments (message_id, property_id, appointment_id, agreement_id)
 				VALUES (?, ?, ?, ?)

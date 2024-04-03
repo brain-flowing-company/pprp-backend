@@ -1,6 +1,7 @@
 package chats
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -65,6 +66,8 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 			Describe("Invalid chat")
 	}
 
+	fmt.Println(inbound)
+
 	var readAt *time.Time
 	now := time.Now()
 	if client.hub.IsUserBothInChat(client.UserId, *client.RecvUserId) {
@@ -72,15 +75,14 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 	}
 
 	msg := &models.Messages{
-		MessageId:   uuid.New(),
-		SenderId:    client.UserId,
-		ReceiverId:  *client.RecvUserId,
-		ChatId:      *client.RecvUserId,
-		Author:      true,
-		ReadAt:      readAt,
-		Content:     inbound.Content,
-		SentAt:      inbound.SentAt,
-		Attatchment: models.MessageAttatchments{},
+		MessageId:  uuid.New(),
+		SenderId:   client.UserId,
+		ReceiverId: *client.RecvUserId,
+		ChatId:     *client.RecvUserId,
+		Author:     true,
+		ReadAt:     readAt,
+		Content:    inbound.Content,
+		SentAt:     inbound.SentAt,
 	}
 
 	err := client.service.SaveMessages(msg)
@@ -131,6 +133,14 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 			ReadAt: time.Now(),
 		}
 		client.hub.GetUser(uuid).SendOutBoundMessage(read.ToOutBound())
+	}
+
+	if (models.MessageAttatchments{}) != inbound.Attatchment {
+		property := models.Properties{PropertyId: *inbound.Attatchment.PropertyId}
+		apperr := client.hub.SendNotificationMessage(&property, true, "Embedded property", client.UserId, uuid)
+		if apperr != nil {
+			return apperr
+		}
 	}
 
 	return nil
