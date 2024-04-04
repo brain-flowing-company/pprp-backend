@@ -126,12 +126,9 @@ func main() {
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
 
-	// apiv2 := app.Group("/api/v2", mw.SessionMiddleware)
-	// apiv2.Post("/payments", payments.Checkout)
-
-	apiv1.Get("/checkout", paymentsHandler.CreatePayment)
-	apiv1.Get("/payments", paymentsHandler.GetPaymentByUserId)
-	apiv1.Get("/payments/history", paymentsHandler.GetHistoryPaymentByUserId)
+	apiv1.Get("/checkout", mw.AuthMiddlewareWrapper(paymentsHandler.CreatePayment))
+	apiv1.Get("/payments", mw.AuthMiddlewareWrapper(paymentsHandler.GetPaymentByUserId))
+	apiv1.Get("/payments/history", mw.AuthMiddlewareWrapper(paymentsHandler.GetHistoryPaymentByUserId))
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/user/greeting", mw.AuthMiddlewareWrapper(hwHandler.UserGreeting))
