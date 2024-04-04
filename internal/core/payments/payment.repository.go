@@ -68,6 +68,7 @@ func (r *repositoryImpl) GetHistoryPaymentByUserId(history *[]models.HistoryResp
 	err := r.db.Table("payments").
 		Select("payments.*, agreements.*").
 		Joins("JOIN agreements ON payments.agreement_id = agreements.agreement_id").
+		Where("payments.user_id = ?", userId).
 		Scan(&history).Error
 	if err != nil {
 		return err
