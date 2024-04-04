@@ -120,6 +120,14 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 			Describe("could not send message to yourself")
 	}
 
+	if (models.MessageAttatchments{}) != inbound.Attatchment {
+		property := models.Properties{PropertyId: *inbound.Attatchment.PropertyId}
+		apperr := client.hub.SendNotificationMessage(&property, "Embedded property", client.UserId, uuid)
+		if apperr != nil {
+			return apperr
+		}
+	}
+
 	client.RecvUserId = &uuid
 
 	apperr := client.service.ReadMessages(uuid, client.UserId)
@@ -133,14 +141,6 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 			ReadAt: time.Now(),
 		}
 		client.hub.GetUser(uuid).SendOutBoundMessage(read.ToOutBound())
-	}
-
-	if (models.MessageAttatchments{}) != inbound.Attatchment {
-		property := models.Properties{PropertyId: *inbound.Attatchment.PropertyId}
-		apperr := client.hub.SendNotificationMessage(&property, "Embedded property", client.UserId, uuid)
-		if apperr != nil {
-			return apperr
-		}
 	}
 
 	return nil
