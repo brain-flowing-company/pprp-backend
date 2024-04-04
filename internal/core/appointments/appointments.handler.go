@@ -123,7 +123,7 @@ func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
 		return utils.ResponseError(c, apperr)
 	}
 
-	apperr = h.hub.SendNotificationMessage(appointment, false, appointment.Note, userId, appointment.OwnerUserId)
+	apperr = h.hub.SendNotificationMessage(appointment, appointment.Note, userId, appointment.OwnerUserId)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}

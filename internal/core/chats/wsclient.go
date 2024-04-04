@@ -137,7 +137,7 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 
 	if (models.MessageAttatchments{}) != inbound.Attatchment {
 		property := models.Properties{PropertyId: *inbound.Attatchment.PropertyId}
-		apperr := client.hub.SendNotificationMessage(&property, true, "Embedded property", client.UserId, uuid)
+		apperr := client.hub.SendNotificationMessage(&property, "Embedded property", client.UserId, uuid)
 		if apperr != nil {
 			return apperr
 		}

@@ -28,7 +28,7 @@ func (h *Hub) GetUser(userId uuid.UUID) *WebsocketClients {
 	return h.clients[userId]
 }
 
-func (h *Hub) SendNotificationMessage(attatchment interface{}, saveOnly bool, content string, senderId uuid.UUID, receiverId uuid.UUID) *apperror.AppError {
+func (h *Hub) SendNotificationMessage(attatchment interface{}, content string, senderId uuid.UUID, receiverId uuid.UUID) *apperror.AppError {
 	var readAt *time.Time
 	now := time.Now()
 	if h.IsReceiverInChat(senderId, receiverId) {
@@ -63,7 +63,7 @@ func (h *Hub) SendNotificationMessage(attatchment interface{}, saveOnly bool, co
 		return err
 	}
 
-	if h.IsUserOnline(senderId) && !saveOnly {
+	if h.IsUserOnline(senderId) {
 		msg.ChatId = receiverId
 		msg.Author = true
 		h.GetUser(senderId).SendOutBoundMessage(msg.ToOutBound())
