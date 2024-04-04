@@ -145,6 +145,11 @@ func (h *handlerImpl) GetHistoryPaymentByUserId(c *fiber.Ctx) error {
 	if err := h.service.GetHistoryPaymentByUserId(&HistoryResponse, userId); err != nil {
 		return utils.ResponseError(c, err)
 	}
+	if len(HistoryResponse) == 0 {
+		return c.JSON(fiber.Map{
+			"message": "No payment history found",
+		})
+	}
 	err := c.JSON(HistoryResponse)
 	if err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InternalServerError).Describe("Failed to get payment by user id"))
