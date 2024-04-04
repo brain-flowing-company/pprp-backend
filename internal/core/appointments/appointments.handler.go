@@ -5,9 +5,11 @@ import (
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/chats"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type Handler interface {
@@ -20,11 +22,13 @@ type Handler interface {
 }
 
 type handlerImpl struct {
+	hub     *chats.Hub
 	service Service
 }
 
-func NewHandler(service Service) Handler {
+func NewHandler(hub *chats.Hub, service Service) Handler {
 	return &handlerImpl{
+		hub,
 		service,
 	}
 }
@@ -79,7 +83,7 @@ func (h *handlerImpl) GetAppointmentById(c *fiber.Ctx) error {
 func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 	appointmentRequest := models.MyAppointmentRequests{
 		UserId: c.Locals("session").(models.Sessions).UserId,
-		Order: c.Query("order"),
+		Order:  c.Query("order"),
 	}
 
 	var appointments models.MyAppointmentResponses
@@ -101,8 +105,10 @@ func (h *handlerImpl) GetMyAppointments(c *fiber.Ctx) error {
 // @failure     400 {object} models.ErrorResponses "Empty dates or some of appointments duplicate with existing one"
 // @failure     500 {object} models.ErrorResponses "Could not create appointments"
 func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
+	userId := c.Locals("session").(models.Sessions).UserId
 	appointment := &models.CreatingAppointments{
-		DwellerUserId: c.Locals("session").(models.Sessions).UserId,
+		AppointmentId: uuid.New(),
+		DwellerUserId: userId,
 	}
 
 	err := c.BodyParser(appointment)
@@ -113,6 +119,11 @@ func (h *handlerImpl) CreateAppointment(c *fiber.Ctx) error {
 	}
 
 	apperr := h.service.CreateAppointment(appointment)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+
+	apperr = h.hub.SendNotificationMessage(appointment, appointment.Note, userId, appointment.OwnerUserId)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}

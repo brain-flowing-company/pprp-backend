@@ -67,21 +67,54 @@ func (repo *repositoryImpl) GetAllChats(results *[]models.ChatPreviews, userId u
 }
 
 func (repo *repositoryImpl) GetMessagesInChat(msgs *[]models.Messages, sendUserId uuid.UUID, recvUserId uuid.UUID, offset int, limit int) error {
-	subQuery := repo.db.Model(&models.Messages{}).
-		Order("sent_at DESC").
-		Offset(offset).Limit(limit).
-		Where("(sender_id = @sender_id AND receiver_id = @receiver_id) OR (sender_id = @receiver_id AND receiver_id = @sender_id)",
+	query := fmt.Sprintf(`
+		SELECT *
+		FROM (
+			SELECT *
+			FROM messages
+			WHERE (sender_id = @sender_id AND receiver_id = @receiver_id)
+				OR (sender_id = @receiver_id AND receiver_id = @sender_id)
+			ORDER BY sent_at DESC
+			LIMIT %d OFFSET %d
+		) AS a
+		LEFT JOIN message_attatchments
+		ON a.message_id = message_attatchments.message_id
+		ORDER BY sent_at ASC
+	`, limit, offset)
+	return repo.db.Model(&models.Messages{}).
+		Raw(query,
 			sql.Named("sender_id", sendUserId),
-			sql.Named("receiver_id", recvUserId))
-
-	return repo.db.Select("*").
-		Table("(?) AS a", subQuery).
-		Order("sent_at ASC").
-		Find(msgs).Error
+			sql.Named("receiver_id", recvUserId),
+		).Scan(msgs).Error
 }
 
 func (repo *repositoryImpl) SaveMessages(msg *models.Messages) error {
-	return repo.db.Model(&models.Messages{}).Create(msg).Error
+	return repo.db.Transaction(func(tx *gorm.DB) error {
+		fmt.Println(msg.MessageId, msg.SenderId, msg.ReceiverId, msg.Content, msg.ReadAt, msg.SentAt)
+		err := tx.Exec(`
+			INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent_at)
+			VALUES (?, ?, ?, ?, ?, ?)
+		`, msg.MessageId, msg.SenderId, msg.ReceiverId, msg.Content, msg.ReadAt, msg.SentAt).Error
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(msg.Attatchment)
+
+		if (models.MessageAttatchments{}) != msg.Attatchment {
+			fmt.Println("attatchment", msg.MessageId, msg.Attatchment.PropertyId, msg.Attatchment.AppointmentId, msg.Attatchment.AgreementId)
+			err = tx.Exec(`
+				INSERT INTO message_attatchments (message_id, property_id, appointment_id, agreement_id)
+				VALUES (?, ?, ?, ?)
+			`, msg.MessageId, msg.Attatchment.PropertyId, msg.Attatchment.AppointmentId, msg.Attatchment.AgreementId).Error
+			fmt.Println(err)
+			if err != nil {
+				return nil
+			}
+		}
+
+		return nil
+	})
 }
 
 func (repo *repositoryImpl) ReadMessages(sendUserId uuid.UUID, recvUserId uuid.UUID) error {
