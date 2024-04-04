@@ -9,7 +9,7 @@ import (
 	"github.com/stripe/stripe-go/v76/checkout/session"
 )
 
-func CheckoutV2(c *fiber.Ctx, name string, price float64, paymentMethod string, cfg *config.Config) error {
+func CheckoutV2(c *fiber.Ctx, name string, price float64, paymentMethod string, cfg *config.Config) (string, error) {
 	stripe.Key = cfg.STRIPE_SECRET_KEY
 	type PaymentRequest struct {
 		Name  string `json:"name"`
@@ -50,5 +50,5 @@ func CheckoutV2(c *fiber.Ctx, name string, price float64, paymentMethod string, 
 	s, _ := session.New(params)
 	fmt.Println(s.URL)
 
-	return c.Redirect(s.URL, fiber.StatusSeeOther)
+	return s.URL, nil
 }

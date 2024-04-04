@@ -126,10 +126,10 @@ func main() {
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
 
-	apiv2 := app.Group("/api/v2", mw.SessionMiddleware)
-	apiv2.Post("/payments", payments.Checkout)
+	// apiv2 := app.Group("/api/v2", mw.SessionMiddleware)
+	// apiv2.Post("/payments", payments.Checkout)
 
-	apiv1.Post("/payments", paymentsHandler.CreatePayment)
+	apiv1.Get("/checkout", paymentsHandler.CreatePayment)
 	apiv1.Get("/payments", paymentsHandler.GetPaymentByUserId)
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
