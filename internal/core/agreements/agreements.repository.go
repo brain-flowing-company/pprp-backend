@@ -168,7 +168,7 @@ func (repo *repositoryImpl) GetAgreementByUserId(agreementResponse *models.MyAgr
 							FROM agreements a
 							JOIN (` + propertiesQuery + `) AS p ON a.property_id = p.property_id
 							JOIN (` + ownersQuery + `) AS o ON a.owner_user_id = o.owner_user_id`
-	
+
 	return repo.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&models.Agreements{}).
 			Raw(agreementListsQuery+`
@@ -219,8 +219,8 @@ func (repo *repositoryImpl) GetAgreementByUserId(agreementResponse *models.MyAgr
 func (repo *repositoryImpl) CreateAgreement(agreement *models.CreatingAgreements) error {
 	return repo.db.Exec(`INSERT INTO agreements (agreement_type, property_id, owner_user_id, dweller_user_id, agreement_date, 
 		status, deposit_amount, payment_per_month, payment_duration, total_payment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-		agreement.AgreementType, agreement.PropertyId, agreement.OwnerUserId, agreement.DwellerUserId, agreement.AgreementDate, 
-		agreement.Status, agreement.DepositAmount, agreement.PaymentPerMonth, agreement.PaymentDuration, agreement.TotalPayment ).Error
+		agreement.AgreementType, agreement.PropertyId, agreement.OwnerUserId, agreement.DwellerUserId, agreement.AgreementDate,
+		agreement.Status, agreement.DepositAmount, agreement.PaymentPerMonth, agreement.PaymentDuration, agreement.TotalPayment).Error
 }
 
 func (repo *repositoryImpl) DeleteAgreement(agreementId string) error {
@@ -235,6 +235,6 @@ func (repo *repositoryImpl) UpdateAgreementStatus(updatingAgreement *models.Upda
 	if err := repo.db.Model(&models.Agreements{}).First(&models.Agreements{}, "agreement_id = ?", agreementId).Error; err != nil {
 		return err
 	}
-	
+
 	return repo.db.Model(&models.Agreements{}).Where("agreement_id = ?", agreementId).Updates(updatingAgreement).Error
 }

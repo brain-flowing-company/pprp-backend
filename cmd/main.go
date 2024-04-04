@@ -131,6 +131,7 @@ func main() {
 
 	apiv1.Get("/checkout", paymentsHandler.CreatePayment)
 	apiv1.Get("/payments", paymentsHandler.GetPaymentByUserId)
+	apiv1.Get("/payments/history", paymentsHandler.GetHistoryPaymentByUserId)
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
 	apiv1.Get("/user/greeting", mw.AuthMiddlewareWrapper(hwHandler.UserGreeting))

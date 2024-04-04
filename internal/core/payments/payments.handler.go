@@ -13,6 +13,7 @@ import (
 type Handler interface {
 	CreatePayment(c *fiber.Ctx) error
 	GetPaymentByUserId(c *fiber.Ctx) error
+	GetHistoryPaymentByUserId(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -101,6 +102,19 @@ func (h *handlerImpl) GetPaymentByUserId(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err)
 	}
 	err := c.JSON(payments)
+	if err != nil {
+		return utils.ResponseError(c, apperror.New(apperror.InternalServerError).Describe("Failed to get payment by user id"))
+	}
+	return nil
+}
+
+func (h *handlerImpl) GetHistoryPaymentByUserId(c *fiber.Ctx) error {
+	userId := c.Locals("session").(models.Sessions).UserId
+	var HistoryResponse []models.HistoryResponse
+	if err := h.service.GetHistoryPaymentByUserId(&HistoryResponse, userId); err != nil {
+		return utils.ResponseError(c, err)
+	}
+	err := c.JSON(HistoryResponse)
 	if err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.InternalServerError).Describe("Failed to get payment by user id"))
 	}
