@@ -217,9 +217,15 @@ func (repo *repositoryImpl) GetAgreementByUserId(agreementResponse *models.MyAgr
 }
 
 func (repo *repositoryImpl) CreateAgreement(agreement *models.CreatingAgreements) error {
+<<<<<<< HEAD
 	return repo.db.Exec(`INSERT INTO agreements (agreement_type, property_id, owner_user_id, dweller_user_id, agreement_date, 
 		status, deposit_amount, payment_per_month, payment_duration, total_payment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		agreement.AgreementType, agreement.PropertyId, agreement.OwnerUserId, agreement.DwellerUserId, agreement.AgreementDate,
+=======
+	return repo.db.Exec(`INSERT INTO agreements (agreement_id, agreement_type, property_id, owner_user_id, dweller_user_id, agreement_date, 
+		status, deposit_amount, payment_per_month, payment_duration, total_payment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		agreement.AgreementId, agreement.AgreementType, agreement.PropertyId, agreement.OwnerUserId, agreement.DwellerUserId, agreement.AgreementDate,
+>>>>>>> dev
 		agreement.Status, agreement.DepositAmount, agreement.PaymentPerMonth, agreement.PaymentDuration, agreement.TotalPayment).Error
 }
 

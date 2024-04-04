@@ -1,6 +1,7 @@
 package chats
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
@@ -14,7 +15,7 @@ import (
 type WebsocketClients struct {
 	router     *WebsocketRouter
 	hub        *Hub
-	Service    Service
+	service    Service
 	UserId     uuid.UUID
 	RecvUserId *uuid.UUID
 	chats      map[uuid.UUID]*models.ChatPreviews
@@ -36,14 +37,14 @@ func NewClient(logger *zap.Logger, conn *websocket.Conn, hub *Hub, service Servi
 	return &WebsocketClients{
 		router:     NewWebsocketRouter(logger, conn),
 		hub:        hub,
-		Service:    service,
+		service:    service,
 		UserId:     userId,
 		RecvUserId: nil,
 		chats:      chats,
 	}, nil
 }
 
-func (client *WebsocketClients) SendMessage(msg *models.OutBoundMessages) {
+func (client *WebsocketClients) SendOutBoundMessage(msg *models.OutBoundMessages) {
 	client.router.Send(msg)
 }
 
@@ -65,9 +66,11 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 			Describe("Invalid chat")
 	}
 
+	fmt.Println(inbound)
+
 	var readAt *time.Time
 	now := time.Now()
-	if client.hub.IsUserInChat(client.UserId, *client.RecvUserId) {
+	if client.hub.IsUserBothInChat(client.UserId, *client.RecvUserId) {
 		readAt = &now
 	}
 
@@ -82,7 +85,7 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 		SentAt:     inbound.SentAt,
 	}
 
-	err := client.Service.SaveMessages(msg)
+	err := client.service.SaveMessages(msg)
 	if err != nil {
 		return err
 	}
@@ -91,13 +94,13 @@ func (client *WebsocketClients) inBoundMsgHandler(inbound *models.InBoundMessage
 		msg.Tag = inbound.Tag
 		msg.ChatId = *client.RecvUserId
 		msg.Author = true
-		client.SendMessage(msg.ToOutBound())
+		client.SendOutBoundMessage(msg.ToOutBound())
 	}
 
 	if client.hub.IsUserOnline(*client.RecvUserId) {
 		msg.ChatId = client.UserId
 		msg.Author = false
-		client.hub.GetUser(*client.RecvUserId).SendMessage(msg.ToOutBound())
+		client.hub.GetUser(*client.RecvUserId).SendOutBoundMessage(msg.ToOutBound())
 	}
 
 	return nil
@@ -117,19 +120,27 @@ func (client *WebsocketClients) inBoundJoinHandler(inbound *models.InBoundMessag
 			Describe("could not send message to yourself")
 	}
 
+	if (models.MessageAttatchments{}) != inbound.Attatchment {
+		property := models.Properties{PropertyId: *inbound.Attatchment.PropertyId}
+		apperr := client.hub.SendNotificationMessage(&property, "Embedded property", client.UserId, uuid)
+		if apperr != nil {
+			return apperr
+		}
+	}
+
 	client.RecvUserId = &uuid
 
-	apperr := client.Service.ReadMessages(uuid, client.UserId)
+	apperr := client.service.ReadMessages(uuid, client.UserId)
 	if apperr != nil {
 		return apperr
 	}
 
-	if client.hub.IsUserInChat(client.UserId, uuid) {
+	if client.hub.IsUserBothInChat(client.UserId, uuid) {
 		read := &models.ReadEvents{
 			ChatId: client.UserId,
 			ReadAt: time.Now(),
 		}
-		client.hub.GetUser(uuid).SendMessage(read.ToOutBound())
+		client.hub.GetUser(uuid).SendOutBoundMessage(read.ToOutBound())
 	}
 
 	return nil

@@ -20,6 +20,7 @@ type Appointments struct {
 }
 
 type CreatingAppointments struct {
+	AppointmentId   uuid.UUID `json:"-"   example:"123e4567-e89b-12d3-a456-426614174000"`
 	PropertyId      uuid.UUID `json:"property_id"       example:"123e4567-e89b-12d3-a456-426614174000"`
 	OwnerUserId     uuid.UUID `json:"owner_user_id"     example:"123e4567-e89b-12d3-a456-426614174000"`
 	DwellerUserId   uuid.UUID `json:"-"   example:"123e4567-e89b-12d3-a456-426614174000"`
@@ -40,7 +41,7 @@ type UpdatingAppointmentStatus struct {
 
 type MyAppointmentRequests struct {
 	UserId uuid.UUID `json:"-"`
-	Order string `json:"-"`
+	Order  string    `json:"-"`
 }
 
 type MyAppointmentResponses struct {
