@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.48.1
 	github.com/gofiber/contrib/fiberzap v1.0.2
 	github.com/gofiber/contrib/websocket v1.3.0
-	github.com/gofiber/fiber/v2 v2.52.1
+	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/gofiber/swagger v0.1.14
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
@@ -18,8 +18,8 @@ require (
 	github.com/swaggo/swag v1.16.3
 	go.uber.org/zap v1.26.0
 	golang.org/x/oauth2 v0.15.0
-	gorm.io/driver/postgres v1.5.4
-	gorm.io/gorm v1.25.6
+	gorm.io/driver/postgres v1.5.7
+	gorm.io/gorm v1.25.7-0.20240204074919-46816ad31dde
 )
 
 require (
