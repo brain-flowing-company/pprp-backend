@@ -1,17 +1,17 @@
 package enums
 
-type Rating float64
+type Rating string
 
 const (
-	Rating0  Rating = 0
-	Rating05 Rating = 0.5
-	Rating1  Rating = 1.0
-	Rating15 Rating = 1.5
-	Rating2  Rating = 2.0
-	Rating25 Rating = 2.5
-	Rating3  Rating = 3.0
-	Rating35 Rating = 3.5
-	Rating4  Rating = 4.0
-	Rating45 Rating = 4.5
-	Rating5  Rating = 5.0
+	Rating0   Rating = "Rating0"
+	Rating0_5 Rating = "Rating0_5"
+	Rating1   Rating = "Rating1"
+	Rating1_5 Rating = "Rating1_5"
+	Rating2   Rating = "Rating2"
+	Rating2_5 Rating = "Rating2_5"
+	Rating3   Rating = "Rating3"
+	Rating3_5 Rating = "Rating3_5"
+	Rating4   Rating = "Rating4"
+	Rating4_5 Rating = "Rating4_5"
+	Rating5   Rating = "Rating5"
 )

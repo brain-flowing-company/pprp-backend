@@ -18,7 +18,7 @@ CREATE TYPE floor_size_units AS ENUM('SQM', 'SQFT');
 
 CREATE TYPE payment_methods AS ENUM('CREDIT_CARD', 'PROMPTPAY');
 
-CREATE TYPE Rating AS ENUM('Rating0', 'Rating05', 'Rating1', 'Rating15', 'Rating2', 'Rating25', 'Rating3', 'Rating35', 'Rating4', 'Rating45', 'Rating5');
+CREATE TYPE Rating AS ENUM('Rating0' , 'Rating0_5' , 'Rating1' , 'Rating1_5' , 'Rating2' , 'Rating2_5' , 'Rating3' , 'Rating3_5' , 'Rating4' , 'Rating4_5' , 'Rating5');
 
 CREATE TABLE email_verification_codes
 (
