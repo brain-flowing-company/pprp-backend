@@ -468,6 +468,15 @@ definitions:
         example: Hello, World
         type: string
     type: object
+  models.MessageAttatchments:
+    properties:
+      agreement_id:
+        type: string
+      appointment_id:
+        type: string
+      property_id:
+        type: string
+    type: object
   models.MessageResponses:
     properties:
       message:
@@ -476,6 +485,8 @@ definitions:
     type: object
   models.Messages:
     properties:
+      attatchment:
+        $ref: '#/definitions/models.MessageAttatchments'
       author:
         example: true
         type: boolean

@@ -217,7 +217,7 @@ CREATE TABLE review(
     property_id UUID REFERENCES properties(property_id) NOT NULL, 
     dweller_user_id UUID REFERENCES users(user_id) NOT NULL, 
     rating Rating NOT NULL, 
-    review TEXT DEFAULT NULL,
+    review TEXT NOT NULL,
     created_at TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP(0) WITH TIME ZONE DEFAULT NULL

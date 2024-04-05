@@ -29,11 +29,18 @@ func (h *handlerImpl) CreateRating(c *fiber.Ctx) error {
 	if err := c.BodyParser(&reviews); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Failed to parse body"))
 	}
-	if utils.IsValidRating(string(reviews.Rating)) {
+	if !utils.IsValidRating(string(reviews.Rating)) {
 		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Invalid rating"))
 	}
 	if err := h.service.CreateRating(&reviews); err != nil {
 		return utils.ResponseError(c, err)
 	}
-	return utils.ResponseStatus(c, fiber.StatusCreated)
+	return c.JSON(fiber.Map{
+		"success":         true,
+		"message":         "Rating created successfully",
+		"rating":          reviews.Rating,
+		"review":          reviews.Review,
+		"property_id":     reviews.PropertyId,
+		"dweller_user_id": reviews.DwellerUserId,
+	})
 }

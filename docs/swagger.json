@@ -2697,6 +2697,20 @@
                 }
             }
         },
+        "models.MessageAttatchments": {
+            "type": "object",
+            "properties": {
+                "agreement_id": {
+                    "type": "string"
+                },
+                "appointment_id": {
+                    "type": "string"
+                },
+                "property_id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.MessageResponses": {
             "type": "object",
             "properties": {
@@ -2709,6 +2723,9 @@
         "models.Messages": {
             "type": "object",
             "properties": {
+                "attatchment": {
+                    "$ref": "#/definitions/models.MessageAttatchments"
+                },
                 "author": {
                     "type": "boolean",
                     "example": true

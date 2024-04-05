@@ -15,6 +15,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/core/greetings"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/payments"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/properties"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/ratings"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/users"
 	"github.com/brain-flowing-company/pprp-backend/internal/middleware"
 	"github.com/brain-flowing-company/pprp-backend/storage"
@@ -122,6 +123,10 @@ func main() {
 	paymentsService := payments.NewService(logger, paymentsRepository, cfg)
 	paymentsHandler := payments.NewHandler(cfg, paymentsService)
 
+	ratingsRepository := ratings.NewRepository(db)
+	ratingsService := ratings.NewService(ratingsRepository, logger, cfg)
+	ratingsHandler := ratings.NewHandler(ratingsService)
+
 	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
@@ -180,6 +185,8 @@ func main() {
 
 	apiv1.Get("/chats", mw.AuthMiddlewareWrapper(chatHandler.GetAllChats))
 	apiv1.Get("/chats/:recvUserId", mw.AuthMiddlewareWrapper(chatHandler.GetMessagesInChat))
+
+	apiv1.Post("/ratings", mw.AuthMiddlewareWrapper(ratingsHandler.CreateRating))
 
 	ws := app.Group("/ws")
 	ws.Get("/chats", websocket.New(chatHandler.OpenConnection))

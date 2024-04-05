@@ -2703,6 +2703,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.MessageAttatchments": {
+            "type": "object",
+            "properties": {
+                "agreement_id": {
+                    "type": "string"
+                },
+                "appointment_id": {
+                    "type": "string"
+                },
+                "property_id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.MessageResponses": {
             "type": "object",
             "properties": {
@@ -2715,6 +2729,9 @@ const docTemplate = `{
         "models.Messages": {
             "type": "object",
             "properties": {
+                "attatchment": {
+                    "$ref": "#/definitions/models.MessageAttatchments"
+                },
                 "author": {
                     "type": "boolean",
                     "example": true
