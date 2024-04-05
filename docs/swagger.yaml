@@ -102,6 +102,14 @@ definitions:
     - PARTIALLY_FURNISHED
     - FULLY_FURNISHED
     - READY_TO_MOVE_IN
+  enums.PaymentMethods:
+    enum:
+    - CREDIT_CARD
+    - PROMPTPAY
+    type: string
+    x-enum-varnames:
+    - CREDIT_CARD
+    - PROMPTPAY
   enums.PropertyTypes:
     enum:
     - CONDOMINIUM
@@ -468,6 +476,56 @@ definitions:
         example: Hello, World
         type: string
     type: object
+  models.HistoryResponse:
+    properties:
+      agreement_date:
+        type: string
+      agreement_id:
+        type: string
+      agreement_type:
+        $ref: '#/definitions/enums.AgreementTypes'
+      cancelled_message:
+        type: string
+      created_at:
+        type: string
+      deposit_amount:
+        type: number
+      dweller_user_id:
+        type: string
+      is_success:
+        type: boolean
+      name:
+        type: string
+      owner_user_id:
+        type: string
+      payment_duration:
+        type: integer
+      payment_id:
+        type: string
+      payment_method:
+        $ref: '#/definitions/enums.PaymentMethods'
+      payment_per_month:
+        type: number
+      price:
+        type: number
+      property_id:
+        type: string
+      status:
+        $ref: '#/definitions/enums.AgreementStatus'
+      total_payment:
+        type: number
+      user_id:
+        type: string
+    type: object
+  models.MessageAttatchments:
+    properties:
+      agreement_id:
+        type: string
+      appointment_id:
+        type: string
+      property_id:
+        type: string
+    type: object
   models.MessageResponses:
     properties:
       message:
@@ -476,6 +534,8 @@ definitions:
     type: object
   models.Messages:
     properties:
+      attatchment:
+        $ref: '#/definitions/models.MessageAttatchments'
       author:
         example: true
         type: boolean
@@ -526,6 +586,13 @@ definitions:
       total:
         example: 2
         type: integer
+    type: object
+  models.MyPaymentsResponse:
+    properties:
+      payments:
+        items:
+          $ref: '#/definitions/models.Payments'
+        type: array
     type: object
   models.MyPropertiesResponses:
     properties:
@@ -601,6 +668,25 @@ definitions:
         type: string
       owner_user_id:
         example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    type: object
+  models.Payments:
+    properties:
+      agreement_id:
+        type: string
+      created_at:
+        type: string
+      is_success:
+        type: boolean
+      name:
+        type: string
+      payment_id:
+        type: string
+      payment_method:
+        $ref: '#/definitions/enums.PaymentMethods'
+      price:
+        type: number
+      user_id:
         type: string
     type: object
   models.Properties:
@@ -1287,6 +1373,52 @@ paths:
       summary: Get messages in a chat with recvUserId *use cookies*
       tags:
       - chats
+  /api/v1/checkout:
+    get:
+      description: Create payment
+      parameters:
+      - description: Agreement ID
+        in: query
+        name: agreement_id
+        required: true
+        type: string
+      - description: Name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: Price
+        in: query
+        name: price
+        required: true
+        type: string
+      - description: Payment Method
+        in: query
+        name: payment_method
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Payments'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Create payment
+      tags:
+      - payments
   /api/v1/email:
     post:
       description: Send a verification email to the user
@@ -1376,6 +1508,56 @@ paths:
       summary: Login with Google
       tags:
       - auth
+  /api/v1/payments:
+    get:
+      description: Get payment by user id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MyPaymentsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get payment by user id
+      tags:
+      - payments
+  /api/v1/payments/history:
+    get:
+      description: Get history payment by user id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.HistoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get history payment by user id
+      tags:
+      - payments
   /api/v1/properties:
     get:
       description: Get all properties or search properties by query
