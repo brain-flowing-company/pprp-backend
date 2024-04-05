@@ -17,7 +17,9 @@ CREATE TYPE furnishing AS ENUM('UNFURNISHED', 'PARTIALLY_FURNISHED', 'FULLY_FURN
 CREATE TYPE floor_size_units AS ENUM('SQM', 'SQFT');
 
 CREATE TYPE payment_methods AS ENUM('CREDIT_CARD', 'PROMPTPAY');
- 
+
+CREATE TYPE Rating AS ENUM('Rating0', 'Rating05', 'Rating1', 'Rating15', 'Rating2', 'Rating25', 'Rating3', 'Rating35', 'Rating4', 'Rating45', 'Rating5');
+
 CREATE TABLE email_verification_codes
 (
     email                     VARCHAR(50) PRIMARY KEY           NOT NULL,
@@ -208,6 +210,17 @@ CREATE TABLE payments(
     created_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP, 
     updated_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP, 
     deleted_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL
+);
+
+CREATE TABLE review(
+    review_id UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+    property_id UUID REFERENCES properties(property_id) NOT NULL, 
+    dweller_user_id UUID REFERENCES users(user_id) NOT NULL, 
+    rating Rating NOT NULL, 
+    review TEXT DEFAULT NULL,
+    created_at TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP(0) WITH TIME ZONE DEFAULT NULL
 );
 
 -------------------- RULES --------------------
