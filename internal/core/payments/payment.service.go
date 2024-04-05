@@ -12,6 +12,7 @@ import (
 type Service interface {
 	CreatePayment(*models.Payments) error
 	GetPaymentByUserId(*models.MyPaymentsResponse, uuid.UUID) error
+	GetHistoryPaymentByUserId(*[]models.HistoryResponse, uuid.UUID) error
 }
 
 type serviceImpl struct {
@@ -42,6 +43,15 @@ func (s *serviceImpl) GetPaymentByUserId(payments *models.MyPaymentsResponse, us
 	err := s.repo.GetPaymentByUserId(payments, userId)
 	if err != nil {
 		s.logger.Error("Failed to get payment by user id", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func (s *serviceImpl) GetHistoryPaymentByUserId(history *[]models.HistoryResponse, userId uuid.UUID) error {
+	err := s.repo.GetHistoryPaymentByUserId(history, userId)
+	if err != nil {
+		s.logger.Error("Failed to get history payment by user id", zap.Error(err))
 		return err
 	}
 	return nil
