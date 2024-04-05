@@ -16,7 +16,7 @@ import (
 //     deleted_at TIMESTAMP(0) WITH TIME ZONE DEFAULT NULL
 // );
 
-type Review struct {
+type Reviews struct {
 	ReviewId      uuid.UUID    `json:"review_id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
 	PropertyId    uuid.UUID    `json:"property_id" gorm:"type:uuid;not null"`
 	DwellerUserId uuid.UUID    `json:"dweller_user_id" gorm:"type:uuid;not null"`
