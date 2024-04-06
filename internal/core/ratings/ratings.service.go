@@ -1,10 +1,14 @@
 package ratings
 
 import (
+	"errors"
+
+	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 type Service interface {
@@ -13,6 +17,7 @@ type Service interface {
 	GetAllRatings(*[]models.RatingResponse) error
 	GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 	GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
+	UpdateRatingStatus(updatingRating *models.UpdateRatingStatus, ratingId uuid.UUID) error
 }
 
 type serviceImpl struct {
@@ -70,6 +75,18 @@ func (s *serviceImpl) GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, 
 	if err != nil {
 		s.logger.Error("Failed to get rating by property id sorted by newest", zap.Error(err))
 		return err
+	}
+	return nil
+}
+
+func (s *serviceImpl) UpdateRatingStatus(updatingRating *models.UpdateRatingStatus, ratingId uuid.UUID) error {
+	err := s.repo.UpdateRatingStatus(updatingRating, ratingId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		s.logger.Error("Rating not found", zap.Error(err))
+		return apperror.New(apperror.RatingNotFound).Describe("Rating not found")
+	} else if err != nil {
+		s.logger.Error("Failed to update rating status", zap.Error(err))
+		return apperror.New(apperror.InternalServerError).Describe("Failed to update rating status")
 	}
 	return nil
 }

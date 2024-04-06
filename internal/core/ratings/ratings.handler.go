@@ -16,6 +16,7 @@ type Handler interface {
 	GetAllRatings(c *fiber.Ctx) error
 	GetRatingByPropertyIdSortedByRating(c *fiber.Ctx) error
 	GetRatingByPropertyIdSortedByNewest(c *fiber.Ctx) error
+	UpdateRatingStatus(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -104,4 +105,26 @@ func (h *handlerImpl) GetRatingByPropertyIdSortedByNewest(c *fiber.Ctx) error {
 		return utils.ResponseError(c, err)
 	}
 	return c.JSON(ratings)
+}
+
+func (h *handlerImpl) UpdateRatingStatus(c *fiber.Ctx) error {
+	updatingRating := models.UpdateRatingStatus{}
+	err := c.BodyParser(&updatingRating)
+	if err != nil {
+		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Failed to parse body"))
+	}
+	ratingId := c.Params("ratingId")
+	ratingIdParsed, err := uuid.Parse(ratingId)
+	if err != nil {
+		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Invalid rating ID"))
+	}
+	apperr := h.service.UpdateRatingStatus(&updatingRating, ratingIdParsed)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Rating status updated successfully",
+	})
+
 }

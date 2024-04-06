@@ -137,9 +137,6 @@ func (r *repositoryImpl) GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUI
 }
 
 func (r *repositoryImpl) UpdateRatingStatus(updateStatus *models.UpdateRatingStatus, ratingId uuid.UUID) error {
-	fmt.Println("ratingId", ratingId)
-	fmt.Println("updateStatus", updateStatus.Rating)
-	fmt.Println("updateStatus", updateStatus.Review)
 	if err := r.db.Model(&models.Reviews{}).First(&models.Reviews{}, "review_id = ?", ratingId).Error; err != nil {
 		return err
 	}
