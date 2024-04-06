@@ -12,6 +12,7 @@ import (
 type Repository interface {
 	CreateRating(*models.Reviews) error
 	GetRatingByPropertyId(uuid.UUID, *[]models.RatingResponse) error
+	GetAllRatings(*[]models.RatingResponse) error
 }
 
 type repositoryImpl struct {
@@ -73,4 +74,15 @@ func (r *repositoryImpl) GetRatingByPropertyId(propertyId uuid.UUID, ratings *[]
 	}
 	return nil
 
+}
+
+func (r *repositoryImpl) GetAllRatings(ratings *[]models.RatingResponse) error {
+	err := r.db.Table("review").
+		Select("review.*, _users.first_name ,_users.last_name").
+		Joins("LEFT JOIN _users ON review.dweller_user_id = _users.user_id").
+		Scan(&ratings).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
