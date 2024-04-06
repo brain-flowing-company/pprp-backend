@@ -1,6 +1,8 @@
 package ratings
 
 import (
+	"fmt"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
@@ -10,6 +12,7 @@ import (
 
 type Handler interface {
 	CreateRating(c *fiber.Ctx) error
+	GetRatingByPropertyId(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -23,8 +26,13 @@ func NewHandler(service Service) Handler {
 }
 
 func (h *handlerImpl) CreateRating(c *fiber.Ctx) error {
+	session, ok := c.Locals("session").(models.Sessions)
+	if !ok {
+		return utils.ResponseError(c, apperror.New(apperror.Unauthorized).Describe("Unauthorized"))
+	}
 	reviews := models.Reviews{
-		ReviewId: uuid.New(),
+		ReviewId:      uuid.New(),
+		DwellerUserId: session.UserId,
 	}
 	if err := c.BodyParser(&reviews); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Failed to parse body"))
@@ -43,4 +51,18 @@ func (h *handlerImpl) CreateRating(c *fiber.Ctx) error {
 		"property_id":     reviews.PropertyId,
 		"dweller_user_id": reviews.DwellerUserId,
 	})
+}
+
+func (h *handlerImpl) GetRatingByPropertyId(c *fiber.Ctx) error {
+	propertyId := c.Params("propertyId")
+	fmt.Println("propertyId", propertyId)
+	parsedPropertyID, err := uuid.Parse(propertyId)
+	if err != nil {
+		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Invalid property ID"))
+	}
+	var ratings []models.RatingResponse
+	if err := h.service.GetRatingByPropertyId(parsedPropertyID, &ratings); err != nil {
+		return utils.ResponseError(c, err)
+	}
+	return c.JSON(ratings)
 }

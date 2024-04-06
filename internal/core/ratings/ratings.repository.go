@@ -1,13 +1,17 @@
 package ratings
 
 import (
+	"fmt"
+
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
 	CreateRating(*models.Reviews) error
+	GetRatingByPropertyId(uuid.UUID, *[]models.RatingResponse) error
 }
 
 type repositoryImpl struct {
@@ -46,4 +50,27 @@ func (r *repositoryImpl) CreateRating(reviews *models.Reviews) error {
 		}
 		return nil
 	})
+}
+
+func (r *repositoryImpl) GetRatingByPropertyId(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
+	fmt.Println("propertyId", propertyId)
+	var propertyCount int64
+	if err := r.db.Model(&models.Properties{}).Where("property_id = ?", propertyId).Count(&propertyCount).Error; err != nil {
+		return err
+	}
+	if propertyCount == 0 {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Property not found")
+	}
+	err := r.db.Table("review").
+		Select("review.*, _users.first_name ,_users.last_name").
+		Joins("LEFT JOIN _users ON review.dweller_user_id = _users.user_id").
+		Where("property_id = ?", propertyId).
+		Scan(&ratings).Error
+	if err != nil {
+		return err
+	}
+	return nil
+
 }
