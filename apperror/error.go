@@ -77,7 +77,8 @@ var (
 	InvalidProfileImageExtension  = &AppErrorType{http.StatusBadRequest, "invalid-profile-image-extensions"}
 
 	// rating errors
-	RatingNotFound = &AppErrorType{http.StatusNotFound, "rating-not-found"}
+	RatingNotFound  = &AppErrorType{http.StatusNotFound, "rating-not-found"}
+	InvalidRatingId = &AppErrorType{http.StatusBadRequest, "invalid-rating-id"}
 
 	InvalidAgreementId = &AppErrorType{http.StatusBadRequest, "invalid-agreement-id"}
 	AgreementNotFound  = &AppErrorType{http.StatusNotFound, "agreement-not-found"}

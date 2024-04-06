@@ -6,6 +6,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
+	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -18,6 +19,7 @@ type Service interface {
 	GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 	GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 	UpdateRatingStatus(updatingRating *models.UpdateRatingStatus, ratingId uuid.UUID) error
+	DeleteRating(ratingId string) error
 }
 
 type serviceImpl struct {
@@ -87,6 +89,21 @@ func (s *serviceImpl) UpdateRatingStatus(updatingRating *models.UpdateRatingStat
 	} else if err != nil {
 		s.logger.Error("Failed to update rating status", zap.Error(err))
 		return apperror.New(apperror.InternalServerError).Describe("Failed to update rating status")
+	}
+	return nil
+}
+
+func (s *serviceImpl) DeleteRating(ratingId string) error {
+	if !utils.IsValidUUID(ratingId) {
+		return apperror.New(apperror.InvalidRatingId).Describe("Invalid rating id")
+	}
+	err := s.repo.DeleteRating(ratingId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return apperror.New(apperror.RatingNotFound).Describe("Rating not found")
+	}
+	if err != nil {
+		s.logger.Error("Failed to delete rating", zap.Error(err))
+		return apperror.New(apperror.InternalServerError).Describe("Failed to delete rating")
 	}
 	return nil
 }

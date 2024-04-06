@@ -16,6 +16,7 @@ type Repository interface {
 	GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 	GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 	UpdateRatingStatus(updateStatus *models.UpdateRatingStatus, ratingId uuid.UUID) error
+	DeleteRating(ratingId string) error
 }
 
 type repositoryImpl struct {
@@ -141,4 +142,12 @@ func (r *repositoryImpl) UpdateRatingStatus(updateStatus *models.UpdateRatingSta
 		return err
 	}
 	return r.db.Model(&models.Reviews{}).Where("review_id = ?", ratingId).Updates(updateStatus).Error
+}
+
+func (r *repositoryImpl) DeleteRating(ratingId string) error {
+	if err := r.db.Model(&models.Reviews{}).First(&models.Reviews{}, "review_id = ?", ratingId).Error; err != nil {
+		return err
+	}
+
+	return r.db.Where("review_id = ?", ratingId).Delete(&models.Reviews{}).Error
 }

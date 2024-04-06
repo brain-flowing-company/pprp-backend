@@ -17,6 +17,7 @@ type Handler interface {
 	GetRatingByPropertyIdSortedByRating(c *fiber.Ctx) error
 	GetRatingByPropertyIdSortedByNewest(c *fiber.Ctx) error
 	UpdateRatingStatus(c *fiber.Ctx) error
+	DeleteRating(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -190,6 +191,28 @@ func (h *handlerImpl) UpdateRatingStatus(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"success": true,
 		"message": "Rating status updated successfully",
+	})
+
+}
+
+// @router /api/v1/ratings/:ratingId [delete]
+// @summary Delete rating
+// @description Delete rating
+// @tags ratings
+// @produce json
+// @param ratingId path string true "ratingId"
+// @success 200 {object} models.MessageResponses
+// @failure 400 {object} models.ErrorResponses
+// @failure 401 {object} models.ErrorResponses
+// @failure 500 {object} models.ErrorResponses
+func (h *handlerImpl) DeleteRating(c *fiber.Ctx) error {
+	ratingId := c.Params("ratingId")
+	err := h.service.DeleteRating(ratingId)
+	if err != nil {
+		return utils.ResponseError(c, err)
+	}
+	return c.JSON(fiber.Map{
+		"message": "Rating deleted",
 	})
 
 }
