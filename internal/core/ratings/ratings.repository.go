@@ -15,6 +15,7 @@ type Repository interface {
 	GetAllRatings(*[]models.RatingResponse) error
 	GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 	GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
+	UpdateRatingStatus(updateStatus *models.UpdateRatingStatus, ratingId uuid.UUID) error
 }
 
 type repositoryImpl struct {
@@ -47,7 +48,7 @@ func (r *repositoryImpl) CreateRating(reviews *models.Reviews) error {
 				New(apperror.PropertyNotFound).
 				Describe("FK constraint in property table")
 		}
-		reviewQuery := `INSERT INTO review (review_id, property_id, dweller_user_id, rating, review) VALUES (?,?,?,?,?)`
+		reviewQuery := `INSERT INTO reviews (review_id, property_id, dweller_user_id, rating, review) VALUES (?,?,?,?,?)`
 		if err := tx.Exec(reviewQuery, reviews.ReviewId, reviews.PropertyId, reviews.DwellerUserId, reviews.Rating, reviews.Review).Error; err != nil {
 			return err
 		}
@@ -66,9 +67,9 @@ func (r *repositoryImpl) GetRatingByPropertyId(propertyId uuid.UUID, ratings *[]
 			New(apperror.PropertyNotFound).
 			Describe("Property not found")
 	}
-	err := r.db.Table("review").
-		Select("review.*, _users.first_name ,_users.last_name").
-		Joins("LEFT JOIN _users ON review.dweller_user_id = _users.user_id").
+	err := r.db.Table("reviews").
+		Select("reviews.*, _users.first_name ,_users.last_name").
+		Joins("LEFT JOIN _users ON reviews.dweller_user_id = _users.user_id").
 		Where("property_id = ?", propertyId).
 		Scan(&ratings).Error
 	if err != nil {
@@ -79,9 +80,9 @@ func (r *repositoryImpl) GetRatingByPropertyId(propertyId uuid.UUID, ratings *[]
 }
 
 func (r *repositoryImpl) GetAllRatings(ratings *[]models.RatingResponse) error {
-	err := r.db.Table("review").
-		Select("review.*, _users.first_name ,_users.last_name").
-		Joins("LEFT JOIN _users ON review.dweller_user_id = _users.user_id").
+	err := r.db.Table("reviews").
+		Select("reviews.*, _users.first_name ,_users.last_name").
+		Joins("LEFT JOIN _users ON reviews.dweller_user_id = _users.user_id").
 		Scan(&ratings).Error
 	if err != nil {
 		return err
@@ -100,9 +101,9 @@ func (r *repositoryImpl) GetRatingByPropertyIdSortedByRating(propertyId uuid.UUI
 			New(apperror.PropertyNotFound).
 			Describe("Property not found")
 	}
-	err := r.db.Table("review").
-		Select("review.*, _users.first_name ,_users.last_name").
-		Joins("LEFT JOIN _users ON review.dweller_user_id = _users.user_id").
+	err := r.db.Table("reviews").
+		Select("reviews.*, _users.first_name ,_users.last_name").
+		Joins("LEFT JOIN _users ON reviews.dweller_user_id = _users.user_id").
 		Where("property_id = ?", propertyId).
 		Order("rating desc").
 		Scan(&ratings).Error
@@ -123,9 +124,9 @@ func (r *repositoryImpl) GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUI
 			New(apperror.PropertyNotFound).
 			Describe("Property not found")
 	}
-	err := r.db.Table("review").
-		Select("review.*, _users.first_name ,_users.last_name").
-		Joins("LEFT JOIN _users ON review.dweller_user_id = _users.user_id").
+	err := r.db.Table("reviews").
+		Select("reviews.*, _users.first_name ,_users.last_name").
+		Joins("LEFT JOIN _users ON reviews.dweller_user_id = _users.user_id").
 		Where("property_id = ?", propertyId).
 		Order("created_at desc").
 		Scan(&ratings).Error
@@ -133,4 +134,14 @@ func (r *repositoryImpl) GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUI
 		return err
 	}
 	return nil
+}
+
+func (r *repositoryImpl) UpdateRatingStatus(updateStatus *models.UpdateRatingStatus, ratingId uuid.UUID) error {
+	fmt.Println("ratingId", ratingId)
+	fmt.Println("updateStatus", updateStatus.Rating)
+	fmt.Println("updateStatus", updateStatus.Review)
+	if err := r.db.Model(&models.Reviews{}).First(&models.Reviews{}, "review_id = ?", ratingId).Error; err != nil {
+		return err
+	}
+	return r.db.Model(&models.Reviews{}).Where("review_id = ?", ratingId).Updates(updateStatus).Error
 }

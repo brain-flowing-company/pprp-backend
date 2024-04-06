@@ -213,7 +213,7 @@ CREATE TABLE payments(
     deleted_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL
 );
 
-CREATE TABLE review(
+CREATE TABLE reviews(
     review_id UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
     property_id UUID REFERENCES properties(property_id) NOT NULL, 
     dweller_user_id UUID REFERENCES users(user_id) NOT NULL, 
