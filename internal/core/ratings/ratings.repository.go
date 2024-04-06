@@ -13,6 +13,7 @@ type Repository interface {
 	CreateRating(*models.Reviews) error
 	GetRatingByPropertyId(uuid.UUID, *[]models.RatingResponse) error
 	GetAllRatings(*[]models.RatingResponse) error
+	GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 }
 
 type repositoryImpl struct {
@@ -80,6 +81,29 @@ func (r *repositoryImpl) GetAllRatings(ratings *[]models.RatingResponse) error {
 	err := r.db.Table("review").
 		Select("review.*, _users.first_name ,_users.last_name").
 		Joins("LEFT JOIN _users ON review.dweller_user_id = _users.user_id").
+		Scan(&ratings).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *repositoryImpl) GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
+	fmt.Println("propertyId", propertyId)
+	var propertyCount int64
+	if err := r.db.Model(&models.Properties{}).Where("property_id = ?", propertyId).Count(&propertyCount).Error; err != nil {
+		return err
+	}
+	if propertyCount == 0 {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Property not found")
+	}
+	err := r.db.Table("review").
+		Select("review.*, _users.first_name ,_users.last_name").
+		Joins("LEFT JOIN _users ON review.dweller_user_id = _users.user_id").
+		Where("property_id = ?", propertyId).
+		Order("rating desc").
 		Scan(&ratings).Error
 	if err != nil {
 		return err

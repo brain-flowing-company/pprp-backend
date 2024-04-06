@@ -11,6 +11,7 @@ type Service interface {
 	CreateRating(*models.Reviews) error
 	GetRatingByPropertyId(uuid.UUID, *[]models.RatingResponse) error
 	GetAllRatings(*[]models.RatingResponse) error
+	GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 }
 
 type serviceImpl struct {
@@ -49,6 +50,15 @@ func (s *serviceImpl) GetAllRatings(ratings *[]models.RatingResponse) error {
 	err := s.repo.GetAllRatings(ratings)
 	if err != nil {
 		s.logger.Error("Failed to get all ratings", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func (s *serviceImpl) GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
+	err := s.repo.GetRatingByPropertyIdSortedByRating(propertyId, ratings)
+	if err != nil {
+		s.logger.Error("Failed to get rating by property id sorted by rating", zap.Error(err))
 		return err
 	}
 	return nil
