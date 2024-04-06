@@ -29,6 +29,18 @@ func NewHandler(service Service) Handler {
 	}
 }
 
+// @router /api/v1/ratings [post]
+// @summary Create rating
+// @description Create rating
+// @tags ratings
+// @produce json
+// @param rating body string true " rating: Rating4_5 | Rating4 | Rating3_5 | Rating3"
+// @param review body string true "review"
+// @param property_id body string true "property_id"
+// @success 200 {object} models.RatingResponse
+// @failure 400 {object} models.ErrorResponses
+// @failure 401 {object} models.ErrorResponses
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) CreateRating(c *fiber.Ctx) error {
 	session, ok := c.Locals("session").(models.Sessions)
 	if !ok {
@@ -57,6 +69,16 @@ func (h *handlerImpl) CreateRating(c *fiber.Ctx) error {
 	})
 }
 
+// @router /api/v1/ratings/:propertyId [get]
+// @summary Get rating by property id
+// @description Get rating by property id
+// @tags ratings
+// @produce json
+// @param propertyId path string true "propertyId"
+// @success 200 {object} models.RatingResponse
+// @failure 400 {object} models.ErrorResponses
+// @failure 401 {object} models.ErrorResponses
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) GetRatingByPropertyId(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 	fmt.Println("propertyId", propertyId)
@@ -71,6 +93,15 @@ func (h *handlerImpl) GetRatingByPropertyId(c *fiber.Ctx) error {
 	return c.JSON(ratings)
 }
 
+// @router /api/v1/ratings [get]
+// @summary Get all ratings
+// @description Get all ratings
+// @tags ratings
+// @produce json
+// @success 200 {object} models.RatingResponse
+// @failure 400 {object} models.ErrorResponses
+// @failure 401 {object} models.ErrorResponses
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) GetAllRatings(c *fiber.Ctx) error {
 	var ratings []models.RatingResponse
 	if err := h.service.GetAllRatings(&ratings); err != nil {
@@ -79,6 +110,16 @@ func (h *handlerImpl) GetAllRatings(c *fiber.Ctx) error {
 	return c.JSON(ratings)
 }
 
+// @router /api/v1/ratings/sorted/:propertyId [get]
+// @summary Get rating by property id sorted by rating
+// @description Get rating by property id sorted by rating
+// @tags ratings
+// @produce json
+// @param propertyId path string true "propertyId"
+// @success 200 {object} models.RatingResponse
+// @failure 400 {object} models.ErrorResponses
+// @failure 401 {object} models.ErrorResponses
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) GetRatingByPropertyIdSortedByRating(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 	fmt.Println("propertyId", propertyId)
@@ -93,6 +134,16 @@ func (h *handlerImpl) GetRatingByPropertyIdSortedByRating(c *fiber.Ctx) error {
 	return c.JSON(ratings)
 }
 
+// @router /api/v1/ratings/newest/:propertyId [get]
+// @summary Get rating by property id sorted by newest
+// @description Get rating by property id sorted by newest
+// @tags ratings
+// @produce json
+// @param propertyId path string true "propertyId"
+// @success 200 {object} models.RatingResponse
+// @failure 400 {object} models.ErrorResponses
+// @failure 401 {object} models.ErrorResponses
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) GetRatingByPropertyIdSortedByNewest(c *fiber.Ctx) error {
 	propertyId := c.Params("propertyId")
 	fmt.Println("propertyId", propertyId)
@@ -107,6 +158,20 @@ func (h *handlerImpl) GetRatingByPropertyIdSortedByNewest(c *fiber.Ctx) error {
 	return c.JSON(ratings)
 }
 
+// apiv1.Patch("/ratings/:ratingId", mw.AuthMiddlewareWrapper(ratingsHandler.UpdateRatingStatus))
+
+// @router /api/v1/ratings/:ratingId [patch]
+// @summary Update rating status
+// @description Update rating status
+// @tags ratings
+// @produce json
+// @param ratingId path string true "ratingId"
+// @param review body string true "review"
+// @param rating body string true "rating"
+// @success 200 {object} models.MessageResponses
+// @failure 400 {object} models.ErrorResponses
+// @failure 401 {object} models.ErrorResponses
+// @failure 500 {object} models.ErrorResponses
 func (h *handlerImpl) UpdateRatingStatus(c *fiber.Ctx) error {
 	updatingRating := models.UpdateRatingStatus{}
 	err := c.BodyParser(&updatingRating)
