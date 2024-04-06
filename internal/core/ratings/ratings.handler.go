@@ -35,7 +35,7 @@ func NewHandler(service Service) Handler {
 // @description Create rating
 // @tags ratings
 // @produce json
-// @param rating body string true " rating: Rating4_5 | Rating4 | Rating3_5 | Rating3"
+// @param rating body int true "rating"
 // @param review body string true "review"
 // @param property_id body string true "property_id"
 // @success 200 {object} models.RatingResponse
@@ -54,7 +54,7 @@ func (h *handlerImpl) CreateRating(c *fiber.Ctx) error {
 	if err := c.BodyParser(&reviews); err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Failed to parse body"))
 	}
-	if !utils.IsValidRating(string(reviews.Rating)) {
+	if !utils.IsValidRating(reviews.Rating) {
 		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Invalid rating"))
 	}
 	if err := h.service.CreateRating(&reviews); err != nil {
@@ -168,7 +168,7 @@ func (h *handlerImpl) GetRatingByPropertyIdSortedByNewest(c *fiber.Ctx) error {
 // @produce json
 // @param ratingId path string true "ratingId"
 // @param review body string true "review"
-// @param rating body string true "rating"
+// @param rating body int true "rating"
 // @success 200 {object} models.MessageResponses
 // @failure 400 {object} models.ErrorResponses
 // @failure 401 {object} models.ErrorResponses
@@ -178,6 +178,9 @@ func (h *handlerImpl) UpdateRatingStatus(c *fiber.Ctx) error {
 	err := c.BodyParser(&updatingRating)
 	if err != nil {
 		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Failed to parse body"))
+	}
+	if !utils.IsValidRating(updatingRating.Rating) {
+		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Invalid rating"))
 	}
 	ratingId := c.Params("ratingId")
 	ratingIdParsed, err := uuid.Parse(ratingId)

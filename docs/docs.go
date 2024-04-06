@@ -1597,12 +1597,12 @@ const docTemplate = `{
                 "summary": "Create rating",
                 "parameters": [
                     {
-                        "description": " rating: Rating4_5 | Rating4 | Rating3_5 | Rating3",
+                        "description": "rating",
                         "name": "rating",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
@@ -1777,7 +1777,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2687,35 +2687,6 @@ const docTemplate = `{
                 "HOUSE",
                 "SERVICED_APARTMENT",
                 "TOWNHOUSE"
-            ]
-        },
-        "enums.Rating": {
-            "type": "string",
-            "enum": [
-                "Rating0",
-                "Rating0_5",
-                "Rating1",
-                "Rating1_5",
-                "Rating2",
-                "Rating2_5",
-                "Rating3",
-                "Rating3_5",
-                "Rating4",
-                "Rating4_5",
-                "Rating5"
-            ],
-            "x-enum-varnames": [
-                "Rating0",
-                "Rating0_5",
-                "Rating1",
-                "Rating1_5",
-                "Rating2",
-                "Rating2_5",
-                "Rating3",
-                "Rating3_5",
-                "Rating4",
-                "Rating4_5",
-                "Rating5"
             ]
         },
         "enums.RegisteredTypes": {
@@ -3907,7 +3878,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rating": {
-                    "$ref": "#/definitions/enums.Rating"
+                    "type": "integer"
                 },
                 "review": {
                     "type": "string"
