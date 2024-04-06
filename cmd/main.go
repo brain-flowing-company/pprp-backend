@@ -188,6 +188,7 @@ func main() {
 	apiv1.Get("/ratings/:propertyId", mw.AuthMiddlewareWrapper(ratingsHandler.GetRatingByPropertyId))
 	apiv1.Get("/ratings", mw.AuthMiddlewareWrapper(ratingsHandler.GetAllRatings))
 	apiv1.Get("/ratings/sorted/:propertyId", mw.AuthMiddlewareWrapper(ratingsHandler.GetRatingByPropertyIdSortedByRating))
+	apiv1.Get("/ratings/newest/:propertyId", mw.AuthMiddlewareWrapper(ratingsHandler.GetRatingByPropertyIdSortedByNewest))
 
 	ws := app.Group("/ws")
 	ws.Get("/chats", websocket.New(chatHandler.OpenConnection))

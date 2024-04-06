@@ -12,6 +12,7 @@ type Service interface {
 	GetRatingByPropertyId(uuid.UUID, *[]models.RatingResponse) error
 	GetAllRatings(*[]models.RatingResponse) error
 	GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
+	GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 }
 
 type serviceImpl struct {
@@ -59,6 +60,15 @@ func (s *serviceImpl) GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, 
 	err := s.repo.GetRatingByPropertyIdSortedByRating(propertyId, ratings)
 	if err != nil {
 		s.logger.Error("Failed to get rating by property id sorted by rating", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func (s *serviceImpl) GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
+	err := s.repo.GetRatingByPropertyIdSortedByNewest(propertyId, ratings)
+	if err != nil {
+		s.logger.Error("Failed to get rating by property id sorted by newest", zap.Error(err))
 		return err
 	}
 	return nil

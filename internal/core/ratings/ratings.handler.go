@@ -15,6 +15,7 @@ type Handler interface {
 	GetRatingByPropertyId(c *fiber.Ctx) error
 	GetAllRatings(c *fiber.Ctx) error
 	GetRatingByPropertyIdSortedByRating(c *fiber.Ctx) error
+	GetRatingByPropertyIdSortedByNewest(c *fiber.Ctx) error
 }
 
 type handlerImpl struct {
@@ -86,6 +87,20 @@ func (h *handlerImpl) GetRatingByPropertyIdSortedByRating(c *fiber.Ctx) error {
 	}
 	var ratings []models.RatingResponse
 	if err := h.service.GetRatingByPropertyIdSortedByRating(parsedPropertyID, &ratings); err != nil {
+		return utils.ResponseError(c, err)
+	}
+	return c.JSON(ratings)
+}
+
+func (h *handlerImpl) GetRatingByPropertyIdSortedByNewest(c *fiber.Ctx) error {
+	propertyId := c.Params("propertyId")
+	fmt.Println("propertyId", propertyId)
+	parsedPropertyID, err := uuid.Parse(propertyId)
+	if err != nil {
+		return utils.ResponseError(c, apperror.New(apperror.BadRequest).Describe("Invalid property ID"))
+	}
+	var ratings []models.RatingResponse
+	if err := h.service.GetRatingByPropertyIdSortedByNewest(parsedPropertyID, &ratings); err != nil {
 		return utils.ResponseError(c, err)
 	}
 	return c.JSON(ratings)
