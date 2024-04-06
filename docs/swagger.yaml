@@ -916,6 +916,25 @@ definitions:
         example: https://image_url.com/abcd
         type: string
     type: object
+  models.RatingResponse:
+    properties:
+      created_at:
+        type: string
+      dweller_user_id:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      property_id:
+        type: string
+      rating:
+        type: integer
+      review:
+        type: string
+      review_id:
+        type: string
+    type: object
   models.RentingProperties:
     properties:
       created_at:
@@ -2065,6 +2084,240 @@ paths:
       summary: Add property to favorites *use cookies*
       tags:
       - property
+  /api/v1/ratings:
+    get:
+      description: Get all ratings
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RatingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get all ratings
+      tags:
+      - ratings
+    post:
+      description: Create rating
+      parameters:
+      - description: rating
+        in: body
+        name: rating
+        required: true
+        schema:
+          type: integer
+      - description: review
+        in: body
+        name: review
+        required: true
+        schema:
+          type: string
+      - description: property_id
+        in: body
+        name: property_id
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RatingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Create rating
+      tags:
+      - ratings
+  /api/v1/ratings/:propertyId:
+    get:
+      description: Get rating by property id
+      parameters:
+      - description: propertyId
+        in: path
+        name: propertyId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RatingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get rating by property id
+      tags:
+      - ratings
+  /api/v1/ratings/:ratingId:
+    delete:
+      description: Delete rating
+      parameters:
+      - description: ratingId
+        in: path
+        name: ratingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Delete rating
+      tags:
+      - ratings
+    patch:
+      description: Update rating status
+      parameters:
+      - description: ratingId
+        in: path
+        name: ratingId
+        required: true
+        type: string
+      - description: review
+        in: body
+        name: review
+        required: true
+        schema:
+          type: string
+      - description: rating
+        in: body
+        name: rating
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MessageResponses'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Update rating status
+      tags:
+      - ratings
+  /api/v1/ratings/newest/:propertyId:
+    get:
+      description: Get rating by property id sorted by newest
+      parameters:
+      - description: propertyId
+        in: path
+        name: propertyId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RatingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get rating by property id sorted by newest
+      tags:
+      - ratings
+  /api/v1/ratings/sorted/:propertyId:
+    get:
+      description: Get rating by property id sorted by rating
+      parameters:
+      - description: propertyId
+        in: path
+        name: propertyId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RatingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponses'
+      summary: Get rating by property id sorted by rating
+      tags:
+      - ratings
   /api/v1/register:
     post:
       description: Create user with formData **\***upload profile image in formData

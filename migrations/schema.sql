@@ -210,6 +210,18 @@ CREATE TABLE payments(
     deleted_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL
 );
 
+CREATE TABLE reviews(
+    review_id UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+    property_id UUID REFERENCES properties(property_id) NOT NULL, 
+    dweller_user_id UUID REFERENCES users(user_id) NOT NULL, 
+    rating INTEGER NOT NULL, 
+    review TEXT NOT NULL,
+    created_at TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP(0) WITH TIME ZONE DEFAULT NULL
+);
+
+
 -------------------- RULES --------------------
 
 CREATE RULE soft_deletion AS ON DELETE TO users DO INSTEAD (
