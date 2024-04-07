@@ -19,17 +19,6 @@ func NewMiddleware(cfg *config.Config) Middleware {
 	}
 }
 
-func (m *Middleware) AuthMiddlewareWrapper(next func(*fiber.Ctx) error) func(*fiber.Ctx) error {
-	return func(c *fiber.Ctx) error {
-		_, ok := c.Locals("session").(models.Sessions)
-		if !ok {
-			return utils.ResponseMessage(c, http.StatusUnauthorized, "Unauthorized")
-		}
-
-		return next(c)
-	}
-}
-
 func (m *Middleware) SessionMiddleware(c *fiber.Ctx) error {
 	cookie := new(models.Cookies)
 
@@ -44,4 +33,15 @@ func (m *Middleware) SessionMiddleware(c *fiber.Ctx) error {
 	}
 
 	return c.Next()
+}
+
+func (m *Middleware) WithAuthentication(next func(*fiber.Ctx) error) func(*fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		_, ok := c.Locals("session").(models.Sessions)
+		if !ok {
+			return utils.ResponseMessage(c, http.StatusUnauthorized, "Unauthorized")
+		}
+
+		return next(c)
+	}
 }
