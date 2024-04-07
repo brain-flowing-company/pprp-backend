@@ -45,3 +45,14 @@ func (m *Middleware) WithAuthentication(next func(*fiber.Ctx) error) func(*fiber
 		return next(c)
 	}
 }
+
+func (m *Middleware) WithOwnerAccess(next func(*fiber.Ctx) error) func(*fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
+		session, ok := c.Locals("session").(models.Sessions)
+		if !ok || !session.IsOwner {
+			return utils.ResponseMessage(c, http.StatusForbidden, "Require owner access")
+		}
+
+		return next(c)
+	}
+}
