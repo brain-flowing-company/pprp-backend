@@ -208,8 +208,8 @@ func (repo *repositoryImpl) GetAppointmentByUserId(appointmentResponse *models.M
 }
 
 func (repo *repositoryImpl) CreateAppointment(appointment *models.CreatingAppointments) error {
-	return repo.db.Exec(`INSERT INTO appointments (property_id, owner_user_id, dweller_user_id, appointment_date, note) VALUES (?, ?, ?, ?, ?)`,
-		appointment.PropertyId, appointment.OwnerUserId, appointment.DwellerUserId, appointment.AppointmentDate, appointment.Note).Error
+	return repo.db.Exec(`INSERT INTO appointments (appointment_id, property_id, owner_user_id, dweller_user_id, appointment_date, note) VALUES (?, ?, ?, ?, ?, ?)`,
+		appointment.AppointmentId, appointment.PropertyId, appointment.OwnerUserId, appointment.DwellerUserId, appointment.AppointmentDate, appointment.Note).Error
 }
 
 func (repo *repositoryImpl) DeleteAppointment(appointmentId string) error {
@@ -224,6 +224,6 @@ func (repo *repositoryImpl) UpdateAppointmentStatus(updatingAppointment *models.
 	if err := repo.db.Model(&models.Appointments{}).First(&models.Appointments{}, "appointment_id = ?", appointmentId).Error; err != nil {
 		return err
 	}
-	
+
 	return repo.db.Model(&models.Appointments{}).Where("appointment_id = ?", appointmentId).Updates(updatingAppointment).Error
 }

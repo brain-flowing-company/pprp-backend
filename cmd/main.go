@@ -15,6 +15,7 @@ import (
 	"github.com/brain-flowing-company/pprp-backend/internal/core/greetings"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/payments"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/properties"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/ratings"
 	"github.com/brain-flowing-company/pprp-backend/internal/core/users"
 	"github.com/brain-flowing-company/pprp-backend/internal/middleware"
 	"github.com/brain-flowing-company/pprp-backend/storage"
@@ -88,10 +89,6 @@ func main() {
 	propertyService := properties.NewService(logger, propertyRepo, storage)
 	propertyHandler := properties.NewHandler(propertyService)
 
-	agreementsRepo := agreements.NewRepository(db)
-	agreementsService := agreements.NewService(logger, agreementsRepo)
-	agreementsHandler := agreements.NewHandler(agreementsService)
-
 	usersRepo := users.NewRepository(db)
 	usersService := users.NewService(logger, cfg, usersRepo, storage)
 	usersHandler := users.NewHandler(usersService)
@@ -109,77 +106,91 @@ func main() {
 	authService := auth.NewService(logger, cfg, authRepository, googleService, emailService)
 	authHandler := auth.NewHandler(cfg, authService)
 
-	appointmentRepository := appointments.NewRepository(db)
-	appointmentService := appointments.NewService(logger, appointmentRepository)
-	appointmentHandler := appointments.NewHandler(appointmentService)
-
-	hub := chats.NewHub()
 	chatRepository := chats.NewRepository(db)
 	chatService := chats.NewService(logger, chatRepository)
+	hub := chats.NewHub(chatService)
 	chatHandler := chats.NewHandler(logger, cfg, hub, chatService)
+
+	appointmentRepository := appointments.NewRepository(db)
+	appointmentService := appointments.NewService(logger, appointmentRepository)
+	appointmentHandler := appointments.NewHandler(hub, appointmentService)
+
+	agreementsRepo := agreements.NewRepository(db)
+	agreementsService := agreements.NewService(logger, agreementsRepo)
+	agreementsHandler := agreements.NewHandler(hub, agreementsService)
 
 	paymentsRepository := payments.NewRepository(db)
 	paymentsService := payments.NewService(logger, paymentsRepository, cfg)
 	paymentsHandler := payments.NewHandler(cfg, paymentsService)
 
+	ratingsRepository := ratings.NewRepository(db)
+	ratingsService := ratings.NewService(ratingsRepository, logger, cfg)
+	ratingsHandler := ratings.NewHandler(ratingsService)
+
 	mw := middleware.NewMiddleware(cfg)
 
 	apiv1 := app.Group("/api/v1", mw.SessionMiddleware)
 
-	apiv2 := app.Group("/api/v2", mw.SessionMiddleware)
-	apiv2.Post("/payments", payments.Checkout)
-
-	apiv1.Post("/payments", paymentsHandler.CreatePayment)
-	apiv1.Get("/payments", paymentsHandler.GetPaymentByUserId)
+	apiv1.Get("/checkout", mw.WithAuthentication(paymentsHandler.CreatePayment))
+	apiv1.Get("/payments", mw.WithAuthentication(paymentsHandler.GetPaymentByUserId))
+	apiv1.Get("/payments/history", mw.WithAuthentication(paymentsHandler.GetHistoryPaymentByUserId))
 
 	apiv1.Get("/greeting", hwHandler.Greeting)
-	apiv1.Get("/user/greeting", mw.AuthMiddlewareWrapper(hwHandler.UserGreeting))
+	apiv1.Get("/user/greeting", mw.WithAuthentication(hwHandler.UserGreeting))
 
 	apiv1.Get("/properties/:propertyId", propertyHandler.GetPropertyById)
 	apiv1.Get("/properties", propertyHandler.GetAllProperties)
-	apiv1.Get("/user/me/properties", mw.AuthMiddlewareWrapper(propertyHandler.GetMyProperties))
-	apiv1.Post("/properties", mw.AuthMiddlewareWrapper(propertyHandler.CreateProperty))
-	apiv1.Patch("/properties/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.UpdatePropertyById))
-	apiv1.Delete("/properties/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.DeletePropertyById))
-	apiv1.Post("/properties/favorites/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.AddFavoriteProperty))
-	apiv1.Delete("/properties/favorites/:propertyId", mw.AuthMiddlewareWrapper(propertyHandler.RemoveFavoriteProperty))
-	apiv1.Get("/user/me/favorites", mw.AuthMiddlewareWrapper(propertyHandler.GetMyFavoriteProperties))
+	apiv1.Get("/user/me/properties", mw.WithAuthentication(propertyHandler.GetMyProperties))
+	apiv1.Post("/properties", mw.WithOwnerAccess(propertyHandler.CreateProperty))
+	apiv1.Patch("/properties/:propertyId", mw.WithOwnerAccess(propertyHandler.UpdatePropertyById))
+	apiv1.Delete("/properties/:propertyId", mw.WithOwnerAccess(propertyHandler.DeletePropertyById))
+	apiv1.Post("/properties/favorites/:propertyId", mw.WithAuthentication(propertyHandler.AddFavoriteProperty))
+	apiv1.Delete("/properties/favorites/:propertyId", mw.WithAuthentication(propertyHandler.RemoveFavoriteProperty))
+	apiv1.Get("/user/me/favorites", mw.WithAuthentication(propertyHandler.GetMyFavoriteProperties))
 	apiv1.Get("/top10properties", propertyHandler.GetTop10Properties)
 
-	apiv1.Get("/appointments", mw.AuthMiddlewareWrapper(appointmentHandler.GetAllAppointments))
-	apiv1.Get("/appointments/:appointmentId", mw.AuthMiddlewareWrapper(appointmentHandler.GetAppointmentById))
-	apiv1.Get("/user/me/appointments", mw.AuthMiddlewareWrapper(appointmentHandler.GetMyAppointments))
-	apiv1.Post("/appointments", mw.AuthMiddlewareWrapper(appointmentHandler.CreateAppointment))
-	apiv1.Delete("/appointments", mw.AuthMiddlewareWrapper(appointmentHandler.DeleteAppointment))
-	apiv1.Patch("/appointments/:appointmentId", mw.AuthMiddlewareWrapper(appointmentHandler.UpdateAppointmentStatus))
+	apiv1.Get("/appointments", mw.WithAuthentication(appointmentHandler.GetAllAppointments))
+	apiv1.Get("/appointments/:appointmentId", mw.WithAuthentication(appointmentHandler.GetAppointmentById))
+	apiv1.Get("/user/me/appointments", mw.WithAuthentication(appointmentHandler.GetMyAppointments))
+	apiv1.Post("/appointments", mw.WithAuthentication(appointmentHandler.CreateAppointment))
+	apiv1.Delete("/appointments", mw.WithAuthentication(appointmentHandler.DeleteAppointment))
+	apiv1.Patch("/appointments/:appointmentId", mw.WithAuthentication(appointmentHandler.UpdateAppointmentStatus))
 
 	apiv1.Get("/users", usersHandler.GetAllUsers)
-	apiv1.Get("/user/me/personal-information", mw.AuthMiddlewareWrapper(usersHandler.GetCurrentUser))
-	apiv1.Get("/user/me/financial-information", mw.AuthMiddlewareWrapper(usersHandler.GetUserFinancialInformation))
+	apiv1.Get("/user/me/personal-information", mw.WithAuthentication(usersHandler.GetCurrentUser))
+	apiv1.Get("/user/me/financial-information", mw.WithAuthentication(usersHandler.GetUserFinancialInformation))
 	apiv1.Get("/user/me/registered", usersHandler.GetRegisteredType)
 	apiv1.Get("/user/:userId", usersHandler.GetUserById)
-	apiv1.Put("/user/me/personal-information", mw.AuthMiddlewareWrapper(usersHandler.UpdateUser))
-	apiv1.Put("/user/me/financial-information", mw.AuthMiddlewareWrapper(usersHandler.UpdateUserFinancialInformation))
-	apiv1.Post("/user/me/verify", mw.AuthMiddlewareWrapper(usersHandler.VerifyCitizenId))
-	apiv1.Delete("/user/:userId", mw.AuthMiddlewareWrapper(usersHandler.DeleteUser))
+	apiv1.Put("/user/me/personal-information", mw.WithAuthentication(usersHandler.UpdateUser))
+	apiv1.Put("/user/me/financial-information", mw.WithAuthentication(usersHandler.UpdateUserFinancialInformation))
+	apiv1.Post("/user/me/verify", mw.WithAuthentication(usersHandler.VerifyCitizenId))
+	apiv1.Delete("/user/:userId", mw.WithAuthentication(usersHandler.DeleteUser))
 
 	apiv1.Post("/register", usersHandler.Register)
 	apiv1.Post("/login", authHandler.Login)
 	apiv1.Post("/logout", authHandler.Logout)
 
-	apiv1.Get("/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.GetAllAgreements))
-	apiv1.Get("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.GetAgreementById))
-	apiv1.Get("/user/me/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.GetMyAgreements))
-	apiv1.Post("/agreements", mw.AuthMiddlewareWrapper(agreementsHandler.CreateAgreement))
-	apiv1.Delete("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.DeleteAgreement))
-	apiv1.Patch("/agreements/:agreementId", mw.AuthMiddlewareWrapper(agreementsHandler.UpdateAgreementStatus))
+	apiv1.Get("/agreements", mw.WithAuthentication(agreementsHandler.GetAllAgreements))
+	apiv1.Get("/agreements/:agreementId", mw.WithAuthentication(agreementsHandler.GetAgreementById))
+	apiv1.Get("/user/me/agreements", mw.WithAuthentication(agreementsHandler.GetMyAgreements))
+	apiv1.Post("/agreements", mw.WithOwnerAccess(agreementsHandler.CreateAgreement))
+	apiv1.Delete("/agreements/:agreementId", mw.WithOwnerAccess(agreementsHandler.DeleteAgreement))
+	apiv1.Patch("/agreements/:agreementId", mw.WithOwnerAccess(agreementsHandler.UpdateAgreementStatus))
 
 	apiv1.Get("/oauth/google", googleHandler.GoogleLogin)
 	apiv1.Post("/email", emailHandler.SendVerificationEmail)
 	apiv1.Get("/auth/callback", authHandler.Callback)
 
-	apiv1.Get("/chats", mw.AuthMiddlewareWrapper(chatHandler.GetAllChats))
-	apiv1.Get("/chats/:recvUserId", mw.AuthMiddlewareWrapper(chatHandler.GetMessagesInChat))
+	apiv1.Get("/chats", mw.WithAuthentication(chatHandler.GetAllChats))
+	apiv1.Get("/chats/:recvUserId", mw.WithAuthentication(chatHandler.GetMessagesInChat))
+
+	apiv1.Post("/ratings", mw.WithAuthentication(ratingsHandler.CreateRating))
+	apiv1.Get("/ratings/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyId))
+	apiv1.Get("/ratings", mw.WithAuthentication(ratingsHandler.GetAllRatings))
+	apiv1.Get("/ratings/sorted/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyIdSortedByRating))
+	apiv1.Get("/ratings/newest/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyIdSortedByNewest))
+	apiv1.Patch("/ratings/:ratingId", mw.WithAuthentication(ratingsHandler.UpdateRatingStatus))
+	apiv1.Delete("/ratings/:ratingId", mw.WithAuthentication(ratingsHandler.DeleteRating))
 
 	ws := app.Group("/ws")
 	ws.Get("/chats", websocket.New(chatHandler.OpenConnection))

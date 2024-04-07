@@ -190,6 +190,13 @@ CREATE TABLE messages (
     sent_at     TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
+CREATE TABLE message_attatchments (
+    message_id     UUID REFERENCES messages     (message_id)     PRIMARY KEY NOT NULL,
+    property_id    UUID REFERENCES properties   (property_id)    DEFAULT NULL,
+    appointment_id UUID REFERENCES appointments (appointment_id) DEFAULT NULL,
+    agreement_id   UUID REFERENCES agreements   (agreement_id)   DEFAULT NULL
+);
+
 CREATE TABLE payments(
     payment_id UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
     user_id    UUID REFERENCES users(user_id)              NOT NULL, 
@@ -202,6 +209,18 @@ CREATE TABLE payments(
     updated_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT CURRENT_TIMESTAMP, 
     deleted_at TIMESTAMP(0) WITH TIME ZONE                DEFAULT NULL
 );
+
+CREATE TABLE reviews(
+    review_id UUID PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+    property_id UUID REFERENCES properties(property_id) NOT NULL, 
+    dweller_user_id UUID REFERENCES users(user_id) NOT NULL, 
+    rating INTEGER NOT NULL, 
+    review TEXT NOT NULL,
+    created_at TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(0) WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP(0) WITH TIME ZONE DEFAULT NULL
+);
+
 
 -------------------- RULES --------------------
 
@@ -338,21 +357,28 @@ INSERT INTO renting_properties (property_id, price_per_month, is_occupied) VALUE
 ('b68f14db-fac6-4b5c-8bb3-68a2ce7efbe9', 15500.57, FALSE),
 ('e3f29fb7-f830-43de-91ab-c67fd0c170a3', 15500.58, FALSE);
 
+INSERT INTO appointments (appointment_id, property_id, owner_user_id, dweller_user_id, status, appointment_date, note) VALUES
+('1b024950-f27d-4edf-b62a-9ac0dce43964', '0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:50:00.000+07', NULL),
+('a4d27fe4-c575-405b-8401-ce5137dc6f4a', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:51:00.000+07', 'Good morning');
+
+INSERT INTO agreements (agreement_id, agreement_type, property_id, owner_user_id, dweller_user_id, agreement_date, status, deposit_amount, payment_per_month, payment_duration, total_payment, cancelled_message) VALUES
+('481095e8-f136-4e5b-b7fd-179e5fa40a28', 'RENTING', '0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-21 15:50:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
+('12424193-cb57-47f5-9f83-2ff2210450c3', 'SELLING', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', '62dd40da-f326-4825-9afc-2d68e06e0282', '2024-02-22 15:51:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
+('c7314051-2e35-4f79-ba7a-e54ceabdec2c', 'RENTING', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-23 15:52:00.000+07', 'CANCELLED', 10000.00, 1000.00, 10000.00, 10, 'nope');
+
 INSERT INTO messages (message_id, sender_id, receiver_id, content, read_at, sent_at) VALUES
 ('541dfc60-2f5b-473a-ac09-76a2aa3e5276', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Good morning' , NULL, '2024-02-25 19:04:18.818+07'),
 ('e74361f2-00de-40d8-b3fc-dc1f85547700', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Hello mate' , NULL, '2024-02-25 19:04:27.436+07'),
 ('3f25b89f-b183-4ba8-b7b5-98d5f5fd374a', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'what are you up to?' , NULL, '2024-02-25 19:04:36.119+07'),
 ('f48c2f66-3450-41f1-8307-db6386187472', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'Hi' , NULL, '2024-02-25 19:05:10.519+07'),
-('8d7a913b-0bd4-4554-8286-bc8ad2b8817e', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '?' , NULL, '2024-02-25 19:05:12.953+07');
+('8d7a913b-0bd4-4554-8286-bc8ad2b8817e', '62dd40da-f326-4825-9afc-2d68e06e0282', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '?' , NULL, '2024-02-25 19:05:12.953+07'),
+('5d7ad256-0e0b-45e5-a985-7c0a4e439047', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'hi', NULL, '2024-04-02 13:23:26.943+07'),
+('ae45bf81-8214-46ec-9032-fa683d6b90a5', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'just hi', NULL, '2024-04-02 13:23:28.689+07');
 
-INSERT INTO appointments (property_id, owner_user_id, dweller_user_id, status, appointment_date, note) VALUES
-('0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:50:00.000+07', NULL),
-('21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', 'PENDING', '2024-02-21 15:51:00.000+07', 'Good morning');
-
-INSERT INTO agreements (agreement_type, property_id, owner_user_id, dweller_user_id, agreement_date, status, deposit_amount, payment_per_month, payment_duration, total_payment, cancelled_message) VALUES
-('RENTING', '0bd03187-91ac-457d-957c-3ba2f6c0d24b', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-21 15:50:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
-('SELLING', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', '62dd40da-f326-4825-9afc-2d68e06e0282', '2024-02-22 15:51:00.000+07', 'AWAITING_DEPOSIT', 10000.00, 1000.00, 10000.00, 10, NULL),
-('RENTING', '21b492b6-8d4f-45a6-af25-2fa9c1eb2042', 'f38f80b3-f326-4825-9afc-ebc331626555', 'bc5891ce-d6f2-d6f2-d6f2-ebc331626555', '2024-02-23 15:52:00.000+07', 'CANCELLED', 10000.00, 1000.00, 10000.00, 10, 'nope');
+INSERT INTO message_attatchments (message_id, property_id, appointment_id, agreement_id) VALUES
+('541dfc60-2f5b-473a-ac09-76a2aa3e5276', '2dd819db-6b5f-4c29-b173-0f0bf04769fb', NULL, NULL),
+('e74361f2-00de-40d8-b3fc-dc1f85547700', NULL, '1b024950-f27d-4edf-b62a-9ac0dce43964', NULL),
+('3f25b89f-b183-4ba8-b7b5-98d5f5fd374a', NULL, NULL, '12424193-cb57-47f5-9f83-2ff2210450c3');
 
 -------------------- VIEWS --------------------
 

@@ -5,9 +5,11 @@ import (
 	"net/http"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/internal/core/chats"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type Handler interface {
@@ -18,12 +20,15 @@ type Handler interface {
 	DeleteAgreement(c *fiber.Ctx) error
 	UpdateAgreementStatus(c *fiber.Ctx) error
 }
+
 type handlerImpl struct {
+	hub     *chats.Hub
 	service Service
 }
 
-func NewHandler(service Service) Handler {
+func NewHandler(hub *chats.Hub, service Service) Handler {
 	return &handlerImpl{
+		hub,
 		service,
 	}
 }
@@ -41,7 +46,7 @@ func (h *handlerImpl) GetAllAgreements(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
-	
+
 	return c.JSON(agreements)
 
 }
@@ -64,7 +69,7 @@ func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
-	
+
 	return c.JSON(agreement)
 }
 
@@ -79,7 +84,7 @@ func (h *handlerImpl) GetAgreementById(c *fiber.Ctx) error {
 func (h *handlerImpl) GetMyAgreements(c *fiber.Ctx) error {
 	agreementRequest := models.MyAgreementRequests{
 		UserId: c.Locals("session").(models.Sessions).UserId,
-		Order: c.Query("order"),
+		Order:  c.Query("order"),
 	}
 
 	var agreements models.MyAgreementResponses
@@ -100,10 +105,12 @@ func (h *handlerImpl) GetMyAgreements(c *fiber.Ctx) error {
 // @success 201 {object} models.MessageResponses "Agreement created successfully"
 // @failure 500 {object} models.ErrorResponses "Could not create agreement"
 func (h *handlerImpl) CreateAgreement(c *fiber.Ctx) error {
+	userId := c.Locals("session").(models.Sessions).UserId
 	agreement := &models.CreatingAgreements{
-		OwnerUserId: c.Locals("session").(models.Sessions).UserId,
+		AgreementId: uuid.New(),
+		OwnerUserId: userId,
 	}
-	
+
 	err := c.BodyParser(agreement)
 	if err != nil {
 		return utils.ResponseError(c, apperror.
@@ -112,6 +119,11 @@ func (h *handlerImpl) CreateAgreement(c *fiber.Ctx) error {
 	}
 
 	apperr := h.service.CreateAgreement(agreement)
+	if apperr != nil {
+		return utils.ResponseError(c, apperr)
+	}
+
+	apperr = h.hub.SendNotificationMessage(agreement, "Embedded agreement", agreement.OwnerUserId, agreement.DwellerUserId)
 	if apperr != nil {
 		return utils.ResponseError(c, apperr)
 	}
@@ -134,7 +146,7 @@ func (h *handlerImpl) DeleteAgreement(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
-	
+
 	return utils.ResponseMessage(c, fiber.StatusOK, "Agreement deleted")
 }
 

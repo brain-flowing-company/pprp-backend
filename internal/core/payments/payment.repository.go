@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	CreatePayment(*models.Payments) error
 	GetPaymentByUserId(*models.MyPaymentsResponse, uuid.UUID) error
+	GetHistoryPaymentByUserId(*[]models.HistoryResponse, uuid.UUID) error
 }
 
 type repositoryImpl struct {
@@ -58,6 +59,18 @@ func (r *repositoryImpl) CreatePayment(payment *models.Payments) error {
 func (r *repositoryImpl) GetPaymentByUserId(payments *models.MyPaymentsResponse, userId uuid.UUID) error {
 	paymentQuery := `SELECT * FROM payments WHERE user_id = ?`
 	if err := r.db.Raw(paymentQuery, userId).Scan(&payments.Payments).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *repositoryImpl) GetHistoryPaymentByUserId(history *[]models.HistoryResponse, userId uuid.UUID) error {
+	err := r.db.Table("payments").
+		Select("payments.*, agreements.*").
+		Joins("JOIN agreements ON payments.agreement_id = agreements.agreement_id").
+		Where("payments.user_id = ?", userId).
+		Scan(&history).Error
+	if err != nil {
 		return err
 	}
 	return nil

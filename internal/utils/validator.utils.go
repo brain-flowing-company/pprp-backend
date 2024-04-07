@@ -30,3 +30,10 @@ func IsValidPassword(password string) bool {
 func IsValidEmailVerificationCode(code string) bool {
 	return len(code) == 10 && code[:4] == "SCK-"
 }
+
+func IsValidRating(rating int8) bool {
+	if rating < 0 || rating > 5 {
+		return false
+	}
+	return true
+}

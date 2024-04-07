@@ -130,8 +130,9 @@ func (s *serviceImpl) ExchangeToken(c context.Context, callback *models.Callback
 
 	if registered {
 		session := models.Sessions{
-			UserId: user.UserId,
-			Email:  googleInfo.Email,
+			UserId:  user.UserId,
+			Email:   googleInfo.Email,
+			IsOwner: user.IsVerified,
 		}
 
 		token, err := utils.CreateJwtToken(session, time.Duration(s.cfg.SessionExpire*int(time.Second)), s.cfg.JWTSecret)
