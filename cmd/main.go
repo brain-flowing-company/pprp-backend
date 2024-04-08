@@ -91,7 +91,7 @@ func main() {
 
 	usersRepo := users.NewRepository(db)
 	usersService := users.NewService(logger, cfg, usersRepo, storage)
-	usersHandler := users.NewHandler(usersService)
+	usersHandler := users.NewHandler(logger, cfg, usersService)
 
 	googleRepo := google.NewRepository(db)
 	googleService := google.NewService(logger, cfg, googleRepo)

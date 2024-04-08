@@ -3,12 +3,15 @@ package users
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/brain-flowing-company/pprp-backend/apperror"
+	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/brain-flowing-company/pprp-backend/internal/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type Handler interface {
@@ -25,11 +28,15 @@ type Handler interface {
 }
 
 type handlerImpl struct {
+	logger  *zap.Logger
+	cfg     *config.Config
 	service Service
 }
 
-func NewHandler(service Service) Handler {
+func NewHandler(logger *zap.Logger, cfg *config.Config, service Service) Handler {
 	return &handlerImpl{
+		logger,
+		cfg,
 		service,
 	}
 }
@@ -266,6 +273,18 @@ func (h *handlerImpl) VerifyCitizenId(c *fiber.Ctx) error {
 	if err != nil {
 		return utils.ResponseError(c, err)
 	}
+
+	session.IsOwner = true
+
+	token, apperr := utils.CreateJwtToken(session, time.Duration(h.cfg.SessionExpire*int(time.Second)), h.cfg.JWTSecret)
+	if apperr != nil {
+		h.logger.Error("Could not create JWT token", zap.Error(apperr))
+		return utils.ResponseError(c, apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not login. Please try again later"))
+	}
+
+	c.Cookie(utils.CreateSessionCookie(token, h.cfg.SessionExpire))
 
 	return utils.ResponseMessage(c, http.StatusOK, "Verified")
 }
