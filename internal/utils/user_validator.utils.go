@@ -95,7 +95,7 @@ func CreditCardsValidator(creditCards validator.FieldLevel) bool {
 	}
 
 	ccs := creditCards.Field().Interface().([]models.CreditCards)
-	if len(ccs) < 0 || len(ccs) > 4 {
+	if len(ccs) > 4 {
 		fmt.Println("CreditCards length is not in range")
 		return false
 	} else if len(ccs) > 0 {
