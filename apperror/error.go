@@ -73,6 +73,7 @@ var (
 	EmailVerificationDataNotFound = &AppErrorType{http.StatusNotFound, "email-verification-data-not-found"}
 	InvalidPassword               = &AppErrorType{http.StatusBadRequest, "invalid-password"}
 	InvalidCredentials            = &AppErrorType{http.StatusUnauthorized, "invalid-credentials"}
+	InvalidPhoneNumber            = &AppErrorType{http.StatusBadRequest, "invalid-phone-number"}
 	ServiceUnavailable            = &AppErrorType{http.StatusServiceUnavailable, "service-unavailable"}
 	InvalidProfileImageExtension  = &AppErrorType{http.StatusBadRequest, "invalid-profile-image-extensions"}
 

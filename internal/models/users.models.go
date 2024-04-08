@@ -25,10 +25,10 @@ func (u Users) TableName() string {
 }
 
 type UserFinancialInformations struct {
-	UserId            uuid.UUID       `json:"-"      gorm:"primaryKey" swaggerignore:"true"`
-	CreditCards       []CreditCards   `json:"credit_cards" gorm:"foreignKey:UserId;references:UserId"`
-	BankName          enums.BankNames `json:"bank_name"    gorm:"default:null" example:"KBANK"`
-	BankAccountNumber string          `json:"bank_account_number" gorm:"default:null" example:"1234567890"`
+	UserId            uuid.UUID       `json:"-"                     gorm:"primaryKey" swaggerignore:"true"`
+	CreditCards       []CreditCards   `json:"credit_cards"          validate:"credit_cards"        gorm:"foreignKey:UserId;references:UserId"`
+	BankName          enums.BankNames `json:"bank_name"             validate:"bank_name"           gorm:"default:null" example:"KBANK"`
+	BankAccountNumber string          `json:"bank_account_number"   validate:"bank_account_number" gorm:"default:null" example:"1234567890"`
 	CommonModels
 }
 
@@ -38,14 +38,14 @@ func (uf UserFinancialInformations) TableName() string {
 
 type CreditCards struct {
 	UserId         uuid.UUID        `json:"-" swaggerignore:"true"`
-	TagNumber      int              `json:"tag_number" example:"1"`
-	CardNickname   string           `json:"card_nickname" example:"John's Card"`
-	CardholderName string           `json:"cardholder_name" example:"John Doe"`
-	CardNumber     string           `json:"card_number" example:"1234567890123456"`
-	ExpireMonth    string           `json:"expire_month" example:"12"`
-	ExpireYear     string           `json:"expire_year" example:"2023"`
-	CVV            string           `json:"cvv" example:"123"`
-	CardColor      enums.CardColors `json:"card_color" example:"BLUE"`
+	TagNumber      int              `json:"tag_number"      validate:"required,number,gte=1,lte=4"     example:"1"`
+	CardNickname   string           `json:"card_nickname"   validate:"required"                        example:"John's Card"`
+	CardholderName string           `json:"cardholder_name" validate:"required"                        example:"John Doe"`
+	CardNumber     string           `json:"card_number"     validate:"card_number"                     example:"1234567890123456"`
+	ExpireMonth    string           `json:"expire_month"    validate:"expire_month"                    example:"12"`
+	ExpireYear     string           `json:"expire_year"     validate:"expire_year"                     example:"2023"`
+	CVV            string           `json:"cvv"             validate:"cvv"                             example:"123"`
+	CardColor      enums.CardColors `json:"card_color"      validate:"card_color"                      example:"BLUE"`
 }
 
 func (cc CreditCards) TableName() string {
@@ -65,12 +65,12 @@ func (uv UserVerifications) TableName() string {
 
 type RegisteringUsers struct {
 	UserId          uuid.UUID             `form:"-" swaggerignore:"true"`
-	RegisteredType  enums.RegisteredTypes `form:"registered_type" exmaple:"EMAIL / GOOGLE"`
-	Email           string                `form:"email"           example:"email@email.com"`
+	RegisteredType  enums.RegisteredTypes `form:"registered_type" validate:"register_type" exmaple:"EMAIL / GOOGLE"`
+	Email           string                `form:"email"           validate:"email"         example:"email@email.com"`
 	Password        string                `form:"password"        example:"password1234"`
-	FirstName       string                `form:"first_name"      example:"John"`
-	LastName        string                `form:"last_name"       example:"Doe"`
-	PhoneNumber     string                `form:"phone_number"    example:"0812345678"`
+	FirstName       string                `form:"first_name"      validate:"required"      example:"John"`
+	LastName        string                `form:"last_name"       validate:"required"      example:"Doe"`
+	PhoneNumber     string                `form:"phone_number"    validate:"phone"         example:"0812345678"`
 	ProfileImageUrl string                `form:"-" swaggerignore:"true"`
 	CommonModels    `swaggerignore:"true"`
 }
@@ -83,7 +83,7 @@ type UpdatingUserPersonalInfos struct {
 	UserId          uuid.UUID `form:"-"            swaggerignore:"true"`
 	FirstName       string    `form:"first_name"   example:"John"`
 	LastName        string    `form:"last_name"    example:"Doe"`
-	PhoneNumber     string    `form:"phone_number" example:"0812345678"`
+	PhoneNumber     string    `form:"phone_number" validate:"phone"    example:"0812345678"`
 	ProfileImageUrl string    `form:"-"            swaggerignore:"true"`
 	CommonModels    `swaggerignore:"true"`
 }
