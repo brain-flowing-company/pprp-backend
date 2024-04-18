@@ -15,6 +15,11 @@ docs:
 test:
 	go test ./internal/... -coverprofile=coverage.out
 
+push:
+	docker buildx build -t suechaokhai-backend --platform linux/amd64 .
+	docker tag suechaokhai-backend 44.221.177.107:50000/se/suechaokhai-backend
+	docker push 44.221.177.107:50000/se/suechaokhai-backend
+
 cover:
 	go tool cover -html=coverage.out
 
