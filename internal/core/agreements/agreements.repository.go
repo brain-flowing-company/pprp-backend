@@ -173,7 +173,7 @@ func (repo *repositoryImpl) GetAgreementByUserId(agreementResponse *models.MyAgr
 		if err := tx.Model(&models.Agreements{}).
 			Raw(agreementListsQuery+`
 				WHERE a.owner_user_id = @user_id
-				ORDER BY a.created_at `+agreementRequest.Order+`
+				ORDER BY a.agreement_date `+agreementRequest.Order+`
 				`, sql.Named("user_id", agreementRequest.UserId)).
 			Scan(&agreementResponse.OwnerAgreements).Error; err != nil {
 			return err
@@ -182,7 +182,7 @@ func (repo *repositoryImpl) GetAgreementByUserId(agreementResponse *models.MyAgr
 		if err := tx.Model(&models.Agreements{}).
 			Raw(agreementListsQuery+`
 				WHERE a.dweller_user_id = @user_id
-				ORDER BY a.created_at `+agreementRequest.Order+`
+				ORDER BY a.agreement_date `+agreementRequest.Order+`
 				`, sql.Named("user_id", agreementRequest.UserId)).
 			Scan(&agreementResponse.DwellerAgreements).Error; err != nil {
 			return err

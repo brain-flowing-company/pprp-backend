@@ -114,6 +114,27 @@ func (s *serviceImpl) GetPropertyByOwnerId(properties *models.MyPropertiesRespon
 }
 
 func (s *serviceImpl) CreateProperty(property *models.PropertyInfos, propertyImages []*multipart.FileHeader) *apperror.AppError {
+	validate, validatorErr := utils.NewPropertyValidator()
+	if validatorErr != nil {
+		s.logger.Error("Could not create validator", zap.Error(validatorErr))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not create property. Please try again later.")
+	}
+
+	if err := validate.Struct(property); err != nil {
+		s.logger.Error("Invalid property information", zap.Error(err))
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("Invalid property information")
+	}
+
+	if !(property.Price > 0 || property.PricePerMonth > 0) {
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("Price or Price per month must be provided")
+	}
+
 	if len(propertyImages) == 0 {
 		return apperror.
 			New(apperror.BadRequest).
@@ -143,6 +164,44 @@ func (s *serviceImpl) UpdatePropertyById(property *models.PropertyInfos, propert
 		return apperror.
 			New(apperror.InvalidPropertyId).
 			Describe("Invalid property id")
+	}
+
+	existingProperty := &models.Properties{}
+	if err := s.repo.GetPropertyById(existingProperty, propertyId, "00000000-0000-0000-0000-000000000000"); err != nil {
+		return apperror.
+			New(apperror.PropertyNotFound).
+			Describe("Could not find the specified property")
+	} else if existingProperty.OwnerId != property.OwnerId {
+		return apperror.
+			New(apperror.Unauthorized).
+			Describe("You are not authorized to update this property")
+	}
+
+	validate, validatorErr := utils.NewPropertyValidator()
+	if validatorErr != nil {
+		s.logger.Error("Could not create validator", zap.Error(validatorErr))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not create property. Please try again later.")
+	}
+
+	if err := validate.Struct(property); err != nil {
+		s.logger.Error("Invalid property information", zap.Error(err))
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("Invalid property information")
+	}
+
+	if !(property.Price > 0 || property.PricePerMonth > 0) {
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("Price or Price per month must be provided")
+	}
+
+	if len(property.ImageUrls) == 0 && len(propertyImages) == 0 {
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("No property image found")
 	}
 
 	if len(propertyImages) != 0 {

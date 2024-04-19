@@ -106,14 +106,27 @@ func (s *serviceImpl) GetUserFinancialInforamtionById(userFinancialInformation *
 }
 
 func (s *serviceImpl) Register(user *models.RegisteringUsers, profileImage *multipart.FileHeader) *apperror.AppError {
+	validate, validatorErr := utils.NewUserValidator()
+	if validatorErr != nil {
+		s.logger.Error("Could not create new user validator", zap.Error(validatorErr))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not create user. Please try again later")
+	}
+
+	if err := validate.Struct(user); err != nil {
+		s.logger.Error("Invalid user information", zap.Error(err))
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("Invalid user information")
+	}
+
 	var countEmail int64
 	if s.repo.CountEmail(&countEmail, user.Email) != nil {
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get all emails")
-	}
-
-	if countEmail > 0 {
+	} else if countEmail > 0 {
 		return apperror.
 			New(apperror.EmailAlreadyExists).
 			Describe("Email already exists")
@@ -124,9 +137,7 @@ func (s *serviceImpl) Register(user *models.RegisteringUsers, profileImage *mult
 		return apperror.
 			New(apperror.InternalServerError).
 			Describe("Could not get all phone numbers")
-	}
-
-	if countPhoneNumber > 0 {
+	} else if countPhoneNumber > 0 {
 		return apperror.
 			New(apperror.PhoneNumberAlreadyExists).
 			Describe("Phone number already exists")
@@ -182,6 +193,12 @@ func (s *serviceImpl) UpdateUser(user *models.UpdatingUserPersonalInfos, profile
 	user.ProfileImageUrl = url
 
 	if user.PhoneNumber != "" {
+		if user.PhoneNumber[0] != '0' || len(user.PhoneNumber) != 10 {
+			return apperror.
+				New(apperror.InvalidPhoneNumber).
+				Describe("Invalid phone number format")
+		}
+
 		var count int64
 		countErr := s.repo.CountPhoneNumber(&count, user.UserId, user.PhoneNumber)
 		if countErr != nil {
@@ -220,6 +237,21 @@ func (s *serviceImpl) UpdateUserFinancialInformationById(userFinancialInformatio
 	creditCards := &userFinancialInformation.CreditCards
 	for i := range *creditCards {
 		(*creditCards)[i].UserId, _ = uuid.Parse(userId)
+	}
+
+	validate, validatorErr := utils.NewUserFinancialInformationValidator()
+	if validatorErr != nil {
+		s.logger.Error("Could not create new user financial information validator", zap.Error(validatorErr))
+		return apperror.
+			New(apperror.InternalServerError).
+			Describe("Could not update user financial information. Please try again later")
+	}
+
+	if err := validate.Struct(userFinancialInformation); err != nil {
+		s.logger.Error("Invalid user financial information", zap.Error(err))
+		return apperror.
+			New(apperror.BadRequest).
+			Describe("Invalid user financial information")
 	}
 
 	err := s.repo.UpdateUserFinancialInformationById(userFinancialInformation, userId)
