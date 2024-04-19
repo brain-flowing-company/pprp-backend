@@ -1,25 +1,19 @@
 package ratings
 
 import (
-	"errors"
-
-	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
-	"github.com/brain-flowing-company/pprp-backend/internal/utils"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
 type Service interface {
 	CreateRating(*models.Reviews) error
-	GetRatingByPropertyId(uuid.UUID, *[]models.RatingResponse) error
+	// GetRatingByPropertyId(uuid.UUID, *[]models.RatingResponse) error
 	GetAllRatings(*[]models.RatingResponse) error
-	GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
-	GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
-	UpdateRatingStatus(updatingRating *models.UpdateRatingStatus, ratingId uuid.UUID) error
-	DeleteRating(ratingId string) error
+	// GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
+	// GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
+	// UpdateRatingStatus(updatingRating *models.UpdateRatingStatus, ratingId uuid.UUID) error
+	// DeleteRating(ratingId string) error
 }
 
 type serviceImpl struct {
@@ -45,14 +39,14 @@ func (s *serviceImpl) CreateRating(reviews *models.Reviews) error {
 	return nil
 }
 
-func (s *serviceImpl) GetRatingByPropertyId(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
-	err := s.repo.GetRatingByPropertyId(propertyId, ratings)
-	if err != nil {
-		s.logger.Error("Failed to get rating by property id", zap.Error(err))
-		return err
-	}
-	return nil
-}
+// func (s *serviceImpl) GetRatingByPropertyId(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
+// 	err := s.repo.GetRatingByPropertyId(propertyId, ratings)
+// 	if err != nil {
+// 		s.logger.Error("Failed to get rating by property id", zap.Error(err))
+// 		return err
+// 	}
+// 	return nil
+// }
 
 func (s *serviceImpl) GetAllRatings(ratings *[]models.RatingResponse) error {
 	err := s.repo.GetAllRatings(ratings)
@@ -63,47 +57,47 @@ func (s *serviceImpl) GetAllRatings(ratings *[]models.RatingResponse) error {
 	return nil
 }
 
-func (s *serviceImpl) GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
-	err := s.repo.GetRatingByPropertyIdSortedByRating(propertyId, ratings)
-	if err != nil {
-		s.logger.Error("Failed to get rating by property id sorted by rating", zap.Error(err))
-		return err
-	}
-	return nil
-}
+// func (s *serviceImpl) GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
+// 	err := s.repo.GetRatingByPropertyIdSortedByRating(propertyId, ratings)
+// 	if err != nil {
+// 		s.logger.Error("Failed to get rating by property id sorted by rating", zap.Error(err))
+// 		return err
+// 	}
+// 	return nil
+// }
 
-func (s *serviceImpl) GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
-	err := s.repo.GetRatingByPropertyIdSortedByNewest(propertyId, ratings)
-	if err != nil {
-		s.logger.Error("Failed to get rating by property id sorted by newest", zap.Error(err))
-		return err
-	}
-	return nil
-}
+// func (s *serviceImpl) GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
+// 	err := s.repo.GetRatingByPropertyIdSortedByNewest(propertyId, ratings)
+// 	if err != nil {
+// 		s.logger.Error("Failed to get rating by property id sorted by newest", zap.Error(err))
+// 		return err
+// 	}
+// 	return nil
+// }
 
-func (s *serviceImpl) UpdateRatingStatus(updatingRating *models.UpdateRatingStatus, ratingId uuid.UUID) error {
-	err := s.repo.UpdateRatingStatus(updatingRating, ratingId)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		s.logger.Error("Rating not found", zap.Error(err))
-		return apperror.New(apperror.RatingNotFound).Describe("Rating not found")
-	} else if err != nil {
-		s.logger.Error("Failed to update rating status", zap.Error(err))
-		return apperror.New(apperror.InternalServerError).Describe("Failed to update rating status")
-	}
-	return nil
-}
+// func (s *serviceImpl) UpdateRatingStatus(updatingRating *models.UpdateRatingStatus, ratingId uuid.UUID) error {
+// 	err := s.repo.UpdateRatingStatus(updatingRating, ratingId)
+// 	if errors.Is(err, gorm.ErrRecordNotFound) {
+// 		s.logger.Error("Rating not found", zap.Error(err))
+// 		return apperror.New(apperror.RatingNotFound).Describe("Rating not found")
+// 	} else if err != nil {
+// 		s.logger.Error("Failed to update rating status", zap.Error(err))
+// 		return apperror.New(apperror.InternalServerError).Describe("Failed to update rating status")
+// 	}
+// 	return nil
+// }
 
-func (s *serviceImpl) DeleteRating(ratingId string) error {
-	if !utils.IsValidUUID(ratingId) {
-		return apperror.New(apperror.InvalidRatingId).Describe("Invalid rating id")
-	}
-	err := s.repo.DeleteRating(ratingId)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return apperror.New(apperror.RatingNotFound).Describe("Rating not found")
-	}
-	if err != nil {
-		s.logger.Error("Failed to delete rating", zap.Error(err))
-		return apperror.New(apperror.InternalServerError).Describe("Failed to delete rating")
-	}
-	return nil
-}
+// func (s *serviceImpl) DeleteRating(ratingId string) error {
+// 	if !utils.IsValidUUID(ratingId) {
+// 		return apperror.New(apperror.InvalidRatingId).Describe("Invalid rating id")
+// 	}
+// 	err := s.repo.DeleteRating(ratingId)
+// 	if errors.Is(err, gorm.ErrRecordNotFound) {
+// 		return apperror.New(apperror.RatingNotFound).Describe("Rating not found")
+// 	}
+// 	if err != nil {
+// 		s.logger.Error("Failed to delete rating", zap.Error(err))
+// 		return apperror.New(apperror.InternalServerError).Describe("Failed to delete rating")
+// 	}
+// 	return nil
+// }

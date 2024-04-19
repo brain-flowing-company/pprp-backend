@@ -11,12 +11,12 @@ import (
 
 type Repository interface {
 	CreateRating(*models.Reviews) error
-	GetRatingByPropertyId(uuid.UUID, *[]models.RatingResponse) error
+	// GetRatingByPropertyId(uuid.UUID, *[]models.RatingResponse) error
 	GetAllRatings(*[]models.RatingResponse) error
-	GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
-	GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
-	UpdateRatingStatus(updateStatus *models.UpdateRatingStatus, ratingId uuid.UUID) error
-	DeleteRating(ratingId string) error
+	// GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
+	// GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
+	// UpdateRatingStatus(updateStatus *models.UpdateRatingStatus, ratingId uuid.UUID) error
+	// DeleteRating(ratingId string) error
 }
 
 type repositoryImpl struct {

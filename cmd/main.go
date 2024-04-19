@@ -185,12 +185,12 @@ func main() {
 	apiv1.Get("/chats/:recvUserId", mw.WithAuthentication(chatHandler.GetMessagesInChat))
 
 	apiv1.Post("/ratings", mw.WithAuthentication(ratingsHandler.CreateRating))
-	apiv1.Get("/ratings/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyId))
+	// apiv1.Get("/ratings/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyId))
 	apiv1.Get("/ratings", mw.WithAuthentication(ratingsHandler.GetAllRatings))
-	apiv1.Get("/ratings/sorted/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyIdSortedByRating))
-	apiv1.Get("/ratings/newest/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyIdSortedByNewest))
-	apiv1.Patch("/ratings/:ratingId", mw.WithAuthentication(ratingsHandler.UpdateRatingStatus))
-	apiv1.Delete("/ratings/:ratingId", mw.WithAuthentication(ratingsHandler.DeleteRating))
+	// apiv1.Get("/ratings/sorted/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyIdSortedByRating))
+	// apiv1.Get("/ratings/newest/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyIdSortedByNewest))
+	// apiv1.Patch("/ratings/:ratingId", mw.WithAuthentication(ratingsHandler.UpdateRatingStatus))
+	// apiv1.Delete("/ratings/:ratingId", mw.WithAuthentication(ratingsHandler.DeleteRating))
 
 	ws := app.Group("/ws")
 	ws.Get("/chats", websocket.New(chatHandler.OpenConnection))
