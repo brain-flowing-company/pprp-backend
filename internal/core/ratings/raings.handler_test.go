@@ -36,7 +36,7 @@ func TestCreateRating(t *testing.T) {
 			requestbody: `{
                 "property_id" : "0bd03187-91ac-457d-957c-3ba2f6c0d24b",
                 "rating" : 0,
-                "review" : "kuayfkdfjlklfjakl"
+                "review" : "rating is 0 in range 0 to 5"
             }`,
 			expectStatus: fiber.StatusOK,
 		},
@@ -45,7 +45,7 @@ func TestCreateRating(t *testing.T) {
 			requestbody: `{
 				"property_id" : "0bd03187-91ac-457d-957c-3ba2f6c0d24b",
 				"rating" : 1.5,
-				"review" : "kuayfkdfjl"
+				"review" : "rating is not integer but float"
 			}`,
 			expectStatus: fiber.StatusBadRequest,
 		},
@@ -54,7 +54,7 @@ func TestCreateRating(t *testing.T) {
 			requestbody: `{
 				"property_id" : "0bd03187-91ac-457d-957c-3ba2f6c0d24b",
 				"rating" : 6,
-				"review" : "kuayfkdfjl"
+				"review" : "rating is not in range 0 to 5 but got 6" 
 			}`,
 			expectStatus: fiber.StatusBadRequest,
 		},
@@ -63,7 +63,7 @@ func TestCreateRating(t *testing.T) {
 			requestbody: `{
 				"property_id" : "0bd03187-91ac-457d-957c-3ba2f6c0d24b",
 				"rating" : 5,
-				"review" : "kuayfkdfjl"
+				"err" : "my error"
 			`,
 			expectStatus: fiber.StatusBadRequest,
 		},
