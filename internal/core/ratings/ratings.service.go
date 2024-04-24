@@ -1,6 +1,8 @@
 package ratings
 
 import (
+	"fmt"
+
 	"github.com/brain-flowing-company/pprp-backend/config"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"go.uber.org/zap"
@@ -9,7 +11,7 @@ import (
 type Service interface {
 	CreateRating(*models.Reviews) error
 	// GetRatingByPropertyId(uuid.UUID, *[]models.RatingResponse) error
-	GetAllRatings(*[]models.RatingResponse) error
+	// GetAllRatings(*[]models.RatingResponse) error
 	// GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 	// GetRatingByPropertyIdSortedByNewest(propertyId uuid.UUID, ratings *[]models.RatingResponse) error
 	// UpdateRatingStatus(updatingRating *models.UpdateRatingStatus, ratingId uuid.UUID) error
@@ -33,6 +35,7 @@ func NewService(repo Repository, logger *zap.Logger, cfg *config.Config) Service
 func (s *serviceImpl) CreateRating(reviews *models.Reviews) error {
 	err := s.repo.CreateRating(reviews)
 	if err != nil {
+		fmt.Println(err)
 		s.logger.Error("Failed to create rating", zap.Error(err))
 		return err
 	}
@@ -48,14 +51,14 @@ func (s *serviceImpl) CreateRating(reviews *models.Reviews) error {
 // 	return nil
 // }
 
-func (s *serviceImpl) GetAllRatings(ratings *[]models.RatingResponse) error {
-	err := s.repo.GetAllRatings(ratings)
-	if err != nil {
-		s.logger.Error("Failed to get all ratings", zap.Error(err))
-		return err
-	}
-	return nil
-}
+// func (s *serviceImpl) GetAllRatings(ratings *[]models.RatingResponse) error {
+// 	err := s.repo.GetAllRatings(ratings)
+// 	if err != nil {
+// 		s.logger.Error("Failed to get all ratings", zap.Error(err))
+// 		return err
+// 	}
+// 	return nil
+// }
 
 // func (s *serviceImpl) GetRatingByPropertyIdSortedByRating(propertyId uuid.UUID, ratings *[]models.RatingResponse) error {
 // 	err := s.repo.GetRatingByPropertyIdSortedByRating(propertyId, ratings)
