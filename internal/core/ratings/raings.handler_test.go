@@ -6,23 +6,20 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/brain-flowing-company/pprp-backend/apperror"
 	"github.com/brain-flowing-company/pprp-backend/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
 
 type mockService struct {
-	getallrating func(*[]models.RatingResponse) error
 	createrating func(*models.Reviews) error
 }
 
-func (h *mockService) GetAllRatings(rating *[]models.RatingResponse) error {
-	return h.getallrating(rating)
-}
 func (h *mockService) CreateRating(rating *models.Reviews) error {
 	return h.createrating(rating)
 }
 
-func TestCreateRating(t *testing.T) {
+func TestCreateRatingHandler(t *testing.T) {
 	app := fiber.New()
 
 	testCase := []struct {
@@ -67,12 +64,24 @@ func TestCreateRating(t *testing.T) {
 			`,
 			expectStatus: fiber.StatusBadRequest,
 		},
+		{
+			description: "internal server error",
+			requestbody: `{
+                "property_id" : "0bd03187-91ac-457d-957c-3ba2f6c0d24b",
+                "rating" : 0,
+                "review" : "internal server error"
+            }`,
+			expectStatus: fiber.StatusInternalServerError,
+		},
 	}
 	for _, tc := range testCase {
 		t.Run(tc.description, func(t *testing.T) {
 			reqBody := []byte(tc.requestbody)
 			service := mockService{
 				createrating: func(rating *models.Reviews) error {
+					if rating.Review == "internal server error" {
+						return apperror.New(apperror.InternalServerError).Describe("Failed to create rating")
+					}
 					return nil
 				},
 			}
@@ -86,7 +95,6 @@ func TestCreateRating(t *testing.T) {
 			if resp.StatusCode != tc.expectStatus {
 				t.Fatalf("expected %d but got %d", tc.expectStatus, resp.StatusCode)
 			}
-			// You can also check the response body, headers, etc. here if needed
 		})
 	}
 }

@@ -11,7 +11,7 @@ import (
 type Handler interface {
 	CreateRating(c *fiber.Ctx) error
 	// GetRatingByPropertyId(c *fiber.Ctx) error
-	GetAllRatings(c *fiber.Ctx) error
+	// GetAllRatings(c *fiber.Ctx) error
 	// GetRatingByPropertyIdSortedByRating(c *fiber.Ctx) error
 	// GetRatingByPropertyIdSortedByNewest(c *fiber.Ctx) error
 	// UpdateRatingStatus(c *fiber.Ctx) error
@@ -99,13 +99,13 @@ func (h *handlerImpl) CreateRating(c *fiber.Ctx) error {
 // @failure 400 {object} models.ErrorResponses
 // @failure 401 {object} models.ErrorResponses
 // @failure 500 {object} models.ErrorResponses
-func (h *handlerImpl) GetAllRatings(c *fiber.Ctx) error {
-	var ratings []models.RatingResponse
-	if err := h.service.GetAllRatings(&ratings); err != nil {
-		return utils.ResponseError(c, err)
-	}
-	return c.JSON(ratings)
-}
+// func (h *handlerImpl) GetAllRatings(c *fiber.Ctx) error {
+// 	var ratings []models.RatingResponse
+// 	if err := h.service.GetAllRatings(&ratings); err != nil {
+// 		return utils.ResponseError(c, err)
+// 	}
+// 	return c.JSON(ratings)
+// }
 
 // // @router /api/v1/ratings/sorted/:propertyId [get]
 // // @summary Get rating by property id sorted by rating

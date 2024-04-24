@@ -186,7 +186,7 @@ func main() {
 
 	apiv1.Post("/ratings", mw.WithAuthentication(ratingsHandler.CreateRating))
 	// apiv1.Get("/ratings/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyId))
-	apiv1.Get("/ratings", mw.WithAuthentication(ratingsHandler.GetAllRatings))
+	// apiv1.Get("/ratings", mw.WithAuthentication(ratingsHandler.GetAllRatings))
 	// apiv1.Get("/ratings/sorted/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyIdSortedByRating))
 	// apiv1.Get("/ratings/newest/:propertyId", mw.WithAuthentication(ratingsHandler.GetRatingByPropertyIdSortedByNewest))
 	// apiv1.Patch("/ratings/:ratingId", mw.WithAuthentication(ratingsHandler.UpdateRatingStatus))
